@@ -229,6 +229,7 @@ void DirectX::DirectXUpdate(){
 	hr_ = commandList_->Reset(commandAllocator_, nullptr);
 	assert(SUCCEEDED(hr_));
 }
+
 void DirectX::DirectXRelease(){
 
 	CloseHandle(fenceEvent);

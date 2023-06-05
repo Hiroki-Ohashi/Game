@@ -40,5 +40,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		}
 	}
 
+	DirectX::DirectXRelease();
+
 	return 0;
 }
