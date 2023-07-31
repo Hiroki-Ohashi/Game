@@ -2,7 +2,7 @@
 #include <cstdint>
 #include <d3d12.h>
 #include "WinApp.h"
-#include "DirectX.h"
+#include "DirectXCommon.h"
 #include "Function.h"
 #include "externals/imgui/imgui.h"
 #include "externals/imgui/imgui_impl_dx12.h"

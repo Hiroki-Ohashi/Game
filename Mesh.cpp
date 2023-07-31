@@ -1,4 +1,4 @@
-#include "Triangle.h"
+#include "Mesh.h"
 #include <Windows.h>
 #include <cstdint>
 #include <string>
@@ -10,7 +10,7 @@
 #include <dxcapi.h>
 #include "WinApp.h"
 #include "Function.h"
-#include "DirectX.h"
+#include "DirectXCommon.h"
 #include "MathFunction.h"
 
 #pragma comment(lib, "d3d12.lib")

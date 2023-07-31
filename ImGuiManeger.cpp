@@ -1,5 +1,5 @@
 #include "ImGuiManeger.h"
-#include "DirectX.h"
+#include "DirectXCommon.h"
 #include "WinApp.h"
 #include <Windows.h>
 #include <cstdint>
@@ -28,7 +28,7 @@ void ImGuiManeger::Update(){
 	ImGui::NewFrame();
 
 	// 開発用UIの処理。実際に開発用のUIを出す場合はココをゲーム固有の処理に置き換える
-	ImGui::ShowDemoWindow();
+	//ImGui::ShowDemoWindow();
 }
 
 void ImGuiManeger::Draw(DirectX* dir_){

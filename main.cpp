@@ -9,10 +9,11 @@
 #include <dxcapi.h>
 #include "WinApp.h"
 #include "Function.h"
-#include "DirectX.h"
-#include "Triangle.h"
+#include "DirectXCommon.h"
+#include "Mesh.h"
 #include "ImGuiManeger.h"
 #include "MathFunction.h"
+#include "externals/imgui/imgui.h"
 
 
 #pragma comment(lib, "d3d12.lib")
@@ -38,8 +39,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		pos[i][2] = { -0.89f - (i * -0.07f),0.0f,0.0f,1.0f };
 	}
 
+	// 左下
+	pos[0][0] = { -0.1f, 0.5f, 0.0f, 1.0f };
+	// 上
+	pos[0][1] = { 0.0f, 0.7f, 0.0f, 1.0f };
+	// 右下
+	pos[0][2] = { 0.1f, 0.5f, 0.0f, 1.0f };
+
 	WinApp* winapp = new WinApp(L"CG2");
-	DirectX* directX = new DirectX;
+	DirectX* directX = new DirectX();
 	Triangle* triangle[Max];
 	ImGuiManeger* imgui = new ImGuiManeger;
 	
@@ -86,20 +94,36 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	
 			
 
-			for (int i = 0; i < Max; i++) {
+			for (int i = 1; i < Max; i++) {
 				*triangle[i]->wvpData = worldViewProjectionMatrix;
 				triangle[i]->DxcUpdate(directX);
+				triangle[0]->DxcUpdate(directX);
 			}
+
+			ImGui::Begin("Mesh Color");
+			ImGui::ColorEdit3("Mesh Color", &triangle[0]->materialData->x);
+			ImGui::End();
+
+			ImGui::Begin("Mesh Position");
+			ImGui::SliderFloat3("Mesh Pos", &transform.translate.x, -1.0f, 1.0f);
+			ImGui::End();
+
+			ImGui::Begin("Camera Position");
+			ImGui::SliderFloat3("Camera Pos", &cameraTransform.translate.x, -1.0f, 1.0f);
+			ImGui::SliderFloat3("Camera scale", &cameraTransform.scale.x, -1.0f, 1.0f);
+			ImGui::SliderFloat3("Camera rotate", &cameraTransform.rotate.x, -1.0f, 1.0f);
+			ImGui::End();
+
 			imgui->Draw(directX);
 
 			directX->Close();
 		}
 	}
+
+
 	for (int i = 0; i < Max; i++) {
 		triangle[i]->DxcRelease();
 	}
-
-
 	imgui->Release();
 	directX->Release(winapp);
 	

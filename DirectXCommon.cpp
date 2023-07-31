@@ -8,8 +8,8 @@
 #include <Windows.h>
 #include "WinApp.h"
 #include "Function.h"
-#include "DirectX.h"
-#include "Triangle.h"
+#include "DirectXCommon.h"
+#include "Mesh.h"
 
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
