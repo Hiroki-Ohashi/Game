@@ -30,7 +30,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	const int Max = 30;
 
 	Vector4 pos[Max][3];
-	for (int i = 0; i < Max; i++) {
+	for (int i = 1; i < Max; i++) {
 		// 左下
 		pos[i][0] = { -0.95f - (i * -0.07f),0.0f,0.0f,1.0f };
 		// 上
@@ -97,8 +97,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			for (int i = 1; i < Max; i++) {
 				*triangle[i]->wvpData = worldViewProjectionMatrix;
 				triangle[i]->DxcUpdate(directX);
-				triangle[0]->DxcUpdate(directX);
 			}
+
+			*triangle[0]->wvpData = worldViewProjectionMatrix;
+			triangle[0]->DxcUpdate(directX);
 
 			ImGui::Begin("Mesh Color");
 			ImGui::ColorEdit3("Mesh Color", &triangle[0]->materialData->x);
