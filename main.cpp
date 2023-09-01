@@ -11,6 +11,7 @@
 #include "Function.h"
 #include "DirectX.h"
 #include "Triangle.h"
+#include "Mesh.h"
 
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -36,21 +37,18 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	}
 
 	WinApp* winapp = new WinApp(L"CG2");
-	DirectX* directX = new DirectX;
+	DirectX* directX = new DirectX();
 	Triangle* triangle[Max];
+	Mesh* mesh = new Mesh();
 	
 	directX->Initialize(winapp);
-	directX->Fence();
+	mesh->Initialize(directX);
 
 	MSG msg{};
 
 	for (int i = 0; i < Max; i++) {
 		triangle[i] = new Triangle;
-		triangle[i]->DxcInitialize();
-		triangle[i]->DxcPso(directX);
-		triangle[i]->DxcVertexDraw(directX, pos[i]);
-		triangle[i]->DxcViewport();
-		triangle[i]->DxcScissor();
+		triangle[i]->Initialize(directX, pos[i]);
 	}
 	
 
@@ -64,20 +62,25 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		else {
 			// ゲームの処理
 			directX->Update();
+			mesh->Update(directX);
 
 			for (int i = 0; i < Max; i++) {
-				triangle[i]->DxcUpdate(directX);
+				triangle[i]->Draw(directX);
 			}
 
 			directX->Close();
 		}
 	}
+
 	for (int i = 0; i < Max; i++) {
-		triangle[i]->DxcRelease();
+		triangle[i]->Release();
+		delete triangle[i];
 	}
 
+	mesh->Release();
+	delete mesh;
 	directX->Release(winapp);
-
+	delete directX;
 	
 
 	return 0;

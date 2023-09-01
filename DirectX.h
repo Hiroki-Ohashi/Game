@@ -12,7 +12,6 @@
 #pragma comment(lib, "dxgi.lib")
 
 class WinApp;
-class Triangle;
 
 class DirectX {
 public:
