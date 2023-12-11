@@ -4,7 +4,7 @@
 void Model::Initialize(){
 
 	// モデル読み込み
-	modelData = LoadObjFile("resources","multiMaterial.obj");
+	modelData = LoadObjFile("resources","cube.obj");
 	DirectX::ScratchImage mipImages2 = texture_->LoadTexture(modelData.material.textureFilePath);
 
 	Model::CreateVertexResource();

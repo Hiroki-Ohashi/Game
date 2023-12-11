@@ -11,7 +11,6 @@ GameScene::~GameScene(){
 }
 
 void GameScene::Initialize(){
-
 	textureManager_ = TextureManager::GetInstance();
 	textureManager_->Initialize();
 
@@ -59,7 +58,6 @@ void GameScene::Update(){
 }
 
 void GameScene::Draw(){
-
 	sphere_->Draw(*camera_->GetTransformationMatrixData(), moon);
 
 	model_->Draw(*camera_->GetTransformationMatrixData(), kusa);
@@ -70,5 +68,5 @@ void GameScene::Draw(){
 	sprite_->Draw(monsterBall);
 }
 
-void GameScene::Release(){
+void GameScene::Release() {
 }

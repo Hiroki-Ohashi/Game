@@ -2,6 +2,7 @@
 #define _USE_MATH_DEFINES
 #include "math.h"
 #include "imgui.h"
+#include <numbers>
 
 void Sphere::Initialize(){
 
@@ -86,14 +87,14 @@ void Sphere::CreateVertexResourceSphere(){
 	vertexResourceSphere->Map(0, nullptr, reinterpret_cast<void**>(&vertexDataSphere));
 
 	// 経度1つ分の角度
-	const float kLonEvery = 2.0f * float(M_PI) / float(kSubdivision);
+	const float kLonEvery = 2.0f * float(std::numbers::pi) / float(kSubdivision);
 
 	// 緯度1つ分の角度
-	const float kLatEvery = float(M_PI) / float(kSubdivision);
+	const float kLatEvery = float(std::numbers::pi) / float(kSubdivision);
 
 	// 緯度の方向に分割
 	for (uint32_t latIndex = 0; latIndex < kSubdivision; ++latIndex) {
-		float lat = float(-M_PI) / 2.0f + kLatEvery * latIndex;
+		float lat = float(-std::numbers::pi) / 2.0f + kLatEvery * latIndex;
 
 		// 経度の方向に分割しながら線を書く
 		for (uint32_t lonIndex = 0; lonIndex < kSubdivision; ++lonIndex) {
