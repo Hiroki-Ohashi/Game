@@ -62,6 +62,7 @@ void GameScene::Draw(){
 
 	model_->Draw(*camera_->GetTransformationMatrixData(), kusa);
 
+
 	triangle_[0]->Draw(*camera_->GetTransformationMatrixData(), uv);
 	triangle_[1]->Draw(*camera_->GetTransformationMatrixData(), uv);
 
