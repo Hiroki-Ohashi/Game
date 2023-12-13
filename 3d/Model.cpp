@@ -22,10 +22,10 @@ void Model::Update(){
 	
 }
 
-void Model::Draw(const Matrix4x4& transformationMatrixData, uint32_t index){
+void Model::Draw(Camera* camera, uint32_t index){
 
 	wvpData->World = MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
-	wvpData->World = Multiply(wvpData->World, transformationMatrixData);
+	wvpData->World = Multiply(wvpData->World, *camera->transformationMatrixData);
 	wvpData->WVP = wvpData->World;
 
 	Matrix4x4 uvtransformMatrix = MakeScaleMatrix(uvTransform.scale);

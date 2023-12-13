@@ -58,13 +58,13 @@ void GameScene::Update(){
 }
 
 void GameScene::Draw(){
-	sphere_->Draw(*camera_->GetTransformationMatrixData(), moon);
+	sphere_->Draw(camera_, moon);
 
-	model_->Draw(*camera_->GetTransformationMatrixData(), kusa);
+	model_->Draw(camera_, kusa);
 
 
-	triangle_[0]->Draw(*camera_->GetTransformationMatrixData(), uv);
-	triangle_[1]->Draw(*camera_->GetTransformationMatrixData(), uv);
+	triangle_[0]->Draw(camera_, uv);
+	triangle_[1]->Draw(camera_, uv);
 
 	sprite_->Draw(monsterBall);
 }

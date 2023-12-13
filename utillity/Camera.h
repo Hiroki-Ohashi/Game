@@ -3,19 +3,12 @@
 #include "MathFunction.h"
 #include "WinApp.h"
 
-class Camera {
-public:
-
-	static Camera* GetInstance();
-
+struct Camera {
 	void Initialize();
 
 	void Update();
 
 	void Draw();
-
-	const Matrix4x4* GetTransformationMatrixData() { return transformationMatrixData; }
-private:
 
 	static WinApp* winapp_;
 

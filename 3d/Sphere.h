@@ -11,6 +11,7 @@
 #include "DirectXCommon.h"
 #include "TextureManager.h"
 #include "Camera.h"
+#include "WorldTransform.h"
 
 class Sphere {
 public:
@@ -18,7 +19,7 @@ public:
 
 	void Update();
 
-	void Draw(const Matrix4x4& transformationMatrixData, uint32_t index);
+	void Draw(Camera* camera, uint32_t index);
 
 	void Release();
 
@@ -29,13 +30,14 @@ public:
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(Microsoft::WRL::ComPtr<ID3D12Device> device, size_t sizeInbytes);
 
 
+
 	Material* GetMaterialDataSphere() { return materialDataSphere; }
 	DirectionalLight* GetDirectionalLightData(){return directionalLightData;}
 
 private:
 
 	TextureManager* texture_ = TextureManager::GetInstance();
-	Camera* camera_ = Camera::GetInstance();
+	WorldTransform worldTransform_;
 
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResourceSphere;
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResourceSphere;

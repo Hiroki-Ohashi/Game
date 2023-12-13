@@ -1,13 +1,6 @@
 #include "Camera.h"
 #include "imgui.h"
 
-
-Camera* Camera::GetInstance()
-{
-	static Camera instance;
-	return &instance;
-}
-
 void Camera::Initialize(){
 	cameraTransform = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -10.0f} };
 }

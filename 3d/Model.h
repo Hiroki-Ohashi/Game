@@ -30,7 +30,7 @@ public:
 
 	void Update();
 
-	void Draw(const Matrix4x4& transformationMatrixData, uint32_t index);
+	void Draw(Camera* camera, uint32_t index);
 
 	void Release();
 
@@ -47,7 +47,6 @@ private:
 
 	WinApp* winapp_ = WinApp::GetInsTance();
 	TextureManager* texture_ = TextureManager::GetInstance();
-	Camera* camera_ = Camera::GetInstance();
 
 	ModelData modelData;
 

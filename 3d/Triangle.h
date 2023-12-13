@@ -11,6 +11,7 @@
 #include "DirectXCommon.h"
 #include "TextureManager.h"
 #include "Camera.h"
+#include "WorldTransform.h"
 
 class Triangle {
 public:
@@ -20,7 +21,7 @@ public:
 	// 読み込み
 	void Update();
 	// 描画
-	void Draw(const Matrix4x4& transformationMatrixData, uint32_t index);
+	void Draw(Camera* camera, uint32_t index);
 	// 解放
 	void Release();
 
@@ -36,7 +37,7 @@ public:
 
 private:
 	TextureManager* texture_ = TextureManager::GetInstance();
-	Camera* camera_ = Camera::GetInstance();
+	WorldTransform worldtransform_;
 
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
 

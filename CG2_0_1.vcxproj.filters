@@ -108,6 +108,9 @@
     <ClCompile Include="Manager\TextureManager.cpp">
       <Filter>Manager</Filter>
     </ClCompile>
+    <ClCompile Include="utillity\WorldTransform.cpp">
+      <Filter>utility</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="externals\imgui\imconfig.h">
@@ -178,6 +181,9 @@
     </ClInclude>
     <ClInclude Include="Manager\TextureManager.h">
       <Filter>Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="utillity\WorldTransform.h">
+      <Filter>utility</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

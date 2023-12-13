@@ -11,6 +11,8 @@ void Sphere::Initialize(){
 	Sphere::CreateTransformationMatrixResourceSphere();
 	Sphere::CreateDirectionalResource();
 
+	worldTransform_.scale = { 0.5f,0.5f,0.5f };
+
 	transformSphere = { {0.5f,0.5f,0.5f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 	uvTransformSphere = { {1.0f, 1.0f, 1.0f},{0.0f, 0.0f, 0.0f},{0.0f, 0.0f, 0.0f}, };
 
@@ -22,13 +24,11 @@ void Sphere::Initialize(){
 void Sphere::Update(){
 }
 
-void Sphere::Draw(const Matrix4x4& transformationMatrixData, uint32_t index){
+void Sphere::Draw(Camera* camera, uint32_t index){
 
-	transformSphere.rotate.y += 0.02f;
+	worldTransform_.rotate.y += 0.02f;
 
-	wvpResourceDataSphere->World = MakeAffineMatrix(transformSphere.scale, transformSphere.rotate, transformSphere.translate);
-	wvpResourceDataSphere->World = Multiply(wvpResourceDataSphere->World, transformationMatrixData);
-	wvpResourceDataSphere->WVP = wvpResourceDataSphere->World;
+	worldTransform_.TransferMatrix(wvpResourceDataSphere, camera);
 
 	Matrix4x4 uvtransformMatrix = MakeScaleMatrix(uvTransformSphere.scale);
 	uvtransformMatrix = Multiply(uvtransformMatrix, MakeRotateZMatrix(uvTransformSphere.rotate.z));

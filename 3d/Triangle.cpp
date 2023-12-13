@@ -7,18 +7,18 @@ void Triangle::Initialize(Vector4* pos){
 	Triangle::CreateWVPResource();
 
 	transform = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
+
+	worldtransform_.scale = transform.scale;
 }
 
 void Triangle::Update(){
 }
 
-void Triangle::Draw(const Matrix4x4& transformationMatrixData, uint32_t index){
+void Triangle::Draw(Camera* camera, uint32_t index){
 
-	transform.rotate.y += 0.03f;
+	worldtransform_.rotate.y += 0.03f;
 
-	wvpData->World = MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
-	wvpData->World = Multiply(wvpData->World, transformationMatrixData);
-	wvpData->WVP = wvpData->World;
+	worldtransform_.TransferMatrix(wvpData, camera);
 
 	DirectXCommon::GetInsTance()->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView);
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
