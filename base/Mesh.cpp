@@ -1,5 +1,11 @@
 #include "Mesh.h"
 
+Mesh* Mesh::GetInstance()
+{
+	static Mesh instance;
+	return &instance;
+}
+
 void Mesh::Initialize() {
 	// dxcCompilerを初期化
 	hr_ = DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&dxcUtils));

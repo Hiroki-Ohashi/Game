@@ -4,7 +4,7 @@
 void Model::Initialize(){
 
 	// モデル読み込み
-	modelData = LoadObjFile("resources","cube.obj");
+	modelData = LoadObjFile("resources","plane.obj");
 	DirectX::ScratchImage mipImages2 = texture_->LoadTexture(modelData.material.textureFilePath);
 
 	Model::CreateVertexResource();
@@ -14,8 +14,10 @@ void Model::Initialize(){
 	transform = { { 0.5f,0.5f,0.5f},{0.0f,0.0f,0.0f},{0.0f,-0.5f,1.0f} };
 	uvTransform = { {1.0f, 1.0f, 1.0f},{0.0f, 0.0f, 0.0f},{0.0f, 0.0f, 0.0f}, };
 
+	worldTransform_.scale = transform.scale;
+	
 	// Lightingするか
-	materialData->enableLighting = true;
+	//materialData->enableLighting = true;
 }
 
 void Model::Update(){
@@ -24,9 +26,11 @@ void Model::Update(){
 
 void Model::Draw(Camera* camera, uint32_t index){
 
-	wvpData->World = MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
+	/*wvpData->World = MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
 	wvpData->World = Multiply(wvpData->World, *camera->transformationMatrixData);
-	wvpData->WVP = wvpData->World;
+	wvpData->WVP = wvpData->World;*/
+
+	worldTransform_.TransferMatrix(wvpData, camera);
 
 	Matrix4x4 uvtransformMatrix = MakeScaleMatrix(uvTransform.scale);
 	uvtransformMatrix = Multiply(uvtransformMatrix, MakeRotateZMatrix(uvTransform.rotate.z));
@@ -38,7 +42,7 @@ void Model::Draw(Camera* camera, uint32_t index){
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
 	DirectXCommon::GetInsTance()->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	// マテリアルCBufferの場所を設定
-	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
+	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResource.Get()->GetGPUVirtualAddress());
 	// TransformationMatrixCBufferの場所を設定
 	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。

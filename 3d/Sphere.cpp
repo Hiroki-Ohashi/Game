@@ -13,7 +13,7 @@ void Sphere::Initialize(){
 
 	worldTransform_.scale = { 0.5f,0.5f,0.5f };
 
-	transformSphere = { {0.5f,0.5f,0.5f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+	transformSphere = { {0.5f,0.5f,0.5f},{0.0f,0.0f,0.0f},{0.0f,0.0f,10.0f} };
 	uvTransformSphere = { {1.0f, 1.0f, 1.0f},{0.0f, 0.0f, 0.0f},{0.0f, 0.0f, 0.0f}, };
 
 	directionalLightData->color = { 1.0f, 1.0f, 1.0f, 1.0f };
@@ -26,7 +26,7 @@ void Sphere::Update(){
 
 void Sphere::Draw(Camera* camera, uint32_t index){
 
-	worldTransform_.rotate.y += 0.02f;
+	//worldTransform_.rotate.y += 0.02f;
 
 	worldTransform_.TransferMatrix(wvpResourceDataSphere, camera);
 

@@ -8,6 +8,7 @@ GameScene::~GameScene(){
 	delete sphere_;
 	delete model_;
 	delete camera_;
+	delete particle_;
 }
 
 void GameScene::Initialize(){
@@ -25,6 +26,9 @@ void GameScene::Initialize(){
 
 	model_ = new Model();
 	model_->Initialize();
+
+	particle_ = new Particle();
+	particle_->Initialize();
 
 	Vector4 pos[Max][3];
 
@@ -48,9 +52,9 @@ void GameScene::Initialize(){
 	}
 
 	uv = textureManager_->Load("Resources/uvChecker.png");
-	moon = textureManager_->Load("Resources/moon.png");
-	monsterBall = textureManager_->Load("Resources/monsterball.png");
-	kusa = textureManager_->Load("Resources/kusa.png");
+	//moon = textureManager_->Load("Resources/moon.png");
+	monsterBall = textureManager_->Load("Resources/monsterBall.png");
+	//kusa = textureManager_->Load("Resources/kusa.png");
 }
 
 void GameScene::Update(){
@@ -58,15 +62,17 @@ void GameScene::Update(){
 }
 
 void GameScene::Draw(){
-	sphere_->Draw(camera_, moon);
 
-	model_->Draw(camera_, kusa);
+	particle_->Draw(camera_, uv);
 
+	//sphere_->Draw(camera_, moon);
 
-	triangle_[0]->Draw(camera_, uv);
-	triangle_[1]->Draw(camera_, uv);
+	//model_->Draw(camera_, uv);
 
-	sprite_->Draw(monsterBall);
+	/*triangle_[0]->Draw(camera_, uv);
+	triangle_[1]->Draw(camera_, uv);*/
+
+	/*sprite_->Draw(monsterBall);*/
 }
 
 void GameScene::Release() {

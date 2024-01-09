@@ -1,6 +1,4 @@
 #pragma once
-
-#include <Windows.h>
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <cassert>
@@ -15,7 +13,7 @@
 #include "Camera.h"
 #include "WorldTransform.h"
 
-class Model {
+class Particle {
 public:
 	void Initialize();
 
@@ -29,13 +27,9 @@ public:
 	void CreateMaterialResource();
 	void CreateWVPResource();
 
-	//void CreatePso();
+	void CreatePso();
 
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(Microsoft::WRL::ComPtr<ID3D12Device> device, size_t sizeInbytes);
-
-
-	ModelData LoadObjFile(const std::string& directoryPath, const std::string& filename);
-	MaterialData LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename);
 
 private:
 
@@ -57,6 +51,17 @@ private:
 
 	Transform transform;
 	Transform uvTransform;
+
+	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineState = nullptr;
+
+	const static uint32_t kNumInstance = 10;
+	D3D12_CPU_DESCRIPTOR_HANDLE instancingSrvHandleCPU_;
+	D3D12_GPU_DESCRIPTOR_HANDLE instancingSrvHandleGPU_;
+	TransformationMatrix* instancingData_;
+	Microsoft::WRL::ComPtr<ID3D12Resource> instancingResource_;
+	Transform transform_[kNumInstance];
+
 
 	bool isModel;
 };

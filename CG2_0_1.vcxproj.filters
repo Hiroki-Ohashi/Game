@@ -111,6 +111,9 @@
     <ClCompile Include="utillity\WorldTransform.cpp">
       <Filter>utility</Filter>
     </ClCompile>
+    <ClCompile Include="3d\Particle.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="externals\imgui\imconfig.h">
@@ -185,6 +188,9 @@
     <ClInclude Include="utillity\WorldTransform.h">
       <Filter>utility</Filter>
     </ClInclude>
+    <ClInclude Include="3d\Particle.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt">
@@ -193,9 +199,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\Shaders\Object3d.hlsli" />
+    <None Include="Particle.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="resources\Shaders\Object3d.PS.hlsl" />
     <FxCompile Include="resources\Shaders\Object3d.VS.hlsl" />
+    <FxCompile Include="Particle.VS.hlsl" />
+    <FxCompile Include="Particle.PS.hlsl" />
   </ItemGroup>
 </Project>

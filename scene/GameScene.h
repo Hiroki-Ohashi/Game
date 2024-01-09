@@ -15,6 +15,7 @@
 #include "TextureManager.h"
 #include "Input.h"
 #include "imgui.h"
+#include "Particle.h"
 
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -47,6 +48,7 @@ private:
 	Sphere* sphere_ = nullptr;
 	Model* model_ = nullptr;
 	Camera* camera_ = nullptr;
+	Particle* particle_ = nullptr;
 
 	uint32_t monsterBall;
 	uint32_t moon;

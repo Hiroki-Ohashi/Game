@@ -55,6 +55,15 @@ struct DirectionalLight {
 	float intensity;
 };
 
+struct MaterialData {
+	std::string textureFilePath;
+};
+
+struct ModelData {
+	std::vector<VertexData> vertices;
+	MaterialData material;
+};
+
 // 単位行列の作成
 Matrix4x4 MakeIndentity4x4();
 

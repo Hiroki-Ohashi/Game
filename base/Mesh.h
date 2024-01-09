@@ -16,6 +16,9 @@
 
 class Mesh {
 public:
+
+	static Mesh* GetInstance();
+
 	void Initialize();
 
 	void CreatePso();
@@ -49,6 +52,8 @@ private:
 	D3D12_ROOT_PARAMETER rootParameters[4] = {};
 
 	D3D12_DESCRIPTOR_RANGE descriptorRange[1] = {};
+	D3D12_DESCRIPTOR_RANGE descriptorRangeForInstancing[1] = {};
+
 
 	D3D12_STATIC_SAMPLER_DESC staticSamplers[1] = {};
 	D3D12_INPUT_ELEMENT_DESC inputElementDescs[3] = {};
