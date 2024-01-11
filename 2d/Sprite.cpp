@@ -2,9 +2,9 @@
 #include "imgui.h"
 
 
-void Sprite::Initialize(){
+void Sprite::Initialize(Vector2 pos, Vector2 scale){
 
-	Sprite::CreateVertexResourceSprite();
+	Sprite::CreateVertexResourceSprite(pos, scale);
 	Sprite::CreateMaterialResourceSprite();
 	Sprite::CreateTransformationMatrixResourceSprite();
 
@@ -58,7 +58,7 @@ void Sprite::Draw(uint32_t index){
 void Sprite::Release(){
 }
 
-void Sprite::CreateVertexResourceSprite(){
+void Sprite::CreateVertexResourceSprite(Vector2 pos, Vector2 scale){
 	// Sprite用の頂点リソースを作る
 	vertexResourceSprite = CreateBufferResource(dir_->GetDevice(), sizeof(VertexData) * 4);
 
@@ -72,19 +72,19 @@ void Sprite::CreateVertexResourceSprite(){
 	vertexResourceSprite->Map(0, nullptr, reinterpret_cast<void**>(&vertexDataSprite));
 
 	// 三角形
-	vertexDataSprite[0].position = { 0.0f, 360.0f, 0.0f, 1.0f }; // 左下
+	vertexDataSprite[0].position = { pos.x, pos.y + scale.y, 0.0f, 1.0f }; // 左下
 	vertexDataSprite[0].texcoord = { 0.0f, 1.0f };
 	vertexDataSprite[0].normal = { 0.0f, 0.0f, -1.0f };
 
-	vertexDataSprite[1].position = { 0.0f, 0.0f, 0.0f, 1.0f }; // 左上
+	vertexDataSprite[1].position = { pos.x, pos.y, 0.0f, 1.0f }; // 左上
 	vertexDataSprite[1].texcoord = { 0.0f, 0.0f };
 	vertexDataSprite[1].normal = { 0.0f, 0.0f, -1.0f };
 
-	vertexDataSprite[2].position = { 640.0f, 360.0f, 0.0f, 1.0f }; // 右下
+	vertexDataSprite[2].position = { pos.x + scale.x, pos.y + scale.y, 0.0f, 1.0f }; // 右下
 	vertexDataSprite[2].texcoord = { 1.0f, 1.0f };
 	vertexDataSprite[2].normal = { 0.0f, 0.0f, -1.0f };
 
-	vertexDataSprite[3].position = { 640.0f, 0.0f, 0.0f, 1.0f }; // 右上
+	vertexDataSprite[3].position = { pos.x + scale.x, pos.y, 0.0f, 1.0f }; // 右上
 	vertexDataSprite[3].texcoord = { 1.0f, 0.0f };
 	vertexDataSprite[3].normal = { 0.0f, 0.0f, -1.0f };
 

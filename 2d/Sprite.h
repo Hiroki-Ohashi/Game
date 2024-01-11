@@ -14,7 +14,7 @@
 
 class Sprite {
 public:
-	void Initialize();
+	void Initialize(Vector2 pos, Vector2 scale);
 
 	void Update();
 
@@ -22,7 +22,7 @@ public:
 
 	void Release();
 
-	void CreateVertexResourceSprite();
+	void CreateVertexResourceSprite(Vector2 pos, Vector2 scale);
 	void CreateMaterialResourceSprite();
 	void CreateTransformationMatrixResourceSprite();
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(Microsoft::WRL::ComPtr<ID3D12Device> device, size_t sizeInbytes);
