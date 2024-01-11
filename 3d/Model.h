@@ -26,7 +26,7 @@ struct ModelData {
 
 class Model {
 public:
-	void Initialize();
+	void Initialize(const std::string& filename);
 
 	void Update();
 

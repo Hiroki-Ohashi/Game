@@ -1,10 +1,10 @@
 #include "Model.h"
 #include "imgui.h"
 
-void Model::Initialize(){
+void Model::Initialize(const std::string& filename){
 
 	// モデル読み込み
-	modelData = LoadObjFile("resources","cube.obj");
+	modelData = LoadObjFile("resources",filename);
 	DirectX::ScratchImage mipImages2 = texture_->LoadTexture(modelData.material.textureFilePath);
 
 	Model::CreateVertexResource();
@@ -13,9 +13,6 @@ void Model::Initialize(){
 
 	transform = { { 0.5f,0.5f,0.5f},{0.0f,0.0f,0.0f},{0.0f,-0.5f,1.0f} };
 	uvTransform = { {1.0f, 1.0f, 1.0f},{0.0f, 0.0f, 0.0f},{0.0f, 0.0f, 0.0f}, };
-
-	// Lightingするか
-	materialData->enableLighting = true;
 }
 
 void Model::Update(){
@@ -92,6 +89,9 @@ void Model::CreateMaterialResource(){
 	materialData->color = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 	materialData->uvTransform = MakeIndentity4x4();
+
+	// Lightingするか
+	materialData->enableLighting = true;
 }
 
 void Model::CreateWVPResource(){

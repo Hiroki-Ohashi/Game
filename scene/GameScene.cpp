@@ -24,7 +24,7 @@ void GameScene::Initialize(){
 	sphere_->Initialize();
 
 	model_ = new Model();
-	model_->Initialize();
+	model_->Initialize("cube.obj");
 
 	Vector4 pos[Max][3];
 
