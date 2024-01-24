@@ -13,6 +13,10 @@ void Model::Initialize(const std::string& filename){
 
 	transform = { { 0.5f,0.5f,0.5f},{0.0f,0.0f,0.0f},{0.0f,-0.5f,1.0f} };
 	uvTransform = { {1.0f, 1.0f, 1.0f},{0.0f, 0.0f, 0.0f},{0.0f, 0.0f, 0.0f}, };
+
+	worldTransform_.translate = transform.translate;
+	worldTransform_.scale = transform.scale;
+	worldTransform_.rotate = transform.rotate;
 }
 
 void Model::Update(){
@@ -21,9 +25,11 @@ void Model::Update(){
 
 void Model::Draw(Camera* camera, uint32_t index){
 
-	wvpData->World = MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
-	wvpData->World = Multiply(wvpData->World, *camera->transformationMatrixData);
-	wvpData->WVP = wvpData->World;
+	//wvpData->World = MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
+	//wvpData->World = Multiply(wvpData->World, *camera->transformationMatrixData);
+	//wvpData->WVP = wvpData->World;
+
+	worldTransform_.TransferMatrix(wvpData, camera);
 
 	Matrix4x4 uvtransformMatrix = MakeScaleMatrix(uvTransform.scale);
 	uvtransformMatrix = Multiply(uvtransformMatrix, MakeRotateZMatrix(uvTransform.rotate.z));

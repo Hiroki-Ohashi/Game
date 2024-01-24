@@ -63,52 +63,52 @@
     <ClCompile Include="externals\imgui\imgui_widgets.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
-    <ClCompile Include="scene\GameScene.cpp">
+    <ClCompile Include="Project\scene\GameScene.cpp">
       <Filter>scene</Filter>
     </ClCompile>
-    <ClCompile Include="utillity\Function.cpp">
+    <ClCompile Include="Project\utillity\Function.cpp">
       <Filter>utility</Filter>
     </ClCompile>
-    <ClCompile Include="utillity\MathFunction.cpp">
+    <ClCompile Include="Project\utillity\MathFunction.cpp">
       <Filter>utility</Filter>
     </ClCompile>
-    <ClCompile Include="utillity\Camera.cpp">
+    <ClCompile Include="Project\utillity\Camera.cpp">
       <Filter>utility</Filter>
     </ClCompile>
-    <ClCompile Include="2d\Sprite.cpp">
+    <ClCompile Include="Engine\2d\Sprite.cpp">
       <Filter>2d</Filter>
     </ClCompile>
-    <ClCompile Include="3d\Model.cpp">
+    <ClCompile Include="Engine\3d\Model.cpp">
       <Filter>3d</Filter>
     </ClCompile>
-    <ClCompile Include="3d\Sphere.cpp">
+    <ClCompile Include="Engine\3d\Sphere.cpp">
       <Filter>3d</Filter>
     </ClCompile>
-    <ClCompile Include="base\DirectXCommon.cpp">
+    <ClCompile Include="Engine\base\DirectXCommon.cpp">
       <Filter>base</Filter>
     </ClCompile>
-    <ClCompile Include="base\Mesh.cpp">
+    <ClCompile Include="Engine\base\Mesh.cpp">
       <Filter>base</Filter>
     </ClCompile>
-    <ClCompile Include="base\WinApp.cpp">
+    <ClCompile Include="Engine\base\WinApp.cpp">
       <Filter>base</Filter>
     </ClCompile>
-    <ClCompile Include="input\Input.cpp">
+    <ClCompile Include="Engine\input\Input.cpp">
       <Filter>input</Filter>
     </ClCompile>
-    <ClCompile Include="3d\Triangle.cpp">
+    <ClCompile Include="Engine\3d\Triangle.cpp">
       <Filter>3d</Filter>
     </ClCompile>
-    <ClCompile Include="Manager\GameManager.cpp">
+    <ClCompile Include="Project\GameManager\GameManager.cpp">
       <Filter>Manager</Filter>
     </ClCompile>
-    <ClCompile Include="Manager\ImGuiManeger.cpp">
+    <ClCompile Include="Engine\Manager\ImGuiManeger.cpp">
       <Filter>Manager</Filter>
     </ClCompile>
-    <ClCompile Include="Manager\TextureManager.cpp">
+    <ClCompile Include="Engine\Manager\TextureManager.cpp">
       <Filter>Manager</Filter>
     </ClCompile>
-    <ClCompile Include="utillity\WorldTransform.cpp">
+    <ClCompile Include="Project\utillity\WorldTransform.cpp">
       <Filter>utility</Filter>
     </ClCompile>
   </ItemGroup>
@@ -137,52 +137,52 @@
     <ClInclude Include="externals\imgui\imstb_truetype.h">
       <Filter>imgui</Filter>
     </ClInclude>
-    <ClInclude Include="scene\GameScene.h">
+    <ClInclude Include="Project\scene\GameScene.h">
       <Filter>scene</Filter>
     </ClInclude>
-    <ClInclude Include="base\DirectXCommon.h">
+    <ClInclude Include="Engine\base\DirectXCommon.h">
       <Filter>base</Filter>
     </ClInclude>
-    <ClInclude Include="base\WinApp.h">
+    <ClInclude Include="Engine\base\WinApp.h">
       <Filter>base</Filter>
     </ClInclude>
-    <ClInclude Include="base\Mesh.h">
+    <ClInclude Include="Engine\base\Mesh.h">
       <Filter>base</Filter>
     </ClInclude>
-    <ClInclude Include="3d\Sphere.h">
+    <ClInclude Include="Engine\3d\Sphere.h">
       <Filter>3d</Filter>
     </ClInclude>
-    <ClInclude Include="3d\Model.h">
+    <ClInclude Include="Engine\3d\Model.h">
       <Filter>3d</Filter>
     </ClInclude>
-    <ClInclude Include="2d\Sprite.h">
+    <ClInclude Include="Engine\2d\Sprite.h">
       <Filter>2d</Filter>
     </ClInclude>
-    <ClInclude Include="input\Input.h">
+    <ClInclude Include="Engine\input\Input.h">
       <Filter>input</Filter>
     </ClInclude>
-    <ClInclude Include="utillity\Function.h">
+    <ClInclude Include="Project\utillity\Function.h">
       <Filter>utility</Filter>
     </ClInclude>
-    <ClInclude Include="utillity\MathFunction.h">
+    <ClInclude Include="Project\utillity\MathFunction.h">
       <Filter>utility</Filter>
     </ClInclude>
-    <ClInclude Include="utillity\Camera.h">
+    <ClInclude Include="Project\utillity\Camera.h">
       <Filter>utility</Filter>
     </ClInclude>
-    <ClInclude Include="3d\Triangle.h">
+    <ClInclude Include="Engine\3d\Triangle.h">
       <Filter>3d</Filter>
     </ClInclude>
-    <ClInclude Include="Manager\GameManager.h">
+    <ClInclude Include="Project\GameManager\GameManager.h">
       <Filter>Manager</Filter>
     </ClInclude>
-    <ClInclude Include="Manager\ImGuiManeger.h">
+    <ClInclude Include="Engine\Manager\ImGuiManeger.h">
       <Filter>Manager</Filter>
     </ClInclude>
-    <ClInclude Include="Manager\TextureManager.h">
+    <ClInclude Include="Engine\Manager\TextureManager.h">
       <Filter>Manager</Filter>
     </ClInclude>
-    <ClInclude Include="utillity\WorldTransform.h">
+    <ClInclude Include="Project\utillity\WorldTransform.h">
       <Filter>utility</Filter>
     </ClInclude>
   </ItemGroup>
@@ -192,10 +192,10 @@
     </Text>
   </ItemGroup>
   <ItemGroup>
-    <None Include="resources\Shaders\Object3d.hlsli" />
+    <None Include="Resources\Shaders\Object3d.hlsli" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="resources\Shaders\Object3d.PS.hlsl" />
-    <FxCompile Include="resources\Shaders\Object3d.VS.hlsl" />
+    <FxCompile Include="Resources\Shaders\Object3d.PS.hlsl" />
+    <FxCompile Include="Resources\Shaders\Object3d.VS.hlsl" />
   </ItemGroup>
 </Project>

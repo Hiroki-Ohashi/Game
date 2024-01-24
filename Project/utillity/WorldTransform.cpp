@@ -16,5 +16,10 @@ void WorldTransform::sTransferMatrix(Microsoft::WRL::ComPtr<ID3D12Resource>& wvp
 }
 
 void WorldTransform::UpdateMatrix() {
+	matWorld = MakeAffineMatrix(scale, rotate, translate);
+	worldMatrix = MakeAffineMatrix(scale, rotate, translate);
 
+	if (parent) {
+		matWorld = Multiply(matWorld, parent->matWorld);
+	}
 }

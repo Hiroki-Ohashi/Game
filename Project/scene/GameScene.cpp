@@ -18,7 +18,7 @@ void GameScene::Initialize(){
 	camera_->Initialize();
 
 	sprite_ = new Sprite(); 
-	sprite_->Initialize(Vector2{20.0f, 10.0f}, Vector2{120.0f, 130.0f});
+	sprite_->Initialize(Vector2{0.0f, 0.0f}, Vector2{640.0f, 360.0f});
 
 	sphere_ = new Sphere();
 	sphere_->Initialize();

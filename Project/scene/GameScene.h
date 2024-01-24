@@ -42,11 +42,12 @@ private:
 
 	Input* input_ = nullptr;
 	TextureManager* textureManager_ = nullptr;
+	Camera* camera_ = nullptr;
+
 	Triangle* triangle_[Max];
 	Sprite* sprite_ = nullptr;
 	Sphere* sphere_ = nullptr;
 	Model* model_ = nullptr;
-	Camera* camera_ = nullptr;
 
 	uint32_t monsterBall;
 	uint32_t moon;

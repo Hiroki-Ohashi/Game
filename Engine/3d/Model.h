@@ -14,6 +14,7 @@
 #include "TextureManager.h"
 #include "Mesh.h"
 #include "Camera.h"
+#include "WorldTransform.h"
 
 struct MaterialData {
 	std::string textureFilePath;
@@ -47,6 +48,8 @@ private:
 
 	WinApp* winapp_ = WinApp::GetInsTance();
 	TextureManager* texture_ = TextureManager::GetInstance();
+
+	WorldTransform worldTransform_;
 
 	ModelData modelData;
 
