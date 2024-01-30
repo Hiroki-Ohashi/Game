@@ -27,7 +27,7 @@ struct ModelData {
 
 class Model {
 public:
-	void Initialize(const std::string& filename);
+	void Initialize(const std::string& filename, Transform transform);
 
 	void Update();
 
@@ -44,12 +44,11 @@ public:
 	ModelData LoadObjFile(const std::string& directoryPath, const std::string& filename);
 	MaterialData LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename);
 
+	WorldTransform worldTransform_;
 private:
 
 	WinApp* winapp_ = WinApp::GetInsTance();
 	TextureManager* texture_ = TextureManager::GetInstance();
-
-	WorldTransform worldTransform_;
 
 	ModelData modelData;
 

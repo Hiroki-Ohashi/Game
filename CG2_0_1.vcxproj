@@ -58,7 +58,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\2d;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\3d;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\base;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\input;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\Manager;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\scene;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\utillity;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Resources;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\externals\DirectXTex;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\externals\imgui;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\GameObject\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\2d;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\3d;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\base;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\input;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\Manager;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\scene;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\utillity;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Resources;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\externals\DirectXTex;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\externals\imgui;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\GameObject\Player;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -82,7 +82,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\2d;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\3d;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\base;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\input;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\Manager;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\scene;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\utillity;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Resources;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\externals\DirectXTex;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\externals\imgui;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\GameObject\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\2d;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\3d;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\base;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\input;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\Manager;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\scene;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\utillity;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Resources;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\externals\DirectXTex;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\externals\imgui;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\GameObject\Player;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -97,6 +97,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Project\GameObject\Player\PlayerBullet.cpp" />
+    <ClCompile Include="Project\GameObject\Player\Player.cpp" />
     <ClCompile Include="Project\utillity\Camera.cpp" />
     <ClCompile Include="Engine\base\DirectXCommon.cpp" />
     <ClCompile Include="externals\imgui\imgui.cpp" />
@@ -123,6 +125,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Project\utillity\WorldTransform.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Project\GameObject\Player\PlayerBullet.h" />
+    <ClInclude Include="Project\GameObject\Player\Player.h" />
     <ClInclude Include="Project\utillity\Camera.h" />
     <ClInclude Include="Engine\base\DirectXCommon.h" />
     <ClInclude Include="externals\imgui\imconfig.h" />

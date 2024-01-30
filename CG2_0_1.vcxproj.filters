@@ -111,6 +111,12 @@
     <ClCompile Include="Project\utillity\WorldTransform.cpp">
       <Filter>utility</Filter>
     </ClCompile>
+    <ClCompile Include="Project\GameObject\Player\Player.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Project\GameObject\Player\PlayerBullet.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="externals\imgui\imconfig.h">
@@ -184,6 +190,12 @@
     </ClInclude>
     <ClInclude Include="Project\utillity\WorldTransform.h">
       <Filter>utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Project\GameObject\Player\Player.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Project\GameObject\Player\PlayerBullet.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

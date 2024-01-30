@@ -16,6 +16,8 @@
 #include "Input.h"
 #include "imgui.h"
 
+#include "Player.h"
+
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "dxguid.lib")
@@ -44,13 +46,7 @@ private:
 	TextureManager* textureManager_ = nullptr;
 	Camera* camera_ = nullptr;
 
-	Triangle* triangle_[Max];
-	Sprite* sprite_ = nullptr;
-	Sphere* sphere_ = nullptr;
-	Model* model_ = nullptr;
+	std::unique_ptr<Player> player_;
 
-	uint32_t monsterBall;
-	uint32_t moon;
-	uint32_t uv;
-	uint32_t kusa;
+	int uv;
 };

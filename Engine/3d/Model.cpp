@@ -1,7 +1,7 @@
 #include "Model.h"
 #include "imgui.h"
 
-void Model::Initialize(const std::string& filename){
+void Model::Initialize(const std::string& filename, Transform transform){
 
 	// モデル読み込み
 	modelData = LoadObjFile("resources",filename);
@@ -11,7 +11,7 @@ void Model::Initialize(const std::string& filename){
 	Model::CreateMaterialResource();
 	Model::CreateWVPResource();
 
-	transform = { { 0.5f,0.5f,0.5f},{0.0f,0.0f,0.0f},{0.0f,-0.5f,1.0f} };
+	//transform = { { 0.5f,0.5f,0.5f},{0.0f,0.0f,0.0f},{0.0f,-0.5f,1.0f} };
 	uvTransform = { {1.0f, 1.0f, 1.0f},{0.0f, 0.0f, 0.0f},{0.0f, 0.0f, 0.0f}, };
 
 	worldTransform_.translate = transform.translate;
@@ -50,15 +50,15 @@ void Model::Draw(Camera* camera, uint32_t index){
 	DirectXCommon::GetInsTance()->GetCommandList()->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
 	
 
-	if (ImGui::TreeNode("Model")) {
-		ImGui::SliderAngle("Rotate.y ", &transform.rotate.y);
-		ImGui::DragFloat3("Transform", &transform.translate.x, 0.01f, -10.0f, 10.0f);
+	////if (ImGui::TreeNode("Model")) {
+	////	ImGui::SliderAngle("Rotate.y ", &transform.rotate.y);
+	////	ImGui::DragFloat3("Transform", &transform.translate.x, 0.01f, -10.0f, 10.0f);
 
-		ImGui::DragFloat2("UVTransform", &uvTransform.translate.x, 0.01f, -10.0f, 10.0f);
-		ImGui::DragFloat2("UVScale", &uvTransform.scale.x, 0.01f, -10.0f, 10.0f);
-		ImGui::SliderAngle("UVRotate", &uvTransform.rotate.z);
-		ImGui::TreePop();
-	}
+	////	ImGui::DragFloat2("UVTransform", &uvTransform.translate.x, 0.01f, -10.0f, 10.0f);
+	////	ImGui::DragFloat2("UVScale", &uvTransform.scale.x, 0.01f, -10.0f, 10.0f);
+	////	ImGui::SliderAngle("UVRotate", &uvTransform.rotate.z);
+	////	ImGui::TreePop();
+	////}
 }
 
 void Model::Release(){
@@ -97,7 +97,7 @@ void Model::CreateMaterialResource(){
 	materialData->uvTransform = MakeIndentity4x4();
 
 	// Lightingするか
-	materialData->enableLighting = true;
+	materialData->enableLighting = false;
 }
 
 void Model::CreateWVPResource(){
