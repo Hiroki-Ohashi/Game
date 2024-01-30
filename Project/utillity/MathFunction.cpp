@@ -1,5 +1,12 @@
 #include "MathFunction.h"
 
+float Dot(const Vector3& v1, const Vector3& v2) {
+	float m3;
+	m3 = v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+
+	return m3;
+};
+
 Matrix4x4 MakeIndentity4x4()
 {
 	Matrix4x4 MakeIndentity4x4;
@@ -358,3 +365,28 @@ Matrix4x4 MakeRotateAxisAngle(const Vector3& axis, float angle)
 
 	return result;
 }
+
+Vector3 SLerp(const Vector3& v1, const Vector3& v2, float t) {
+	Vector3 p;
+
+	Vector3 s;
+	Vector3 e;
+
+	s = Normalize(v1);
+	e = Normalize(v2);
+	float angle = acos(Dot(s, e));
+	// SinΘ
+	float SinTh = sin(angle);
+
+	// 補間係数
+	float Ps = sin(angle * (1 - t));
+	float Pe = sin(angle * t);
+
+	p.x = (Ps * s.x + Pe * e.x) / SinTh;
+	p.y = (Ps * s.y + Pe * e.y) / SinTh;
+	p.z = (Ps * s.z + Pe * e.z) / SinTh;
+
+	p = Normalize(p);
+
+	return p;
+};

@@ -2,7 +2,7 @@
 #include "imgui.h"
 
 
-void Sprite::Initialize(Vector2 pos, Vector2 scale){
+void Sprite::Initialize(Vector2 pos, Vector2 scale, float index){
 
 	Sprite::CreateVertexResourceSprite(pos, scale);
 	Sprite::CreateMaterialResourceSprite();
@@ -13,12 +13,17 @@ void Sprite::Initialize(Vector2 pos, Vector2 scale){
 
 	// SpriteはLightingしないのでfalseを設定
 	materialDataSprite->enableLighting = false;
+
+	// 白を設定
+	materialDataSprite->color = { 1.0f, 1.0f, 1.0f, index };
 }
 
-void Sprite::Update(){
+void Sprite::Update(float alpha){
+	materialDataSprite->color.w = alpha;
 }
 
 void Sprite::Draw(uint32_t index){
+
 	transformationMatrixDataSprite->World = MakeAffineMatrix(transformSprite.scale, transformSprite.rotate, transformSprite.translate);
 	Matrix4x4 viewMatrixSprite = MakeIndentity4x4();
 	Matrix4x4 projectionMatrixSprite = MakeOrthographicMatrix(0.0f, 0.0f, float(WinApp::GetInsTance()->GetKClientWidth()), float(WinApp::GetInsTance()->GetKClientHeight()), 0.0f, 100.0f);
@@ -45,14 +50,14 @@ void Sprite::Draw(uint32_t index){
 	// 描画(DrawCall/ドローコール)
 	dir_->GetCommandList()->DrawIndexedInstanced(6, 1, 0, 0, 0);
 	
-	if (ImGui::TreeNode("Sprite")) {
+	/*if (ImGui::TreeNode("Sprite")) {
 		ImGui::DragFloat2("Transform", &transformSprite.translate.x, 0.1f, -1000.0f, 1000.0f);
-
+		ImGui::DragFloat4("aaa", &materialDataSprite->color.x, 0.1f, -10.0f, 10.0f);
 		ImGui::DragFloat2("UVTransform", &uvTransformSprite.translate.x, 0.01f, -10.0f, 10.0f);
 		ImGui::DragFloat2("UVScale", &uvTransformSprite.scale.x, 0.01f, -10.0f, 10.0f);
 		ImGui::SliderAngle("UVRotate", &uvTransformSprite.rotate.z);
 		ImGui::TreePop();
-	}
+	}*/
 }
 
 void Sprite::Release(){
@@ -116,8 +121,6 @@ void Sprite::CreateMaterialResourceSprite(){
 	materialDataSprite = nullptr;
 	// 書き込むためのアドレスを取得
 	materialResourceSprite->Map(0, nullptr, reinterpret_cast<void**>(&materialDataSprite));
-	// 白を設定
-	materialDataSprite->color = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 	materialDataSprite->uvTransform = MakeIndentity4x4();
 }

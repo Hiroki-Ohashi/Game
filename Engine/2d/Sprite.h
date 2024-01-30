@@ -14,9 +14,9 @@
 
 class Sprite {
 public:
-	void Initialize(Vector2 pos, Vector2 scale);
+	void Initialize(Vector2 pos, Vector2 scale, float index);
 
-	void Update();
+	void Update(float alpha);
 
 	void Draw(uint32_t index);
 
@@ -27,6 +27,7 @@ public:
 	void CreateTransformationMatrixResourceSprite();
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(Microsoft::WRL::ComPtr<ID3D12Device> device, size_t sizeInbytes);
 
+	void SetAlpha(float a) { a = materialDataSprite->color.z; }
 
 	Material* GetMaterialDataSprite() { return materialDataSprite; }
 

@@ -17,6 +17,8 @@
 #include "imgui.h"
 
 #include "Player.h"
+#include "Enemy.h"
+#include "Skydome.h"
 
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -46,7 +48,29 @@ private:
 	TextureManager* textureManager_ = nullptr;
 	Camera* camera_ = nullptr;
 
-	std::unique_ptr<Player> player_;
+	Player* player_ = nullptr;
+	Enemy* enemy_ = nullptr;
+	Skydome* skydome_ = nullptr;
+
+	Sprite* title_ = nullptr;
+	Sprite* kakusi_ = nullptr;
+	Sprite* ui_ = nullptr;
 
 	int uv;
+	int kuro;
+	int teki;
+	int ui;
+	int sky;
+
+	int scene;
+
+	float a;
+	float b;
+
+	bool isAAA;
+	bool isTitle;
+
+	float speed = 0.01f;
+	float speed2 = 0.01f;
+
 };

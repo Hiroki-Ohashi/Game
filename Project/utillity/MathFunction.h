@@ -54,7 +54,7 @@ struct DirectionalLight {
 	Vector3 direction;
 	float intensity;
 };
-
+float Dot(const Vector3& v1, const Vector3& v2);
 // 単位行列の作成
 Matrix4x4 MakeIndentity4x4();
 
@@ -76,3 +76,6 @@ Matrix4x4 MakeScaleMatrix(const Vector3& scale);
 Matrix4x4 MakeTranslateMatrix(const Vector3& translate);
 
 Matrix4x4 MakeRotateAxisAngle(const Vector3& axis, float angle);
+
+// 球面線形補間
+Vector3 SLerp(const Vector3& v1, const Vector3& v2, float t);

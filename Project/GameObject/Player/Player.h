@@ -12,18 +12,22 @@ class Player {
 public:
 	~Player();
 
-	void Init(const std::string filename);
+	void Init();
 	void Update();
-	void Draw(uint32_t index, Camera* camera);
+	void Draw(uint32_t index, Camera* camera, uint32_t index2);
 
 	void Attack();
 
+	Vector3 GetPosition() { return transform.translate; }
+
 public:
-	Model* model_;
+	Model* model_ = nullptr;
+	Model* model_2 = nullptr;
 	Input* input_ = Input::GetInsTance();
 	TextureManager* textureManager_ = TextureManager::GetInstance();
 
 	Transform transform;
+	Transform transform2;
 
 	float speed = 0.02f;
 
