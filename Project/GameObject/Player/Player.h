@@ -17,8 +17,11 @@ public:
 	void Draw(uint32_t index, Camera* camera, uint32_t index2);
 
 	void Attack();
+	void OnCollision();
 
 	Vector3 GetPosition() { return transform.translate; }
+	// 弾リストを取得
+	const std::list<PlayerBullet*>& GetBullets() const { return bullets_; }
 
 public:
 	Model* model_ = nullptr;

@@ -19,7 +19,7 @@ void EnemyBullet::Update()
 	toPlayer.y = player_->GetPosition().y - transform.translate.y;
 	toPlayer.z = player_->GetPosition().z - transform.translate.z;
 
-	float t = 0.0000001f;
+	float t = 0.1f;
 
 	// 引数で受け取った速度をメンバ変数に代入
 	velocity_ = SLerp(toPlayer,transform.translate,t);

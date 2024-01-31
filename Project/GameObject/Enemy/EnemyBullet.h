@@ -11,8 +11,10 @@ public:
 	void Draw(Camera* camera, uint32_t index);
 
 	bool IsDead() const { return isDead_; }
+	void OnCollision() { isDead_ = true; }
 
 	void SetPlayer(Player* player);
+	Vector3 GetPosition() { return transform.translate; }
 private:
 
 	std::unique_ptr<Model> model_;

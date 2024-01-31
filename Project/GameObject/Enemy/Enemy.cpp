@@ -35,8 +35,10 @@ void Enemy::Update() {
 
 	if (attackTimer <= 0) {
 
-		// 攻撃処理
-		Attack();
+		if (isDead_ == false) {
+			// 攻撃処理
+			Attack();
+		}
 
 		// 発射タイマーを初期化
 		attackTimer = kFireInterval;
@@ -49,7 +51,9 @@ void Enemy::Update() {
 }
 
 void Enemy::Draw(uint32_t index, Camera* camera, uint32_t index2) {
-	model_->Draw(camera, index);
+	if (isDead_ == false) {
+		model_->Draw(camera, index);
+	}
 
 	// 弾描画
 	for (EnemyBullet* bullet : bullets_) {

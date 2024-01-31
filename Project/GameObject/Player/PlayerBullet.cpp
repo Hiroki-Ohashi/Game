@@ -13,7 +13,9 @@ void PlayerBullet::Init(Vector3 pos)
 
 void PlayerBullet::Update()
 {
-	model_->worldTransform_.translate.z += 1.0f;
+	transform.translate.z += 1.0f;
+
+	model_->worldTransform_.translate = transform.translate;
 
 	// 時間経過でデス
 	if (--deathTimer_ <= 0) {

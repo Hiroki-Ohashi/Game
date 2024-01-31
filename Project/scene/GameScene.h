@@ -39,6 +39,8 @@ public:
 	// 解放
 	void Release();
 
+	void CheckAllCollisions();
+
 private:
 
 	// 三角形の数
@@ -55,6 +57,9 @@ private:
 	Sprite* title_ = nullptr;
 	Sprite* kakusi_ = nullptr;
 	Sprite* ui_ = nullptr;
+
+	// 敵弾
+	std::list<EnemyBullet*> enemyBullets_;
 
 	int uv;
 	int kuro;

@@ -21,6 +21,12 @@ public:
 
 	void SetPlayer(Player* player);
 
+	void OnCollision() { isDead_ = true; }
+
+	Vector3 GetPosition() { return transform.translate; }
+	// 弾リストを取得
+	const std::list<EnemyBullet*>& GetBullets() const { return bullets_; }
+
 	// 行動フェーズ
 	enum class Phase {
 		Approach, // 接近する
@@ -46,4 +52,6 @@ private:
 	static void (Enemy::* phasePFuncTable[])();
 
 	Player* player_ = nullptr;
+
+	bool isDead_;
 };
