@@ -1,30 +1,24 @@
 #include "Enemy.h"
 #include "Player.h"
+#include "GameScene.h"
 
 Enemy::~Enemy() {
 	delete model_;
 }
 
-void Enemy::Init() {
-	transform = { { 0.1f,0.1f,0.1f},{0.0f,0.0f,0.0f},{0.01f,0.5f,10.0f} };
+void Enemy::Init(Vector3 translation) {
+	transform = { { 0.1f,0.1f,0.1f},{0.0f,0.0f,0.0f},{translation.x,translation.y,translation.z} };
 
 	model_ = new Model();
 	model_->Initialize("cube.obj", transform);
+
+	isDead_ = false;
 }
 
 // staticで宣言したメンバ関数ポインタテーブルの実態
 void (Enemy::* Enemy::phasePFuncTable[])() = { &Enemy::ApproachUpdate, &Enemy::LeaveUpdate };
 
 void Enemy::Update() {
-
-	// デスフラグんお立った弾を排除
-	bullets_.remove_if([](EnemyBullet* bullet) {
-		if (bullet->IsDead()) {
-			delete bullet;
-			return true;
-		}
-		return false;
-	});
 
 	// メンバ関数ポインタに入っている関数を呼び出す
 	(this->*phasePFuncTable[static_cast<size_t>(phase_)])();
@@ -43,21 +37,11 @@ void Enemy::Update() {
 		// 発射タイマーを初期化
 		attackTimer = kFireInterval;
 	}
-
-	// 弾更新
-	for (EnemyBullet* bullet : bullets_) {
-		bullet->Update();
-	}
 }
 
-void Enemy::Draw(uint32_t index, Camera* camera, uint32_t index2) {
+void Enemy::Draw(uint32_t index, Camera* camera) {
 	if (isDead_ == false) {
 		model_->Draw(camera, index);
-	}
-
-	// 弾描画
-	for (EnemyBullet* bullet : bullets_) {
-		bullet->Draw(camera, index2);
 	}
 }
 
@@ -89,7 +73,7 @@ void Enemy::Attack() {
 	newBullet->SetPlayer(player_);
 	newBullet->Init(transform.translate, velocity);
 	// 弾を登録
-	bullets_.push_back(newBullet);
+	gameScene_->AddEnemyBullet(newBullet);
 }
 
 void Enemy::ApproachUpdate() {

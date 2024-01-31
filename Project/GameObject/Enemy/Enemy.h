@@ -4,14 +4,15 @@
 #include "TextureManager.h"
 
 class Player;
+class GameScene;
 
 class Enemy {
 public:
 	~Enemy();
 
-	void Init();
+	void Init(Vector3 translation);
 	void Update();
-	void Draw(uint32_t index, Camera* camera, uint32_t index2);
+	void Draw(uint32_t index, Camera* camera);
 
 	void Attack();
 
@@ -33,6 +34,8 @@ public:
 		Leave,    // 離脱する
 	};
 
+	void SetGameScene(GameScene* gameScene) { gameScene_ = gameScene; }
+
 private:
 	Model* model_ = nullptr;
 	TextureManager* textureManager_ = TextureManager::GetInstance();
@@ -52,6 +55,7 @@ private:
 	static void (Enemy::* phasePFuncTable[])();
 
 	Player* player_ = nullptr;
+	GameScene* gameScene_ = nullptr;
 
 	bool isDead_;
 };

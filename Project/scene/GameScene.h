@@ -41,6 +41,24 @@ public:
 
 	void CheckAllCollisions();
 
+	/// <summary>
+	/// 敵発生データの読み込み
+	/// </summary>
+	void LoadEnemyPopData();
+
+	/// <summary>
+	/// 敵発生コマンドの更新
+	/// </summary>
+	void UpdateEnemyPopCommands();
+
+	void EnemySpown(Vector3);
+
+	/// <summary>
+	///	敵:敵弾を追加する
+	/// </summary>
+	void AddEnemyBullet(EnemyBullet* enemyBullet);
+	void AddEnemy(Enemy* enemy);
+
 private:
 
 	// 三角形の数
@@ -51,7 +69,9 @@ private:
 	Camera* camera_ = nullptr;
 
 	Player* player_ = nullptr;
-	Enemy* enemy_ = nullptr;
+	// 敵キャラ
+	std::list<Enemy*> enemys_;
+
 	Skydome* skydome_ = nullptr;
 
 	Sprite* title_ = nullptr;
@@ -60,6 +80,14 @@ private:
 
 	// 敵弾
 	std::list<EnemyBullet*> enemyBullets_;
+
+	// 待機タイマー
+	int32_t waitTimer_;
+	// 待機フラグ
+	bool isWait_ = false;
+
+	// 敵発生コマンド
+	std::stringstream enemyPopCommands;
 
 	int uv;
 	int kuro;
