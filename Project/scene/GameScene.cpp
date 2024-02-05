@@ -53,11 +53,11 @@ void GameScene::Initialize(){
 		triangle_[i]->Initialize(pos[i]);
 	}
 
-	uv = textureManager_->Load("Resources/uvChecker.png");
-	moon = textureManager_->Load("Resources/moon.png");
-	monsterBall = textureManager_->Load("Resources/monsterball.png");
-	kusa = textureManager_->Load("Resources/kusa.png");
-	circle = textureManager_->Load("Resources/circle.png");
+	uv = textureManager_->Load("resources/uvChecker.png");
+	moon = textureManager_->Load("resources/moon.png");
+	monsterBall = textureManager_->Load("resources/monsterball.png");
+	kusa = textureManager_->Load("resources/kusa.png");
+	circle = textureManager_->Load("resources/circle.png");
 }
 
 void GameScene::Update(){
