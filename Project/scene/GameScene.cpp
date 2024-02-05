@@ -29,8 +29,8 @@ void GameScene::Initialize(){
 	model_ = new Model();
 	model_->Initialize("cube.obj", transform);
 
-	particle_ = new Particle();
-	particle_->Initialize("plane.obj");
+	particle_ = new Particles();
+	particle_->Initialize("plane.obj", Vector3{0.0f, 0.0f, 0.0f});
 
 	Vector4 pos[Max][3];
 
@@ -57,6 +57,7 @@ void GameScene::Initialize(){
 	moon = textureManager_->Load("Resources/moon.png");
 	monsterBall = textureManager_->Load("Resources/monsterball.png");
 	kusa = textureManager_->Load("Resources/kusa.png");
+	circle = textureManager_->Load("Resources/circle.png");
 }
 
 void GameScene::Update(){
@@ -64,7 +65,7 @@ void GameScene::Update(){
 }
 
 void GameScene::Draw(){
-	/*sphere_->Draw(camera_, moon);
+	sphere_->Draw(camera_, moon);
 
 	model_->Draw(camera_, kusa);
 
@@ -72,9 +73,9 @@ void GameScene::Draw(){
 	triangle_[0]->Draw(camera_, uv);
 	triangle_[1]->Draw(camera_, uv);
 
-	sprite_->Draw(monsterBall);*/
+	sprite_->Draw(monsterBall);
 
-	particle_->Draw(camera_, uv);
+	particle_->Draw(camera_, circle);
 }
 
 void GameScene::Release() {

@@ -1,6 +1,6 @@
 #include "Particle.h"
 
-void Particle::Initialize(const std::string& filename) {
+void Particles::Initialize(const std::string& filename, Vector3 pos) {
 
 	// モデル読み込み
 	modelData = texture_->LoadObjFile("resources", filename);
@@ -10,14 +10,15 @@ void Particle::Initialize(const std::string& filename) {
 	modelData.vertices.push_back({ .position = {-1.0f,1.0f,0.0f,1.0f}, .texcoord = {0.0f,0.0f},.normal = {0.0f,0.0f,1.0f} }); // 左上
 	modelData.vertices.push_back({ .position = {1.0f,1.0f,0.0f,1.0f}, .texcoord = {1.0f,0.0f},.normal = {0.0f,0.0f,1.0f} }); // 右上
 	modelData.vertices.push_back({ .position = {-1.0f,-1.0f,0.0f,1.0f}, .texcoord = {0.0f,1.0f},.normal = {0.0f,0.0f,1.0f} }); // 左下
+
 	modelData.vertices.push_back({ .position = {-1.0f,-1.0f,0.0f,1.0f}, .texcoord = {0.0f,1.0f},.normal = {0.0f,0.0f,1.0f} }); // 左下
 	modelData.vertices.push_back({ .position = {1.0f,1.0f,0.0f,1.0f}, .texcoord = {1.0f,0.0f},.normal = {0.0f,0.0f,1.0f} }); // 右上
 	modelData.vertices.push_back({ .position = {1.0f,-1.0f,0.0f,1.0f}, .texcoord = {1.0f,1.0f},.normal = {0.0f,0.0f,1.0f} }); // 右下
 
 	// Resource作成
-	instancingResource_ = CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(TransformationMatrix) * kNumInstance);
+	instancingResource = CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(ParticleForGpu) * kMaxInstance);
 	instancingData_ = nullptr;
-	instancingResource_->Map(0, nullptr, reinterpret_cast<void**>(&instancingData_));
+	instancingResource->Map(0, nullptr, reinterpret_cast<void**>(&instancingData_));
 
 	// SRVの作成
 	uint32_t descriptorSizeSRV = DirectXCommon::GetInsTance()->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
@@ -27,39 +28,56 @@ void Particle::Initialize(const std::string& filename) {
 	instancingSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
 	instancingSrvDesc.Buffer.FirstElement = 0;
 	instancingSrvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
-	instancingSrvDesc.Buffer.NumElements = kNumInstance;
-	instancingSrvDesc.Buffer.StructureByteStride = sizeof(TransformationMatrix);
+	instancingSrvDesc.Buffer.NumElements = kMaxInstance;
+	instancingSrvDesc.Buffer.StructureByteStride = sizeof(ParticleForGpu);
 	// SRVを作成するDescriptorHeapの場所を決める
 	instancingSrvHandleCPU_ = texture_->GetCPUDescriptorHandle(DirectXCommon::GetInsTance()->GetSrvDescriptorHeap(), descriptorSizeSRV, 7);
 	instancingSrvHandleGPU_ = texture_->GetGPUDescriptorHandle(DirectXCommon::GetInsTance()->GetSrvDescriptorHeap(), descriptorSizeSRV, 7);
 	// SRVの生成
-	DirectXCommon::GetInsTance()->GetDevice()->CreateShaderResourceView(instancingResource_.Get(), &instancingSrvDesc, instancingSrvHandleCPU_);
+	DirectXCommon::GetInsTance()->GetDevice()->CreateShaderResourceView(instancingResource.Get(), &instancingSrvDesc, instancingSrvHandleCPU_);
 
-	Particle::CreatePso();
-	Particle::CreateVertexResource();
-	Particle::CreateMaterialResource();
-	Particle::CreateWVPResource();
+	Particles::CreatePso();
+	Particles::CreateVertexResource();
+	Particles::CreateMaterialResource();
+	Particles::CreateWVPResource();
 
-	for (uint32_t index = 0; index < kNumInstance; ++index) {
+	std::random_device seedGenerator;
+	std::mt19937 randomEngine(seedGenerator());
+
+	// 位置と速度を[-1,1]でランダムに初期化
+	for (uint32_t index = 0; index < kMaxInstance; ++index) {
 		instancingData_[index].WVP = MakeIndentity4x4();
 		instancingData_[index].World = MakeIndentity4x4();
-		transform_[index].scale = { 1.0f,1.0f,1.0f };
-		transform_[index].rotate = { 0,0,0 };
-		transform_[index].translate = { index * 0.1f,index * 0.1f,index * 0.1f };
+		instancingData_[index].color = { 1.0f, 1.0f, 1.0f, 1.0f };
+		particles[index] = MakeNewParticle(randomEngine);
+		instancingData_[index].color = particles[index].color;
+		particles[index].transform.translate = pos;
 	}
-}
-
-void Particle::Update() {
 
 }
 
-void Particle::Draw(Camera* camera, uint32_t index) {
+void Particles::Update() {
+}
 
-	for (uint32_t index = 0; index < kNumInstance; ++index) {
-		Matrix4x4 worldMatrix = MakeAffineMatrix(transform_[index].scale, transform_[index].rotate, transform_[index].translate);
+void Particles::Draw(Camera* camera, uint32_t index) {
+	uint32_t numInstance = 0;
+	for (uint32_t index = 0; index < kMaxInstance; ++index) {
+		if (particles[index].lifeTime <= particles[index].currentTime) {
+			continue;
+		}
+
+		Matrix4x4 worldMatrix = MakeAffineMatrix(particles[index].transform.scale, particles[index].transform.rotate, particles[index].transform.translate);
 		Matrix4x4 worldViewMatrix = Multiply(worldMatrix, Multiply(worldMatrix, Multiply(camera->viewMatrix, camera->projectionMatrix)));
+		particles[index].transform.translate.x += particles[index].velocity.x * kDeltaTime;
+		particles[index].transform.translate.y += particles[index].velocity.y * kDeltaTime;
+		particles[index].transform.translate.z += particles[index].velocity.z * kDeltaTime;
+		particles[index].currentTime += kDeltaTime;
 		instancingData_[index].World = worldMatrix;
 		instancingData_[index].WVP = worldViewMatrix;
+		instancingData_[index].color = particles[index].color;
+		float alpha = 1.0f - (particles[index].currentTime / particles[index].lifeTime);
+		instancingData_[numInstance].color.w = alpha;
+		++numInstance;
 	}
 
 	Matrix4x4 uvtransformMatrix = MakeScaleMatrix(uvTransform.scale);
@@ -83,13 +101,13 @@ void Particle::Draw(Camera* camera, uint32_t index) {
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
 	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootDescriptorTable(2, texture_->GetTextureSRVHandleGPU(index));
 
-	DirectXCommon::GetInsTance()->GetCommandList()->DrawInstanced(UINT(modelData.vertices.size()), kNumInstance, 0, 0);
+	DirectXCommon::GetInsTance()->GetCommandList()->DrawInstanced(UINT(modelData.vertices.size()), numInstance, 0, 0);
 }
 
-void Particle::Release() {
+void Particles::Release() {
 }
 
-void Particle::CreateVertexResource() {
+void Particles::CreateVertexResource() {
 	// 頂点用のリソースを作る。
 	vertexResource = CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(VertexData) * modelData.vertices.size()).Get();
 
@@ -109,7 +127,7 @@ void Particle::CreateVertexResource() {
 	std::memcpy(vertexData, modelData.vertices.data(), sizeof(VertexData) * modelData.vertices.size());
 }
 
-void Particle::CreateMaterialResource() {
+void Particles::CreateMaterialResource() {
 	// マテリアル用のリソースを作る。今回はcolor1つ分のサイズを用意する
 	materialResource = CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(Material));
 	// マテリアルにデータを書き込む
@@ -124,7 +142,7 @@ void Particle::CreateMaterialResource() {
 	materialData->enableLighting = false;
 }
 
-void Particle::CreateWVPResource() {
+void Particles::CreateWVPResource() {
 	// WVP用のリソースを作る。Matrix4x4 1つ分のサイズを用意する
 	wvpResource = CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(TransformationMatrix));
 
@@ -135,7 +153,7 @@ void Particle::CreateWVPResource() {
 	wvpData->WVP = MakeIndentity4x4();
 }
 
-void Particle::CreatePso()
+void Particles::CreatePso()
 {
 	// dxcCompilerを初期化
 	IDxcUtils* dxcUtils = nullptr;
@@ -236,6 +254,13 @@ void Particle::CreatePso()
 	D3D12_BLEND_DESC blendDesc{};
 	// すべての色要素を書き込む
 	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+	blendDesc.RenderTarget[0].BlendEnable = TRUE;
+	blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+	blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+	blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
+	blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
 
 	// RasiterzerStateの設定
 	D3D12_RASTERIZER_DESC rasterizerDesc{};
@@ -256,7 +281,7 @@ void Particle::CreatePso()
 	// Depthの機能を有効化する
 	depthStencilDesc.DepthEnable = true;
 	// 書き込む
-	depthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
+	depthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
 	// 比較関数はLessEqual。つまり、近ければ描画される
 	depthStencilDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
 
@@ -284,7 +309,7 @@ void Particle::CreatePso()
 	assert(SUCCEEDED(hr));
 }
 
-Microsoft::WRL::ComPtr<ID3D12Resource> Particle::CreateBufferResource(Microsoft::WRL::ComPtr<ID3D12Device> device, size_t sizeInbytes)
+Microsoft::WRL::ComPtr<ID3D12Resource> Particles::CreateBufferResource(Microsoft::WRL::ComPtr<ID3D12Device> device, size_t sizeInbytes)
 {
 	Microsoft::WRL::ComPtr<ID3D12Resource> Resource = nullptr;
 
@@ -316,4 +341,21 @@ Microsoft::WRL::ComPtr<ID3D12Resource> Particle::CreateBufferResource(Microsoft:
 	assert(SUCCEEDED(hr_));
 
 	return Resource;
+}
+
+Particle Particles::MakeNewParticle(std::mt19937& randomEngine)
+{
+	std::uniform_real_distribution<float> distribution(-1.0f, 1.0f);
+	std::uniform_real_distribution<float> distColor(0.0f, 1.0f);
+	std::uniform_real_distribution<float> distTime(1.0f, 3.0f);
+	Particle particle;
+	// 位置と速度を[-1,1]でランダムに初期化
+	particle.transform.scale = { 1.0f,1.0f,1.0f };
+	particle.transform.rotate = { 0,0,0 };
+	particle.transform.translate = { distribution(randomEngine), distribution(randomEngine), distribution(randomEngine) };
+	particle.velocity = { distribution(randomEngine), distribution(randomEngine), distribution(randomEngine) };
+	particle.color = { distColor(randomEngine), distColor(randomEngine), distColor(randomEngine), 0.0f};
+	particle.lifeTime = distTime(randomEngine);
+	particle.currentTime = 0;
+	return particle;
 }

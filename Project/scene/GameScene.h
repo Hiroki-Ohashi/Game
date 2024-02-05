@@ -50,7 +50,7 @@ private:
 	Sprite* sprite_ = nullptr;
 	Sphere* sphere_ = nullptr;
 	Model* model_ = nullptr;
-	Particle* particle_ = nullptr;
+	Particles* particle_ = nullptr;
 
 	CameraForGpu camera;
 	Transform transform;
@@ -59,4 +59,5 @@ private:
 	uint32_t moon;
 	uint32_t uv;
 	uint32_t kusa;
+	uint32_t circle;
 };
