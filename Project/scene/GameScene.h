@@ -50,6 +50,7 @@ private:
 	Model* model_ = nullptr;
 
 	CameraForGpu camera;
+	Transform transform;
 
 	uint32_t monsterBall;
 	uint32_t moon;

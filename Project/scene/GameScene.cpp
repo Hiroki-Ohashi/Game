@@ -23,8 +23,10 @@ void GameScene::Initialize(){
 	sphere_ = new Sphere();
 	sphere_->Initialize();
 
+	transform = { { 0.5f,0.5f,0.5f},{0.0f,0.0f,0.0f},{0.0f,-0.5f,1.0f} };
+
 	model_ = new Model();
-	model_->Initialize("cube.obj");
+	model_->Initialize("cube.obj", transform);
 
 	Vector4 pos[Max][3];
 
@@ -58,15 +60,15 @@ void GameScene::Update(){
 }
 
 void GameScene::Draw(){
-	sphere_->Draw(camera_, monsterBall);
+	sphere_->Draw(camera_, moon);
 
-	/*model_->Draw(camera_, kusa);
+	model_->Draw(camera_, kusa);
 
 
 	triangle_[0]->Draw(camera_, uv);
 	triangle_[1]->Draw(camera_, uv);
 
-	sprite_->Draw(monsterBall);*/
+	sprite_->Draw(monsterBall);
 }
 
 void GameScene::Release() {

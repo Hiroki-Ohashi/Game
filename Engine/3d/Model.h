@@ -15,6 +15,7 @@
 #include "Mesh.h"
 #include "Camera.h"
 #include "WorldTransform.h"
+#include "Camera.h"
 
 struct MaterialData {
 	std::string textureFilePath;
@@ -27,7 +28,7 @@ struct ModelData {
 
 class Model {
 public:
-	void Initialize(const std::string& filename);
+	void Initialize(const std::string& filename, Transform transform);
 
 	void Update();
 
@@ -58,6 +59,7 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource;
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource;
 	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource;
+	Microsoft::WRL::ComPtr<ID3D12Resource> cameraResource;
 
 	VertexData* vertexData;
 	Material* materialData;
@@ -67,4 +69,7 @@ private:
 	Transform uvTransform;
 
 	bool isModel;
+
+	CameraForGpu camera;
+
 };

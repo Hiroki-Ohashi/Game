@@ -1,7 +1,7 @@
 #include "Model.h"
 #include "imgui.h"
 
-void Model::Initialize(const std::string& filename){
+void Model::Initialize(const std::string& filename, Transform transform){
 
 	// モデル読み込み
 	modelData = LoadObjFile("resources",filename);
@@ -11,7 +11,10 @@ void Model::Initialize(const std::string& filename){
 	Model::CreateMaterialResource();
 	Model::CreateWVPResource();
 
-	transform = { { 0.5f,0.5f,0.5f},{0.0f,0.0f,0.0f},{0.0f,-0.5f,1.0f} };
+	cameraResource = CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(Camera));
+	cameraResource->Map(0, nullptr, reinterpret_cast<void**>(&camera));
+	camera.worldPosition = { 0.0f, 0.0f, 0.0f };
+
 	uvTransform = { {1.0f, 1.0f, 1.0f},{0.0f, 0.0f, 0.0f},{0.0f, 0.0f, 0.0f}, };
 
 	worldTransform_.translate = transform.translate;
@@ -44,6 +47,8 @@ void Model::Draw(Camera* camera, uint32_t index){
 	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
 	// TransformationMatrixCBufferの場所を設定
 	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
+	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(4, cameraResource->GetGPUVirtualAddress());
+
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
 	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootDescriptorTable(2, texture_->GetTextureSRVHandleGPU(index));
 	// 描画(DrawCall/ドローコール)
@@ -51,8 +56,8 @@ void Model::Draw(Camera* camera, uint32_t index){
 	
 
 	if (ImGui::TreeNode("Model")) {
-		ImGui::SliderAngle("Rotate.y ", &transform.rotate.y);
-		ImGui::DragFloat3("Transform", &transform.translate.x, 0.01f, -10.0f, 10.0f);
+		ImGui::SliderAngle("Rotate.y ", &worldTransform_.rotate.y);
+		ImGui::DragFloat3("Transform", &worldTransform_.translate.x, 0.01f, -10.0f, 10.0f);
 
 		ImGui::DragFloat2("UVTransform", &uvTransform.translate.x, 0.01f, -10.0f, 10.0f);
 		ImGui::DragFloat2("UVScale", &uvTransform.scale.x, 0.01f, -10.0f, 10.0f);
@@ -98,6 +103,7 @@ void Model::CreateMaterialResource(){
 
 	// Lightingするか
 	materialData->enableLighting = true;
+	materialData->shininess = 70.0f;
 }
 
 void Model::CreateWVPResource(){
