@@ -16,6 +16,10 @@ void Sphere::Initialize(){
 	transformSphere = { {0.5f,0.5f,0.5f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 	uvTransformSphere = { {1.0f, 1.0f, 1.0f},{0.0f, 0.0f, 0.0f},{0.0f, 0.0f, 0.0f}, };
 
+	cameraResource = CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(Camera));
+	cameraResource->Map(0, nullptr, reinterpret_cast<void**>(&camera));
+	camera.worldPosition = { 0.0f, 0.0f, 0.0f };
+
 	directionalLightData->color = { 1.0f, 1.0f, 1.0f, 1.0f };
 	directionalLightData->direction = { 0.0f, -1.0f, 1.0f };
 	directionalLightData->intensity = 1.0f;
@@ -44,6 +48,7 @@ void Sphere::Draw(Camera* camera, uint32_t index){
 	// TransformationMatrixCBufferの場所を設定
 	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResourceSphere->GetGPUVirtualAddress());
 	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource->GetGPUVirtualAddress());
+	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(4, cameraResource->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
 	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootDescriptorTable(2, texture_->GetTextureSRVHandleGPU(index));
 	// 描画(DrawCall/ドローコール)
@@ -191,6 +196,8 @@ void Sphere::CreateMaterialResourceSphere(){
 	materialDataSphere->enableLighting = true;
 
 	materialDataSphere->uvTransform = MakeIndentity4x4();
+
+	materialDataSphere->shininess = 70.0f;
 }
 
 void Sphere::CreateTransformationMatrixResourceSphere(){

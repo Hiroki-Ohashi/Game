@@ -49,6 +49,8 @@ private:
 	Sphere* sphere_ = nullptr;
 	Model* model_ = nullptr;
 
+	CameraForGpu camera;
+
 	uint32_t monsterBall;
 	uint32_t moon;
 	uint32_t uv;

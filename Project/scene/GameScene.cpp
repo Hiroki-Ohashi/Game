@@ -58,15 +58,15 @@ void GameScene::Update(){
 }
 
 void GameScene::Draw(){
-	sphere_->Draw(camera_, moon);
+	sphere_->Draw(camera_, monsterBall);
 
-	model_->Draw(camera_, kusa);
+	/*model_->Draw(camera_, kusa);
 
 
 	triangle_[0]->Draw(camera_, uv);
 	triangle_[1]->Draw(camera_, uv);
 
-	sprite_->Draw(monsterBall);
+	sprite_->Draw(monsterBall);*/
 }
 
 void GameScene::Release() {

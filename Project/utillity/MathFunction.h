@@ -42,6 +42,7 @@ struct Material {
 	int32_t enableLighting;
 	float padding[3];
 	Matrix4x4 uvTransform;
+	float shininess;
 };
 
 struct TransformationMatrix {
@@ -53,6 +54,10 @@ struct DirectionalLight {
 	Vector4 color;
 	Vector3 direction;
 	float intensity;
+};
+
+struct CameraForGpu {
+	Vector3 worldPosition;
 };
 
 // 単位行列の作成
