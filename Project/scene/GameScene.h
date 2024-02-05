@@ -16,6 +16,8 @@
 #include "Input.h"
 #include "imgui.h"
 
+#include "Particle.h"
+
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "dxguid.lib")
@@ -48,6 +50,7 @@ private:
 	Sprite* sprite_ = nullptr;
 	Sphere* sphere_ = nullptr;
 	Model* model_ = nullptr;
+	Particle* particle_ = nullptr;
 
 	CameraForGpu camera;
 	Transform transform;

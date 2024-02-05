@@ -56,6 +56,15 @@ struct DirectionalLight {
 	float intensity;
 };
 
+struct MaterialData {
+	std::string textureFilePath;
+};
+
+struct ModelData {
+	std::vector<VertexData> vertices;
+	MaterialData material;
+};
+
 struct CameraForGpu {
 	Vector3 worldPosition;
 };

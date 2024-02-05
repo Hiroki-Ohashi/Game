@@ -8,6 +8,7 @@ GameScene::~GameScene(){
 	delete sphere_;
 	delete model_;
 	delete camera_;
+	delete particle_;
 }
 
 void GameScene::Initialize(){
@@ -27,6 +28,9 @@ void GameScene::Initialize(){
 
 	model_ = new Model();
 	model_->Initialize("cube.obj", transform);
+
+	particle_ = new Particle();
+	particle_->Initialize("plane.obj");
 
 	Vector4 pos[Max][3];
 
@@ -60,7 +64,7 @@ void GameScene::Update(){
 }
 
 void GameScene::Draw(){
-	sphere_->Draw(camera_, moon);
+	/*sphere_->Draw(camera_, moon);
 
 	model_->Draw(camera_, kusa);
 
@@ -68,7 +72,9 @@ void GameScene::Draw(){
 	triangle_[0]->Draw(camera_, uv);
 	triangle_[1]->Draw(camera_, uv);
 
-	sprite_->Draw(monsterBall);
+	sprite_->Draw(monsterBall);*/
+
+	particle_->Draw(camera_, uv);
 }
 
 void GameScene::Release() {

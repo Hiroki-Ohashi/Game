@@ -16,6 +16,8 @@
 
 class Mesh {
 public:
+	static Mesh* GetInsTance();
+
 	void Initialize();
 
 	void CreatePso();

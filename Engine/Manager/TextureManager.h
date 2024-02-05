@@ -5,8 +5,11 @@
 #include <format>
 #include <cassert>
 #include <vector>
+#include <fstream>
+#include <sstream>
 
 #include "Function.h"
+#include "MathFunction.h"
 #include "DirectXCommon.h"
 #include "d3dx12.h"
 
@@ -30,6 +33,9 @@ public:
 	
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateTextureResource(Microsoft::WRL::ComPtr<ID3D12Device> device, const DirectX::TexMetadata& metadata);
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(Microsoft::WRL::ComPtr<ID3D12Device> device, size_t sizeInbytes);
+
+	ModelData LoadObjFile(const std::string& directoryPath, const std::string& filename);
+	MaterialData LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename);
 
 	[[nodiscard]]
 	Microsoft::WRL::ComPtr<ID3D12Resource> UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages);
