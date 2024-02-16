@@ -59,10 +59,7 @@ void GameManager::Run()
 
 			// 描画処理
 			gameScene->Draw();
-#ifdef DEBUG
 			imgui->Draw();
-#endif // DEBUG
-
 		
 			directX->Close();
 		}
