@@ -72,7 +72,7 @@ private:
 	// 敵キャラ
 	std::list<Enemy*> enemys_;
 
-	Skydome* skydome_ = nullptr;
+	std::unique_ptr<Skydome> skydome_ = nullptr;
 
 	Sprite* title_ = nullptr;
 	Sprite* kakusi_ = nullptr;

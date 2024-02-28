@@ -37,7 +37,7 @@ public:
 	void SetGameScene(GameScene* gameScene) { gameScene_ = gameScene; }
 
 private:
-	Model* model_ = nullptr;
+	std::unique_ptr<Model> model_ = nullptr;
 	TextureManager* textureManager_ = TextureManager::GetInstance();
 	Transform transform;
 

@@ -24,8 +24,8 @@ public:
 	const std::list<PlayerBullet*>& GetBullets() const { return bullets_; }
 
 public:
-	Model* model_ = nullptr;
-	Model* model_2 = nullptr;
+	std::unique_ptr<Model> model_ = nullptr;
+	std::unique_ptr<Model> model_2 = nullptr;
 	Input* input_ = Input::GetInsTance();
 	TextureManager* textureManager_ = TextureManager::GetInstance();
 

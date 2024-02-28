@@ -5,7 +5,7 @@ GameScene::~GameScene(){
 	delete title_;
 	delete kakusi_;
 	delete ui_;
-	delete skydome_;
+	delete player_;
 
 	// bullet_の解放
 	for (EnemyBullet* bullet : enemyBullets_) {
@@ -26,7 +26,7 @@ void GameScene::Initialize(){
 	camera_ = new Camera();
 	camera_->Initialize();
 
-	player_ = new Player();
+	player_ = new Player;
 	player_->Init();
 
 	LoadEnemyPopData();
@@ -41,15 +41,15 @@ void GameScene::Initialize(){
 	ui_->Initialize({ 460,360 }, { 360, 180 }, 0.01f);
 
 	// 天球の生成
-	skydome_ = new Skydome();
+	skydome_ = std::make_unique<Skydome>();
 	// 天球の初期化
 	skydome_->Initialize();
 
-	uv = textureManager_->Load("Resources/start.png");
-	kuro = textureManager_->Load("Resources/kuro.png");
-	teki= textureManager_->Load("Resources/moon.png");
-	ui = textureManager_->Load("Resources/ui.png");
-	sky = textureManager_->Load("Resources/sky.png");
+	uv = textureManager_->Load("resources/start.png");
+	kuro = textureManager_->Load("resources/kuro.png");
+	teki= textureManager_->Load("resources/moon.png");
+	ui = textureManager_->Load("resources/ui.png");
+	sky = textureManager_->Load("resources/sky.png");
 
 	a = 0.0f;
 	isAAA = false;
@@ -169,8 +169,8 @@ void GameScene::CheckAllCollisions()
 		float p2eBY = (posB.y - posA.y) * (posB.y - posA.y);
 		float p2eBZ = (posB.z - posA.z) * (posB.z - posA.z);
 
-		float pRadius = 1;
-		float eBRadius = 1;
+		float pRadius = 0.1f;
+		float eBRadius = 0.1f;
 
 		float L = (pRadius + eBRadius) * (pRadius + eBRadius);
 
@@ -199,8 +199,8 @@ void GameScene::CheckAllCollisions()
 			float e2pBY = (posB.y - posA.y) * (posB.y - posA.y);
 			float e2pBZ = (posB.z - posA.z) * (posB.z - posA.z);
 
-			const int eRadius = 1;
-			const int pBRadius = 1;
+			float eRadius = 0.1f;
+			float pBRadius = 0.1f;
 
 			float L = (eRadius + pBRadius);
 
@@ -227,8 +227,8 @@ void GameScene::CheckAllCollisions()
 			float pB2eBY = (posB.y - posA.y) * (posB.y - posA.y);
 			float pB2eBZ = (posB.z - posA.z) * (posB.z - posA.z);
 
-			float pBRadius = 1;
-			float eBRadius = 1;
+			float pBRadius = 0.1f;
+			float eBRadius = 0.1f;
 
 			float L = (pBRadius + eBRadius) * (pBRadius + eBRadius);
 

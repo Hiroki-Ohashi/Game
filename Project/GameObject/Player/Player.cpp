@@ -5,18 +5,16 @@ Player::~Player() {
 	for (PlayerBullet* bullet : bullets_) {
 		delete bullet;
 	}
-
-	delete model_;
 }
 
 void Player::Init() {
 	transform = { { 0.1f,0.1f,0.1f},{0.0f,0.0f,0.0f},{0.01f,0.01f,0.01f} };
 	transform2 = { { 0.1f,0.1f,0.1f},{0.0f,0.0f,0.0f},{0.01f,0.01f,0.01f} };
 
-	model_ = new Model();
+	model_ = std::make_unique<Model>();
 	model_->Initialize("cube.obj", transform);
 
-	model_2 = new Model();
+	model_2 = std::make_unique<Model>();
 	model_2->Initialize("pro.obj", transform2);
 }
 
@@ -33,6 +31,7 @@ void Player::Update() {
 
 	transform.translate.z -= 0.05f;
 	transform2.translate.z -= 0.05f;
+
 	model_2->worldTransform_.rotate.y += 0.3f;
 
 	model_->worldTransform_.translate = transform.translate;

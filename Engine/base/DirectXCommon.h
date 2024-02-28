@@ -10,6 +10,8 @@
 #include <wrl.h>
 #include <Windows.h>
 #include <chrono>
+#include <thread>
+
 #include "WinApp.h"
 #include "Function.h"
 

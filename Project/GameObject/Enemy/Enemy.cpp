@@ -3,13 +3,12 @@
 #include "GameScene.h"
 
 Enemy::~Enemy() {
-	delete model_;
 }
 
 void Enemy::Init(Vector3 translation) {
 	transform = { { 0.1f,0.1f,0.1f},{0.0f,0.0f,0.0f},{translation.x,translation.y,translation.z} };
 
-	model_ = new Model();
+	model_ = std::make_unique<Model>();
 	model_->Initialize("cube.obj", transform);
 
 	isDead_ = false;

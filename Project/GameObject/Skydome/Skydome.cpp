@@ -2,14 +2,13 @@
 
 Skydome::~Skydome()
 {
-	delete model_;
 }
 
 void Skydome::Initialize()
 {
-	transform = { { 100.0f,100.0f,100.0f},{0.0f,0.0f,0.0f},{0.01f,0.01f,0.01f} };
+	transform = { { 1000.0f,1000.0f,1000.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 
-	model_ = new Model();
+	model_ = std::make_unique<Model>();
 	model_->Initialize("skydome.obj", transform);
 }
 
