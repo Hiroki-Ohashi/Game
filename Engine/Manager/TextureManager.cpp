@@ -119,6 +119,11 @@ MaterialData TextureManager::LoadMaterialTemplateFile(const std::string& directo
 	return materialData;
 }
 
+//const DirectX::TexMetadata& TextureManager::GetMetaData(uint32_t textureIndex)
+//{
+//	TextureData& textureData
+//}
+
 
 void TextureManager::SetTexture(const std::string& filePath, uint32_t index)
 {

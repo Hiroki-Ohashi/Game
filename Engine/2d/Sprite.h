@@ -30,6 +30,21 @@ public:
 
 	Material* GetMaterialDataSprite() { return materialDataSprite; }
 
+	const Vector2& GetAnchorPoint() const { return anchorPoint; }
+	// 画像の切り出しサイズ
+	Vector2 GetTextureSize() { return textureSize; }
+
+	Vector2 GetTextureLeftTop() { return textureLeftTop; }
+
+	void SetAnchorPoint(const Vector2 anchorPoint_) { this->anchorPoint = anchorPoint_; }
+
+	void SetSize(Vector2 size) { textureSize = size; }
+
+	void SetTextureLeftTop(const Vector2 textureLeftTop_) { this->textureLeftTop = textureLeftTop_; }
+
+	// テクスチャのサイズをスプライトに合わせる
+	void AdjustTextureSize();
+
 private:
 	DirectXCommon* dir_ = DirectXCommon::GetInsTance();
 	TextureManager* texture_ = TextureManager::GetInstance();
@@ -51,4 +66,14 @@ private:
 	Transform uvTransformSprite;
 
 	bool isSprite = false;
+
+	uint32_t textureIndex;
+
+	Vector2 anchorPoint = { 0.0f, 0.0f };
+
+	// 画像の左上の座標
+	Vector2 textureLeftTop = { 0.0f,0.0f };
+	// テクスチャの切り出しサイズ
+	Vector2 textureSize = { 100.0f, 100.0f };
+
 };
