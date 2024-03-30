@@ -13,8 +13,10 @@ void Sphere::Initialize(){
 
 	worldTransform_.scale = { 0.5f,0.5f,0.5f };
 
-	transformSphere = { {0.5f,0.5f,0.5f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+	transformSphere = { {0.5f,0.5f,0.5f},{0.0f,0.0f,0.0f},{0.0f,10.0f,0.0f} };
 	uvTransformSphere = { {1.0f, 1.0f, 1.0f},{0.0f, 0.0f, 0.0f},{0.0f, 0.0f, 0.0f}, };
+
+	worldTransform_.translate = transformSphere.translate;
 
 	cameraResource = CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(Camera));
 	cameraResource->Map(0, nullptr, reinterpret_cast<void**>(&camera));

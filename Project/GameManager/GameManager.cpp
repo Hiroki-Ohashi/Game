@@ -16,7 +16,14 @@ GameManager::GameManager()
 
 	imgui =ImGuiManeger::GetInstance();
 	imgui->Initialize();
+
+	// 各シーンの配列
+	sceneArr_[TITLE] = std::make_unique<TitleScene>();
+	sceneArr_[STAGE] = std::make_unique<GameScene>();
+
+	currentSceneNo_ = TITLE;
 }
+
 
 GameManager::~GameManager()
 {
@@ -33,9 +40,6 @@ void GameManager::Run()
 {
 	CoInitializeEx(0, COINIT_MULTITHREADED);
 
-	GameScene* gameScene = new GameScene;
-
-	gameScene->Initialize();
 
 	MSG msg{};
 
@@ -49,16 +53,25 @@ void GameManager::Run()
 		else {
 			// ゲームの処理
 
+			// シーンのチェック
+			prvSceneNo_ = currentSceneNo_;
+			currentSceneNo_ = sceneArr_[currentSceneNo_]->GetSceneNo();
+
+			// シーン変更チェック
+			if (prvSceneNo_ != currentSceneNo_) {
+				sceneArr_[currentSceneNo_]->Initialize();
+			}
 
 			// 更新処理
 			imgui->Update();
 			directX->Update();
 			mesh->Update();
 			input->Update();
-			gameScene->Update();
+			sceneArr_[currentSceneNo_]->Update();
 
 			// 描画処理
-			gameScene->Draw();
+			sceneArr_[currentSceneNo_]->Draw();
+
 			imgui->Draw();
 		
 			directX->Close();

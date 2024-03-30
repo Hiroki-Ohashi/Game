@@ -31,6 +31,8 @@ public:
 
 	void CreatePso();
 
+	void SetPos(Vector3 pos_) { pos_ = worldTransform_.translate; }
+
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(Microsoft::WRL::ComPtr<ID3D12Device> device, size_t sizeInbytes);
 
 	Particle MakeNewParticle(std::mt19937& randomEngine);

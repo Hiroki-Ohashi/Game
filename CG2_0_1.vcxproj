@@ -99,6 +99,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Engine\3d\Particle.cpp" />
+    <ClCompile Include="Project\GameManager\IScene.cpp" />
     <ClCompile Include="Project\utillity\Camera.cpp" />
     <ClCompile Include="Engine\base\DirectXCommon.cpp" />
     <ClCompile Include="externals\imgui\imgui.cpp" />
@@ -123,9 +124,11 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\3d\Triangle.cpp" />
     <ClCompile Include="Engine\base\WinApp.cpp" />
     <ClCompile Include="Project\utillity\WorldTransform.cpp" />
+    <ClCompile Include="Project\scene\TitleScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\3d\Particle.h" />
+    <ClInclude Include="Project\GameManager\IScene.h" />
     <ClInclude Include="Project\utillity\Camera.h" />
     <ClInclude Include="Engine\base\DirectXCommon.h" />
     <ClInclude Include="externals\imgui\imconfig.h" />
@@ -150,6 +153,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\3d\Triangle.h" />
     <ClInclude Include="Engine\base\WinApp.h" />
     <ClInclude Include="Project\utillity\WorldTransform.h" />
+    <ClInclude Include="Project\scene\TitleScene.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />

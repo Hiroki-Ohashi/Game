@@ -20,6 +20,8 @@ void Model::Initialize(const std::string& filename, Transform transform){
 	worldTransform_.translate = transform.translate;
 	worldTransform_.scale = transform.scale;
 	worldTransform_.rotate = transform.rotate;
+
+	materialData->enableLighting = false;
 }
 
 void Model::Update(){
@@ -102,7 +104,6 @@ void Model::CreateMaterialResource(){
 	materialData->uvTransform = MakeIndentity4x4();
 
 	// Lightingするか
-	materialData->enableLighting = true;
 	materialData->shininess = 70.0f;
 }
 
