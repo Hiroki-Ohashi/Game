@@ -45,20 +45,19 @@ private:
 	TextureManager* textureManager_ = nullptr;
 	Camera* camera_ = nullptr;
 
-	std::unique_ptr<Sphere> sphere_ = nullptr;
-
 	std::unique_ptr<Model> model_;
 	std::unique_ptr<Model> model2_;
 
-	Particles* particle_ = nullptr;
+	std::unique_ptr<Particles> particle_ = nullptr;
 	Particles* particle2_ = nullptr;
 
 	CameraForGpu camera;
+
 	Transform transform;
 	Transform transform2;
 
-	Vector3 pos = { -1.0f, 0.0f, 10.0f };
-	Vector3 pos2 = { 1.0f, 0.0f, 10.0f };
+	Vector3 pos = { -2.0f, 0.0f, 10.0f };
+	Vector3 pos2 = { 2.0f, 0.0f, 10.0f };
 
 	uint32_t monsterBall;
 	uint32_t moon;

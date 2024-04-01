@@ -1,6 +1,6 @@
 #include "Particle.h"
 
-void Particles::Initialize(const std::string& filename, Vector3 pos) {
+void Particles::Initialize(const std::string& filename, Vector3 pos, uint32_t index) {
 
 	// モデル読み込み
 	modelData = texture_->LoadObjFile("resources", filename);
@@ -30,9 +30,10 @@ void Particles::Initialize(const std::string& filename, Vector3 pos) {
 	instancingSrvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
 	instancingSrvDesc.Buffer.NumElements = kMaxInstance;
 	instancingSrvDesc.Buffer.StructureByteStride = sizeof(ParticleForGpu);
+
 	// SRVを作成するDescriptorHeapの場所を決める
-	instancingSrvHandleCPU_ = texture_->GetCPUDescriptorHandle(DirectXCommon::GetInsTance()->GetSrvDescriptorHeap(), descriptorSizeSRV, 7);
-	instancingSrvHandleGPU_ = texture_->GetGPUDescriptorHandle(DirectXCommon::GetInsTance()->GetSrvDescriptorHeap(), descriptorSizeSRV, 7);
+	instancingSrvHandleCPU_ = texture_->GetCPUDescriptorHandle(DirectXCommon::GetInsTance()->GetSrvDescriptorHeap(), descriptorSizeSRV, index);
+	instancingSrvHandleGPU_ = texture_->GetGPUDescriptorHandle(DirectXCommon::GetInsTance()->GetSrvDescriptorHeap(), descriptorSizeSRV, index);
 	// SRVの生成
 	DirectXCommon::GetInsTance()->GetDevice()->CreateShaderResourceView(instancingResource.Get(), &instancingSrvDesc, instancingSrvHandleCPU_);
 

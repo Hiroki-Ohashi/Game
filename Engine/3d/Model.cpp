@@ -57,7 +57,7 @@ void Model::Draw(Camera* camera, uint32_t index){
 	DirectXCommon::GetInsTance()->GetCommandList()->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
 	
 
-	if (ImGui::TreeNode("Model")) {
+	/*if (ImGui::TreeNode("Model")) {
 		ImGui::SliderAngle("Rotate.y ", &worldTransform_.rotate.y);
 		ImGui::DragFloat3("Transform", &worldTransform_.translate.x, 0.01f, -10.0f, 10.0f);
 
@@ -65,7 +65,7 @@ void Model::Draw(Camera* camera, uint32_t index){
 		ImGui::DragFloat2("UVScale", &uvTransform.scale.x, 0.01f, -10.0f, 10.0f);
 		ImGui::SliderAngle("UVRotate", &uvTransform.rotate.z);
 		ImGui::TreePop();
-	}
+	}*/
 }
 
 void Model::Release(){

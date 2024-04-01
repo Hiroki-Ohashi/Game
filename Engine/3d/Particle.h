@@ -17,7 +17,7 @@
 
 class Particles {
 public:
-	void Initialize(const std::string& filename, Vector3 pos);
+	void Initialize(const std::string& filename, Vector3 pos, uint32_t index);
 
 	void Update();
 

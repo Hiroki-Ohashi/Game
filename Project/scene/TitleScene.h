@@ -36,12 +36,9 @@ public:
 private:
 
 	TextureManager* textureManager_ = TextureManager::GetInstance();
-	Camera* camera_ = nullptr;
 
 	std::unique_ptr<Sprite> sprite_ = nullptr;
 	std::unique_ptr<Sprite> sprite2_ = nullptr;
-
-	std::unique_ptr<Sphere> sphere_ = nullptr;
 
 	Transform transform;
 	Transform transform2;

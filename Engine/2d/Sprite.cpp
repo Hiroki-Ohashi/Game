@@ -45,6 +45,9 @@ void Sprite::Initialize(Vector2 pos, Vector2 scale){
 
 	// SpriteはLightingしないのでfalseを設定
 	materialDataSprite->enableLighting = false;
+
+	// 白を設定
+	materialDataSprite->color = { 1.0f, 1.0f, 1.0f, 1.0f };
 }
 
 void Sprite::Update(){
@@ -151,8 +154,6 @@ void Sprite::CreateMaterialResourceSprite(){
 	materialDataSprite = nullptr;
 	// 書き込むためのアドレスを取得
 	materialResourceSprite->Map(0, nullptr, reinterpret_cast<void**>(&materialDataSprite));
-	// 白を設定
-	materialDataSprite->color = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 	materialDataSprite->uvTransform = MakeIndentity4x4();
 }
