@@ -45,11 +45,13 @@ private:
 	TextureManager* textureManager_ = nullptr;
 	Camera* camera_ = nullptr;
 
+	std::unique_ptr<Sphere> sphere_;
+
 	std::unique_ptr<Model> model_;
 	std::unique_ptr<Model> model2_;
 
 	std::unique_ptr<Particles> particle_ = nullptr;
-	Particles* particle2_ = nullptr;
+	std::unique_ptr<Particles> particle2_ = nullptr;
 
 	CameraForGpu camera;
 

@@ -3,6 +3,10 @@
 
 void Model::Initialize(const std::string& filename, Transform transform){
 
+	directionalLightData.color = { 1.0f, 1.0f, 1.0f, 1.0f };
+	directionalLightData.direction = { 0.0f, -1.0f, 1.0f };
+	directionalLightData.intensity = 1.0f;
+
 	// モデル読み込み
 	modelData = texture_->LoadObjFile("resources",filename);
 	DirectX::ScratchImage mipImages2 = texture_->LoadTexture(modelData.material.textureFilePath);
@@ -10,6 +14,7 @@ void Model::Initialize(const std::string& filename, Transform transform){
 	Model::CreateVertexResource();
 	Model::CreateMaterialResource();
 	Model::CreateWVPResource();
+	Model::CreateDirectionalResource();
 
 	cameraResource = CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(Camera));
 	cameraResource->Map(0, nullptr, reinterpret_cast<void**>(&camera));
@@ -20,8 +25,6 @@ void Model::Initialize(const std::string& filename, Transform transform){
 	worldTransform_.translate = transform.translate;
 	worldTransform_.scale = transform.scale;
 	worldTransform_.rotate = transform.rotate;
-
-	materialData->enableLighting = false;
 }
 
 void Model::Update(){
@@ -49,6 +52,7 @@ void Model::Draw(Camera* camera, uint32_t index){
 	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResource.Get()->GetGPUVirtualAddress());
 	// TransformationMatrixCBufferの場所を設定
 	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
+	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource->GetGPUVirtualAddress());
 	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(4, cameraResource->GetGPUVirtualAddress());
 
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
@@ -103,8 +107,9 @@ void Model::CreateMaterialResource(){
 
 	materialData->uvTransform = MakeIndentity4x4();
 
-	// Lightingするか
 	materialData->shininess = 70.0f;
+
+	materialData->enableLighting = false;
 }
 
 void Model::CreateWVPResource(){
@@ -116,6 +121,12 @@ void Model::CreateWVPResource(){
 
 	// 単位行列を書き込んでおく
 	wvpData->WVP = MakeIndentity4x4();
+}
+
+void Model::CreateDirectionalResource()
+{
+	directionalLightResource = CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(DirectionalLight));
+	directionalLightResource->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightData));
 }
 
 Microsoft::WRL::ComPtr<ID3D12Resource> Model::CreateBufferResource(Microsoft::WRL::ComPtr<ID3D12Device> device, size_t sizeInbytes)

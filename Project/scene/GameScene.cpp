@@ -5,7 +5,6 @@ GameScene::~GameScene(){
 		delete triangle_[i];
 	}*/
 	delete camera_;
-	delete particle2_;
 }
 
 void GameScene::Initialize(){
@@ -15,6 +14,9 @@ void GameScene::Initialize(){
 	camera_ = new Camera();
 	camera_->Initialize();
 
+	sphere_ = std::make_unique<Sphere>();
+	sphere_->Initialize();
+
 	transform = { { 0.5f,0.5f,0.5f},{0.0f,0.0f,0.0f},{-1.0f,-0.5f,3.0f} };
 	transform2 = { { 0.5f,0.5f,0.5f},{0.0f,0.0f,0.0f},{1.0f,-0.5f,3.0f} };
 
@@ -22,12 +24,12 @@ void GameScene::Initialize(){
 	model_->Initialize("cube.obj", transform);
 
 	model2_ = std::make_unique<Model>();
-	model2_->Initialize("multiMesh.obj", transform2);
+	model2_->Initialize("multiMaterial.obj", transform2);
 
 	particle_ = std::make_unique<Particles>();
 	particle_->Initialize("plane.obj", pos, 7);
 
-	particle2_ = new Particles();
+	particle2_ = std::make_unique<Particles>();
 	particle2_->Initialize("plane.obj", pos2, 8);
 
 	//Vector4 pos[Max][3];
@@ -59,6 +61,7 @@ void GameScene::Initialize(){
 }
 
 void GameScene::Update(){
+
 	camera_->Update();
 
 	if (input_->TriggerKey(DIK_SPACE)) {
@@ -80,6 +83,8 @@ void GameScene::Update(){
 }
 
 void GameScene::Draw(){
+
+	//sphere_->Draw(camera_, moon);
 
 	model_->Draw(camera_, kusa);
 	model2_->Draw(camera_, uv);
