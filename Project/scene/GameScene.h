@@ -94,6 +94,7 @@ private:
 	int teki;
 	int ui;
 	int sky;
+	int reticle;
 
 	int scene;
 

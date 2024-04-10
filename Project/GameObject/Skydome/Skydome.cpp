@@ -6,7 +6,7 @@ Skydome::~Skydome()
 
 void Skydome::Initialize()
 {
-	transform = { { 1000.0f,1000.0f,1000.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+	transform = { { 10000.0f,10000.0f,10000.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 
 	model_ = std::make_unique<Model>();
 	model_->Initialize("skydome.obj", transform);

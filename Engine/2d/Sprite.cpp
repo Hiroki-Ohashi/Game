@@ -14,6 +14,9 @@ void Sprite::Initialize(Vector2 pos, Vector2 scale, float index){
 	// SpriteはLightingしないのでfalseを設定
 	materialDataSprite->enableLighting = false;
 
+	transformSprite.translate.x = pos.x;
+	transformSprite.translate.y = pos.y;
+
 	// 白を設定
 	materialDataSprite->color = { 1.0f, 1.0f, 1.0f, index };
 }

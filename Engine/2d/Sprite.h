@@ -11,6 +11,8 @@
 #include "DirectXCommon.h"
 #include "TextureManager.h"
 #include "Mesh.h"
+#include <WorldTransform.h>
+#include "Camera.h"
 
 class Sprite {
 public:
@@ -29,7 +31,11 @@ public:
 
 	void SetAlpha(float a) { a = materialDataSprite->color.z; }
 
+	void SetPos(Vector2 pos_) { pos_.x = transformSprite.translate.x; pos_.y = transformSprite.translate.y; }
+
 	Material* GetMaterialDataSprite() { return materialDataSprite; }
+
+	WorldTransform worldTransform_;
 
 private:
 	DirectXCommon* dir_ = DirectXCommon::GetInsTance();

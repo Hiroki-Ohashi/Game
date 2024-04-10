@@ -2,6 +2,9 @@
 #include "Model.h"
 #include "EnemyBullet.h"
 #include "TextureManager.h"
+#include "BaseEnemyState.h"
+#include "EnemyStateApproch.h"
+#include "EnemyStateLeave.h"
 
 class Player;
 class GameScene;
@@ -16,11 +19,15 @@ public:
 
 	void Attack();
 
-	void ApproachUpdate();
+	/*void ApproachUpdate();
 
-	void LeaveUpdate();
+	void LeaveUpdate();*/
 
 	void SetPlayer(Player* player);
+
+	void Move();
+	void SetVelocity(float x, float y, float z);
+	void ChangeState(BaseEnemyState* newState) { state = newState; }
 
 	void OnCollision() { isDead_ = true; }
 
@@ -28,11 +35,11 @@ public:
 	// 弾リストを取得
 	const std::list<EnemyBullet*>& GetBullets() const { return bullets_; }
 
-	// 行動フェーズ
-	enum class Phase {
-		Approach, // 接近する
-		Leave,    // 離脱する
-	};
+	//// 行動フェーズ
+	//enum class Phase {
+	//	Approach, // 接近する
+	//	Leave,    // 離脱する
+	//};
 
 	void SetGameScene(GameScene* gameScene) { gameScene_ = gameScene; }
 
@@ -50,12 +57,17 @@ private:
 	int bulletTex;
 
 	// フェーズ
-	Phase phase_ = Phase::Approach;
+	//Phase phase_ = Phase::Approach;
 	// メンバ関数ポインタのテーブル
 	static void (Enemy::* phasePFuncTable[])();
 
 	Player* player_ = nullptr;
 	GameScene* gameScene_ = nullptr;
 
+	Vector3 velocity_ = { 0.0f,0.0f,0.0f };
+
 	bool isDead_;
+
+	// ステート
+	BaseEnemyState* state;
 };

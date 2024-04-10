@@ -97,6 +97,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Project\utillity\CollisionManager.cpp" />
+    <ClCompile Include="Project\utillity\Collider.cpp" />
+    <ClCompile Include="Project\GameObject\Enemy\EnemyStateLeave.cpp" />
+    <ClCompile Include="Project\GameObject\Enemy\EnemyStateApproch.cpp" />
     <ClCompile Include="Project\GameObject\Enemy\EnemyBullet.cpp" />
     <ClCompile Include="Project\GameObject\Enemy\Enemy.cpp" />
     <ClCompile Include="Project\GameObject\Player\PlayerBullet.cpp" />
@@ -126,8 +130,15 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\base\WinApp.cpp" />
     <ClCompile Include="Project\utillity\WorldTransform.cpp" />
     <ClCompile Include="Project\GameObject\Skydome\Skydome.cpp" />
+    <ClCompile Include="Project\GameObject\RailCamera\RailCamera.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Project\utillity\CollisionManager.h" />
+    <ClInclude Include="Project\utillity\Collider.h" />
+    <ClInclude Include="Project\utillity\CollisionConfig.h" />
+    <ClInclude Include="Project\GameObject\Enemy\EnemyStateLeave.h" />
+    <ClInclude Include="Project\GameObject\Enemy\EnemyStateApproch.h" />
+    <ClInclude Include="Project\GameObject\Enemy\BaseEnemyState.h" />
     <ClInclude Include="Project\GameObject\Enemy\EnemyBullet.h" />
     <ClInclude Include="Project\GameObject\Enemy\Enemy.h" />
     <ClInclude Include="Project\GameObject\Player\PlayerBullet.h" />
@@ -157,6 +168,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\base\WinApp.h" />
     <ClInclude Include="Project\utillity\WorldTransform.h" />
     <ClInclude Include="Project\GameObject\Skydome\Skydome.h" />
+    <ClInclude Include="Project\GameObject\RailCamera\RailCamera.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />

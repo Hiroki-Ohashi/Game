@@ -16,6 +16,9 @@ void Player::Init() {
 
 	model_2 = std::make_unique<Model>();
 	model_2->Initialize("pro.obj", transform2);
+
+	reticle_ = std::make_unique<Sprite>();
+	reticle_->Initialize(pos, { 100.0f, 100.0f },1.0f);
 }
 
 void Player::Update() {
@@ -29,8 +32,8 @@ void Player::Update() {
 		return false;
 	});
 
-	transform.translate.z -= 0.05f;
-	transform2.translate.z -= 0.05f;
+	transform.translate.z += 0.001f;
+	transform2.translate.z += 0.001f;
 
 	model_2->worldTransform_.rotate.y += 0.3f;
 
@@ -53,6 +56,25 @@ void Player::Update() {
 		transform.translate.x += speed;
 		transform2.translate.x += speed;
 	}
+
+	// ゲームパッドの状態を得る変数(XINPUT)
+	XINPUT_STATE joyState;
+
+	// ゲームパッド状態取得
+	if (Input::GetInsTance()->GetJoystickState(joyState)) {
+		transform.translate.x += (float)joyState.Gamepad.sThumbLX / SHRT_MAX * speed;
+		transform.translate.y += (float)joyState.Gamepad.sThumbLY / SHRT_MAX * speed;
+
+		transform2.translate.x += (float)joyState.Gamepad.sThumbLX / SHRT_MAX * speed;
+		transform2.translate.y += (float)joyState.Gamepad.sThumbLY / SHRT_MAX * speed;
+	}
+
+	if (Input::GetInsTance()->GetJoystickState(joyState)) {
+		pos.x += (float)joyState.Gamepad.sThumbRX / SHRT_MAX * speed;
+		pos.y += (float)joyState.Gamepad.sThumbRY / SHRT_MAX * speed;
+	}
+
+	reticle_->SetPos(pos);
 
 	// 移動限界座標
 	const float kMoveLimitX = 1.9f;
@@ -88,7 +110,26 @@ void Player::Draw(uint32_t index, Camera* camera, uint32_t index2){
 	}
 }
 
+void Player::DrawUI(uint32_t index)
+{
+	reticle_->Draw(index);
+}
+
 void Player::Attack() {
+
+	XINPUT_STATE joyState{};
+	if (Input::GetInsTance()->GetJoystickState(joyState)) {
+		if (Input::GetInsTance()->PressedButton(joyState, XINPUT_GAMEPAD_RIGHT_SHOULDER)) {
+
+			// 弾を生成し、初期化
+			PlayerBullet* newBullet = new PlayerBullet();
+			newBullet->Init(transform.translate);
+
+			// 弾を登録
+			bullets_.push_back(newBullet);
+		}
+	}
+
 	if (input_->TriggerKey(DIK_SPACE)) {
 
 		// 弾を生成し、初期化

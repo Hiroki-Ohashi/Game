@@ -12,15 +12,19 @@ void Enemy::Init(Vector3 translation) {
 	model_->Initialize("cube.obj", transform);
 
 	isDead_ = false;
+
+	state = new EnemyStateApproach();
 }
 
 // staticで宣言したメンバ関数ポインタテーブルの実態
-void (Enemy::* Enemy::phasePFuncTable[])() = { &Enemy::ApproachUpdate, &Enemy::LeaveUpdate };
+//void (Enemy::* Enemy::phasePFuncTable[])() = { &Enemy::ApproachUpdate, &Enemy::LeaveUpdate };
 
 void Enemy::Update() {
 
-	// メンバ関数ポインタに入っている関数を呼び出す
-	(this->*phasePFuncTable[static_cast<size_t>(phase_)])();
+	state->Update(this);
+
+	//// メンバ関数ポインタに入っている関数を呼び出す
+	//(this->*phasePFuncTable[static_cast<size_t>(phase_)])();
 
 	model_->worldTransform_.translate = transform.translate;
 
@@ -75,21 +79,34 @@ void Enemy::Attack() {
 	gameScene_->AddEnemyBullet(newBullet);
 }
 
-void Enemy::ApproachUpdate() {
-	// 移動 (ベクトルを加算)
-	transform.translate.z -= 0.05f;
-	// 既定の位置に達したら離脱
-	if (transform.translate.z < 0.0f) {
-		phase_ = Phase::Leave;
-	}
-}
-
-void Enemy::LeaveUpdate() {
-	// 移動 (ベクトルを加算)
-	if (phase_ == Phase::Leave) {
-		transform.translate.y += 0.01f;
-		transform.translate.x -= 0.01f;
-	}
-}
+//void Enemy::ApproachUpdate() {
+//	// 移動 (ベクトルを加算)
+//	transform.translate.z -= 0.05f;
+//	// 既定の位置に達したら離脱
+//	if (transform.translate.z < 0.0f) {
+//		phase_ = Phase::Leave;
+//	}
+//}
+//
+//void Enemy::LeaveUpdate() {
+//	// 移動 (ベクトルを加算)
+//	if (phase_ == Phase::Leave) {
+//		transform.translate.y += 0.01f;
+//		transform.translate.x -= 0.01f;
+//	}
+//}
 
 void  Enemy::SetPlayer(Player* player) { player_ = player; }
+
+void Enemy::Move()
+{
+	transform.translate.x += velocity_.x;
+	transform.translate.y += velocity_.y;
+	transform.translate.z += velocity_.z;
+}
+
+void Enemy::SetVelocity(float x, float y, float z) {
+	velocity_.x = x;
+	velocity_.y = y;
+	velocity_.z = z;
+}

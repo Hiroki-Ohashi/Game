@@ -5,6 +5,7 @@
 #include "Input.h"
 #include "WorldTransform.h"
 #include "TextureManager.h"
+#include "Sprite.h"
 
 #include "PlayerBullet.h"
 
@@ -15,6 +16,7 @@ public:
 	void Init();
 	void Update();
 	void Draw(uint32_t index, Camera* camera, uint32_t index2);
+	void DrawUI(uint32_t index);
 
 	void Attack();
 	void OnCollision();
@@ -29,8 +31,12 @@ public:
 	Input* input_ = Input::GetInsTance();
 	TextureManager* textureManager_ = TextureManager::GetInstance();
 
+	std::unique_ptr<Sprite> reticle_ = nullptr;
+
 	Transform transform;
 	Transform transform2;
+
+	Vector2 pos = { 590.0f,310.0f };
 
 	float speed = 0.02f;
 

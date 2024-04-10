@@ -50,6 +50,7 @@ void GameScene::Initialize(){
 	teki= textureManager_->Load("resources/moon.png");
 	ui = textureManager_->Load("resources/ui.png");
 	sky = textureManager_->Load("resources/sky.png");
+	reticle = textureManager_->Load("resources/reticle.png");
 
 	a = 0.0f;
 	isAAA = false;
@@ -63,6 +64,18 @@ void GameScene::Update(){
 
 
 	if (scene == 0) {
+
+		XINPUT_STATE joyState;
+
+		if (Input::GetInsTance()->GetJoystickState(joyState)) {
+
+			if (Input::GetInsTance()->PressedButton(joyState, XINPUT_GAMEPAD_A)) {
+				isAAA = true;
+			}
+
+		}
+
+
 		if (input_->TriggerKey(DIK_SPACE)) {
 			isAAA = true;
 		}
@@ -117,7 +130,7 @@ void GameScene::Update(){
 			return false;
 		});
 
-		camera_->cameraTransform.translate.z -= 0.05f;
+		camera_->cameraTransform.translate.z += 0.001f;
 		CheckAllCollisions();
 	}
 }
@@ -134,6 +147,8 @@ void GameScene::Draw(){
 		bullet->Draw(camera_, kuro);
 	}
 	skydome_->Draw(camera_, sky);
+
+	player_->DrawUI(reticle);
 
 	if (isTitle) {
 		title_->Draw(uv);
