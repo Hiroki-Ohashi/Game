@@ -3,7 +3,7 @@
 void Particles::Initialize(const std::string& filename, Vector3 pos, uint32_t index) {
 
 	// モデル読み込み
-	modelData = texture_->LoadObjFile("resources", filename);
+	modelData = texture_->LoadModelFile("resources", filename);
 	DirectX::ScratchImage mipImages2 = texture_->LoadTexture(modelData.material.textureFilePath);
 
 	// 頂点の座標

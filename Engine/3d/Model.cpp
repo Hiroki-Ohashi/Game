@@ -2,13 +2,8 @@
 #include "imgui.h"
 
 void Model::Initialize(const std::string& filename, Transform transform){
-
-	directionalLightData.color = { 1.0f, 1.0f, 1.0f, 1.0f };
-	directionalLightData.direction = { 0.0f, -1.0f, 1.0f };
-	directionalLightData.intensity = 1.0f;
-
 	// モデル読み込み
-	modelData = texture_->LoadObjFile("resources",filename);
+	modelData = texture_->LoadModelFile("resources",filename);
 	DirectX::ScratchImage mipImages2 = texture_->LoadTexture(modelData.material.textureFilePath);
 
 	Model::CreateVertexResource();
@@ -25,6 +20,10 @@ void Model::Initialize(const std::string& filename, Transform transform){
 	worldTransform_.translate = transform.translate;
 	worldTransform_.scale = transform.scale;
 	worldTransform_.rotate = transform.rotate;
+
+	directionalLightData.color = { 1.0f, 1.0f, 1.0f, 1.0f };
+	directionalLightData.direction = { 0.0f, -1.0f, 1.0f };
+	directionalLightData.intensity = 1.0f;
 }
 
 void Model::Update(){
@@ -44,6 +43,8 @@ void Model::Draw(Camera* camera, uint32_t index){
 	uvtransformMatrix = Multiply(uvtransformMatrix, MakeTranslateMatrix(uvTransform.translate));
 	materialData->uvTransform = uvtransformMatrix;
 
+
+
 	// コマンドを積む
 	DirectXCommon::GetInsTance()->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView); // VBVを設定
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
@@ -54,7 +55,6 @@ void Model::Draw(Camera* camera, uint32_t index){
 	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
 	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource->GetGPUVirtualAddress());
 	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(4, cameraResource->GetGPUVirtualAddress());
-
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
 	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootDescriptorTable(2, texture_->GetTextureSRVHandleGPU(index));
 	// 描画(DrawCall/ドローコール)
@@ -68,6 +68,14 @@ void Model::Draw(Camera* camera, uint32_t index){
 		ImGui::DragFloat2("UVTransform", &uvTransform.translate.x, 0.01f, -10.0f, 10.0f);
 		ImGui::DragFloat2("UVScale", &uvTransform.scale.x, 0.01f, -10.0f, 10.0f);
 		ImGui::SliderAngle("UVRotate", &uvTransform.rotate.z);
+		ImGui::TreePop();
+	}
+
+	if (ImGui::TreeNode("Light")) {
+		ImGui::SliderFloat3("Light Direction", &directionalLightData.direction.x, -1.0f, 1.0f);
+		directionalLightData.direction = Normalize(directionalLightData.direction);
+		ImGui::SliderFloat4("light color", &directionalLightData.color.x, 0.0f, 1.0f);
+		ImGui::SliderFloat("Intensity", &directionalLightData.intensity, 0.0f, 1.0f);
 		ImGui::TreePop();
 	}*/
 }
@@ -107,9 +115,9 @@ void Model::CreateMaterialResource(){
 
 	materialData->uvTransform = MakeIndentity4x4();
 
-	materialData->shininess = 70.0f;
-
 	materialData->enableLighting = false;
+
+	materialData->shininess = 70.0f;
 }
 
 void Model::CreateWVPResource(){

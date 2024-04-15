@@ -56,6 +56,12 @@ struct DirectionalLight {
 	float intensity;
 };
 
+struct Node {
+	Matrix4x4 localmatrix;
+	std::string name;
+	std::vector<Node> children;
+};
+
 struct MaterialData {
 	std::string textureFilePath;
 };
@@ -63,6 +69,7 @@ struct MaterialData {
 struct ModelData {
 	std::vector<VertexData> vertices;
 	MaterialData material;
+	Node rootNode;
 };
 
 struct Particle {

@@ -21,7 +21,7 @@ uint32_t TextureManager::Load(const std::string& filePath)
 	return textureIndex_;
 }
 
-ModelData TextureManager::LoadObjFile(const std::string& directoryPath, const std::string& filename)
+ModelData TextureManager::LoadModelFile(const std::string& directoryPath, const std::string& filename)
 {
 
 
@@ -56,6 +56,7 @@ ModelData TextureManager::LoadObjFile(const std::string& directoryPath, const st
 				vertex.position.x *= -1.0f;
 				vertex.normal.x *= -1.0f;
 				modelData.vertices.push_back(vertex);
+				modelData.rootNode = ReadNode(scene->mRootNode);
 			}
 		}
 
@@ -163,6 +164,42 @@ MaterialData TextureManager::LoadMaterialTemplateFile(const std::string& directo
 		}
 	}
 	return materialData;
+}
+
+Node TextureManager::ReadNode(aiNode* node)
+{
+	Node result;
+	aiMatrix4x4 aiLocalMatrix = node->mTransformation; // nodeのlcalMatrixを取得
+	aiLocalMatrix.Transpose(); // 列ベクトル形式を行ベクトル形式に転置
+
+	result.localmatrix.m[0][0] = aiLocalMatrix[0][0]; 
+	result.localmatrix.m[0][1] = aiLocalMatrix[0][1];
+	result.localmatrix.m[0][2] = aiLocalMatrix[0][2];
+	result.localmatrix.m[0][3] = aiLocalMatrix[0][3];
+
+	result.localmatrix.m[1][0] = aiLocalMatrix[1][0];
+	result.localmatrix.m[1][1] = aiLocalMatrix[1][1];
+	result.localmatrix.m[1][2] = aiLocalMatrix[1][2];
+	result.localmatrix.m[1][3] = aiLocalMatrix[1][3];
+
+	result.localmatrix.m[2][0] = aiLocalMatrix[2][0];
+	result.localmatrix.m[2][1] = aiLocalMatrix[2][1];
+	result.localmatrix.m[2][2] = aiLocalMatrix[2][2];
+	result.localmatrix.m[2][3] = aiLocalMatrix[2][3];
+
+	result.localmatrix.m[3][0] = aiLocalMatrix[3][0];
+	result.localmatrix.m[3][1] = aiLocalMatrix[3][1];
+	result.localmatrix.m[3][2] = aiLocalMatrix[3][2];
+	result.localmatrix.m[3][3] = aiLocalMatrix[3][3];
+
+	result.name = node->mName.C_Str();// node名を確定
+	result.children.resize(node->mNumChildren);// 子供の数だけ確保
+	for (uint32_t childIndex = 0; childIndex < node->mNumChildren; ++childIndex) {
+		// 再帰的に読んで階層構造を作っていく
+		result.children[childIndex] = ReadNode(node->mChildren[childIndex]);
+	}
+
+	return result;
 }
 
 //const DirectX::TexMetadata& TextureManager::GetMetaData(uint32_t textureIndex)
