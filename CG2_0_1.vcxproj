@@ -58,13 +58,16 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\2d;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\3d;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\base;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\input;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\Manager;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\scene;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\utillity;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\resources;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\externals\DirectXTex;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\externals\imgui;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\GameObject\;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\GameManager;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\2d;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\3d;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\base;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\input;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\Manager;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\scene;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\utillity;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\resources;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\externals\DirectXTex;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\externals\imgui;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\GameObject\;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\GameManager;$(ProjectDir)externals\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <AdditionalOptions>/ignore:4049 /ignore:4098 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalLibraryDirectories>$(ProjectDir)externals\assimp\lib\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>assimp-vc143-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxcompiler.dll" "$(TargetDir)dxcompiler.dll"
@@ -82,7 +85,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\2d;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\3d;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\base;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\input;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\Manager;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\scene;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\utillity;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\resources;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\externals\DirectXTex;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\externals\imgui;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\GameObject\;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\GameManager;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\2d;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\3d;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\base;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\input;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\Manager;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\scene;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\utillity;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\resources;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\externals\DirectXTex;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\externals\imgui;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\GameObject\;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\GameManager;$(ProjectDir)externals\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -91,6 +94,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
+      <AdditionalLibraryDirectories>$(ProjectDir)externals\assimp\lib\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>assimp-vc143-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxcompiler.dll" "$(TargetDir)dxcompiler.dll"
