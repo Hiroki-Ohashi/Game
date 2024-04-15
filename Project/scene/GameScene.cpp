@@ -1,14 +1,10 @@
 #include "GameScene.h"
 
 GameScene::~GameScene(){
-	for (int i = 0; i < Max; i++) {
+	/*for (int i = 0; i < Max; i++) {
 		delete triangle_[i];
-	}
-	delete sprite_;
-	delete sphere_;
-	delete model_;
+	}*/
 	delete camera_;
-	delete particle_;
 }
 
 void GameScene::Initialize(){
@@ -18,40 +14,44 @@ void GameScene::Initialize(){
 	camera_ = new Camera();
 	camera_->Initialize();
 
-	sprite_ = new Sprite(); 
-	sprite_->Initialize(Vector2{0.0f, 0.0f}, Vector2{640.0f, 360.0f});
-
-	sphere_ = new Sphere();
+	sphere_ = std::make_unique<Sphere>();
 	sphere_->Initialize();
 
-	transform = { { 0.5f,0.5f,0.5f},{0.0f,0.0f,0.0f},{0.0f,-0.5f,1.0f} };
+	transform = { { 0.5f,0.5f,0.5f},{0.0f,0.0f,0.0f},{-1.0f,-0.5f,3.0f} };
+	transform2 = { { 0.5f,0.5f,0.5f},{0.0f,0.0f,0.0f},{1.0f,-0.5f,3.0f} };
 
-	model_ = new Model();
+	model_ = std::make_unique<Model>();
 	model_->Initialize("cube.obj", transform);
 
-	particle_ = new Particles();
-	particle_->Initialize("plane.obj", Vector3{0.0f, 0.0f, 0.0f});
+	model2_ = std::make_unique<Model>();
+	model2_->Initialize("multiMaterial.obj", transform2);
 
-	Vector4 pos[Max][3];
+	particle_ = std::make_unique<Particles>();
+	particle_->Initialize("plane.obj", pos, 7);
 
-	// 左下
-	pos[0][0] = { -0.5f, -0.25f, 0.0f, 1.0f };
-	// 上
-	pos[0][1] = { 0.0f, 0.5f, 0.0f, 1.0f };
-	// 右下
-	pos[0][2] = { 0.5f, -0.25f, 0.0f, 1.0f };
+	particle2_ = std::make_unique<Particles>();
+	particle2_->Initialize("plane.obj", pos2, 8);
 
-	// 左下2
-	pos[1][0] = { -0.5f, -0.25f, 0.5f, 1.0f };
-	// 上2
-	pos[1][1] = { 0.0f, 0.0f, 0.0f, 1.0f };
-	// 右下2
-	pos[1][2] = { 0.5f, -0.25f, -0.5f, 1.0f };
+	//Vector4 pos[Max][3];
 
-	for (int i = 0; i < Max; i++) {
+	//// 左下
+	//pos[0][0] = { -0.5f, -0.25f, 0.0f, 1.0f };
+	//// 上
+	//pos[0][1] = { 0.0f, 0.5f, 0.0f, 1.0f };
+	//// 右下
+	//pos[0][2] = { 0.5f, -0.25f, 0.0f, 1.0f };
+
+	//// 左下2
+	//pos[1][0] = { -0.5f, -0.25f, 0.5f, 1.0f };
+	//// 上2
+	//pos[1][1] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	//// 右下2
+	//pos[1][2] = { 0.5f, -0.25f, -0.5f, 1.0f };
+
+	/*for (int i = 0; i < Max; i++) {
 		triangle_[i] = new Triangle();
 		triangle_[i]->Initialize(pos[i]);
-	}
+	}*/
 
 	uv = textureManager_->Load("resources/uvChecker.png");
 	moon = textureManager_->Load("resources/moon.png");
@@ -61,21 +61,36 @@ void GameScene::Initialize(){
 }
 
 void GameScene::Update(){
+
 	camera_->Update();
+
+	if (input_->TriggerKey(DIK_SPACE)) {
+		sceneNo = TITLE;
+	}
+	
+	if (input_->PushKey(DIK_D)) {
+		camera_->cameraTransform.translate.x += 0.1f;
+	}
+	if (input_->PushKey(DIK_A)) {
+		camera_->cameraTransform.translate.x -= 0.1f;
+	}
+	if (input_->PushKey(DIK_W)) {
+		camera_->cameraTransform.translate.y += 0.1f;
+	}
+	if (input_->PushKey(DIK_S)) {
+		camera_->cameraTransform.translate.y -= 0.1f;
+	}
 }
 
 void GameScene::Draw(){
-	sphere_->Draw(camera_, moon);
+
+	//sphere_->Draw(camera_, moon);
 
 	model_->Draw(camera_, kusa);
-
-
-	triangle_[0]->Draw(camera_, uv);
-	triangle_[1]->Draw(camera_, uv);
-
-	sprite_->Draw(monsterBall);
+	model2_->Draw(camera_, uv);
 
 	particle_->Draw(camera_, circle);
+	particle2_->Draw(camera_, uv);
 }
 
 void GameScene::Release() {

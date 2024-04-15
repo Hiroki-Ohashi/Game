@@ -35,6 +35,7 @@ private:
 	void CreateVertexResource();
 	void CreateMaterialResource();
 	void CreateWVPResource();
+	void CreateDirectionalResource();
 
 private:
 
@@ -51,10 +52,12 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource;
 	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource;
 	Microsoft::WRL::ComPtr<ID3D12Resource> cameraResource;
+	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource;
 
 	VertexData* vertexData;
 	Material* materialData;
 	TransformationMatrix* wvpData;
+	DirectionalLight directionalLightData;
 
 	Transform transform;
 	Transform uvTransform;

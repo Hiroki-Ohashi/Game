@@ -25,6 +25,8 @@ public:
 	void CreateVertexResourceSprite(Vector2 pos, Vector2 scale);
 	void CreateMaterialResourceSprite();
 	void CreateTransformationMatrixResourceSprite();
+	void CreatePso();
+
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(Microsoft::WRL::ComPtr<ID3D12Device> device, size_t sizeInbytes);
 
 
@@ -56,6 +58,9 @@ private:
 
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferViewSprite{};
 	D3D12_INDEX_BUFFER_VIEW indexBufferViewSprite{};
+
+	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineState = nullptr;
 
 	VertexData* vertexDataSprite;
 	Material* materialDataSprite;

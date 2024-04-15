@@ -13,8 +13,10 @@ void Sphere::Initialize(){
 
 	worldTransform_.scale = { 0.5f,0.5f,0.5f };
 
-	transformSphere = { {0.5f,0.5f,0.5f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+	transformSphere = { {0.5f,0.5f,0.5f},{0.0f,0.0f,0.0f},{0.0f,10.0f,0.0f} };
 	uvTransformSphere = { {1.0f, 1.0f, 1.0f},{0.0f, 0.0f, 0.0f},{0.0f, 0.0f, 0.0f}, };
+
+	worldTransform_.translate = transformSphere.translate;
 
 	cameraResource = CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(Camera));
 	cameraResource->Map(0, nullptr, reinterpret_cast<void**>(&camera));
@@ -54,7 +56,7 @@ void Sphere::Draw(Camera* camera, uint32_t index){
 	// 描画(DrawCall/ドローコール)
 	DirectXCommon::GetInsTance()->GetCommandList()->DrawInstanced(vertexIndex, 1, 0, 0);
 	
-	if (ImGui::TreeNode("Sphere")) {
+	/*if (ImGui::TreeNode("Sphere")) {
 		ImGui::DragFloat3("Scale", &transformSphere.scale.x, 0.01f, -10.0f, 10.0f);
 		ImGui::DragFloat3("Rotate", &transformSphere.rotate.x, 0.01f, -10.0f, 10.0f);
 		ImGui::DragFloat3("Transform", &transformSphere.translate.x, 0.01f, -10.0f, 10.0f);
@@ -71,7 +73,7 @@ void Sphere::Draw(Camera* camera, uint32_t index){
 		ImGui::SliderFloat4("light color", &directionalLightData->color.x, 0.0f, 1.0f);
 		ImGui::SliderFloat("Intensity", &directionalLightData->intensity, 0.0f, 1.0f);
 		ImGui::TreePop();
-	}
+	}*/
 }
 
 void Sphere::Release() {
