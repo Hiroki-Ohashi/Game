@@ -32,6 +32,6 @@ void TitleScene::Update()
 
 void TitleScene::Draw()
 {
-	sprite_->Draw(monsterBall);
-	sprite2_->Draw(uv);
+	//sprite_->Draw(monsterBall);
+	//sprite2_->Draw(uv);
 }
