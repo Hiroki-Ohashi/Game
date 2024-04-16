@@ -1,5 +1,43 @@
 #include "MathFunction.h"
 
+float Dot(const Vector3& v1, const Vector3& v2)
+{
+	float result;
+	result = v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+	return result;
+}
+
+float Length(const Vector3& v)
+{
+	float result;
+	result = powf(v.x, 2.0) + powf(v.y, 2.0) + powf(v.z, 2.0);
+
+	return sqrtf(result);
+};
+
+Vector3 Cross(const Vector3& v1, const Vector3& v2)
+{
+	Vector3 Cross;
+	Cross.x = v1.y * v2.z - v1.z * v2.y;
+	Cross.y = v1.z * v2.x - v1.x * v2.z;
+	Cross.z = v1.x * v2.y - v1.y * v2.x;
+	return Cross;
+}
+
+Vector3 Transforme(const Vector3& vector, const Matrix4x4& matrix) {
+	Vector3 result;
+	result.x = vector.x * matrix.m[0][0] + vector.y * matrix.m[1][0] + vector.z * matrix.m[2][0] + 1.0f * matrix.m[3][0];
+	result.y = vector.x * matrix.m[0][1] + vector.y * matrix.m[1][1] + vector.z * matrix.m[2][1] + 1.0f * matrix.m[3][1];
+	result.z = vector.x * matrix.m[0][2] + vector.y * matrix.m[1][2] + vector.z * matrix.m[2][2] + 1.0f * matrix.m[3][2];
+	float w = vector.x * matrix.m[0][3] + vector.y * matrix.m[1][3] + vector.z * matrix.m[2][3] + 1.0f * matrix.m[3][3];
+	assert(w != 0.0f);
+	result.x /= w;
+	result.y /= w;
+	result.z /= w;
+
+	return result;
+}
+
 Matrix4x4 MakeIndentity4x4()
 {
 	Matrix4x4 MakeIndentity4x4;
@@ -355,6 +393,172 @@ Matrix4x4 MakeRotateAxisAngle(const Vector3& axis, float angle)
 	result.m[3][1] = 0.0f;
 	result.m[3][2] = 0.0f;
 	result.m[3][3] = 1.0f;
+
+	return result;
+}
+
+Quaternion Multiply(const Quaternion& lhs, const Quaternion& rhs)
+{
+	Quaternion result;
+
+	result.x = lhs.y * rhs.z - lhs.z * rhs.y + rhs.w * lhs.x + lhs.w * rhs.x;
+	result.y = lhs.z * rhs.x - lhs.x * rhs.z + rhs.w * lhs.y + lhs.w * rhs.y;
+	result.z = lhs.x * rhs.y - lhs.y * rhs.x + rhs.w * lhs.z + lhs.w * rhs.z;
+	result.w = lhs.w * rhs.w - Dot(Vector3{ lhs.x,lhs.y ,lhs.z }, { rhs.x,rhs.y ,rhs.z });
+
+	return result;
+}
+
+float Dot(const Quaternion& q0, const Quaternion& q1)
+{
+	float result;
+
+	result = q0.x * q1.x + q0.y * q1.y + q0.z * q1.z + q0.w * q1.w;
+
+	return result;
+}
+
+Quaternion IdentityQuaternion()
+{
+	Quaternion result;
+	result.x *= 0.0f;
+	result.y *= 0.0f;
+	result.z *= 0.0f;
+	result.w *= 1.0f;
+	return result;
+}
+
+Quaternion Conjugate(const Quaternion& quaternion)
+{
+	Quaternion result = quaternion;
+
+	result.x *= -1.0f;
+	result.y *= -1.0f;
+	result.z *= -1.0f;
+	result.w *= 1.0f;
+
+	return result;
+}
+
+float Norm(const Quaternion& quaternion)
+{
+	float result = sqrt(quaternion.x * quaternion.x + quaternion.y * quaternion.y + quaternion.z * quaternion.z + quaternion.w * quaternion.w);
+
+	return result;
+}
+
+Quaternion Normalize(const Quaternion& quaternion)
+{
+	Quaternion result;
+	float len = 1 / sqrtf(quaternion.x * quaternion.x + quaternion.y * quaternion.y + quaternion.z * quaternion.z + quaternion.w * quaternion.w);
+	result = { quaternion.x * len,quaternion.y * len,quaternion.z * len,quaternion.w * len };
+	return result;
+}
+
+Quaternion Inverse(const Quaternion& quaternion)
+{
+	Quaternion result;
+
+	float n = Norm(quaternion) * Norm(quaternion);
+	Quaternion result2 = Conjugate(quaternion);
+
+
+	result.x = result2.x / n;
+	result.y = result2.y / n;
+	result.z = result2.z / n;
+	result.w = result2.w / n;
+
+	return result;
+}
+
+Quaternion mainasu(const Quaternion& quaternion)
+{
+	Quaternion result = quaternion;
+
+	result.x *= -1.0f;
+	result.y *= -1.0f;
+	result.z *= -1.0f;
+	result.w *= -1.0f;
+
+	return result;
+}
+
+Quaternion MakeRotateAxisAngleQuaternion(const Vector3& axis, float angle)
+{
+	Quaternion result;
+
+	result.x = axis.x * std::sinf(angle / 2.0f);
+	result.y = axis.y * std::sinf(angle / 2.0f);
+	result.z = axis.z * std::sinf(angle / 2.0f);
+	result.w = std::cosf(angle / 2.0f);
+
+	return result;
+}
+
+Vector3 RotateVector(const Vector3& vector, const Quaternion& quaternion)
+{
+	Vector3 result;
+	Quaternion n;
+	n.x = vector.x;
+	n.y = vector.y;
+	n.z = vector.z;
+	n.w = 0.0f;
+
+	Quaternion a = Multiply(Multiply(quaternion, n), Conjugate(quaternion));
+
+	result.x = a.x;
+	result.y = a.y;
+	result.z = a.z;
+
+	return result;
+}
+
+Matrix4x4 MakeRotateMatrix(const Quaternion quaternion)
+{
+	Matrix4x4 result;
+
+	result.m[0][0] = (quaternion.w * quaternion.w) + (quaternion.x * quaternion.x) - (quaternion.y * quaternion.y) - (quaternion.z * quaternion.z);
+	result.m[0][1] = 2.0f * ((quaternion.x * quaternion.y) + (quaternion.w * quaternion.z));
+	result.m[0][2] = 2.0f * ((quaternion.x * quaternion.z) - (quaternion.w * quaternion.y));
+	result.m[0][3] = 0.0f;
+
+	result.m[1][0] = 2.0f * ((quaternion.x * quaternion.y) - (quaternion.w * quaternion.z));
+	result.m[1][1] = (quaternion.w * quaternion.w) - (quaternion.x * quaternion.x) + (quaternion.y * quaternion.y) - (quaternion.z * quaternion.z);
+	result.m[1][2] = 2.0f * ((quaternion.y * quaternion.z) + (quaternion.w * quaternion.x));
+	result.m[1][3] = 0.0f;
+
+	result.m[2][0] = 2.0f * ((quaternion.x * quaternion.z) + (quaternion.w * quaternion.y));
+	result.m[2][1] = 2.0f * ((quaternion.y * quaternion.z) - (quaternion.w * quaternion.x));
+	result.m[2][2] = (quaternion.w * quaternion.w) - (quaternion.x * quaternion.x) - (quaternion.y * quaternion.y) + (quaternion.z * quaternion.z);
+	result.m[2][3] = 0.0f;
+
+	result.m[3][0] = 0.0f;
+	result.m[3][1] = 0.0f;
+	result.m[3][2] = 0.0f;
+	result.m[3][3] = 1.0f;
+
+	return result;
+}
+
+Quaternion Slerp(const Quaternion& q0, const Quaternion& q1, float t)
+{
+	Quaternion result;
+
+	float dot = Dot(q0, q1);
+	if (dot < 0) {
+		mainasu(q0);
+		dot = -dot;
+	}
+
+	float theta = std::acos(dot);
+
+	float scale0 = std::sin((1 - t) * theta) / std::sin(theta);
+	float scale1 = std::sin(t * theta) / std::sin(theta);
+
+	result.x = scale0 * q0.x + scale1 * q1.x;
+	result.y = scale0 * q0.y + scale1 * q1.y;
+	result.z = scale0 * q0.z + scale1 * q1.z;
+	result.w = scale0 * q0.w + scale1 * q1.w;
 
 	return result;
 }
