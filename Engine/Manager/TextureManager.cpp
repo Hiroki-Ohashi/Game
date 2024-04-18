@@ -23,14 +23,13 @@ uint32_t TextureManager::Load(const std::string& filePath)
 
 ModelData TextureManager::LoadModelFile(const std::string& directoryPath, const std::string& filename)
 {
-
-
 	ModelData modelData; // 構築するModelData
 
 	Assimp::Importer importer;
 	std::string filePath = directoryPath + "/" + filename;
 	const aiScene* scene = importer.ReadFile(filePath.c_str(), aiProcess_FlipWindingOrder | aiProcess_FlipUVs);
 	assert(scene->HasMeshes()); // メッシュがないのは対応しない
+	modelData.rootNode = ReadNode(scene->mRootNode);
 
 	for (uint32_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
 		aiMesh* mesh = scene->mMeshes[meshIndex];
@@ -53,10 +52,9 @@ ModelData TextureManager::LoadModelFile(const std::string& directoryPath, const 
 				vertex.normal = { normal.x, normal.y, normal.z };
 				vertex.texcoord = { texcoord.x, texcoord.y };
 				// aiProcess_MakeLeftHandedはz*=-1で、右手->左手に変換するので手動で対処
-				vertex.position.x *= -1.0f;
-				vertex.normal.x *= -1.0f;
+				/*vertex.position.x *= -1.0f;
+				vertex.normal.x *= -1.0f;*/
 				modelData.vertices.push_back(vertex);
-				modelData.rootNode = ReadNode(scene->mRootNode);
 			}
 		}
 
@@ -69,6 +67,8 @@ ModelData TextureManager::LoadModelFile(const std::string& directoryPath, const 
 			}
 		}
 	}
+
+	
 
 	//// 必要な変数の宣言
 	//ModelData modelData; // 構築するModelData

@@ -21,5 +21,7 @@ struct WorldTransform {
 
 	void sTransferMatrix(Microsoft::WRL::ComPtr<ID3D12Resource>& wvpResource, Camera& camera);
 
+	void GltfTransferMatrix(ModelData modelData, TransformationMatrix* wvpData, Camera* camera);
+
 	void UpdateMatrix();
 };

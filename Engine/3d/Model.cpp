@@ -6,6 +6,12 @@ void Model::Initialize(const std::string& filename, Transform transform){
 	modelData = texture_->LoadModelFile("resources",filename);
 	DirectX::ScratchImage mipImages2 = texture_->LoadTexture(modelData.material.textureFilePath);
 
+	worldTransform_.translate = transform.translate;
+	worldTransform_.scale = transform.scale;
+	worldTransform_.rotate = transform.rotate;
+
+	worldTransform_.UpdateMatrix();
+
 	Model::CreateVertexResource();
 	Model::CreateMaterialResource();
 	Model::CreateWVPResource();
@@ -17,10 +23,7 @@ void Model::Initialize(const std::string& filename, Transform transform){
 
 	uvTransform = { {1.0f, 1.0f, 1.0f},{0.0f, 0.0f, 0.0f},{0.0f, 0.0f, 0.0f}, };
 
-	worldTransform_.translate = transform.translate;
-	worldTransform_.scale = transform.scale;
-	worldTransform_.rotate = transform.rotate;
-
+	
 	directionalLightData.color = { 1.0f, 1.0f, 1.0f, 1.0f };
 	directionalLightData.direction = { 0.0f, -1.0f, 1.0f };
 	directionalLightData.intensity = 1.0f;
@@ -36,13 +39,12 @@ void Model::Draw(Camera* camera, uint32_t index){
 	//wvpData->World = Multiply(wvpData->World, *camera->transformationMatrixData);
 	//wvpData->WVP = wvpData->World;
 
-	worldTransform_.TransferMatrix(wvpData, camera);
+	worldTransform_.GltfTransferMatrix(modelData, wvpData, camera);
 
 	Matrix4x4 uvtransformMatrix = MakeScaleMatrix(uvTransform.scale);
 	uvtransformMatrix = Multiply(uvtransformMatrix, MakeRotateZMatrix(uvTransform.rotate.z));
 	uvtransformMatrix = Multiply(uvtransformMatrix, MakeTranslateMatrix(uvTransform.translate));
 	materialData->uvTransform = uvtransformMatrix;
-
 
 
 	// コマンドを積む
@@ -61,7 +63,7 @@ void Model::Draw(Camera* camera, uint32_t index){
 	DirectXCommon::GetInsTance()->GetCommandList()->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
 	
 
-	/*if (ImGui::TreeNode("Model")) {
+	if (ImGui::TreeNode("Model")) {
 		ImGui::SliderAngle("Rotate.y ", &worldTransform_.rotate.y);
 		ImGui::DragFloat3("Transform", &worldTransform_.translate.x, 0.01f, -10.0f, 10.0f);
 
@@ -71,7 +73,7 @@ void Model::Draw(Camera* camera, uint32_t index){
 		ImGui::TreePop();
 	}
 
-	if (ImGui::TreeNode("Light")) {
+	/*if (ImGui::TreeNode("Light")) {
 		ImGui::SliderFloat3("Light Direction", &directionalLightData.direction.x, -1.0f, 1.0f);
 		directionalLightData.direction = Normalize(directionalLightData.direction);
 		ImGui::SliderFloat4("light color", &directionalLightData.color.x, 0.0f, 1.0f);

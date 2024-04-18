@@ -17,20 +17,20 @@ void GameScene::Initialize(){
 	sphere_ = std::make_unique<Sphere>();
 	sphere_->Initialize();
 
-	transform = { { 0.5f,0.5f,0.5f},{0.0f,0.0f,0.0f},{-1.5f,-0.5f,3.0f} };
+	transform = { { 0.5f,0.5f,0.5f},{0.0f,0.0f,0.0f},{0.0f,0.0f,3.0f} };
 	transform2 = { { 0.5f,0.5f,0.5f},{0.0f,0.0f,0.0f},{1.5f,-0.5f,3.0f} };
 
 	model_ = std::make_unique<Model>();
-	model_->Initialize("cube.obj", transform);
+	model_->Initialize("plane.gltf", transform);
 
-	model2_ = std::make_unique<Model>();
-	model2_->Initialize("axis.obj", transform2);
+	//model2_ = std::make_unique<Model>();
+	//model2_->Initialize("plane.obj", transform2);
 
-	particle_ = std::make_unique<Particles>();
-	particle_->Initialize("plane.obj", pos, 7);
+	//particle_ = std::make_unique<Particles>();
+	//particle_->Initialize("plane.obj", pos, 7);
 
-	particle2_ = std::make_unique<Particles>();
-	particle2_->Initialize("plane.obj", pos2, 8);
+	//particle2_ = std::make_unique<Particles>();
+	//particle2_->Initialize("plane.obj", pos2, 8);
 
 	//Vector4 pos[Max][3];
 
@@ -86,8 +86,8 @@ void GameScene::Draw(){
 
 	//sphere_->Draw(camera_, moon);
 
-	model_->Draw(camera_, kusa);
-	model2_->Draw(camera_, uv);
+	model_->Draw(camera_, uv);
+	//model2_->Draw(camera_, uv);
 
 	//particle_->Draw(camera_, circle);
 	//particle2_->Draw(camera_, uv);
