@@ -66,4 +66,5 @@ private:
 	uint32_t uv;
 	uint32_t kusa;
 	uint32_t circle;
+	uint32_t utillity;
 };

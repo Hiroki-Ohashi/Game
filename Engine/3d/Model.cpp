@@ -4,6 +4,8 @@
 void Model::Initialize(const std::string& filename, Transform transform){
 	// モデル読み込み
 	modelData = texture_->LoadModelFile("resources",filename);
+	animation = texture_->LoadAnimationFile("resources", filename);
+
 	DirectX::ScratchImage mipImages2 = texture_->LoadTexture(modelData.material.textureFilePath);
 
 	worldTransform_.translate = transform.translate;
@@ -39,7 +41,7 @@ void Model::Draw(Camera* camera, uint32_t index){
 	//wvpData->World = Multiply(wvpData->World, *camera->transformationMatrixData);
 	//wvpData->WVP = wvpData->World;
 
-	worldTransform_.GltfTransferMatrix(modelData, wvpData, camera);
+	worldTransform_.AnimationTransferMatrix(modelData, animation, wvpData, camera);
 
 	Matrix4x4 uvtransformMatrix = MakeScaleMatrix(uvTransform.scale);
 	uvtransformMatrix = Multiply(uvtransformMatrix, MakeRotateZMatrix(uvTransform.rotate.z));

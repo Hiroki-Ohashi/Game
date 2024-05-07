@@ -45,6 +45,7 @@ private:
 	WorldTransform worldTransform_;
 
 	ModelData modelData;
+	Animation animation;
 
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
 

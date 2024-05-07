@@ -8,9 +8,6 @@ void WorldTransform::TransferMatrix(TransformationMatrix* wvpData, Camera* camer
 	wvpData->World = MakeAffineMatrix(scale, rotate, translate);
 	wvpData->World = Multiply(wvpData->World, *camera->transformationMatrixData);
 	wvpData->WVP = wvpData->World;
-
-	/*wvpData->WVP = modelData.rootNode.localmatrix * worldMatrix * camera->transformationMatrixData;
-	wvpData->World = modelData.rootNode.localmatrix * worldMatrix;*/
 }
 
 void WorldTransform::sTransferMatrix(Microsoft::WRL::ComPtr<ID3D12Resource>& wvpResource, Camera& camera)
@@ -20,6 +17,20 @@ void WorldTransform::sTransferMatrix(Microsoft::WRL::ComPtr<ID3D12Resource>& wvp
 
 void WorldTransform::GltfTransferMatrix(ModelData modelData, TransformationMatrix* wvpData, Camera* camera)
 {
+	wvpData->WVP = Multiply(modelData.rootNode.localmatrix, Multiply(worldMatrix, *camera->transformationMatrixData));
+	wvpData->World = Multiply(modelData.rootNode.localmatrix, worldMatrix);
+}
+
+void WorldTransform::AnimationTransferMatrix(ModelData modelData, Animation animation, TransformationMatrix* wvpData, Camera* camera)
+{
+	animationTime += 1.0f / 60.0f; // 時刻を進める。
+	animationTime = std::fmod(animationTime, animation.duration);// リピート再生
+	NodeAnimation& rootNodeAnimation = animation.nodeAnimations[modelData.rootNode.name];
+	Vector3 translate = CalculateValue(rootNodeAnimation.translate.keyframes, animationTime);
+	Quaternion rotate = CalculateValueRotate(rootNodeAnimation.rotate.keyframes, animationTime);
+	Vector3 scale = CalculateValue(rootNodeAnimation.scale.keyframes, animationTime);
+	Matrix4x4 localMatrix = MakeAffineMatrix(translate, rotate, scale);
+
 	wvpData->WVP = Multiply(modelData.rootNode.localmatrix, Multiply(worldMatrix, *camera->transformationMatrixData));
 	wvpData->World = Multiply(modelData.rootNode.localmatrix, worldMatrix);
 }

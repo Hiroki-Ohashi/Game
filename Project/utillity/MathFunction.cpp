@@ -540,6 +540,25 @@ Matrix4x4 MakeRotateMatrix(const Quaternion quaternion)
 	return result;
 }
 
+Vector3 Lerp(const Vector3& v1, const Vector3& v2, float t) {
+	Vector3 p;
+	p.x = v1.x + t * (v2.x - v1.x);
+	p.y = v1.y + t * (v2.y - v1.y);
+	p.z = v1.z + t * (v2.z - v1.z);
+	return p;
+}
+
+Quaternion LerpQuaternion(const Quaternion& v1, const Quaternion& v2, float t)
+{
+	Quaternion p;
+	p.x = v1.x + t * (v2.x - v1.x);
+	p.y = v1.y + t * (v2.y - v1.y);
+	p.z = v1.z + t * (v2.z - v1.z);
+	p.w = v1.w + t * (v2.w - v1.w);
+	return p;
+}
+
+
 Quaternion Slerp(const Quaternion& q0, const Quaternion& q1, float t)
 {
 	Quaternion result;
@@ -561,4 +580,44 @@ Quaternion Slerp(const Quaternion& q0, const Quaternion& q1, float t)
 	result.w = scale0 * q0.w + scale1 * q1.w;
 
 	return result;
+}
+
+Vector3 CalculateValue(const std::vector<KeyframeVector3>& keyframes, float time)
+{
+	assert(!keyframes.empty()); // キーがないものは返す値がわからないのでダメ
+	if (keyframes.size() == 1 || time <= keyframes[0].time){
+		return keyframes[0].value;
+	}
+
+	for (size_t index = 0; index < keyframes.size() - 1; ++index) {
+		size_t nextIndex = index + 1;
+		//indexとnextIndexの2つのkeyframeを取得して範囲内に時刻があるかを判定
+		if (keyframes[index].time <= time && time <= keyframes[nextIndex].time) {
+			//範囲内を補間する
+			float t = (time - keyframes[index].time) / (keyframes[nextIndex].time - keyframes[index].time);
+			return Lerp(keyframes[index].value, keyframes[nextIndex].value, t);
+		}
+	}
+	// ここまできた場合は一番後の時刻よりも後ろなので最後の値を返すことにする
+	return (*keyframes.rbegin()).value;
+}
+
+Quaternion CalculateValueRotate(const std::vector<KeyframeQuaternion>& keyframes, float time)
+{
+	assert(!keyframes.empty()); // キーがないものは返す値がわからないのでダメ
+	if (keyframes.size() == 1 || time <= keyframes[0].time) {
+		return keyframes[0].value;
+	}
+
+	for (size_t index = 0; index < keyframes.size() - 1; ++index) {
+		size_t nextIndex = index + 1;
+		//indexとnextIndexの2つのkeyframeを取得して範囲内に時刻があるかを判定
+		if (keyframes[index].time <= time && time <= keyframes[nextIndex].time) {
+			//範囲内を補間する
+			float t = (time - keyframes[index].time) / (keyframes[nextIndex].time - keyframes[index].time);
+			return Slerp(keyframes[index].value, keyframes[nextIndex].value, t);
+		}
+	}
+	// ここまできた場合は一番後の時刻よりも後ろなので最後の値を返すことにする
+	return (*keyframes.rbegin()).value;
 }

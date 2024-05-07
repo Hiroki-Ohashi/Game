@@ -2,6 +2,34 @@
 #include "Function.h"
 #include<cmath>
 #include<cassert>
+#include <map>
+
+template <typename tValue>
+struct Keyframe {
+	float time; // キーフレームの時刻（単位は秒）
+	tValue value; // キーフレームの値
+};
+
+using KeyframeVector3 = Keyframe<Vector3>;
+using KeyframeQuaternion = Keyframe<Quaternion>;
+
+template <typename tValue>
+
+struct AnimationCurve {
+	std::vector<Keyframe<tValue>> keyframes;
+};
+
+struct NodeAnimation {
+	AnimationCurve<Vector3> translate;
+	AnimationCurve<Quaternion> rotate;
+	AnimationCurve<Vector3> scale;
+};
+
+struct Animation {
+	float duration; // アニメーション全体の尺（単位は秒）
+	// NodeAnimationの集合。Node名でひけるようにしておく
+	std::map<std::string, NodeAnimation> nodeAnimations;
+};
 
 struct Quaternion {
 	float x;
@@ -143,4 +171,10 @@ Vector3 RotateVector(const Vector3& vector, const Quaternion& quaternion);
 // Quaternionから回転行列を求める
 Matrix4x4 MakeRotateMatrix(const Quaternion quaternion);
 
+Vector3 Lerp(const Vector3& v1, const Vector3& v2, float t);
+Quaternion LerpQuaternion(const Quaternion& v1, const Quaternion& v2, float t);
+
 Quaternion Slerp(const Quaternion& q0, const Quaternion& q1, float t);
+
+Vector3 CalculateValue(const std::vector<KeyframeVector3>& keyframes, float time);
+Quaternion CalculateValueRotate(const std::vector<KeyframeQuaternion>& keyframes, float time);

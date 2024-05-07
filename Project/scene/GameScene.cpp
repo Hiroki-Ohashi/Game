@@ -21,7 +21,7 @@ void GameScene::Initialize(){
 	transform2 = { { 0.5f,0.5f,0.5f},{0.0f,0.0f,0.0f},{1.5f,-0.5f,3.0f} };
 
 	model_ = std::make_unique<Model>();
-	model_->Initialize("plane.gltf", transform);
+	model_->Initialize("AnimatedCube.gltf", transform);
 
 	//model2_ = std::make_unique<Model>();
 	//model2_->Initialize("plane.obj", transform2);
@@ -58,6 +58,7 @@ void GameScene::Initialize(){
 	monsterBall = textureManager_->Load("resources/monsterball.png");
 	kusa = textureManager_->Load("resources/kusa.png");
 	circle = textureManager_->Load("resources/circle.png");
+	utillity = textureManager_->Load("resources/AnimatedCube_BaseColor.png");
 }
 
 void GameScene::Update(){
@@ -86,7 +87,7 @@ void GameScene::Draw(){
 
 	//sphere_->Draw(camera_, moon);
 
-	model_->Draw(camera_, uv);
+	model_->Draw(camera_, utillity);
 	//model2_->Draw(camera_, uv);
 
 	//particle_->Draw(camera_, circle);

@@ -40,6 +40,7 @@ public:
 
 	ModelData LoadModelFile(const std::string& directoryPath, const std::string& filename);
 	MaterialData LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename);
+	Animation LoadAnimationFile(const std::string& directoryPath, const std::string& filename);
 
 	Node ReadNode(aiNode* node);
 
