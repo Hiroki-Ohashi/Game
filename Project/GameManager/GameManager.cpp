@@ -72,6 +72,7 @@ void GameManager::Run()
 			// 描画処理
 			sceneArr_[currentSceneNo_]->Draw();
 
+			directX->SwapChain();
 			imgui->Draw();
 		
 			directX->Close();

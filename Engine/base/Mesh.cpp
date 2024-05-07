@@ -162,38 +162,13 @@ void Mesh::CreatePso(){
 	// 実際に生成
 	hr_ = dir_->GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc, IID_PPV_ARGS(&graphicsPipelineState));
 	assert(SUCCEEDED(hr_));
-
-	Mesh::Viewport();
-	Mesh::Scissor();
 }
 
 void Mesh::Update(){
 	// コマンドを積む
-	dir_->GetCommandList()->RSSetViewports(1, &viewport);
-	dir_->GetCommandList()->RSSetScissorRects(1, &scissorRect);
 	// DirectXCommon::GetInsTance()を設定。PSOに設定しているけど別途設定が必要
 	dir_->GetCommandList()->SetGraphicsRootSignature(rootSignature.Get());
 	dir_->GetCommandList()->SetPipelineState(graphicsPipelineState.Get());
-}
-
-void Mesh::Viewport(){
-	// ビューポート
-	// クライアント領域のサイズと一緒にして画面全体に表示
-	viewport.Width = (float)window_->GetKClientWidth();
-	viewport.Height = (float)window_->GetKClientHeight();
-	viewport.TopLeftX = 0;
-	viewport.TopLeftY = 0;
-	viewport.MinDepth = 0.0f;
-	viewport.MaxDepth = 1.0f;
-}
-
-void Mesh::Scissor(){
-	// シザー矩形
-	// 基本的にビューポートと同じ矩形が構成されるようにする
-	scissorRect.left = 0;
-	scissorRect.right = window_->GetKClientWidth();
-	scissorRect.top = 0;
-	scissorRect.bottom = window_->GetKClientHeight();
 }
 
 void Mesh::Release(){

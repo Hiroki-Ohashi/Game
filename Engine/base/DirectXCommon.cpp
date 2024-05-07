@@ -90,7 +90,6 @@ void DirectXCommon::Initialize() {
 #endif
 
 	//コマンドキューを生成する
-
 	D3D12_COMMAND_QUEUE_DESC commandQueueDesc{};
 	hr_ = device_->CreateCommandQueue(&commandQueueDesc,
 		IID_PPV_ARGS(&commandQueue_));
@@ -110,8 +109,6 @@ void DirectXCommon::Initialize() {
 	assert(SUCCEEDED(hr_));
 
 	// スワップチェーンを生成する
-
-	
 	swapChainDesc.Width = WinApp::GetInsTance()->GetKClientWidth();// 画面の幅
 	swapChainDesc.Height = WinApp::GetInsTance()->GetKClientHeight();// 画面の高さ
 	swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;// 色の形式
@@ -119,12 +116,13 @@ void DirectXCommon::Initialize() {
 	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;// 描画のターゲットとして利用
 	swapChainDesc.BufferCount = 2;/// ダブルバッファ
 	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;// モニタに写したら中身を破棄
+
 	// コマンドキュー、ウインドウハンドル、設定を渡して生成する
 	hr_ = dxgiFactory_->CreateSwapChainForHwnd(commandQueue_.Get(), WinApp::GetInsTance()->GetHwnd(), &swapChainDesc, nullptr, nullptr, reinterpret_cast<IDXGISwapChain1**>(swapChain_.GetAddressOf()));
 	assert(SUCCEEDED(hr_));
 
 	// RTV用のヒープでディスクリプタの数は2。RTVはShader内で触るものではないので、ShaderVisibleはfalse
-	rtvDescriptorHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 2, false);
+	rtvDescriptorHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 3, false);
 
 	// SRV用のヒープでディスクリプタの数は128。SRVはShader内で触るものなので、ShaderVisibleはtrue
 	srvDescriptorHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 128, true);
@@ -154,26 +152,31 @@ void DirectXCommon::Initialize() {
 	// 2つ目を作る
 	device_->CreateRenderTargetView(swapChainResources[1].Get(), &rtvDesc, rtvHandles[1]);
 
+	// RTVの作成
+	const Vector4 kRenderTargetClearValue{ 1.0f,0.0f,0.0f,1.0f }; // いったんわかりやすいように赤
+	renderTextureResource = CreateRenderTextureResource(device_.Get(), WinApp::GetInsTance()->GetKClientWidth(), WinApp::GetInsTance()->GetKClientHeight(), DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, kRenderTargetClearValue);
+	rtvHandle.ptr = rtvHandles[1].ptr + device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+	device_->CreateRenderTargetView(renderTextureResource.Get(), &rtvDesc, rtvHandle);
+
+	D3D12_CPU_DESCRIPTOR_HANDLE srvStartHandle = srvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart();
+	srvHandle = srvStartHandle;
+
+	// SRVの設定。FormatはResourceと同じにしておく
+	D3D12_SHADER_RESOURCE_VIEW_DESC renderTextureSrvDesc{};
+	renderTextureSrvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+	renderTextureSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	renderTextureSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	renderTextureSrvDesc.Texture2D.MipLevels = 1;
+
+	// SRVの作成
+	device_->CreateShaderResourceView(renderTextureResource.Get(), &renderTextureSrvDesc, srvHandle);
+
 	// DepthStencilTextureをウィンドウのサイズで作成
 	depthStencilResource = CreateDepthStencilTextureResource(device_.Get(), WinApp::GetInsTance()->GetKClientWidth(), WinApp::GetInsTance()->GetKClientHeight());
 
-	// RTVの作成
-	const Vector4 kRenderTargetClearValue{ 1.0f,0.0f,0.0f,1.0f }; // いったんわかりやすいように赤
-	auto renderTextureResource = CreateRenderTextureResource(device_.Get(), WinApp::GetInsTance()->GetKClientWidth(), WinApp::GetInsTance()->GetKClientHeight(), DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, kRenderTargetClearValue);
-	device_->CreateRenderTargetView(renderTextureResource.Get(), &rtvDesc, rtvStartHandle);
-
-	// SRVの設定。FormatはResourceと同じにしておく
-	D3D12_SHADER_RESOURCE_VIEW_DESC renderTextureSrvCesc{};
-	renderTextureSrvCesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
-	renderTextureSrvCesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	renderTextureSrvCesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-	renderTextureSrvCesc.Texture2D.MipLevels = 1;
-
-	// SRVの作成
-	device_->CreateShaderResourceView(renderTextureResource.Get(), &renderTextureSrvCesc, rtvStartHandle);
-
 	// DSV用のヒープでディスクリプタの数は1。DSVはShader内で触るものではないので、shaderVisibleはfalse
 	dsvDescriptorHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1, false);
+
 	// DSVの設定
 	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc{};
 	dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
@@ -182,6 +185,8 @@ void DirectXCommon::Initialize() {
 	device_->CreateDepthStencilView(depthStencilResource.Get(), &dsvDesc, dsvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart());
 
 	DirectXCommon::Fence();
+	DirectXCommon::Viewport();
+	DirectXCommon::Scissor();
 }
 
 void DirectXCommon::Fence(){
@@ -195,12 +200,13 @@ void DirectXCommon::Fence(){
 	assert(fenceEvent != nullptr);
 }
 
-void DirectXCommon::Update(){
+void DirectXCommon::SwapChain()
+{
 	//これから書き込むバックバッファのインデックスを取得 
 	UINT backBufferIndex = swapChain_->GetCurrentBackBufferIndex();
 
 	// TransitionBarrierの設定
-	// 今回のバリアはTransition
+// 今回のバリアはTransition
 	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
 	// Noneにしておく
 	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
@@ -218,8 +224,36 @@ void DirectXCommon::Update(){
 	commandList_->OMSetRenderTargets(1, &rtvHandles[backBufferIndex], false, &dsvHandle);
 
 	// 指定した色で画面全体をクリアする
-	float clearColor[] = { 0.1f, 0.25f, 0.5f, 1.0f };
+	float clearColor[] = { 1.0f,0.0f,0.0f,1.0f };
 	commandList_->ClearRenderTargetView(rtvHandles[backBufferIndex], clearColor, 0, nullptr);
+
+	commandList_->RSSetViewports(1, &viewport);
+	commandList_->RSSetScissorRects(1, &scissorRect);
+}
+
+void DirectXCommon::Update(){
+
+	// TransitionBarrierの設定
+	// 今回のバリアはTransition
+	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	// Noneにしておく
+	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	// バリアを張る対象のリソース。現在のバックバッファに対して行う
+	barrier.Transition.pResource = renderTextureResource.Get();
+	// 遷移前(現在)のResourceState
+	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
+	// 遷移後のResourceState
+	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
+	// TransitionBarrierを練る
+	commandList_->ResourceBarrier(1, &barrier);
+
+	// 描画先のRTVとDSVをを設定する
+	dsvHandle = dsvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart();
+	commandList_->OMSetRenderTargets(1, &rtvHandle, false, &dsvHandle);
+
+	// 指定した色で画面全体をクリアする
+	float clearColor[] = { 1.0f,0.0f,0.0f,1.0f };
+	commandList_->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
 
 	// 指定した深度で画面全体をクリアする
 	commandList_->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
@@ -227,6 +261,9 @@ void DirectXCommon::Update(){
 	// 描画用のDescriptorHeapの設定
 	ID3D12DescriptorHeap* descriptorHeaps[] = { srvDescriptorHeap_.Get()};
 	commandList_->SetDescriptorHeaps(1, descriptorHeaps);
+
+	commandList_->RSSetViewports(1, &viewport);
+	commandList_->RSSetScissorRects(1, &scissorRect);
 }
 
 void DirectXCommon::Close(){
@@ -268,6 +305,28 @@ void DirectXCommon::Close(){
 	hr_ = commandList_->Reset(commandAllocator_.Get(), nullptr);
 	assert(SUCCEEDED(hr_));
 }
+
+
+void DirectXCommon::Viewport() {
+	// ビューポート
+	// クライアント領域のサイズと一緒にして画面全体に表示
+	viewport.Width = (float)WinApp::GetInsTance()->GetKClientWidth();
+	viewport.Height = (float)WinApp::GetInsTance()->GetKClientHeight();
+	viewport.TopLeftX = 0;
+	viewport.TopLeftY = 0;
+	viewport.MinDepth = 0.0f;
+	viewport.MaxDepth = 1.0f;
+}
+
+void DirectXCommon::Scissor() {
+	// シザー矩形
+	// 基本的にビューポートと同じ矩形が構成されるようにする
+	scissorRect.left = 0;
+	scissorRect.right = WinApp::GetInsTance()->GetKClientWidth();
+	scissorRect.top = 0;
+	scissorRect.bottom = WinApp::GetInsTance()->GetKClientHeight();
+}
+
 
 void DirectXCommon::Release(){
 
@@ -346,13 +405,12 @@ Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCommon::CreateDepthStencilTextureR
 
 Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCommon::CreateRenderTextureResource(ID3D12Device* device, int32_t width, int32_t height, DXGI_FORMAT format, const Vector4& clearColor)
 {
-	return Microsoft::WRL::ComPtr<ID3D12Resource>();// 生成するResourceの設定
 	D3D12_RESOURCE_DESC resourceDesc{};
 	resourceDesc.Width = width; // Textureの幅
 	resourceDesc.Height = height; // Textureの高さ
 	resourceDesc.MipLevels = 1; // mipmapの数
 	resourceDesc.DepthOrArraySize = 1; // 奥行 or 配列Textureの配列数
-	resourceDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT; // DepthStencilとして利用可能なフォーマット
+	resourceDesc.Format = format; // DepthStencilとして利用可能なフォーマット
 	resourceDesc.SampleDesc.Count = 1; // サンプリングカウント
 	resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D; // 2次元
 	resourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET; // RenderTargetとして利用可能にする

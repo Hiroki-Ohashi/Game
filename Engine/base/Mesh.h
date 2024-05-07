@@ -24,9 +24,6 @@ public:
 
 	void Update();
 
-	void Viewport();
-	void Scissor();
-
 	void Release();
 
 private:
@@ -54,9 +51,6 @@ private:
 
 	D3D12_STATIC_SAMPLER_DESC staticSamplers[1] = {};
 	D3D12_INPUT_ELEMENT_DESC inputElementDescs[4] = {};
-
-	D3D12_VIEWPORT viewport{};
-	D3D12_RECT scissorRect{};
 
 	static inline HRESULT hr_;
 

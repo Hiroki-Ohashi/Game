@@ -36,7 +36,11 @@ public:
 
 	// User Methods
 	void Fence();
+	void SwapChain();
 	void Close();
+
+	void Viewport();
+	void Scissor();
 
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> CreateDescriptorHeap(ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible);
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateDepthStencilTextureResource(ID3D12Device* device, int32_t width, int32_t height);
@@ -71,7 +75,10 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> srvDescriptorHeap_ = nullptr;
 
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles[2];
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle;
+
 	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle;
+	D3D12_CPU_DESCRIPTOR_HANDLE srvHandle;
 	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc{};
 
 	Microsoft::WRL::ComPtr<ID3D12Resource> depthStencilResource;
@@ -83,6 +90,12 @@ private:
 
 	std::chrono::steady_clock::time_point reference_;
 
-	static inline HRESULT hr_;
+	Microsoft::WRL::ComPtr<ID3D12Resource> renderTextureResource;
 
+	const Vector4 kRenderTargetClearValue = { 1.0f,0.0f,0.0f,1.0f }; // いったんわかりやすいように赤
+
+	D3D12_VIEWPORT viewport{};
+	D3D12_RECT scissorRect{};
+
+	static inline HRESULT hr_;
 };
