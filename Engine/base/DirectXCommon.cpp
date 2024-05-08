@@ -127,7 +127,6 @@ void DirectXCommon::Initialize() {
 	// SRV用のヒープでディスクリプタの数は128。SRVはShader内で触るものなので、ShaderVisibleはtrue
 	srvDescriptorHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 128, true);
 
-
 	// SwapChainからResourceを引っ張ってくる
 	hr_ = swapChain_->GetBuffer(0, IID_PPV_ARGS(&swapChainResources[0]));
 	// うまく取得できなければ起動できない
@@ -203,8 +202,9 @@ void DirectXCommon::Fence(){
 }
 
 void DirectXCommon::Update(){
+
 	//これから書き込むバックバッファのインデックスを取得 
-	UINT backBufferIndex = swapChain_->GetCurrentBackBufferIndex();
+	backBufferIndex = swapChain_->GetCurrentBackBufferIndex();
 
 	// TransitionBarrierの設定
 	// 今回のバリアはTransition
@@ -255,8 +255,6 @@ void DirectXCommon::Update(){
 
 void DirectXCommon::SwapChain()
 {
-	//これから書き込むバックバッファのインデックスを取得 
-	UINT backBufferIndex = swapChain_->GetCurrentBackBufferIndex();
 
 	// TransitionBarrierの設定
 	// 今回のバリアはTransition
@@ -282,10 +280,6 @@ void DirectXCommon::SwapChain()
 
 	commandList_->RSSetViewports(1, &viewport);
 	commandList_->RSSetScissorRects(1, &scissorRect);
-
-	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
-	commandList_->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	commandList_->SetGraphicsRootDescriptorTable(0, srvGpuHandle);
 }
 
 void DirectXCommon::Close(){

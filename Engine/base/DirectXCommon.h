@@ -52,6 +52,7 @@ public:
 	DXGI_SWAP_CHAIN_DESC1 GetSwapChainDesc() { return swapChainDesc; }
 	D3D12_RENDER_TARGET_VIEW_DESC GetRtvDesc() { return rtvDesc; }
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetSrvDescriptorHeap() { return srvDescriptorHeap_.Get(); }
+	D3D12_GPU_DESCRIPTOR_HANDLE GetSrvHandleGpu() { return srvGpuHandle; }
 
 private:
 
@@ -99,6 +100,8 @@ private:
 
 	D3D12_VIEWPORT viewport{};
 	D3D12_RECT scissorRect{};
+
+	UINT backBufferIndex;
 
 	static inline HRESULT hr_;
 };
