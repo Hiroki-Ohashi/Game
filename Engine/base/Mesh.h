@@ -21,8 +21,10 @@ public:
 	void Initialize();
 
 	void CreatePso();
+	void CreatePostPso();
 
 	void Update();
+	void PostUpdate();
 
 	void Release();
 
@@ -53,6 +55,10 @@ private:
 	D3D12_INPUT_ELEMENT_DESC inputElementDescs[4] = {};
 
 	static inline HRESULT hr_;
+
+	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineState_ = nullptr;
+	D3D12_INPUT_ELEMENT_DESC inputElementDescs_[2] = {};
 
 	static WinApp* window_;
 };

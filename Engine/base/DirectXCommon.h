@@ -79,6 +79,9 @@ private:
 
 	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle;
 	D3D12_CPU_DESCRIPTOR_HANDLE srvHandle;
+
+	D3D12_GPU_DESCRIPTOR_HANDLE srvGpuHandle;
+
 	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc{};
 
 	Microsoft::WRL::ComPtr<ID3D12Resource> depthStencilResource;
