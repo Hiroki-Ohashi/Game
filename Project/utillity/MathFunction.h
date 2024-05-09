@@ -4,33 +4,6 @@
 #include<cassert>
 #include <map>
 
-template <typename tValue>
-struct Keyframe {
-	float time; // キーフレームの時刻（単位は秒）
-	tValue value; // キーフレームの値
-};
-
-using KeyframeVector3 = Keyframe<Vector3>;
-using KeyframeQuaternion = Keyframe<Quaternion>;
-
-template <typename tValue>
-
-struct AnimationCurve {
-	std::vector<Keyframe<tValue>> keyframes;
-};
-
-struct NodeAnimation {
-	AnimationCurve<Vector3> translate;
-	AnimationCurve<Quaternion> rotate;
-	AnimationCurve<Vector3> scale;
-};
-
-struct Animation {
-	float duration; // アニメーション全体の尺（単位は秒）
-	// NodeAnimationの集合。Node名でひけるようにしておく
-	std::map<std::string, NodeAnimation> nodeAnimations;
-};
-
 struct Quaternion {
 	float x;
 	float y;
@@ -126,6 +99,35 @@ struct CameraForGpu {
 	Vector3 worldPosition;
 };
 
+template <typename tValue>
+struct Keyframe {
+	float time; // キーフレームの時刻（単位は秒）
+	tValue value; // キーフレームの値
+};
+
+using KeyframeVector3 = Keyframe<Vector3>;
+using KeyframeQuaternion = Keyframe<Quaternion>;
+
+template <typename tValue>
+
+struct AnimationCurve {
+	std::vector<Keyframe<tValue>> keyframes;
+};
+
+struct NodeAnimation {
+	AnimationCurve<Vector3> translate;
+	AnimationCurve<Quaternion> rotate;
+	AnimationCurve<Vector3> scale;
+};
+
+struct Animation {
+	float duration; // アニメーション全体の尺（単位は秒）
+	// NodeAnimationの集合。Node名でひけるようにしておく
+	std::map<std::string, NodeAnimation> nodeAnimations;
+};
+
+
+
 float Dot(const Vector3& v1, const Vector3& v2);
 float Length(const Vector3& v);
 Vector3 Normalize(const Vector3& v1);
@@ -178,3 +180,4 @@ Quaternion Slerp(const Quaternion& q0, const Quaternion& q1, float t);
 
 Vector3 CalculateValue(const std::vector<KeyframeVector3>& keyframes, float time);
 Quaternion CalculateValueRotate(const std::vector<KeyframeQuaternion>& keyframes, float time);
+Matrix4x4 MakeAffineMatrixQuaternion(const Vector3& scale, const Quaternion& rotate, const Vector3& translate);

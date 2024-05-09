@@ -621,3 +621,32 @@ Quaternion CalculateValueRotate(const std::vector<KeyframeQuaternion>& keyframes
 	// ここまできた場合は一番後の時刻よりも後ろなので最後の値を返すことにする
 	return (*keyframes.rbegin()).value;
 }
+
+Matrix4x4 MakeAffineMatrixQuaternion(const Vector3& scale, const Quaternion& rotate, const Vector3& translate)
+{
+	Matrix4x4 MakeAffineMatrix;
+
+	Matrix4x4 XYZ = MakeRotateMatrix(rotate);
+
+	MakeAffineMatrix.m[0][0] = XYZ.m[0][0] * scale.x;
+	MakeAffineMatrix.m[0][1] = XYZ.m[0][1] * scale.x;
+	MakeAffineMatrix.m[0][2] = XYZ.m[0][2] * scale.x;
+	MakeAffineMatrix.m[0][3] = 0;
+
+	MakeAffineMatrix.m[1][0] = XYZ.m[1][0] * scale.y;
+	MakeAffineMatrix.m[1][1] = XYZ.m[1][1] * scale.y;
+	MakeAffineMatrix.m[1][2] = XYZ.m[1][2] * scale.y;
+	MakeAffineMatrix.m[1][3] = 0;
+
+	MakeAffineMatrix.m[2][0] = XYZ.m[2][0] * scale.z;
+	MakeAffineMatrix.m[2][1] = XYZ.m[2][1] * scale.z;
+	MakeAffineMatrix.m[2][2] = XYZ.m[2][2] * scale.z;
+	MakeAffineMatrix.m[2][3] = 0;
+
+	MakeAffineMatrix.m[3][0] = translate.x;
+	MakeAffineMatrix.m[3][1] = translate.y;
+	MakeAffineMatrix.m[3][2] = translate.z;
+	MakeAffineMatrix.m[3][3] = 1;
+
+	return MakeAffineMatrix;
+}

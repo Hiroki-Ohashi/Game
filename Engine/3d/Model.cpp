@@ -12,8 +12,6 @@ void Model::Initialize(const std::string& filename, Transform transform){
 	worldTransform_.scale = transform.scale;
 	worldTransform_.rotate = transform.rotate;
 
-	worldTransform_.UpdateMatrix();
-
 	Model::CreateVertexResource();
 	Model::CreateMaterialResource();
 	Model::CreateWVPResource();
@@ -25,6 +23,7 @@ void Model::Initialize(const std::string& filename, Transform transform){
 
 	uvTransform = { {1.0f, 1.0f, 1.0f},{0.0f, 0.0f, 0.0f},{0.0f, 0.0f, 0.0f}, };
 
+	worldTransform_.UpdateMatrix();
 	
 	directionalLightData.color = { 1.0f, 1.0f, 1.0f, 1.0f };
 	directionalLightData.direction = { 0.0f, -1.0f, 1.0f };
@@ -75,13 +74,13 @@ void Model::Draw(Camera* camera, uint32_t index){
 		ImGui::TreePop();
 	}
 
-	/*if (ImGui::TreeNode("Light")) {
+	if (ImGui::TreeNode("Light")) {
 		ImGui::SliderFloat3("Light Direction", &directionalLightData.direction.x, -1.0f, 1.0f);
 		directionalLightData.direction = Normalize(directionalLightData.direction);
 		ImGui::SliderFloat4("light color", &directionalLightData.color.x, 0.0f, 1.0f);
 		ImGui::SliderFloat("Intensity", &directionalLightData.intensity, 0.0f, 1.0f);
 		ImGui::TreePop();
-	}*/
+	}
 }
 
 void Model::Release(){

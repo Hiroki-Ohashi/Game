@@ -29,7 +29,8 @@ void WorldTransform::AnimationTransferMatrix(ModelData modelData, Animation anim
 	Vector3 translate = CalculateValue(rootNodeAnimation.translate.keyframes, animationTime);
 	Quaternion rotate = CalculateValueRotate(rootNodeAnimation.rotate.keyframes, animationTime);
 	Vector3 scale = CalculateValue(rootNodeAnimation.scale.keyframes, animationTime);
-	Matrix4x4 localMatrix = MakeAffineMatrix(translate, rotate, scale);
+
+	modelData.rootNode.localmatrix = MakeAffineMatrixQuaternion(scale, rotate, translate);
 
 	wvpData->WVP = Multiply(modelData.rootNode.localmatrix, Multiply(worldMatrix, *camera->transformationMatrixData));
 	wvpData->World = Multiply(modelData.rootNode.localmatrix, worldMatrix);
