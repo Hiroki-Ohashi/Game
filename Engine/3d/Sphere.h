@@ -51,8 +51,8 @@ private:
 	Material* materialDataSphere;
 	TransformationMatrix* wvpResourceDataSphere;
 
-	Transform transformSphere;
-	Transform uvTransformSphere;
+	EulerTransform transformSphere;
+	EulerTransform uvTransformSphere;
 	TransformationMatrix* worldMatrixSphere;
 
 	const uint32_t kSubdivision = 128; //分割数

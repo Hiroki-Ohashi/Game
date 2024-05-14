@@ -16,19 +16,17 @@
 #include "Mesh.h"
 #include "Camera.h"
 #include "WorldTransform.h"
-#include "Camera.h"
 
 class Model {
 public:
-	void Initialize(const std::string& filename, Transform transform);
+	void Initialize(const std::string& filename, EulerTransform transform);
 
 	void Update();
 
 	void Draw(Camera* camera, uint32_t index);
+	void DrawAnimation(Skeleton skeleton, Animation animation, Camera* camera, uint32_t index);
 
-	void Release();
-
-	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(Microsoft::WRL::ComPtr<ID3D12Device> device, size_t sizeInbytes);
+	ModelData GetModelData() { return modelData; }
 
 private:
 
@@ -36,6 +34,8 @@ private:
 	void CreateMaterialResource();
 	void CreateWVPResource();
 	void CreateDirectionalResource();
+
+	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(Microsoft::WRL::ComPtr<ID3D12Device> device, size_t sizeInbytes);
 
 private:
 
@@ -45,7 +45,6 @@ private:
 	WorldTransform worldTransform_;
 
 	ModelData modelData;
-	Animation animation;
 
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
 
@@ -60,8 +59,8 @@ private:
 	TransformationMatrix* wvpData;
 	DirectionalLight directionalLightData;
 
-	Transform transform;
-	Transform uvTransform;
+	EulerTransform transform;
+	EulerTransform uvTransform;
 
 	bool isModel;
 

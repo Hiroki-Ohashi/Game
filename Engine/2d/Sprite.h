@@ -67,8 +67,8 @@ private:
 	TransformationMatrix* transformationMatrixDataSprite;
 	uint32_t* indexDataSprite;
 
-	Transform transformSprite;
-	Transform uvTransformSprite;
+	EulerTransform transformSprite;
+	EulerTransform uvTransformSprite;
 
 	bool isSprite = false;
 

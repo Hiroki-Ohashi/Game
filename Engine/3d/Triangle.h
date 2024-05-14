@@ -49,7 +49,7 @@ private:
 	Material* materialData;
 	TransformationMatrix* wvpData;
 
-	Transform transform;
+	EulerTransform transform;
 
 	Matrix4x4 worldMatrix;
 

@@ -3,6 +3,7 @@
 #include<cmath>
 #include<cassert>
 #include <map>
+#include <optional>
 
 struct Quaternion {
 	float x;
@@ -34,9 +35,15 @@ struct Matrix4x4 {
 	float m[4][4];
 };
 
-struct Transform {
+struct EulerTransform {
 	Vector3 scale;
 	Vector3 rotate;
+	Vector3 translate;
+};
+
+struct QuaternionTransform {
+	Vector3 scale;
+	Quaternion rotate;
 	Vector3 translate;
 };
 
@@ -66,6 +73,7 @@ struct DirectionalLight {
 };
 
 struct Node {
+	QuaternionTransform transform;
 	Matrix4x4 localmatrix;
 	std::string name;
 	std::vector<Node> children;
@@ -82,7 +90,7 @@ struct ModelData {
 };
 
 struct Particle {
-	Transform transform;
+	EulerTransform transform;
 	Vector3 velocity;
 	Vector4 color;
 	float lifeTime;
@@ -126,7 +134,21 @@ struct Animation {
 	std::map<std::string, NodeAnimation> nodeAnimations;
 };
 
+struct Joint {
+	QuaternionTransform transform; // Transformの情報
+	Matrix4x4 localMatrix; // localMtrix
+	Matrix4x4 skeltonSpaceMatrix; // SkeltonSpaceでの変換行列
+	std::string name; // 名前
+	std::vector<int32_t> children; // 子jointのindexリスト。いらなければ空
+	int32_t index; // 自身のindex
+	std::optional<int32_t> parent; // 親jointのindex。いなければnull
+};
 
+struct Skeleton {
+	int32_t root; // RootJointのindex
+	std::map<std::string, int32_t> jointmap; // Joint名とindexの辞書
+	std::vector<Joint> joints; // 所属しているJoint
+};
 
 float Dot(const Vector3& v1, const Vector3& v2);
 float Length(const Vector3& v);

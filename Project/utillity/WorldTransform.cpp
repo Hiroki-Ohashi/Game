@@ -21,19 +21,22 @@ void WorldTransform::GltfTransferMatrix(ModelData modelData, TransformationMatri
 	wvpData->World = Multiply(modelData.rootNode.localmatrix, worldMatrix);
 }
 
-void WorldTransform::AnimationTransferMatrix(ModelData modelData, Animation animation, TransformationMatrix* wvpData, Camera* camera)
+void WorldTransform::AnimationTransferMatrix(Skeleton skeleton, Animation animation, TransformationMatrix* wvpData, Camera* camera)
 {
-	animationTime += 1.0f / 60.0f; // 時刻を進める。
-	animationTime = std::fmod(animationTime, animation.duration);// リピート再生
-	NodeAnimation& rootNodeAnimation = animation.nodeAnimations[modelData.rootNode.name];
-	Vector3 translate = CalculateValue(rootNodeAnimation.translate.keyframes, animationTime);
-	Quaternion rotate = CalculateValueRotate(rootNodeAnimation.rotate.keyframes, animationTime);
-	Vector3 scale = CalculateValue(rootNodeAnimation.scale.keyframes, animationTime);
+	//animationTime += 1.0f / 60.0f; // 時刻を進める。
+	//animationTime = std::fmod(animationTime, animation.duration);// リピート再生
+	//NodeAnimation& rootNodeAnimation = animation.nodeAnimations[modelData.rootNode.name];
+	//Vector3 translate = CalculateValue(rootNodeAnimation.translate.keyframes, animationTime);
+	//Quaternion rotate = CalculateValueRotate(rootNodeAnimation.rotate.keyframes, animationTime);
+	//Vector3 scale = CalculateValue(rootNodeAnimation.scale.keyframes, animationTime);
 
-	modelData.rootNode.localmatrix = MakeAffineMatrixQuaternion(scale, rotate, translate);
+	//modelData.rootNode.localmatrix = MakeAffineMatrixQuaternion(scale, rotate, translate);
 
-	wvpData->WVP = Multiply(modelData.rootNode.localmatrix, Multiply(worldMatrix, *camera->transformationMatrixData));
-	wvpData->World = Multiply(modelData.rootNode.localmatrix, worldMatrix);
+	wvpData->WVP = Multiply(worldMatrix, *camera->transformationMatrixData);
+
+	for (Joint& joint : skeleton.joints) {
+		wvpData->World = Multiply(joint.skeltonSpaceMatrix, worldMatrix);
+	}
 }
 
 void WorldTransform::UpdateMatrix() {

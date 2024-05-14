@@ -125,7 +125,7 @@ Animation TextureManager::LoadAnimationFile(const std::string& directoryPath, co
 			aiQuatKey& keyAssimp = nodeAnimationAssimp->mRotationKeys[keyIndex];
 			KeyframeQuaternion keyframe;
 			keyframe.time = float(keyAssimp.mTime / animationAssimp->mTicksPerSecond);// ここも秒に変換
-			keyframe.value = { keyAssimp.mValue.x, -keyAssimp.mValue.y, -keyAssimp.mValue.z, keyAssimp.mValue.w }; // 右手->左手
+			keyframe.value = { keyAssimp.mValue.x, keyAssimp.mValue.y, -keyAssimp.mValue.z, keyAssimp.mValue.w }; // 右手->左手
 			nodeAnimation.rotate.keyframes.push_back(keyframe);
 		}
 
@@ -146,28 +146,15 @@ Animation TextureManager::LoadAnimationFile(const std::string& directoryPath, co
 Node TextureManager::ReadNode(aiNode* node)
 {
 	Node result;
-	aiMatrix4x4 aiLocalMatrix = node->mTransformation; // nodeのlcalMatrixを取得
-	aiLocalMatrix.Transpose(); // 列ベクトル形式を行ベクトル形式に転置
 
-	result.localmatrix.m[0][0] = aiLocalMatrix[0][0]; 
-	result.localmatrix.m[0][1] = aiLocalMatrix[0][1];
-	result.localmatrix.m[0][2] = aiLocalMatrix[0][2];
-	result.localmatrix.m[0][3] = aiLocalMatrix[0][3];
+	aiVector3D scale, translate;
+	aiQuaternion rotate;
+	node->mTransformation.Decompose(scale, rotate, translate);// assimpの行列からSRTを抽出する関数を利用
 
-	result.localmatrix.m[1][0] = aiLocalMatrix[1][0];
-	result.localmatrix.m[1][1] = aiLocalMatrix[1][1];
-	result.localmatrix.m[1][2] = aiLocalMatrix[1][2];
-	result.localmatrix.m[1][3] = aiLocalMatrix[1][3];
-
-	result.localmatrix.m[2][0] = aiLocalMatrix[2][0];
-	result.localmatrix.m[2][1] = aiLocalMatrix[2][1];
-	result.localmatrix.m[2][2] = aiLocalMatrix[2][2];
-	result.localmatrix.m[2][3] = aiLocalMatrix[2][3];
-
-	result.localmatrix.m[3][0] = aiLocalMatrix[3][0];
-	result.localmatrix.m[3][1] = aiLocalMatrix[3][1];
-	result.localmatrix.m[3][2] = aiLocalMatrix[3][2];
-	result.localmatrix.m[3][3] = aiLocalMatrix[3][3];
+	result.transform.scale = { scale.x,scale.y,scale.z }; // Scaleはそのまま
+	result.transform.rotate = { rotate.x, -rotate.y, -rotate.z, rotate.w }; // x軸を反転、さらに回転方向が逆なので軸を反転させる
+	result.transform.translate = { -translate.x, translate.y, translate.z }; // x軸を反転
+	result.localmatrix = MakeAffineMatrixQuaternion(result.transform.scale, result.transform.rotate, result.transform.translate);
 
 	result.name = node->mName.C_Str();// node名を確定
 	result.children.resize(node->mNumChildren);// 子供の数だけ確保

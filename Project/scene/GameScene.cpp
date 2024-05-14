@@ -20,8 +20,8 @@ void GameScene::Initialize(){
 	transform = { { 0.5f,0.5f,0.5f},{0.0f,0.0f,0.0f},{0.0f,0.0f,3.0f} };
 	transform2 = { { 0.5f,0.5f,0.5f},{0.0f,0.0f,0.0f},{1.5f,-0.5f,3.0f} };
 
-	model_ = std::make_unique<Model>();
-	model_->Initialize("AnimatedCube.gltf", transform);
+	model_ = std::make_unique<AnimationModel>();
+	model_->Initialize("walk.gltf", transform);
 
 	//model2_ = std::make_unique<Model>();
 	//model2_->Initialize("plane.obj", transform2);
@@ -59,6 +59,7 @@ void GameScene::Initialize(){
 	kusa = textureManager_->Load("resources/kusa.png");
 	circle = textureManager_->Load("resources/circle.png");
 	utillity = textureManager_->Load("resources/AnimatedCube_BaseColor.png");
+	white = textureManager_->Load("resources/white.png");
 }
 
 void GameScene::Update(){
@@ -87,7 +88,7 @@ void GameScene::Draw(){
 
 	//sphere_->Draw(camera_, moon);
 
-	model_->Draw(camera_, utillity);
+	model_->Draw(camera_, white);
 	//model2_->Draw(camera_, uv);
 
 	//particle_->Draw(camera_, circle);

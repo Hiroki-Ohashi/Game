@@ -5,7 +5,6 @@
 #include "Camera.h"
 
 struct WorldTransform {
-	float animationTime = 0.0f;
 
 	Vector3 scale = { 1.0f,1.0f,1.0f };
 	Vector3 rotate = { 0.0f,0.0f,0.0f };
@@ -24,7 +23,8 @@ struct WorldTransform {
 	void sTransferMatrix(Microsoft::WRL::ComPtr<ID3D12Resource>& wvpResource, Camera& camera);
 
 	void GltfTransferMatrix(ModelData modelData, TransformationMatrix* wvpData, Camera* camera);
-	void AnimationTransferMatrix(ModelData modelData, Animation animation, TransformationMatrix* wvpData, Camera* camera);
+	//void AnimationTransferMatrix(ModelData modelData, Animation animation, TransformationMatrix* wvpData, Camera* camera);
+	void AnimationTransferMatrix(Skeleton skeleton, Animation animation, TransformationMatrix* wvpData, Camera* camera);
 
 	void UpdateMatrix();
 };
