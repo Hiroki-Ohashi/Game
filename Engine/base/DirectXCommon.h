@@ -74,6 +74,8 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> rtvDescriptorHeap_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> dsvDescriptorHeap_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> srvDescriptorHeap_ = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> srvDescriptorHeap2_ = nullptr;
+
 
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles[2];
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle;

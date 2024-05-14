@@ -126,6 +126,7 @@ void DirectXCommon::Initialize() {
 
 	// SRV用のヒープでディスクリプタの数は128。SRVはShader内で触るものなので、ShaderVisibleはtrue
 	srvDescriptorHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 128, true);
+	srvDescriptorHeap2_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 128, true);
 
 	// SwapChainからResourceを引っ張ってくる
 	hr_ = swapChain_->GetBuffer(0, IID_PPV_ARGS(&swapChainResources[0]));
@@ -157,10 +158,10 @@ void DirectXCommon::Initialize() {
 	rtvHandle.ptr = rtvHandles[1].ptr + device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	device_->CreateRenderTargetView(renderTextureResource.Get(), &rtvDesc, rtvHandle);
 
-	D3D12_CPU_DESCRIPTOR_HANDLE srvStartHandle = srvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart();
+	D3D12_CPU_DESCRIPTOR_HANDLE srvStartHandle = srvDescriptorHeap2_->GetCPUDescriptorHandleForHeapStart();
 	srvHandle = srvStartHandle;
 
-	srvGpuHandle = srvDescriptorHeap_->GetGPUDescriptorHandleForHeapStart();
+	srvGpuHandle = srvDescriptorHeap2_->GetGPUDescriptorHandleForHeapStart();
 
 	// SRVの設定。FormatはResourceと同じにしておく
 	D3D12_SHADER_RESOURCE_VIEW_DESC renderTextureSrvDesc{};
@@ -256,27 +257,20 @@ void DirectXCommon::Update(){
 void DirectXCommon::SwapChain()
 {
 
-	// TransitionBarrierの設定
-	// 今回のバリアはTransition
-	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-	// Noneにしておく
-	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-	// バリアを張る対象のリソース。現在のバックバッファに対して行う
-	barrier.Transition.pResource = swapChainResources[backBufferIndex].Get();
-	// 遷移前(現在)のResourceState
-	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
-	// 遷移後のResourceState
-	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
-	// TransitionBarrierを練る
-	commandList_->ResourceBarrier(1, &barrier);
-
 	// 描画先のRTVとDSVをを設定する
 	dsvHandle = dsvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart();
 	commandList_->OMSetRenderTargets(1, &rtvHandles[backBufferIndex], false, &dsvHandle);
 
+	// TransitionBarrierを練る
+	commandList_->ResourceBarrier(1, &barrier);
+
 	// 指定した色で画面全体をクリアする
 	float clearColor[] = { 0.1f, 0.25f, 0.5f, 1.0f };
 	commandList_->ClearRenderTargetView(rtvHandles[backBufferIndex], clearColor, 0, nullptr);
+
+	// 描画用のDescriptorHeapの設定
+	ID3D12DescriptorHeap* descriptorHeaps[] = { srvDescriptorHeap2_.Get() };
+	commandList_->SetDescriptorHeaps(1, descriptorHeaps);
 
 	commandList_->RSSetViewports(1, &viewport);
 	commandList_->RSSetScissorRects(1, &scissorRect);
