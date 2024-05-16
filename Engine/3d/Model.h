@@ -33,6 +33,7 @@ private:
 	void CreateVertexResource();
 	void CreateMaterialResource();
 	void CreateWVPResource();
+	void CreateIndexResource();
 	void CreateDirectionalResource();
 
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(Microsoft::WRL::ComPtr<ID3D12Device> device, size_t sizeInbytes);
@@ -45,13 +46,16 @@ private:
 	WorldTransform worldTransform_;
 
 	ModelData modelData;
+	uint32_t* mappedIndex;
 
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
+	D3D12_INDEX_BUFFER_VIEW indexBufferView{};
 
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource;
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource;
 	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource;
 	Microsoft::WRL::ComPtr<ID3D12Resource> cameraResource;
+	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource;
 	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource;
 
 	VertexData* vertexData;
