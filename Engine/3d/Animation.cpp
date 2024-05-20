@@ -67,6 +67,63 @@ int32_t AnimationModel::CreateJoint(const Node& node, const std::optional<int32_
 	return joint.index;
 }
 
+SkinCluster AnimationModel::CreateSkinCluster(const Microsoft::WRL::ComPtr<ID3D12Device>& device, const Skeleton& skeleton, const ModelData& modelData, const Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>& descriptorHeap, uint32_t descriptorSize)
+{
+	SkinCluster skinCluster;
+
+	// palette用のResourceを確保
+	skinCluster.paletteResource = CreateBufferResource(device, sizeof(WellForGPU) * skeleton.joints.size());
+	WellForGPU* mappedPalette = nullptr;
+	skinCluster.paletteResource->Map(0, nullptr, reinterpret_cast<void**>(&mappedPalette));
+	skinCluster.mappedPalette = { mappedPalette, skeleton.joints.size() }; // spanを使ってアクセスするようにする
+	skinCluster.paletteSrvHandle.first = texture_->GetGPUDescriptorHandle(descriptorHeap, descriptorSize, 10);
+	// palette用のsrvを作成
+	
+	// influence用のResourceを確保
+	
+	// influence用のVBVを作成
+	
+	// InverseBindPoseMatrixの保存領域を作成
+	
+	// ModelDataのSkinCluster情報を解析してInfluenceの中身を埋める
+
+	return skinCluster;
+}
+
+Microsoft::WRL::ComPtr<ID3D12Resource> AnimationModel::CreateBufferResource(Microsoft::WRL::ComPtr<ID3D12Device> device, size_t sizeInbytes)
+{
+	Microsoft::WRL::ComPtr<ID3D12Resource> Resource = nullptr;
+
+	D3D12_HEAP_PROPERTIES uploadHeapProperties{};
+	// 頂点リソース用のヒープの設定
+	uploadHeapProperties.Type = D3D12_HEAP_TYPE_UPLOAD;// UploadHeapを使う
+
+	// 頂点リソースの設定
+	D3D12_RESOURCE_DESC ResourceDesc{};
+	// バッファリソース。テクスチャの場合はまた別の設定をする
+	ResourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+	ResourceDesc.Width = sizeInbytes;
+	// バッファの場合はこれらは1にする決まり
+	ResourceDesc.Height = 1;
+	ResourceDesc.DepthOrArraySize = 1;
+	ResourceDesc.MipLevels = 1;
+	ResourceDesc.SampleDesc.Count = 1;
+	// バッファの場合はこれにする決まり
+	ResourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+	// 実際に頂点リソースを作る
+	HRESULT hr_ = device->CreateCommittedResource(
+		&uploadHeapProperties,
+		D3D12_HEAP_FLAG_NONE,
+		&ResourceDesc,
+		D3D12_RESOURCE_STATE_GENERIC_READ,
+		nullptr,
+		IID_PPV_ARGS(&Resource));
+
+	assert(SUCCEEDED(hr_));
+
+	return Resource;
+}
+
 void AnimationModel::ApplyAnimation(Skeleton& skeleton, const Animation& animation, float animationTime)
 {
 	for (Joint& joint : skeleton.joints) {

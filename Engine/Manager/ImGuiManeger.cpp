@@ -39,8 +39,11 @@ void ImGuiManeger::Draw(){
 	//ImGui::ShowDemoWindow();
 	// ImGuiの内部コマンドを生成する
 	ImGui::Render();
+
+#ifdef DEBUG
 	// 実際にcommandListのImGuiの描画コマンドを積む
 	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), DirectXCommon::GetInsTance()->GetCommandList());
+#endif // DEBUG
 }
 
 void ImGuiManeger::Release(){
