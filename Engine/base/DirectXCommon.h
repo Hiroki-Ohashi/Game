@@ -37,6 +37,7 @@ public:
 	// User Methods
 	void Fence();
 	void SwapChain();
+	void RemoveBarrier();
 	void Close();
 
 	void Viewport();
@@ -53,6 +54,8 @@ public:
 	D3D12_RENDER_TARGET_VIEW_DESC GetRtvDesc() { return rtvDesc; }
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetSrvDescriptorHeap() { return srvDescriptorHeap_.Get(); }
 	D3D12_GPU_DESCRIPTOR_HANDLE GetSrvHandleGpu() { return srvGpuHandle; }
+	D3D12_RESOURCE_BARRIER GetBarrier() const { return barrier; }
+	void SetBarrier(D3D12_RESOURCE_BARRIER barrier_) { barrier_ = barrier; }
 
 private:
 
