@@ -9,9 +9,10 @@
 class AnimationModel {
 public:
 	void Initialize(const std::string& filename, EulerTransform transform);
-	void Update();
+	void Update(float time);
 	void Draw(Camera* camera, uint32_t index);
 private:
+	void CreatePso();
 
 	Skeleton CreateSkelton(const Node& rootNode);
 	int32_t CreateJoint(const Node& node, const std::optional<int32_t>& parent, std::vector<Joint>& joints);
@@ -20,6 +21,7 @@ private:
 	void ApplyAnimation(Skeleton& skeleton, const Animation& animation, float animationTime);
 
 private:
+	DirectXCommon* dir_ = DirectXCommon::GetInsTance();
 	TextureManager* texture_ = TextureManager::GetInstance();
 	std::unique_ptr<Model> model_ = nullptr;
 
@@ -30,5 +32,9 @@ private:
 	float animationTime = 0.0f;
 
 	Skeleton skeleton;
+	SkinCluster skinCluster;
 	Joint joint;
+
+	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineState = nullptr;
 };

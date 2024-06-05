@@ -24,9 +24,10 @@ public:
 	void Update();
 
 	void Draw(Camera* camera, uint32_t index);
-	void DrawAnimation(Skeleton skeleton, Animation animation, Camera* camera, uint32_t index);
+	void DrawAnimation(Skeleton skeleton, Animation animation, Camera* camera, uint32_t index, SkinCluster skinCluster);
 
 	ModelData GetModelData() { return modelData; }
+	void SetWorldTransform(WorldTransform worldtransform) { worldTransform_ = worldtransform; }
 
 private:
 

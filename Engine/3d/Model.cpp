@@ -1,5 +1,6 @@
 #include "Model.h"
 #include "imgui.h"
+#include <numbers>
 
 void Model::Initialize(const std::string& filename, EulerTransform transform) {
 	// モデル読み込み
@@ -23,15 +24,18 @@ void Model::Initialize(const std::string& filename, EulerTransform transform) {
 
 	uvTransform = { {1.0f, 1.0f, 1.0f},{0.0f, 0.0f, 0.0f},{0.0f, 0.0f, 0.0f}, };
 
-	worldTransform_.UpdateMatrix();
-
 	directionalLightData.color = { 1.0f, 1.0f, 1.0f, 1.0f };
 	directionalLightData.direction = { 0.0f, -1.0f, 1.0f };
 	directionalLightData.intensity = 1.0f;
 }
 
 void Model::Update() {
+	worldTransform_.rotate.y += 0.01f;
+	worldTransform_.UpdateMatrix();
 
+	ImGui::Begin("Model");
+	ImGui::DragFloat3("Rotate", &worldTransform_.rotate.x, 0.01f, -100.0f, 100.0f);
+	ImGui::End();
 }
 
 void Model::Draw(Camera* camera, uint32_t index) {
@@ -66,7 +70,7 @@ void Model::Draw(Camera* camera, uint32_t index) {
 	DirectXCommon::GetInsTance()->GetCommandList()->DrawIndexedInstanced(UINT(modelData.indices.size()), 1, 0, 0, 0);
 
 
-	if (ImGui::TreeNode("Model")) {
+	/*if (ImGui::TreeNode("Model")) {
 		ImGui::SliderAngle("Rotate.y ", &worldTransform_.rotate.y);
 		ImGui::DragFloat3("Transform", &worldTransform_.translate.x, 0.01f, -10.0f, 10.0f);
 
@@ -82,10 +86,10 @@ void Model::Draw(Camera* camera, uint32_t index) {
 		ImGui::SliderFloat4("light color", &directionalLightData.color.x, 0.0f, 1.0f);
 		ImGui::SliderFloat("Intensity", &directionalLightData.intensity, 0.0f, 1.0f);
 		ImGui::TreePop();
-	}
+	}*/
 }
 
-void Model::DrawAnimation(Skeleton skeleton, Animation animation, Camera* camera, uint32_t index)
+void Model::DrawAnimation(Skeleton skeleton, Animation animation, Camera* camera, uint32_t index, SkinCluster skinCluster)
 {
 	worldTransform_.AnimationTransferMatrix(skeleton, animation, wvpData, camera);
 
@@ -94,18 +98,22 @@ void Model::DrawAnimation(Skeleton skeleton, Animation animation, Camera* camera
 	uvtransformMatrix = Multiply(uvtransformMatrix, MakeTranslateMatrix(uvTransform.translate));
 	materialData->uvTransform = uvtransformMatrix;
 
+	D3D12_VERTEX_BUFFER_VIEW vbvs[2] = {
+		vertexBufferView,
+		skinCluster.influenceBufferView
+	};
 
 	// コマンドを積む
-	DirectXCommon::GetInsTance()->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView); // VBVを設定
+	DirectXCommon::GetInsTance()->GetCommandList()->IASetVertexBuffers(0, 2, vbvs); // VBVを設定
 	DirectXCommon::GetInsTance()->GetCommandList()->IASetIndexBuffer(&indexBufferView); // VBVを設定
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
 	DirectXCommon::GetInsTance()->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	// マテリアルCBufferの場所を設定
 	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResource.Get()->GetGPUVirtualAddress());
 	// TransformationMatrixCBufferの場所を設定
-	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
-	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource->GetGPUVirtualAddress());
-	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(4, cameraResource->GetGPUVirtualAddress());
+	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource.Get()->GetGPUVirtualAddress());
+	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource.Get()->GetGPUVirtualAddress());
+	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(4, cameraResource.Get()->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
 	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootDescriptorTable(2, texture_->GetTextureSRVHandleGPU(index));
 	// 描画(DrawCall/ドローコール)
@@ -181,13 +189,6 @@ void Model::CreateIndexResource()
 
 	// 書き込むためのアドレスを取得
 	indexResource->Map(0, nullptr, reinterpret_cast<void**>(&mappedIndex));
-
-	mappedIndex[0] = 0;
-	mappedIndex[1] = 1;
-	mappedIndex[2] = 2;
-	mappedIndex[3] = 2;
-	mappedIndex[4] = 3;
-	mappedIndex[5] = 0;
 
 	// 頂点データをリソースにコピー
 	std::memcpy(mappedIndex, modelData.indices.data(), sizeof(uint32_t) * modelData.indices.size());
