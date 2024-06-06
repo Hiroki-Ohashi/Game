@@ -74,7 +74,8 @@ void GameManager::Run()
 
 			directX->SwapChain();
 			mesh->PostUpdate();
-			//directX->RemoveBarrier();
+			directX->RemoveBarrier();
+			mesh->Draw();
 			imgui->Draw();
 		
 			directX->Close();

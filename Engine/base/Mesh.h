@@ -27,6 +27,8 @@ public:
 	void Update();
 	void PostUpdate();
 
+	void Draw();
+
 	void Release();
 
 private:
