@@ -4,18 +4,35 @@ void AnimationModel::Initialize(const std::string& filename, EulerTransform tran
 {
 	AnimationModel::CreatePso();
 
-	model_ = std::make_unique<Model>();
-	model_->Initialize(filename, transform);
+	modelData = texture_->LoadModelFile("resources", filename);
+	DirectX::ScratchImage mipImages2 = texture_->LoadTexture(modelData.material.textureFilePath);
 
+	animation = texture_->LoadAnimationFile("resources", filename);
+
+	skeleton = CreateSkelton(modelData.rootNode);
+	skinCluster = CreateSkinCluster(dir_->GetDevice(), skeleton, modelData, dir_->GetSrvDescriptorHeap(), texture_->GetDiscreptorSize());
+
+	worldTransform_.Initialize();
 	worldTransform_.translate = transform.translate;
 	worldTransform_.scale = transform.scale;
 	worldTransform_.rotate = transform.rotate;
+	worldTransform_.UpdateMatrix();
 
-	model_->SetWorldTransform(worldTransform_);
+	AnimationModel::CreateVertexResource();
+	AnimationModel::CreateMaterialResource();
+	AnimationModel::CreateWVPResource();
+	AnimationModel::CreateIndexResource();
+	AnimationModel::CreateDirectionalResource();
 
-	animation = texture_->LoadAnimationFile("resources", filename);
-	skeleton = CreateSkelton(model_->GetModelData().rootNode);
-	skinCluster = CreateSkinCluster(dir_->GetDevice(), skeleton, model_->GetModelData(), dir_->GetSrvDescriptorHeap(), texture_->GetDiscreptorSize());
+	cameraResource = CreateBufferResource(dir_->GetDevice(), sizeof(Camera));
+	cameraResource->Map(0, nullptr, reinterpret_cast<void**>(&camera));
+	camera.worldPosition = { 0.0f, 0.0f, 0.0f };
+
+	uvTransform = { {1.0f, 1.0f, 1.0f},{0.0f, 0.0f, 0.0f},{0.0f, 0.0f, 0.0f}, };
+
+	directionalLightData.color = { 1.0f, 1.0f, 1.0f, 1.0f };
+	directionalLightData.direction = { 0.0f, -1.0f, 1.0f };
+	directionalLightData.intensity = 1.0f;
 }
 
 void AnimationModel::Update(float time)
@@ -44,18 +61,44 @@ void AnimationModel::Update(float time)
 		skinCluster.mappedPalette[jointIndex].skeletonSpaceMatrix = Multiply(skinCluster.inverseBindPoseMatrices[jointIndex], skeleton.joints[jointIndex].skeltonSpaceMatrix);
 		skinCluster.mappedPalette[jointIndex].skeletonSpaceInverseTransposeMatrix = Transpose(Inverse(skinCluster.mappedPalette[jointIndex].skeletonSpaceMatrix));
 	}
-
-	model_->Update();
-
 }
 
 void AnimationModel::Draw(Camera* camera, uint32_t index)
 {
+
+	// コマンドを積む
 	// DirectXCommon::GetInsTance()を設定。PSOに設定しているけど別途設定が必要
 	dir_->GetCommandList()->SetGraphicsRootSignature(rootSignature.Get());
 	dir_->GetCommandList()->SetPipelineState(graphicsPipelineState.Get());
 	dir_->GetCommandList()->SetGraphicsRootDescriptorTable(5, skinCluster.paletteSrvHandle.second);
-	model_->DrawAnimation(skeleton, animation, camera, index, skinCluster);
+
+	worldTransform_.AnimationTransferMatrix(skeleton, animation, wvpData, camera);
+
+	Matrix4x4 uvtransformMatrix = MakeScaleMatrix(uvTransform.scale);
+	uvtransformMatrix = Multiply(uvtransformMatrix, MakeRotateZMatrix(uvTransform.rotate.z));
+	uvtransformMatrix = Multiply(uvtransformMatrix, MakeTranslateMatrix(uvTransform.translate));
+	materialData->uvTransform = uvtransformMatrix;
+
+	D3D12_VERTEX_BUFFER_VIEW vbvs[2] = {
+		vertexBufferView,
+		skinCluster.influenceBufferView
+	};
+
+	dir_->GetCommandList()->IASetVertexBuffers(0, 2, vbvs); // VBVを設定
+	dir_->GetCommandList()->IASetIndexBuffer(&indexBufferView); // VBVを設定
+	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
+	dir_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	// マテリアルCBufferの場所を設定
+	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResource.Get()->GetGPUVirtualAddress());
+	// TransformationMatrixCBufferの場所を設定
+	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource.Get()->GetGPUVirtualAddress());
+	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource.Get()->GetGPUVirtualAddress());
+	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(4, cameraResource.Get()->GetGPUVirtualAddress());
+	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
+	dir_->GetCommandList()->SetGraphicsRootDescriptorTable(2, texture_->GetTextureSRVHandleGPU(index));
+	// 描画(DrawCall/ドローコール)
+	//DirectXCommon::GetInsTance()->GetCommandList()->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
+	dir_->GetCommandList()->DrawIndexedInstanced(UINT(modelData.indices.size()), 1, 0, 0, 0);
 }
 
 void AnimationModel::CreatePso()
@@ -236,6 +279,82 @@ void AnimationModel::CreatePso()
 	// 実際に生成
 	hr = DirectXCommon::GetInsTance()->GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc, IID_PPV_ARGS(&graphicsPipelineState));
 	assert(SUCCEEDED(hr));
+}
+
+void AnimationModel::CreateVertexResource()
+{
+	// 頂点用のリソースを作る。
+	vertexResource = CreateBufferResource(dir_->GetDevice(), sizeof(VertexData) * modelData.vertices.size());
+
+	// リソースの先頭のアドレスから使う
+	vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();
+	// 使用するリソースのサイズは頂点3つ分のサイズ
+	vertexBufferView.SizeInBytes = UINT(sizeof(VertexData) * modelData.vertices.size());
+	// 1頂点あたりのサイズ
+	vertexBufferView.StrideInBytes = sizeof(VertexData);
+
+	// 頂点リソースにデータを書き込む
+	vertexData = nullptr;
+
+	// 書き込むためのアドレスを取得
+	vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
+	// 頂点データをリソースにコピー
+	std::memcpy(vertexData, modelData.vertices.data(), sizeof(VertexData) * modelData.vertices.size());
+}
+
+void AnimationModel::CreateMaterialResource()
+{
+	// マテリアル用のリソースを作る。今回はcolor1つ分のサイズを用意する
+	materialResource = CreateBufferResource(dir_->GetDevice(), sizeof(Material));
+	// マテリアルにデータを書き込む
+	materialData = nullptr;
+	// 書き込むためのアドレスを取得
+	materialResource->Map(0, nullptr, reinterpret_cast<void**>(&materialData));
+	// 白を設定
+	materialData->color = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+	materialData->uvTransform = MakeIndentity4x4();
+
+	materialData->enableLighting = false;
+
+	materialData->shininess = 70.0f;
+}
+
+void AnimationModel::CreateWVPResource()
+{
+	// WVP用のリソースを作る。Matrix4x4 1つ分のサイズを用意する
+	wvpResource = CreateBufferResource(dir_->GetDevice(), sizeof(TransformationMatrix));
+
+	// 書き込むためのアドレスを取得
+	wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
+
+	// 単位行列を書き込んでおく
+	wvpData->WVP = MakeIndentity4x4();
+}
+
+void AnimationModel::CreateIndexResource()
+{
+	// 頂点用のリソースを作る。
+	indexResource = CreateBufferResource(dir_->GetDevice(), sizeof(uint32_t) * modelData.indices.size());
+
+	// リソースの先頭のアドレスから使う
+	indexBufferView.BufferLocation = indexResource->GetGPUVirtualAddress();
+	// 使用するリソースのサイズは頂点3つ分のサイズ
+	indexBufferView.SizeInBytes = UINT(sizeof(uint32_t) * modelData.indices.size());
+	// 1頂点あたりのサイズ
+	indexBufferView.Format = DXGI_FORMAT_R32_UINT;
+
+	// 書き込むためのアドレスを取得
+	indexResource->Map(0, nullptr, reinterpret_cast<void**>(&mappedIndex));
+
+	// 頂点データをリソースにコピー
+	std::memcpy(mappedIndex, modelData.indices.data(), sizeof(uint32_t) * modelData.indices.size());
+}
+
+void AnimationModel::CreateDirectionalResource()
+{
+	directionalLightResource = CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(DirectionalLight));
+	directionalLightResource->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightData));
 }
 
 Skeleton AnimationModel::CreateSkelton(const Node& rootNode)

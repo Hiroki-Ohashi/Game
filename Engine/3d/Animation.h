@@ -3,8 +3,7 @@
 #include "MathFunction.h"
 #include "Camera.h"
 #include "WorldTransform.h"
-
-#include "Model.h"
+#include "TextureManager.h"
 
 class AnimationModel {
 public:
@@ -13,6 +12,11 @@ public:
 	void Draw(Camera* camera, uint32_t index);
 private:
 	void CreatePso();
+	void CreateVertexResource();
+	void CreateMaterialResource();
+	void CreateWVPResource();
+	void CreateIndexResource();
+	void CreateDirectionalResource();
 
 	Skeleton CreateSkelton(const Node& rootNode);
 	int32_t CreateJoint(const Node& node, const std::optional<int32_t>& parent, std::vector<Joint>& joints);
@@ -23,10 +27,11 @@ private:
 private:
 	DirectXCommon* dir_ = DirectXCommon::GetInsTance();
 	TextureManager* texture_ = TextureManager::GetInstance();
-	std::unique_ptr<Model> model_ = nullptr;
+	CameraForGpu camera;
 
 	WorldTransform worldTransform_;
 	EulerTransform transform;
+	EulerTransform uvTransform;
 
 	Animation animation;
 	float animationTime = 0.0f;
@@ -37,4 +42,23 @@ private:
 
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineState = nullptr;
+
+private:
+	ModelData modelData;
+	uint32_t* mappedIndex;
+
+	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
+	D3D12_INDEX_BUFFER_VIEW indexBufferView{};
+
+	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource;
+	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource;
+	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource;
+	Microsoft::WRL::ComPtr<ID3D12Resource> cameraResource;
+	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource;
+	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource;
+
+	VertexData* vertexData;
+	Material* materialData;
+	TransformationMatrix* wvpData;
+	DirectionalLight directionalLightData;
 };
