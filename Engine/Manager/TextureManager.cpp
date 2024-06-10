@@ -21,6 +21,13 @@ uint32_t TextureManager::Load(const std::string& filePath)
 	return textureIndex_;
 }
 
+Animation TextureManager::LoadAnimation(const std::string& directoryPath, const std::string& filename)
+{
+	animationIndex_ += 1;
+	animation[animationIndex_] = LoadAnimationFile(directoryPath, filename);
+	return animation[animationIndex_];
+}
+
 ModelData TextureManager::LoadModelFile(const std::string& directoryPath, const std::string& filename)
 {
 	ModelData modelData; // 構築するModelData

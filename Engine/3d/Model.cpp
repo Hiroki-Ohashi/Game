@@ -30,8 +30,6 @@ void Model::Initialize(const std::string& filename, EulerTransform transform) {
 }
 
 void Model::Update() {
-	worldTransform_.rotate.y += 0.01f;
-	worldTransform_.UpdateMatrix();
 
 	ImGui::Begin("Model");
 	ImGui::DragFloat3("Rotate", &worldTransform_.rotate.x, 0.01f, -100.0f, 100.0f);

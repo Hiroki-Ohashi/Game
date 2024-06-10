@@ -11,6 +11,7 @@ struct DirectionalLight {
 	float32_t3 direction;
 	float intensity;
 };
+
 struct Camera
 {
 	float32_t3 worldPosition;
@@ -33,17 +34,18 @@ PixelShaderOutput main(VertexShaderOutput input) {
 	float4 transformeduv = mul(float32_t4(input.texcoord, 0.0f, 1.0f), gMaterial.uvTransform);
 	float32_t4 textureColor = gTexture.Sample(gSampler, transformeduv.xy);
 
-	float32_t3 toEye = normalize(gCamera.worldPosition - input.worldPosition);
-	float32_t3 reflectLight = reflect(gDirectionalLight.direction, normalize(input.normal));
-
 	if (gMaterial.enableLighting != 0) {
 		// half lambert
-		//float NdotL =dot(normalize(input.normal), -gDirectionalLight.direction);
-		float NdotL = saturate(dot(normalize(input.normal), -gDirectionalLight.direction));
+		float NdotL =dot(normalize(input.normal), -gDirectionalLight.direction);
+		//float NdotL = saturate(dot(normalize(input.normal), -gDirectionalLight.direction));
 		float cos = pow(NdotL * 0.5f + 0.5f, 2.0f);
 
+		float32_t3 toEye = normalize(gCamera.worldPosition - input.worldPosition);
+		float32_t3 reflectLight = reflect(gDirectionalLight.direction, normalize(input.normal));
+		
 		float RDotE = dot(reflectLight, toEye);
 		float specularPow = pow(saturate(RDotE), gMaterial.shininess); // 反射強度
+
 		// 拡散反射
 		float32_t3 diffuse = gMaterial.color.rgb * textureColor.rgb * gDirectionalLight.color.rgb * cos * gDirectionalLight.intensity;
 		// 鏡面反射

@@ -2,12 +2,17 @@
 
 void AnimationModel::Initialize(const std::string& filename, EulerTransform transform)
 {
-	AnimationModel::CreatePso();
-
 	modelData = texture_->LoadModelFile("resources", filename);
 	DirectX::ScratchImage mipImages2 = texture_->LoadTexture(modelData.material.textureFilePath);
 
-	animation = texture_->LoadAnimationFile("resources", filename);
+	animation = texture_->LoadAnimation("resources", filename);
+
+	AnimationModel::CreatePso();
+	AnimationModel::CreateVertexResource();
+	AnimationModel::CreateMaterialResource();
+	AnimationModel::CreateWVPResource();
+	AnimationModel::CreateIndexResource();
+	AnimationModel::CreateDirectionalResource();
 
 	skeleton = CreateSkelton(modelData.rootNode);
 	skinCluster = CreateSkinCluster(dir_->GetDevice(), skeleton, modelData, dir_->GetSrvDescriptorHeap(), texture_->GetDiscreptorSize());
@@ -18,15 +23,9 @@ void AnimationModel::Initialize(const std::string& filename, EulerTransform tran
 	worldTransform_.rotate = transform.rotate;
 	worldTransform_.UpdateMatrix();
 
-	AnimationModel::CreateVertexResource();
-	AnimationModel::CreateMaterialResource();
-	AnimationModel::CreateWVPResource();
-	AnimationModel::CreateIndexResource();
-	AnimationModel::CreateDirectionalResource();
-
 	cameraResource = CreateBufferResource(dir_->GetDevice(), sizeof(Camera));
 	cameraResource->Map(0, nullptr, reinterpret_cast<void**>(&camera));
-	camera.worldPosition = { 0.0f, 0.0f, 0.0f };
+	camera.worldPosition = { 0.0f, 0.0f, -10.0f };
 
 	uvTransform = { {1.0f, 1.0f, 1.0f},{0.0f, 0.0f, 0.0f},{0.0f, 0.0f, 0.0f}, };
 
@@ -61,6 +60,9 @@ void AnimationModel::Update(float time)
 		skinCluster.mappedPalette[jointIndex].skeletonSpaceMatrix = Multiply(skinCluster.inverseBindPoseMatrices[jointIndex], skeleton.joints[jointIndex].skeltonSpaceMatrix);
 		skinCluster.mappedPalette[jointIndex].skeletonSpaceInverseTransposeMatrix = Transpose(Inverse(skinCluster.mappedPalette[jointIndex].skeletonSpaceMatrix));
 	}
+
+	worldTransform_.rotate.y += 0.01f;
+	worldTransform_.UpdateMatrix();
 }
 
 void AnimationModel::Draw(Camera* camera, uint32_t index)
@@ -73,6 +75,7 @@ void AnimationModel::Draw(Camera* camera, uint32_t index)
 	dir_->GetCommandList()->SetGraphicsRootDescriptorTable(5, skinCluster.paletteSrvHandle.second);
 
 	worldTransform_.AnimationTransferMatrix(skeleton, animation, wvpData, camera);
+	worldTransform_.UpdateMatrix();
 
 	Matrix4x4 uvtransformMatrix = MakeScaleMatrix(uvTransform.scale);
 	uvtransformMatrix = Multiply(uvtransformMatrix, MakeRotateZMatrix(uvTransform.rotate.z));
@@ -99,6 +102,14 @@ void AnimationModel::Draw(Camera* camera, uint32_t index)
 	// 描画(DrawCall/ドローコール)
 	//DirectXCommon::GetInsTance()->GetCommandList()->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
 	dir_->GetCommandList()->DrawIndexedInstanced(UINT(modelData.indices.size()), 1, 0, 0, 0);
+
+	if (ImGui::TreeNode("Light")) {
+		ImGui::SliderFloat3("Light Direction", &directionalLightData.direction.x, -2.0f, 2.0f);
+		directionalLightData.direction = Normalize(directionalLightData.direction);
+		ImGui::SliderFloat4("Light color", &directionalLightData.color.x, 0.0f, 1.0f);
+		ImGui::SliderFloat("Intensity", &directionalLightData.intensity, 0.0f, 1.0f);
+		ImGui::TreePop();
+	}
 }
 
 void AnimationModel::CreatePso()
@@ -237,7 +248,7 @@ void AnimationModel::CreatePso()
 	// RasterizerState
 	D3D12_RASTERIZER_DESC rasterizerDesc{};
 	// 裏面(時計回り)を表示しない
-	rasterizerDesc.CullMode = D3D12_CULL_MODE_BACK;
+	rasterizerDesc.CullMode = D3D12_CULL_MODE_NONE;
 	// 三角形の中を塗りつぶす
 	rasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
 
@@ -315,7 +326,7 @@ void AnimationModel::CreateMaterialResource()
 
 	materialData->uvTransform = MakeIndentity4x4();
 
-	materialData->enableLighting = false;
+	materialData->enableLighting = true;
 
 	materialData->shininess = 70.0f;
 }
@@ -353,7 +364,7 @@ void AnimationModel::CreateIndexResource()
 
 void AnimationModel::CreateDirectionalResource()
 {
-	directionalLightResource = CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(DirectionalLight));
+	directionalLightResource = CreateBufferResource(dir_->GetDevice(), sizeof(DirectionalLight));
 	directionalLightResource->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightData));
 }
 

@@ -14,21 +14,21 @@ void GameScene::Initialize(){
 	camera_ = new Camera();
 	camera_->Initialize();
 
-	sphere_ = std::make_unique<Sphere>();
-	sphere_->Initialize();
+	/*sphere_ = std::make_unique<Sphere>();
+	sphere_->Initialize();*/
 
-	transform = { { 1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,-1.0f,3.0f} };
-	transform2 = { { 1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{-1.0f,-1.0f,3.0f} };
+	transform = { { 1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{-1.0f,-1.0f,3.0f} };
+	transform2 = { { 1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,-1.0f,3.0f} };
 	transform3 = { { 1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{1.0f,-1.0f,3.0f} };
 
 	model_ = std::make_unique<AnimationModel>();
-	model_->Initialize("walk.gltf", transform);
+	model_->Initialize("simpleSkin.gltf", transform);
 
 	model2_ = std::make_unique<AnimationModel>();
-	model2_->Initialize("simpleSkin.gltf", transform2);
+	model2_->Initialize("walk.gltf", transform2);
 
-	model3_ = std::make_unique<AnimationModel>();
-	model3_->Initialize("sneakWalk.gltf", transform3);
+	//model3_ = std::make_unique<AnimationModel>();
+	//model3_->Initialize("sneakWalk.gltf", transform3);
 
 	//model2_ = std::make_unique<Model>();
 	//model2_->Initialize("plane.obj", transform2);
@@ -90,18 +90,18 @@ void GameScene::Update(){
 		camera_->cameraTransform.translate.y -= 0.1f;
 	}
 
-	model_->Update(1.0f);
-	model2_->Update(6.0f);
-	model3_->Update(1.0f);
+	model_->Update(6.0f);
+	model2_->Update(1.0f);
+	//model3_->Update(1.0f);
 }
 
 void GameScene::Draw(){
 
 	//sphere_->Draw(camera_, moon);
 
-	model_->Draw(camera_, uv);
+	//model_->Draw(camera_, uv);
 	model2_->Draw(camera_, uv);
-	model3_->Draw(camera_, uv);
+	//model3_->Draw(camera_, uv);
 
 	//particle_->Draw(camera_, circle);
 	//particle2_->Draw(camera_, uv);

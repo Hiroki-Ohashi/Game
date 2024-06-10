@@ -46,7 +46,7 @@ private:
 	TextureManager* textureManager_ = nullptr;
 	Camera* camera_ = nullptr;
 
-	std::unique_ptr<Sphere> sphere_;
+	//std::unique_ptr<Sphere> sphere_;
 
 	//std::unique_ptr<Model> model_;
 	//std::unique_ptr<Model> model2_;

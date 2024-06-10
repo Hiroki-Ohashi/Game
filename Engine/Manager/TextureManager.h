@@ -26,6 +26,8 @@ public:
 
 	uint32_t Load(const std::string& filePath);
 
+	Animation LoadAnimation(const std::string& directoryPath, const std::string& filename);
+
 	void SetTexture(const std::string& filePath, uint32_t index);
 	
 	DirectX::ScratchImage LoadTexture(const std::string& filePath);
@@ -66,4 +68,9 @@ private:
 
 	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU[kMaxTexture];
 	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU[kMaxTexture];
+
+	static const int kMaxAnimation = 100;
+	uint32_t animationIndex_;
+
+	Animation animation[kMaxAnimation];
 };
