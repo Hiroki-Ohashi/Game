@@ -321,8 +321,11 @@ void Mesh::PostUpdate()
 {
 	dir_->GetCommandList()->SetGraphicsRootSignature(rootSignature_.Get());
 	dir_->GetCommandList()->SetPipelineState(graphicsPipelineState_.Get());
+	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
+	dir_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	dir_->GetCommandList()->SetGraphicsRootDescriptorTable(0, dir_->GetSrvHandleGpu());
 	//dir_->GetCommandList()->SetGraphicsRootDescriptorTable(0, texture_->GetTextureSRVHandleGPU(0));
+	dir_->GetCommandList()->DrawInstanced(3, 1, 0, 0);
 }
 
 void Mesh::Draw()

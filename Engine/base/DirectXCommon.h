@@ -29,7 +29,7 @@ public:
 
 	// Default Methods
 	void Initialize();
-	void Update();
+	void RenderTexture();
 	// void Draw(); //not use
 	void Release();
 	
@@ -53,6 +53,7 @@ public:
 	DXGI_SWAP_CHAIN_DESC1 GetSwapChainDesc() { return swapChainDesc; }
 	D3D12_RENDER_TARGET_VIEW_DESC GetRtvDesc() { return rtvDesc; }
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetSrvDescriptorHeap() { return srvDescriptorHeap_.Get(); }
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetSrvDescriptorHeap2() { return srvDescriptorHeap2_.Get(); }
 	D3D12_GPU_DESCRIPTOR_HANDLE GetSrvHandleGpu() { return srvGpuHandle; }
 	D3D12_RESOURCE_BARRIER GetBarrier() const { return barrier; }
 	void SetBarrier(D3D12_RESOURCE_BARRIER barrier_) { barrier_ = barrier; }
@@ -72,7 +73,9 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> commandList_ = nullptr;
 	Microsoft::WRL::ComPtr<IDXGISwapChain4> swapChain_ = nullptr;
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc{};
+
 	D3D12_RESOURCE_BARRIER barrier{};
+	D3D12_RESOURCE_BARRIER barrier2{};
 
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> rtvDescriptorHeap_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> dsvDescriptorHeap_ = nullptr;

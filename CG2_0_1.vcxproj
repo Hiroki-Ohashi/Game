@@ -58,7 +58,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\2d;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\3d;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\base;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\input;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\Manager;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\scene;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\utillity;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\resources;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\externals\DirectXTex;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\externals\imgui;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\GameObject\;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\GameManager;$(ProjectDir)externals\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\2d;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\3d;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\base;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\input;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\Manager;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\scene;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\utillity;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\resources;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\externals\DirectXTex;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\externals\imgui;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\GameObject\;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\GameManager;$(ProjectDir)externals\assimp\include;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\PostProcess;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -85,7 +85,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\2d;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\3d;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\base;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\input;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\Manager;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\scene;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\utillity;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\resources;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\externals\DirectXTex;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\externals\imgui;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\GameObject\;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\GameManager;$(ProjectDir)externals\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\2d;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\3d;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\base;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\input;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\Manager;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\scene;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\utillity;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\resources;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\externals\DirectXTex;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\externals\imgui;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\GameObject\;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\GameManager;$(ProjectDir)externals\assimp\include;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\PostProcess;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -104,6 +104,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Engine\3d\Particle.cpp" />
+    <ClCompile Include="PostProcess.cpp" />
     <ClCompile Include="Project\GameManager\IScene.cpp" />
     <ClCompile Include="Project\utillity\Camera.cpp" />
     <ClCompile Include="Engine\base\DirectXCommon.cpp" />
@@ -133,6 +134,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\3d\Particle.h" />
+    <ClInclude Include="PostProcess.h" />
     <ClInclude Include="Project\GameManager\IScene.h" />
     <ClInclude Include="Project\utillity\Camera.h" />
     <ClInclude Include="Engine\base\DirectXCommon.h" />

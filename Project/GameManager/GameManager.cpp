@@ -64,7 +64,7 @@ void GameManager::Run()
 
 			// 更新処理
 			imgui->Update();
-			directX->Update();
+			directX->RenderTexture();
 			mesh->Update();
 			input->Update();
 			sceneArr_[currentSceneNo_]->Update();
@@ -75,7 +75,7 @@ void GameManager::Run()
 			directX->SwapChain();
 			mesh->PostUpdate();
 			directX->RemoveBarrier();
-			mesh->Draw();
+			//mesh->Draw();
 			imgui->Draw();
 		
 			directX->Close();

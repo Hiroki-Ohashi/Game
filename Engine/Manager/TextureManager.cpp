@@ -153,8 +153,8 @@ void TextureManager::SetTexture(const std::string& filePath, uint32_t index)
 	srvDesc.Texture2D.MipLevels = UINT(metadata.mipLevels);
 
 	// SRVを作成するDescriptorHeapの場所を決める
-	textureSrvHandleCPU[index] = GetCPUDescriptorHandle(dir_->GetSrvDescriptorHeap(), descriptorSizeSRV, index);
-	textureSrvHandleGPU[index] = GetGPUDescriptorHandle(dir_->GetSrvDescriptorHeap(), descriptorSizeSRV, index);
+	textureSrvHandleCPU[index] = GetCPUDescriptorHandle(dir_->GetSrvDescriptorHeap2(), descriptorSizeSRV, index);
+	textureSrvHandleGPU[index] = GetGPUDescriptorHandle(dir_->GetSrvDescriptorHeap2(), descriptorSizeSRV, index);
 
 	// 先頭はImGuiが使っているのでその次を使う
 	textureSrvHandleCPU[index].ptr += dir_->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
