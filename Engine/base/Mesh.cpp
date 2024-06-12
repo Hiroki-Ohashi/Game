@@ -317,7 +317,7 @@ void Mesh::Update(){
 	dir_->GetCommandList()->SetPipelineState(graphicsPipelineState.Get());
 }
 
-void Mesh::PostUpdate()
+void Mesh::PostDraw()
 {
 	dir_->GetCommandList()->SetGraphicsRootSignature(rootSignature_.Get());
 	dir_->GetCommandList()->SetPipelineState(graphicsPipelineState_.Get());
@@ -325,11 +325,6 @@ void Mesh::PostUpdate()
 	dir_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	dir_->GetCommandList()->SetGraphicsRootDescriptorTable(0, dir_->GetSrvHandleGpu());
 	//dir_->GetCommandList()->SetGraphicsRootDescriptorTable(0, texture_->GetTextureSRVHandleGPU(0));
-	dir_->GetCommandList()->DrawInstanced(3, 1, 0, 0);
-}
-
-void Mesh::Draw()
-{
 	dir_->GetCommandList()->DrawInstanced(3, 1, 0, 0);
 }
 

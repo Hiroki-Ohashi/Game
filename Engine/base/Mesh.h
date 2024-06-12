@@ -25,9 +25,7 @@ public:
 	void CreatePostPso();
 
 	void Update();
-	void PostUpdate();
-
-	void Draw();
+	void PostDraw();
 
 	void Release();
 
