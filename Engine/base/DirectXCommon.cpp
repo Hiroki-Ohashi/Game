@@ -157,8 +157,7 @@ void DirectXCommon::Initialize() {
 	rtvHandle.ptr = rtvHandles[1].ptr + device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	device_->CreateRenderTargetView(renderTextureResource.Get(), &rtvDesc, rtvHandle);
 
-	D3D12_CPU_DESCRIPTOR_HANDLE srvStartHandle = srvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart();
-	srvHandle.ptr += srvStartHandle.ptr + device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	srvHandle.ptr += srvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart().ptr + device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	srvGpuHandle.ptr += srvDescriptorHeap_->GetGPUDescriptorHandleForHeapStart().ptr + device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
 	// SRVの設定。FormatはResourceと同じにしておく
@@ -239,7 +238,6 @@ void DirectXCommon::RenderTexture(){
 
 void DirectXCommon::SwapChain()
 {
-
 	// 今回のバリアはTransition
 	barrier2.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
 	// Noneにしておく
@@ -261,13 +259,12 @@ void DirectXCommon::SwapChain()
 	float clearColor[] = { 0.1f, 0.25f, 0.5f, 1.0f };
 	commandList_->ClearRenderTargetView(rtvHandles[backBufferIndex], clearColor, 0, nullptr);
 
-	// 描画用のDescriptorHeapの設定
-	ID3D12DescriptorHeap* descriptorHeaps[] = { srvDescriptorHeap_.Get() };
-
-	commandList_->SetDescriptorHeaps(1, descriptorHeaps);
-
 	commandList_->RSSetViewports(1, &viewport);
 	commandList_->RSSetScissorRects(1, &scissorRect);
+
+	// 描画用のDescriptorHeapの設定
+	ID3D12DescriptorHeap* descriptorHeaps[] = { srvDescriptorHeap_.Get() };
+	commandList_->SetDescriptorHeaps(1, descriptorHeaps);
 }
 
 void DirectXCommon::RemoveBarrier()

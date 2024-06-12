@@ -35,3 +35,7 @@ void TitleScene::Draw()
 	//sprite_->Draw(monsterBall);
 	//sprite2_->Draw(uv);
 }
+
+void TitleScene::PostDraw()
+{
+}

@@ -23,8 +23,6 @@ uint32_t TextureManager::Load(const std::string& filePath)
 
 ModelData TextureManager::LoadModelFile(const std::string& directoryPath, const std::string& filename)
 {
-
-
 	ModelData modelData; // 構築するModelData
 
 	Assimp::Importer importer;

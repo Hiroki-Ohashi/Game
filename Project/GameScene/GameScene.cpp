@@ -14,6 +14,9 @@ void GameScene::Initialize(){
 	camera_ = new Camera();
 	camera_->Initialize();
 
+	postProcess_ = std::make_unique<PostProcess>();
+	postProcess_->Initialize();
+
 	sphere_ = std::make_unique<Sphere>();
 	sphere_->Initialize();
 
@@ -91,6 +94,11 @@ void GameScene::Draw(){
 
 	//particle_->Draw(camera_, circle);
 	//particle2_->Draw(camera_, uv);
+}
+
+void GameScene::PostDraw()
+{
+	postProcess_->Draw();
 }
 
 void GameScene::Release() {

@@ -22,10 +22,8 @@ public:
 	void Initialize();
 
 	void CreatePso();
-	void CreatePostPso();
 
 	void Update();
-	void PostDraw();
 
 	void Release();
 
@@ -45,9 +43,6 @@ private:
 
 	IDxcBlob* vertexShaderBlob;
 	IDxcBlob* pixelShaderBlob;
-
-	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;
-	Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineState_ = nullptr;
 
 	uint32_t index;
 

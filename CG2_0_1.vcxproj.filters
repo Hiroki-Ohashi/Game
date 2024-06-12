@@ -63,7 +63,7 @@
     <ClCompile Include="externals\imgui\imgui_widgets.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
-    <ClCompile Include="Project\scene\GameScene.cpp">
+    <ClCompile Include="Project\GameScene\GameScene.cpp">
       <Filter>scene</Filter>
     </ClCompile>
     <ClCompile Include="Project\utillity\Function.cpp">
@@ -84,16 +84,16 @@
     <ClCompile Include="Engine\3d\Sphere.cpp">
       <Filter>3d</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\base\DirectXCommon.cpp">
+    <ClCompile Include="Engine\Base\DirectXCommon.cpp">
       <Filter>base</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\base\Mesh.cpp">
+    <ClCompile Include="Engine\Base\Mesh.cpp">
       <Filter>base</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\base\WinApp.cpp">
+    <ClCompile Include="Engine\Base\WinApp.cpp">
       <Filter>base</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\input\Input.cpp">
+    <ClCompile Include="Engine\Input\Input.cpp">
       <Filter>input</Filter>
     </ClCompile>
     <ClCompile Include="Engine\3d\Triangle.cpp">
@@ -117,10 +117,10 @@
     <ClCompile Include="Project\GameManager\IScene.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Project\scene\TitleScene.cpp">
+    <ClCompile Include="Project\GameScene\TitleScene.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="PostProcess.cpp">
+    <ClCompile Include="Engine\PostProcess\PostProcess.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -149,16 +149,16 @@
     <ClInclude Include="externals\imgui\imstb_truetype.h">
       <Filter>imgui</Filter>
     </ClInclude>
-    <ClInclude Include="Project\scene\GameScene.h">
+    <ClInclude Include="Project\GameScene\GameScene.h">
       <Filter>scene</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\base\DirectXCommon.h">
+    <ClInclude Include="Engine\Base\DirectXCommon.h">
       <Filter>base</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\base\WinApp.h">
+    <ClInclude Include="Engine\Base\WinApp.h">
       <Filter>base</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\base\Mesh.h">
+    <ClInclude Include="Engine\Base\Mesh.h">
       <Filter>base</Filter>
     </ClInclude>
     <ClInclude Include="Engine\3d\Sphere.h">
@@ -170,7 +170,7 @@
     <ClInclude Include="Engine\2d\Sprite.h">
       <Filter>2d</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\input\Input.h">
+    <ClInclude Include="Engine\Input\Input.h">
       <Filter>input</Filter>
     </ClInclude>
     <ClInclude Include="Project\utillity\Function.h">
@@ -203,10 +203,10 @@
     <ClInclude Include="Project\GameManager\IScene.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Project\scene\TitleScene.h">
+    <ClInclude Include="Project\GameScene\TitleScene.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="PostProcess.h">
+    <ClInclude Include="Engine\PostProcess\PostProcess.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
@@ -227,5 +227,6 @@
     <FxCompile Include="resources\Shaders\Particle.VS.hlsl" />
     <FxCompile Include="resources\Shaders\Grayscale.PS.hlsl" />
     <FxCompile Include="resources\Shaders\Fullscreen.VS.hlsl" />
+    <FxCompile Include="resources\Shaders\Vignette.PS.hlsl" />
   </ItemGroup>
 </Project>

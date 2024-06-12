@@ -22,5 +22,7 @@ public:
 
 	virtual void Draw() = 0;
 
+	virtual void PostDraw() = 0;
+
 	int GetSceneNo();
 };

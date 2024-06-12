@@ -73,7 +73,7 @@ void GameManager::Run()
 			sceneArr_[currentSceneNo_]->Draw();
 
 			directX->SwapChain();
-			mesh->PostDraw();
+			sceneArr_[currentSceneNo_]->PostDraw();
 			directX->RemoveBarrier();
 			imgui->Draw();
 		
