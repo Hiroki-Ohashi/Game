@@ -13,7 +13,7 @@ void Sphere::Initialize(){
 
 	worldTransform_.scale = { 0.5f,0.5f,0.5f };
 
-	transformSphere = { {0.5f,0.5f,0.5f},{0.0f,0.0f,0.0f},{0.0f,10.0f,0.0f} };
+	transformSphere = { {0.5f,0.5f,0.5f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 	uvTransformSphere = { {1.0f, 1.0f, 1.0f},{0.0f, 0.0f, 0.0f},{0.0f, 0.0f, 0.0f}, };
 
 	worldTransform_.translate = transformSphere.translate;
@@ -65,15 +65,15 @@ void Sphere::Draw(Camera* camera, uint32_t index){
 		ImGui::DragFloat2("UVScale", &uvTransformSphere.scale.x, 0.01f, -10.0f, 10.0f);
 		ImGui::SliderAngle("UVRotate", &uvTransformSphere.rotate.z);
 		ImGui::TreePop();
-	}
+	}*/
 
-	if (ImGui::TreeNode("Light")) {
+	if (ImGui::TreeNode("SphereLight")) {
 		ImGui::SliderFloat3("Light Direction", &directionalLightData->direction.x, -1.0f, 1.0f);
 		directionalLightData->direction = Normalize(directionalLightData->direction);
 		ImGui::SliderFloat4("light color", &directionalLightData->color.x, 0.0f, 1.0f);
 		ImGui::SliderFloat("Intensity", &directionalLightData->intensity, 0.0f, 1.0f);
 		ImGui::TreePop();
-	}*/
+	}
 }
 
 void Sphere::Release() {

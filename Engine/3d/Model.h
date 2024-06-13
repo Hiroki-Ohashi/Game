@@ -16,26 +16,28 @@
 #include "Mesh.h"
 #include "Camera.h"
 #include "WorldTransform.h"
-#include "Camera.h"
 
 class Model {
 public:
-	void Initialize(const std::string& filename, Transform transform);
+	void Initialize(const std::string& filename, EulerTransform transform);
 
 	void Update();
 
 	void Draw(Camera* camera, uint32_t index);
+	void DrawAnimation(Skeleton skeleton, Animation animation, Camera* camera, uint32_t index, SkinCluster skinCluster);
 
-	void Release();
-
-	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(Microsoft::WRL::ComPtr<ID3D12Device> device, size_t sizeInbytes);
+	ModelData GetModelData() { return modelData; }
+	void SetWorldTransform(WorldTransform worldtransform) { worldTransform_ = worldtransform; }
 
 private:
 
 	void CreateVertexResource();
 	void CreateMaterialResource();
 	void CreateWVPResource();
+	void CreateIndexResource();
 	void CreateDirectionalResource();
+
+	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(Microsoft::WRL::ComPtr<ID3D12Device> device, size_t sizeInbytes);
 
 private:
 
@@ -45,13 +47,16 @@ private:
 	WorldTransform worldTransform_;
 
 	ModelData modelData;
+	uint32_t* mappedIndex;
 
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
+	D3D12_INDEX_BUFFER_VIEW indexBufferView{};
 
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource;
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource;
 	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource;
 	Microsoft::WRL::ComPtr<ID3D12Resource> cameraResource;
+	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource;
 	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource;
 
 	VertexData* vertexData;
@@ -59,8 +64,8 @@ private:
 	TransformationMatrix* wvpData;
 	DirectionalLight directionalLightData;
 
-	Transform transform;
-	Transform uvTransform;
+	EulerTransform transform;
+	EulerTransform uvTransform;
 
 	bool isModel;
 

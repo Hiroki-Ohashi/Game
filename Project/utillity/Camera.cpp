@@ -13,10 +13,10 @@ void Camera::Update(){
 	worldViewProjectionMatrix = Multiply(worldMatrix, Multiply(viewMatrix, projectionMatrix));
 	transformationMatrixData = &worldViewProjectionMatrix;
 
-	/*if (ImGui::TreeNode("Camera")) {
+	if (ImGui::TreeNode("Camera")) {
 		ImGui::DragFloat3("Camera Transform", &cameraTransform.translate.x, 0.01f, -50.0f, 50.0f);
 		ImGui::TreePop();
-	}*/
+	}
 }
 
 void Camera::Draw(){}

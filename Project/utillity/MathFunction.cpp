@@ -38,6 +38,28 @@ Vector3 Transforme(const Vector3& vector, const Matrix4x4& matrix) {
 	return result;
 }
 
+// 転置行列
+Matrix4x4 Transpose(const Matrix4x4& m) {
+	Matrix4x4 Transpose;
+	Transpose.m[0][0] = m.m[0][0];
+	Transpose.m[0][1] = m.m[1][0];
+	Transpose.m[0][2] = m.m[2][0];
+	Transpose.m[0][3] = m.m[3][0];
+	Transpose.m[1][0] = m.m[0][1];
+	Transpose.m[1][1] = m.m[1][1];
+	Transpose.m[1][2] = m.m[2][1];
+	Transpose.m[1][3] = m.m[3][1];
+	Transpose.m[2][0] = m.m[0][2];
+	Transpose.m[2][1] = m.m[1][2];
+	Transpose.m[2][2] = m.m[2][2];
+	Transpose.m[2][3] = m.m[3][2];
+	Transpose.m[3][0] = m.m[0][3];
+	Transpose.m[3][1] = m.m[1][3];
+	Transpose.m[3][2] = m.m[2][3];
+	Transpose.m[3][3] = m.m[3][3];
+	return Transpose;
+}
+
 Matrix4x4 MakeIndentity4x4()
 {
 	Matrix4x4 MakeIndentity4x4;
@@ -540,25 +562,110 @@ Matrix4x4 MakeRotateMatrix(const Quaternion quaternion)
 	return result;
 }
 
+Vector3 Lerp(const Vector3& v1, const Vector3& v2, float t) {
+	Vector3 p;
+	p.x = (1.0f - t) * v1.x + t * v2.x;
+	p.y = (1.0f - t) * v1.y + t * v2.y;
+	p.z = (1.0f - t) * v1.z + t * v2.z;
+	return p;
+}
+
+Quaternion LerpQuaternion(const Quaternion& v1, const Quaternion& v2, float t)
+{
+	Quaternion p;
+	p.x = v1.x + t * (v2.x - v1.x);
+	p.y = v1.y + t * (v2.y - v1.y);
+	p.z = v1.z + t * (v2.z - v1.z);
+	p.w = v1.w + t * (v2.w - v1.w);
+	return p;
+}
+
+
 Quaternion Slerp(const Quaternion& q0, const Quaternion& q1, float t)
 {
-	Quaternion result;
-
-	float dot = Dot(q0, q1);
+	Quaternion result{};
+	Vector3 q0Vector = { q0.x,q0.y,q0.z };
+	Vector3 q1Vector = { q1.x,q1.y,q1.z };
+	float q0W = q0.w;
+	float dot = Dot(q0Vector, q1Vector) + q0.w * q1.w;
 	if (dot < 0) {
-		mainasu(q0);
-		dot = -dot;
+		q0Vector.x = -1.0f * q0Vector.x;
+		q0Vector.y = -1.0f * q0Vector.y;
+		q0Vector.z = -1.0f * q0Vector.z;
+		q0W = -1.0f * q0W;
+		dot = -1.0f * dot;
 	}
 
 	float theta = std::acos(dot);
 
-	float scale0 = std::sin((1 - t) * theta) / std::sin(theta);
+	float scale0 = std::sin((1.0f - t) * theta) / std::sin(theta);
 	float scale1 = std::sin(t * theta) / std::sin(theta);
 
-	result.x = scale0 * q0.x + scale1 * q1.x;
-	result.y = scale0 * q0.y + scale1 * q1.y;
-	result.z = scale0 * q0.z + scale1 * q1.z;
-	result.w = scale0 * q0.w + scale1 * q1.w;
+	if (dot >= 1.0f - std::numeric_limits<float>::epsilon()) {
+		result.x = (1.0f - t) * q0Vector.x + t * q1Vector.x;
+		result.y = (1.0f - t) * q0Vector.y + t * q1Vector.y;
+		result.z = (1.0f - t) * q0Vector.z + t * q1Vector.z;
+		result.w = (1.0f - t) * q0W + t * q1.w;
+	}
+	else {
+		result.x = scale0 * q0Vector.x + scale1 * q1Vector.x;
+		result.y = scale0 * q0Vector.y + scale1 * q1Vector.y;
+		result.z = scale0 * q0Vector.z + scale1 * q1Vector.z;
+		result.w = scale0 * q0W + scale1 * q1.w;
+	}
 
-	return result;
+	return 	result;
+}
+
+Vector3 CalculateValue(const std::vector<KeyframeVector3>& keyframes, float time)
+{
+	assert(!keyframes.empty()); // キーがないものは返す値がわからないのでダメ
+	if (keyframes.size() == 1 || time <= keyframes[0].time){
+		return keyframes[0].value;
+	}
+
+	for (size_t index = 0; index < keyframes.size() - 1; ++index) {
+		size_t nextIndex = index + 1;
+		//indexとnextIndexの2つのkeyframeを取得して範囲内に時刻があるかを判定
+		if (keyframes[index].time <= time && time <= keyframes[nextIndex].time) {
+			//範囲内を補間する
+			float t = (time - keyframes[index].time) / (keyframes[nextIndex].time - keyframes[index].time);
+			return Lerp(keyframes[index].value, keyframes[nextIndex].value, t);
+		}
+	}
+	// ここまできた場合は一番後の時刻よりも後ろなので最後の値を返すことにする
+	return (*keyframes.rbegin()).value;
+}
+
+Quaternion CalculateValueRotate(const std::vector<KeyframeQuaternion>& keyframes, float time)
+{
+	assert(!keyframes.empty()); // キーがないものは返す値がわからないのでダメ
+	if (keyframes.size() == 1 || time <= keyframes[0].time) {
+		return keyframes[0].value;
+	}
+
+	for (size_t index = 0; index < keyframes.size() - 1; ++index) {
+		size_t nextIndex = index + 1;
+		//indexとnextIndexの2つのkeyframeを取得して範囲内に時刻があるかを判定
+		if (keyframes[index].time <= time && time <= keyframes[nextIndex].time) {
+			//範囲内を補間する
+			float t = (time - keyframes[index].time) / (keyframes[nextIndex].time - keyframes[index].time);
+			return Slerp(keyframes[index].value, keyframes[nextIndex].value, t);
+		}
+	}
+	// ここまできた場合は一番後の時刻よりも後ろなので最後の値を返すことにする
+	return (*keyframes.rbegin()).value;
+}
+
+Matrix4x4 MakeAffineMatrixQuaternion(const Vector3& scale, const Quaternion& rotate, const Vector3& translate)
+{
+	Matrix4x4 MakeAffineMatrix;
+
+	Matrix4x4 Scale = MakeScaleMatrix(scale);
+	Matrix4x4 Rotate = MakeRotateMatrix(rotate);
+	Matrix4x4 Translate = MakeTranslateMatrix(translate);
+
+	MakeAffineMatrix = Multiply(Multiply(Scale, Rotate), Translate);
+
+	return MakeAffineMatrix;
 }

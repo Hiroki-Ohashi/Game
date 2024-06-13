@@ -56,7 +56,7 @@ private:
 	Material* materialData;
 	TransformationMatrix* wvpData;
 
-	Transform uvTransform;
+	EulerTransform uvTransform;
 
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineState = nullptr;

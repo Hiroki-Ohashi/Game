@@ -26,6 +26,8 @@ public:
 
 	uint32_t Load(const std::string& filePath);
 
+	Animation LoadAnimation(const std::string& directoryPath, const std::string& filename);
+
 	void SetTexture(const std::string& filePath, uint32_t index);
 	
 	DirectX::ScratchImage LoadTexture(const std::string& filePath);
@@ -34,12 +36,14 @@ public:
 
 	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap, uint32_t descriptorSize, uint32_t index);
 	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap, uint32_t descriptorSize, uint32_t index);
+	uint32_t GetDiscreptorSize() { return descriptorSizeSRV; }
 	
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateTextureResource(Microsoft::WRL::ComPtr<ID3D12Device> device, const DirectX::TexMetadata& metadata);
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(Microsoft::WRL::ComPtr<ID3D12Device> device, size_t sizeInbytes);
 
 	ModelData LoadModelFile(const std::string& directoryPath, const std::string& filename);
 	MaterialData LoadMaterialTemplateFile(const std::string& directoryPath, const std::string& filename);
+	Animation LoadAnimationFile(const std::string& directoryPath, const std::string& filename);
 
 	Node ReadNode(aiNode* node);
 
@@ -66,4 +70,9 @@ private:
 
 	D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU[kMaxTexture];
 	D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU[kMaxTexture];
+
+	static const int kMaxAnimation = 100;
+	uint32_t animationIndex_;
+
+	Animation animation[kMaxAnimation];
 };
