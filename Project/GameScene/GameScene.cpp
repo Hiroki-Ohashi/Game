@@ -25,8 +25,8 @@ void GameScene::Initialize(){
 	transform2 = { { 1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,-1.0f,3.0f} };
 	transform3 = { { 1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{1.0f,-1.0f,3.0f} };
 
-	model_ = std::make_unique<AnimationModel>();
-	model_->Initialize("simpleSkin.gltf", transform);
+	/*model_ = std::make_unique<AnimationModel>();
+	model_->Initialize("simpleSkin.gltf", transform);*/
 
 	model2_ = std::make_unique<AnimationModel>();
 	model2_->Initialize("walk.gltf", transform2);
@@ -96,7 +96,7 @@ void GameScene::Update(){
 	}
 
 
-	model_->Update(6.0f);
+	//model_->Update(6.0f);
 	model2_->Update(1.0f);
 	//model3_->Update(1.0f);
 

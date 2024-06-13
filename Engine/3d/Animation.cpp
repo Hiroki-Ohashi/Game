@@ -28,10 +28,6 @@ void AnimationModel::Initialize(const std::string& filename, EulerTransform tran
 	camera.worldPosition = { 0.0f, 0.0f, -10.0f };
 
 	uvTransform = { {1.0f, 1.0f, 1.0f},{0.0f, 0.0f, 0.0f},{0.0f, 0.0f, 0.0f}, };
-
-	directionalLightData.color = { 1.0f, 1.0f, 1.0f, 1.0f };
-	directionalLightData.direction = { 0.0f, -1.0f, 1.0f };
-	directionalLightData.intensity = 1.0f;
 }
 
 void AnimationModel::Update(float time)
@@ -104,7 +100,7 @@ void AnimationModel::Draw(Camera* camera, uint32_t index)
 	dir_->GetCommandList()->DrawIndexedInstanced(UINT(modelData.indices.size()), 1, 0, 0, 0);
 
 	if (ImGui::TreeNode("Light")) {
-		ImGui::SliderFloat3("Light Direction", &directionalLightData.direction.x, -2.0f, 2.0f);
+		ImGui::SliderFloat3("Light Direction", &directionalLightData.direction.x, -1.0f, 1.0f);
 		directionalLightData.direction = Normalize(directionalLightData.direction);
 		ImGui::SliderFloat4("Light color", &directionalLightData.color.x, 0.0f, 1.0f);
 		ImGui::SliderFloat("Intensity", &directionalLightData.intensity, 0.0f, 1.0f);
@@ -366,6 +362,10 @@ void AnimationModel::CreateDirectionalResource()
 {
 	directionalLightResource = CreateBufferResource(dir_->GetDevice(), sizeof(DirectionalLight));
 	directionalLightResource->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightData));
+
+	directionalLightData.color = { 1.0f, 1.0f, 1.0f, 1.0f };
+	directionalLightData.direction = { 0.0f, -1.0f, 1.0f };
+	directionalLightData.intensity = 1.0f;
 }
 
 Skeleton AnimationModel::CreateSkelton(const Node& rootNode)
