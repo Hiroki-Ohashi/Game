@@ -63,7 +63,7 @@
     <ClCompile Include="externals\imgui\imgui_widgets.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
-    <ClCompile Include="Project\scene\GameScene.cpp">
+    <ClCompile Include="Project\GameScene\GameScene.cpp">
       <Filter>scene</Filter>
     </ClCompile>
     <ClCompile Include="Project\utillity\Function.cpp">
@@ -117,7 +117,7 @@
     <ClCompile Include="Project\GameManager\IScene.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Project\scene\TitleScene.cpp">
+    <ClCompile Include="Project\GameScene\TitleScene.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Engine\3d\Animation.cpp">
@@ -149,7 +149,7 @@
     <ClInclude Include="externals\imgui\imstb_truetype.h">
       <Filter>imgui</Filter>
     </ClInclude>
-    <ClInclude Include="Project\scene\GameScene.h">
+    <ClInclude Include="Project\GameScene\GameScene.h">
       <Filter>scene</Filter>
     </ClInclude>
     <ClInclude Include="Engine\base\DirectXCommon.h">
@@ -203,7 +203,7 @@
     <ClInclude Include="Project\GameManager\IScene.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Project\scene\TitleScene.h">
+    <ClInclude Include="Project\GameScene\TitleScene.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Engine\3d\Animation.h">

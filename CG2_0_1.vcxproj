@@ -117,7 +117,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="externals\imgui\imgui_widgets.cpp" />
     <ClCompile Include="Project\utillity\Function.cpp" />
     <ClCompile Include="Project\GameManager\GameManager.cpp" />
-    <ClCompile Include="Project\scene\GameScene.cpp" />
+    <ClCompile Include="Project\GameScene\GameScene.cpp" />
     <ClCompile Include="Engine\Manager\ImGuiManeger.cpp" />
     <ClCompile Include="Engine\input\Input.cpp" />
     <ClCompile Include="main.cpp" />
@@ -130,7 +130,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\3d\Triangle.cpp" />
     <ClCompile Include="Engine\base\WinApp.cpp" />
     <ClCompile Include="Project\utillity\WorldTransform.cpp" />
-    <ClCompile Include="Project\scene\TitleScene.cpp" />
+    <ClCompile Include="Project\GameScene\TitleScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\3d\Animation.h" />
@@ -148,7 +148,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="externals\imgui\imstb_truetype.h" />
     <ClInclude Include="Project\utillity\Function.h" />
     <ClInclude Include="Project\GameManager\GameManager.h" />
-    <ClInclude Include="Project\scene\GameScene.h" />
+    <ClInclude Include="Project\GameScene\GameScene.h" />
     <ClInclude Include="Engine\Manager\ImGuiManeger.h" />
     <ClInclude Include="Engine\input\Input.h" />
     <ClInclude Include="Project\utillity\MathFunction.h" />
@@ -160,7 +160,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\3d\Triangle.h" />
     <ClInclude Include="Engine\base\WinApp.h" />
     <ClInclude Include="Project\utillity\WorldTransform.h" />
-    <ClInclude Include="Project\scene\TitleScene.h" />
+    <ClInclude Include="Project\GameScene\TitleScene.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />
