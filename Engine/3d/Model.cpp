@@ -68,7 +68,7 @@ void Model::Draw(Camera* camera, uint32_t index) {
 	DirectXCommon::GetInsTance()->GetCommandList()->DrawIndexedInstanced(UINT(modelData.indices.size()), 1, 0, 0, 0);
 
 
-	/*if (ImGui::TreeNode("Model")) {
+	if (ImGui::TreeNode("Model")) {
 		ImGui::SliderAngle("Rotate.y ", &worldTransform_.rotate.y);
 		ImGui::DragFloat3("Transform", &worldTransform_.translate.x, 0.01f, -10.0f, 10.0f);
 
@@ -84,7 +84,7 @@ void Model::Draw(Camera* camera, uint32_t index) {
 		ImGui::SliderFloat4("light color", &directionalLightData.color.x, 0.0f, 1.0f);
 		ImGui::SliderFloat("Intensity", &directionalLightData.intensity, 0.0f, 1.0f);
 		ImGui::TreePop();
-	}*/
+	}
 }
 
 void Model::DrawAnimation(Skeleton skeleton, Animation animation, Camera* camera, uint32_t index, SkinCluster skinCluster)

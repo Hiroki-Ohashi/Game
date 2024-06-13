@@ -13,6 +13,7 @@
 #include "WinApp.h"
 #include "Function.h"
 #include "DirectXCommon.h"
+#include "TextureManager.h"
 
 class Mesh {
 public:
@@ -24,13 +25,11 @@ public:
 
 	void Update();
 
-	void Viewport();
-	void Scissor();
-
 	void Release();
 
 private:
 	DirectXCommon* dir_ = DirectXCommon::GetInsTance();
+	TextureManager* texture_ = TextureManager::GetInstance();
 
 	IDxcUtils* dxcUtils = nullptr;
 	IDxcCompiler3* dxcCompiler = nullptr;
@@ -38,27 +37,14 @@ private:
 
 	Microsoft::WRL::ComPtr<ID3DBlob> signatureBlob = nullptr;
 	Microsoft::WRL::ComPtr<ID3DBlob> errorBlob = nullptr;
+
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineState = nullptr;
-	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc{};
 
 	IDxcBlob* vertexShaderBlob;
 	IDxcBlob* pixelShaderBlob;
 
-	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
-	D3D12_VERTEX_BUFFER_VIEW materialBufferView{};
-
-	D3D12_ROOT_PARAMETER rootParameters[5] = {};
-
-	D3D12_DESCRIPTOR_RANGE descriptorRange[1] = {};
-
-	D3D12_STATIC_SAMPLER_DESC staticSamplers[1] = {};
-	D3D12_INPUT_ELEMENT_DESC inputElementDescs[4] = {};
-
-	D3D12_VIEWPORT viewport{};
-	D3D12_RECT scissorRect{};
-
-	static inline HRESULT hr_;
+	uint32_t index;
 
 	static WinApp* window_;
 };

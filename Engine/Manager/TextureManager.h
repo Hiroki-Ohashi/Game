@@ -49,6 +49,8 @@ public:
 
 	Microsoft::WRL::ComPtr<ID3D12Resource> GetTextureResource(uint32_t index) { return textureResource[index].Get(); }
 
+	//uint32_t GetDiscrepterRtvSize() { return descriptorSizeRTV; }
+
 	[[nodiscard]]
 	Microsoft::WRL::ComPtr<ID3D12Resource> UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages);
 

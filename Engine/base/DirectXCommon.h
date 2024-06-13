@@ -14,6 +14,7 @@
 
 #include "WinApp.h"
 #include "Function.h"
+#include "MathFunction.h"
 
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -28,17 +29,23 @@ public:
 
 	// Default Methods
 	void Initialize();
-	void Update();
+	void RenderTexture();
 	// void Draw(); //not use
 	void Release();
 	
 
 	// User Methods
 	void Fence();
+	void SwapChain();
+	void RemoveBarrier();
 	void Close();
+
+	void Viewport();
+	void Scissor();
 
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> CreateDescriptorHeap(ID3D12Device* device, D3D12_DESCRIPTOR_HEAP_TYPE heapType, UINT numDescriptors, bool shaderVisible);
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateDepthStencilTextureResource(ID3D12Device* device, int32_t width, int32_t height);
+	Microsoft::WRL::ComPtr<ID3D12Resource> CreateRenderTextureResource(ID3D12Device* device, int32_t width, int32_t height, DXGI_FORMAT format, const Vector4& clearColor);
 
 	// Accessor
 	ID3D12GraphicsCommandList* GetCommandList() { return commandList_.Get(); }
@@ -46,6 +53,10 @@ public:
 	DXGI_SWAP_CHAIN_DESC1 GetSwapChainDesc() { return swapChainDesc; }
 	D3D12_RENDER_TARGET_VIEW_DESC GetRtvDesc() { return rtvDesc; }
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetSrvDescriptorHeap() { return srvDescriptorHeap_.Get(); }
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetSrvDescriptorHeap2() { return srvDescriptorHeap2_.Get(); }
+	D3D12_GPU_DESCRIPTOR_HANDLE GetSrvHandleGpu() { return srvGpuHandle; }
+	D3D12_RESOURCE_BARRIER GetBarrier() const { return barrier; }
+	void SetBarrier(D3D12_RESOURCE_BARRIER barrier_) { barrier_ = barrier; }
 
 private:
 
@@ -62,14 +73,24 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> commandList_ = nullptr;
 	Microsoft::WRL::ComPtr<IDXGISwapChain4> swapChain_ = nullptr;
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc{};
+
 	D3D12_RESOURCE_BARRIER barrier{};
+	D3D12_RESOURCE_BARRIER barrier2{};
 
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> rtvDescriptorHeap_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> dsvDescriptorHeap_ = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> srvDescriptorHeap_ = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> srvDescriptorHeap2_ = nullptr;
+
 
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles[2];
+	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle;
+
 	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle;
+	D3D12_CPU_DESCRIPTOR_HANDLE srvHandle;
+
+	D3D12_GPU_DESCRIPTOR_HANDLE srvGpuHandle;
+
 	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc{};
 
 	Microsoft::WRL::ComPtr<ID3D12Resource> depthStencilResource;
@@ -81,6 +102,14 @@ private:
 
 	std::chrono::steady_clock::time_point reference_;
 
-	static inline HRESULT hr_;
+	Microsoft::WRL::ComPtr<ID3D12Resource> renderTextureResource;
 
+	const Vector4 kRenderTargetClearValue = { 0.1f, 0.25f, 0.5f, 1.0f }; // いったんわかりやすいように赤
+
+	D3D12_VIEWPORT viewport{};
+	D3D12_RECT scissorRect{};
+
+	UINT backBufferIndex;
+
+	static inline HRESULT hr_;
 };

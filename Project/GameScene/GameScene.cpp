@@ -14,6 +14,10 @@ void GameScene::Initialize(){
 	camera_ = new Camera();
 	camera_->Initialize();
 
+
+	postProcess_ = std::make_unique<PostProcess>();
+	postProcess_->Initialize();
+  
 	/*sphere_ = std::make_unique<Sphere>();
 	sphere_->Initialize();*/
 
@@ -65,6 +69,7 @@ void GameScene::Initialize(){
 	monsterBall = textureManager_->Load("resources/monsterball.png");
 	kusa = textureManager_->Load("resources/kusa.png");
 	circle = textureManager_->Load("resources/circle.png");
+
 	utillity = textureManager_->Load("resources/AnimatedCube_BaseColor.png");
 	white = textureManager_->Load("resources/white.png");
 }
@@ -90,14 +95,17 @@ void GameScene::Update(){
 		camera_->cameraTransform.translate.y -= 0.1f;
 	}
 
+
 	model_->Update(6.0f);
 	model2_->Update(1.0f);
 	//model3_->Update(1.0f);
+
 }
 
 void GameScene::Draw(){
 
 	//sphere_->Draw(camera_, moon);
+
 
 	//model_->Draw(camera_, uv);
 	model2_->Draw(camera_, uv);
@@ -105,6 +113,12 @@ void GameScene::Draw(){
 
 	//particle_->Draw(camera_, circle);
 	//particle2_->Draw(camera_, uv);
+}
+
+
+void GameScene::PostDraw()
+{
+	postProcess_->Draw();
 }
 
 void GameScene::Release() {

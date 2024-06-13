@@ -8,7 +8,7 @@ Mesh* Mesh::GetInsTance()
 
 void Mesh::Initialize() {
 	// dxcCompilerを初期化
-	hr_ = DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&dxcUtils));
+	HRESULT hr_ = DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&dxcUtils));
 	assert(SUCCEEDED(hr_));
 	hr_ = DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&dxcCompiler));
 	assert(SUCCEEDED(hr_));
@@ -26,12 +26,14 @@ void Mesh::CreatePso(){
 	descriptionRootSignature.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
 	//DescriptorRange
+	D3D12_DESCRIPTOR_RANGE descriptorRange[1] = {};
 	descriptorRange[0].BaseShaderRegister = 0;//0から始まる
 	descriptorRange[0].NumDescriptors = 1;//数は1つ
 	descriptorRange[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;//SRVを使う
 	descriptorRange[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;//Offsetを自動計算
 
 
+	D3D12_ROOT_PARAMETER rootParameters[5] = {};
 	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; // CBVを使う
 	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
 	rootParameters[0].Descriptor.ShaderRegister = 0; // レジスタ番号0とバインド
@@ -57,6 +59,7 @@ void Mesh::CreatePso(){
 	descriptionRootSignature.NumParameters = _countof(rootParameters); // 配列の長さ
 
 	// Samplerの設定
+	D3D12_STATIC_SAMPLER_DESC staticSamplers[1] = {};
 	staticSamplers[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR; // バイナリフィルタ
 	staticSamplers[0].AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP; // 0~1の範囲外をリピート
 	staticSamplers[0].AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
@@ -70,17 +73,18 @@ void Mesh::CreatePso(){
 	descriptionRootSignature.NumStaticSamplers = _countof(staticSamplers);
 
 	// シリアライズしてバイナリにする
-	hr_ = D3D12SerializeRootSignature(&descriptionRootSignature, D3D_ROOT_SIGNATURE_VERSION_1, &signatureBlob, &errorBlob);
+	HRESULT hr_ = D3D12SerializeRootSignature(&descriptionRootSignature, D3D_ROOT_SIGNATURE_VERSION_1, &signatureBlob, &errorBlob);
 	if (FAILED(hr_)) {
 		Convert::Log(reinterpret_cast<char*>(errorBlob->GetBufferPointer()));
 		assert(false);
 	}
+
 	// バイナリを元に生成
-	
 	hr_ = dir_->GetDevice()->CreateRootSignature(0, signatureBlob->GetBufferPointer(), signatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature));
 	assert(SUCCEEDED(hr_));
 
 	// InputLayout
+	D3D12_INPUT_ELEMENT_DESC inputElementDescs[4] = {};
 	inputElementDescs[0].SemanticName = "POSITION";
 	inputElementDescs[0].SemanticIndex = 0;
 	inputElementDescs[0].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
@@ -141,6 +145,7 @@ void Mesh::CreatePso(){
 	depthStencilDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
 
 	// PSO生成
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC graphicsPipelineStateDesc{};
 	graphicsPipelineStateDesc.pRootSignature = rootSignature.Get();// RootSignature
 	graphicsPipelineStateDesc.InputLayout = inputLayoutDesc;// InputLayout
 	graphicsPipelineStateDesc.VS = { vertexShaderBlob->GetBufferPointer(), vertexShaderBlob->GetBufferSize() };// VertexShader
@@ -163,38 +168,13 @@ void Mesh::CreatePso(){
 	// 実際に生成
 	hr_ = dir_->GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc, IID_PPV_ARGS(&graphicsPipelineState));
 	assert(SUCCEEDED(hr_));
-
-	Mesh::Viewport();
-	Mesh::Scissor();
 }
 
 void Mesh::Update(){
 	// コマンドを積む
-	dir_->GetCommandList()->RSSetViewports(1, &viewport);
-	dir_->GetCommandList()->RSSetScissorRects(1, &scissorRect);
 	// DirectXCommon::GetInsTance()を設定。PSOに設定しているけど別途設定が必要
 	dir_->GetCommandList()->SetGraphicsRootSignature(rootSignature.Get());
 	dir_->GetCommandList()->SetPipelineState(graphicsPipelineState.Get());
-}
-
-void Mesh::Viewport(){
-	// ビューポート
-	// クライアント領域のサイズと一緒にして画面全体に表示
-	viewport.Width = (float)window_->GetKClientWidth();
-	viewport.Height = (float)window_->GetKClientHeight();
-	viewport.TopLeftX = 0;
-	viewport.TopLeftY = 0;
-	viewport.MinDepth = 0.0f;
-	viewport.MaxDepth = 1.0f;
-}
-
-void Mesh::Scissor(){
-	// シザー矩形
-	// 基本的にビューポートと同じ矩形が構成されるようにする
-	scissorRect.left = 0;
-	scissorRect.right = window_->GetKClientWidth();
-	scissorRect.top = 0;
-	scissorRect.bottom = window_->GetKClientHeight();
 }
 
 void Mesh::Release(){

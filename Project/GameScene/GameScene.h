@@ -14,10 +14,10 @@
 #include "Model.h"
 #include "TextureManager.h"
 #include "imgui.h"
-#include "Animation.h"
-
 #include "Particle.h"
 #include "IScene.h"
+#include <PostProcess.h>
+#include "Animation.h"
 
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -35,6 +35,9 @@ public:
 	void Update() override;
 	// 描画
 	void Draw() override;
+
+	void PostDraw() override;
+  
 	// 解放
 	void Release();
 
@@ -57,6 +60,8 @@ private:
 
 	std::unique_ptr<Particles> particle_ = nullptr;
 	std::unique_ptr<Particles> particle2_ = nullptr;
+
+	std::unique_ptr<PostProcess> postProcess_ = nullptr;
 
 	CameraForGpu camera;
 
