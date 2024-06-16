@@ -54,3 +54,26 @@ bool Input::TriggerKey(BYTE keyNumber)
 
 	return false;
 }
+
+bool Input::GetJoystickState(XINPUT_STATE& out) const
+{
+	DWORD dwResult = XInputGetState(0, &out);
+	if (dwResult == ERROR_SUCCESS) {
+		return true;
+	}
+
+	return false;
+}
+
+bool Input::PressedButton(XINPUT_STATE& out, WORD button)
+{
+	Input::GetInsTance()->UpdateButtonState(state_, out.Gamepad.wButtons & button);
+
+	return (state_.isPressed && !state_.wasPressed);
+}
+
+void Input::UpdateButtonState(ButtonState& state, bool isPressed)
+{
+	state.wasPressed = state.isPressed;
+	state.isPressed = isPressed;
+}

@@ -419,6 +419,26 @@ Matrix4x4 MakeRotateAxisAngle(const Vector3& axis, float angle)
 	return result;
 }
 
+float LerpShortAngle(float a, float b, float t)
+{
+	float Lerp = 0.0f;
+	float Pi = 3.1415f;
+	// 角度差分を求める
+	float diff = b - a;
+
+	if (Pi < diff) {
+		Lerp = std::fmod(diff - 2.0f * Pi, 2.0f * Pi);
+	}
+	else if (-Pi > diff) {
+		Lerp = std::fmod(diff + 2.0f * Pi, 2.0f * Pi);
+	}
+	else {
+		Lerp = diff;
+	}
+
+	return a + Lerp * t;
+}
+
 Quaternion Multiply(const Quaternion& lhs, const Quaternion& rhs)
 {
 	Quaternion result;

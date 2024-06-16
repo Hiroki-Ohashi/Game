@@ -95,9 +95,28 @@ void GameScene::Update(){
 		camera_->cameraTransform.translate.y -= 0.1f;
 	}
 
+	// ゲームパッドの状態を得る変数(XINPUT)
+	XINPUT_STATE joyState;
+
+	if (Input::GetInsTance()->GetJoystickState(joyState)) {
+		const float sikii = 2.0f;
+		bool isMoving = false;
+		//
+		Vector3 move = { (float)joyState.Gamepad.sThumbLX, 0.0f, (float)joyState.Gamepad.sThumbLY };
+		if (Length(move) > sikii) {
+			isMoving = true;
+		}
+		if (isMoving) {
+			transform2.translate.x += (float)joyState.Gamepad.sThumbLX / SHRT_MAX * speed;
+			transform2.translate.z += (float)joyState.Gamepad.sThumbLY / SHRT_MAX * speed;
+			angle = std::atan2(move.x, move.z);
+		}
+	}
+	transform2.rotate.y = LerpShortAngle(transform2.rotate.y, angle, 1.0f);
+
 
 	//model_->Update(6.0f);
-	model2_->Update(1.0f);
+	model2_->Update(1.0f, transform2.translate, transform2.rotate);
 	//model3_->Update(1.0f);
 
 }

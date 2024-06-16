@@ -72,6 +72,9 @@ private:
 	Vector3 pos = { -2.0f, 0.0f, 10.0f };
 	Vector3 pos2 = { 2.0f, 0.0f, 10.0f };
 
+	float speed = 0.02f;
+	float angle;
+
 	uint32_t monsterBall;
 	uint32_t moon;
 	uint32_t uv;

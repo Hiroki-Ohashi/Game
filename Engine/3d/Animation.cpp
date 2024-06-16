@@ -30,7 +30,7 @@ void AnimationModel::Initialize(const std::string& filename, EulerTransform tran
 	uvTransform = { {1.0f, 1.0f, 1.0f},{0.0f, 0.0f, 0.0f},{0.0f, 0.0f, 0.0f}, };
 }
 
-void AnimationModel::Update(float time)
+void AnimationModel::Update(float time, Vector3 pos, Vector3 rotate)
 {
 	// アニメーションの時間を進める
 	animationTime += 1.0f / 60.0f;
@@ -57,7 +57,8 @@ void AnimationModel::Update(float time)
 		skinCluster.mappedPalette[jointIndex].skeletonSpaceInverseTransposeMatrix = Transpose(Inverse(skinCluster.mappedPalette[jointIndex].skeletonSpaceMatrix));
 	}
 
-	worldTransform_.rotate.y += 0.01f;
+	worldTransform_.translate = pos;
+	worldTransform_.rotate = rotate;
 	worldTransform_.UpdateMatrix();
 }
 
@@ -322,7 +323,7 @@ void AnimationModel::CreateMaterialResource()
 
 	materialData->uvTransform = MakeIndentity4x4();
 
-	materialData->enableLighting = true;
+	materialData->enableLighting = false;
 
 	materialData->shininess = 70.0f;
 }

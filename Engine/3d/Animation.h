@@ -8,7 +8,7 @@
 class AnimationModel {
 public:
 	void Initialize(const std::string& filename, EulerTransform transform);
-	void Update(float time);
+	void Update(float time, Vector3 pos, Vector3 rotate);
 	void Draw(Camera* camera, uint32_t index);
 private:
 	void CreatePso();
