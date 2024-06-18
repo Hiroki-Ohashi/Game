@@ -15,7 +15,7 @@ void AnimationModel::Initialize(const std::string& filename, EulerTransform tran
 	AnimationModel::CreateDirectionalResource();
 
 	skeleton = CreateSkelton(modelData.rootNode);
-	skinCluster = CreateSkinCluster(dir_->GetDevice(), skeleton, modelData, dir_->GetSrvDescriptorHeap(), texture_->GetDiscreptorSize());
+	skinCluster = CreateSkinCluster(dir_->GetDevice(), skeleton, modelData, dir_->GetSrvDescriptorHeap2(), texture_->GetDiscreptorSize());
 
 	worldTransform_.Initialize();
 	worldTransform_.translate = transform.translate;
@@ -326,7 +326,7 @@ void AnimationModel::CreateMaterialResource()
 
 	materialData->uvTransform = MakeIndentity4x4();
 
-	materialData->enableLighting = true;
+	materialData->enableLighting = false;
 
 	materialData->shininess = 70.0f;
 }
