@@ -12,7 +12,7 @@ struct Camera {
 
 	static WinApp* winapp_;
 
-	Transform cameraTransform;
+	EulerTransform cameraTransform;
 	Matrix4x4 worldMatrix;
 	Matrix4x4 cameraMatrix;
 	Matrix4x4 viewMatrix;

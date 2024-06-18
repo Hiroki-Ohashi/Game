@@ -41,8 +41,8 @@ private:
 	std::unique_ptr<Sprite> sprite_ = nullptr;
 	std::unique_ptr<Sprite> sprite2_ = nullptr;
 
-	Transform transform;
-	Transform transform2;
+	EulerTransform transform;
+	EulerTransform transform2;
 
 	uint32_t monsterBall;
 	uint32_t moon;

@@ -21,6 +21,13 @@ uint32_t TextureManager::Load(const std::string& filePath)
 	return textureIndex_;
 }
 
+Animation TextureManager::LoadAnimation(const std::string& directoryPath, const std::string& filename)
+{
+	animationIndex_ += 1;
+	animation[animationIndex_] = LoadAnimationFile(directoryPath, filename);
+	return animation[animationIndex_];
+}
+
 ModelData TextureManager::LoadModelFile(const std::string& directoryPath, const std::string& filename)
 {
 	ModelData modelData; // 構築するModelData
@@ -29,32 +36,55 @@ ModelData TextureManager::LoadModelFile(const std::string& directoryPath, const 
 	std::string filePath = directoryPath + "/" + filename;
 	const aiScene* scene = importer.ReadFile(filePath.c_str(), aiProcess_FlipWindingOrder | aiProcess_FlipUVs);
 	assert(scene->HasMeshes()); // メッシュがないのは対応しない
+	
 
 	for (uint32_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
 		aiMesh* mesh = scene->mMeshes[meshIndex];
 		assert(mesh->HasNormals()); // 法線がないMeshは今回非対応
 		assert(mesh->HasTextureCoords(0)); // TexcoordがないMeshは今回非対応
+		modelData.vertices.resize(mesh->mNumVertices); // 最初に頂点数分のメモリを確保しておく
 
-		// ココからMeshの中身(Face)の解析を行っていく
+		for (uint32_t vertexIndex = 0; vertexIndex < mesh->mNumVertices; ++vertexIndex) {
+			aiVector3D& position = mesh->mVertices[vertexIndex];
+			aiVector3D& normal = mesh->mNormals[vertexIndex];
+			aiVector3D& texcoord = mesh->mTextureCoords[0][vertexIndex];
+			// 右手系->左手系への変換を忘れずに
+			modelData.vertices[vertexIndex].position = { -position.x, position.y, position.z, 1.0f };
+			modelData.vertices[vertexIndex].normal = { -normal.x, normal.y, normal.z };
+			modelData.vertices[vertexIndex].texcoord = { texcoord.x, texcoord.y };
+		}
+		// Index解析
 		for (uint32_t faceIndex = 0; faceIndex < mesh->mNumFaces; ++faceIndex) {
 			aiFace& face = mesh->mFaces[faceIndex];
-			assert(face.mNumIndices == 3); // 三角形のみサポート
-			// ココからFaceの中身(vertex)の解析を行って行く
+			assert(face.mNumIndices == 3);
+
 			for (uint32_t element = 0; element < face.mNumIndices; ++element) {
 				uint32_t vertexIndex = face.mIndices[element];
-				aiVector3D& position = mesh->mVertices[vertexIndex];
-				aiVector3D& normal = mesh->mNormals[vertexIndex];
-				aiVector3D& texcoord = mesh->mTextureCoords[0][vertexIndex];
+				modelData.indices.push_back(vertexIndex);
+			}
+		}
 
-				VertexData vertex;
-				vertex.position = { position.x, position.y, position.z, 1.0f };
-				vertex.normal = { normal.x, normal.y, normal.z };
-				vertex.texcoord = { texcoord.x, texcoord.y };
-				// aiProcess_MakeLeftHandedはz*=-1で、右手->左手に変換するので手動で対処
-				vertex.position.x *= -1.0f;
-				vertex.normal.x *= -1.0f;
-				modelData.vertices.push_back(vertex);
-				modelData.rootNode = ReadNode(scene->mRootNode);
+		// SkinCluster
+		for (uint32_t boneIndex = 0; boneIndex < mesh->mNumBones; ++boneIndex) {
+			// Jointごとの格納領域を作る
+			aiBone* bone = mesh->mBones[boneIndex];
+			std::string jointName = bone->mName.C_Str();
+			JointWeightData& jointWeightData = modelData.skinClusterData[jointName];
+
+			// InverseBindPoseMatrixの抽出
+			aiMatrix4x4 bindPoseMatrixAssimp = bone->mOffsetMatrix.Inverse();// BindPoseMatrixに戻す
+			aiVector3D scale, translate;
+			aiQuaternion rotate;
+			bindPoseMatrixAssimp.Decompose(scale, rotate, translate);// 成分を抽出
+			// 左手座標系のBindPoseMatrixを作る
+			Matrix4x4 bindPoseMatrix = MakeAffineMatrixQuaternion(
+				{ scale.x,scale.y,scale.z }, { rotate.x,-rotate.y,-rotate.z,rotate.w }, { -translate.x,translate.y,translate.z });
+			// InverseBindPoseMatrixにする
+			jointWeightData.inverseBindPoseMatrix = Inverse(bindPoseMatrix);
+
+			// Weight情報を取り出す
+			for (uint32_t weightIndex = 0; weightIndex < bone->mNumWeights; ++weightIndex) {
+				jointWeightData.vertexWeights.push_back({ bone->mWeights[weightIndex].mWeight, bone->mWeights[weightIndex].mVertexId });
 			}
 		}
 
@@ -66,6 +96,8 @@ ModelData TextureManager::LoadModelFile(const std::string& directoryPath, const 
 				modelData.material.textureFilePath = directoryPath + "/" + textureFilepath.C_Str();
 			}
 		}
+
+		modelData.rootNode = ReadNode(scene->mRootNode);
 	}
 	return modelData;
 }
@@ -93,31 +125,67 @@ MaterialData TextureManager::LoadMaterialTemplateFile(const std::string& directo
 	return materialData;
 }
 
+Animation TextureManager::LoadAnimationFile(const std::string& directoryPath, const std::string& filename)
+{
+	Animation animation; //今回作るアニメーション
+
+	Assimp::Importer importor;
+	std::string filePath = directoryPath + "/" + filename;
+	const aiScene* scene = importor.ReadFile(filePath.c_str(), 0);
+	assert(scene->mNumAnimations != 0); // アニメーションがない
+	aiAnimation* animationAssimp = scene->mAnimations[0]; // 最初のアニメーションだけ採用。もちろん複数対応するにこしたことはない
+	animation.duration = float(animationAssimp->mDuration / animationAssimp->mTicksPerSecond); // 時間の単位を秒に変換
+
+	// assimpでは個々のNodeのAnimationをchannelと呼んでいるのでchannelを回してNodeAnimationの情報をとってくる
+	for (uint32_t channelIndex = 0; channelIndex < animationAssimp->mNumChannels; ++channelIndex) {
+
+		aiNodeAnim* nodeAnimationAssimp = animationAssimp->mChannels[channelIndex];
+		NodeAnimation& nodeAnimation = animation.nodeAnimations[nodeAnimationAssimp->mNodeName.C_Str()];
+
+		// translate
+		for (uint32_t keyIndex = 0; keyIndex < nodeAnimationAssimp->mNumPositionKeys; ++keyIndex) {
+			aiVectorKey& keyAssimp = nodeAnimationAssimp->mPositionKeys[keyIndex];
+			KeyframeVector3 keyframe;
+			keyframe.time = float(keyAssimp.mTime / animationAssimp->mTicksPerSecond);// ここも秒に変換
+			keyframe.value = { -keyAssimp.mValue.x, keyAssimp.mValue.y, keyAssimp.mValue.z }; // 右手->左手
+			nodeAnimation.translate.keyframes.push_back(keyframe);
+		}
+
+		// Rotate
+		for (uint32_t keyIndex = 0; keyIndex < nodeAnimationAssimp->mNumRotationKeys; ++keyIndex) {
+			aiQuatKey& keyAssimp = nodeAnimationAssimp->mRotationKeys[keyIndex];
+			KeyframeQuaternion keyframe;
+			keyframe.time = float(keyAssimp.mTime / animationAssimp->mTicksPerSecond);// ここも秒に変換
+			keyframe.value = { keyAssimp.mValue.x, -keyAssimp.mValue.y, -keyAssimp.mValue.z, keyAssimp.mValue.w }; // 右手->左手
+			nodeAnimation.rotate.keyframes.push_back(keyframe);
+		}
+
+		// scale
+		for (uint32_t keyIndex = 0; keyIndex < nodeAnimationAssimp->mNumScalingKeys; ++keyIndex) {
+			aiVectorKey& keyAssimp = nodeAnimationAssimp->mScalingKeys[keyIndex];
+			KeyframeVector3 keyframe;
+			keyframe.time = float(keyAssimp.mTime / animationAssimp->mTicksPerSecond);// ここも秒に変換
+			keyframe.value = { keyAssimp.mValue.x, keyAssimp.mValue.y, keyAssimp.mValue.z }; // 右手->左手
+			nodeAnimation.scale.keyframes.push_back(keyframe);
+		}
+
+	}
+
+	return animation;
+}
+
 Node TextureManager::ReadNode(aiNode* node)
 {
 	Node result;
-	aiMatrix4x4 aiLocalMatrix = node->mTransformation; // nodeのlcalMatrixを取得
-	aiLocalMatrix.Transpose(); // 列ベクトル形式を行ベクトル形式に転置
 
-	result.localmatrix.m[0][0] = aiLocalMatrix[0][0]; 
-	result.localmatrix.m[0][1] = aiLocalMatrix[0][1];
-	result.localmatrix.m[0][2] = aiLocalMatrix[0][2];
-	result.localmatrix.m[0][3] = aiLocalMatrix[0][3];
+	aiVector3D scale, translate;
+	aiQuaternion rotate;
+	node->mTransformation.Decompose(scale, rotate, translate);// assimpの行列からSRTを抽出する関数を利用
 
-	result.localmatrix.m[1][0] = aiLocalMatrix[1][0];
-	result.localmatrix.m[1][1] = aiLocalMatrix[1][1];
-	result.localmatrix.m[1][2] = aiLocalMatrix[1][2];
-	result.localmatrix.m[1][3] = aiLocalMatrix[1][3];
-
-	result.localmatrix.m[2][0] = aiLocalMatrix[2][0];
-	result.localmatrix.m[2][1] = aiLocalMatrix[2][1];
-	result.localmatrix.m[2][2] = aiLocalMatrix[2][2];
-	result.localmatrix.m[2][3] = aiLocalMatrix[2][3];
-
-	result.localmatrix.m[3][0] = aiLocalMatrix[3][0];
-	result.localmatrix.m[3][1] = aiLocalMatrix[3][1];
-	result.localmatrix.m[3][2] = aiLocalMatrix[3][2];
-	result.localmatrix.m[3][3] = aiLocalMatrix[3][3];
+	result.transform.scale = { scale.x,scale.y,scale.z }; // Scaleはそのまま
+	result.transform.rotate = { rotate.x, -rotate.y, -rotate.z, rotate.w }; // x軸を反転、さらに回転方向が逆なので軸を反転させる
+	result.transform.translate = { -translate.x, translate.y, translate.z }; // x軸を反転
+	result.localmatrix = MakeAffineMatrixQuaternion(result.transform.scale, result.transform.rotate, result.transform.translate);
 
 	result.name = node->mName.C_Str();// node名を確定
 	result.children.resize(node->mNumChildren);// 子供の数だけ確保
@@ -128,12 +196,6 @@ Node TextureManager::ReadNode(aiNode* node)
 
 	return result;
 }
-
-//const DirectX::TexMetadata& TextureManager::GetMetaData(uint32_t textureIndex)
-//{
-//	TextureData& textureData
-//}
-
 
 void TextureManager::SetTexture(const std::string& filePath, uint32_t index)
 {

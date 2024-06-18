@@ -121,6 +121,9 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Engine\PostProcess\PostProcess.cpp">
+
+    <ClCompile Include="Engine\3d\Animation.cpp">
+
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -206,7 +209,11 @@
     <ClInclude Include="Project\GameScene\TitleScene.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+
     <ClInclude Include="Engine\PostProcess\PostProcess.h">
+
+    <ClInclude Include="Engine\3d\Animation.h">
+
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
@@ -225,6 +232,7 @@
     <FxCompile Include="resources\Shaders\Object3d.VS.hlsl" />
     <FxCompile Include="resources\Shaders\Particle.PS.hlsl" />
     <FxCompile Include="resources\Shaders\Particle.VS.hlsl" />
+
     <FxCompile Include="resources\Shaders\Grayscale.PS.hlsl" />
     <FxCompile Include="resources\Shaders\Fullscreen.VS.hlsl" />
     <FxCompile Include="resources\Shaders\Vignette.PS.hlsl" />
