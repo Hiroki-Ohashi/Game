@@ -12,6 +12,7 @@
 #include "TextureManager.h"
 #include "Camera.h"
 #include "WorldTransform.h"
+#include "Light.h"
 
 class Sphere {
 public:
@@ -26,7 +27,6 @@ public:
 	void CreateVertexResourceSphere();
 	void CreateMaterialResourceSphere();
 	void CreateTransformationMatrixResourceSphere();
-	void CreateDirectionalResource();
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(Microsoft::WRL::ComPtr<ID3D12Device> device, size_t sizeInbytes);
 
 
@@ -35,14 +35,13 @@ public:
 	DirectionalLight* GetDirectionalLightData(){return directionalLightData;}
 
 private:
-
+	Light* light_ = Light::GetInstance();
 	TextureManager* texture_ = TextureManager::GetInstance();
 	WorldTransform worldTransform_;
 
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResourceSphere;
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResourceSphere;
 	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResourceSphere;
-	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource;
 	Microsoft::WRL::ComPtr<ID3D12Resource> cameraResource;
 
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferViewSphere{};

@@ -15,6 +15,7 @@ void Camera::Update(){
 
 	if (ImGui::TreeNode("Camera")) {
 		ImGui::DragFloat3("Camera Transform", &cameraTransform.translate.x, 0.01f, -50.0f, 50.0f);
+		ImGui::DragFloat3("Camera Rotate", &cameraTransform.rotate.x, 0.01f, -50.0f, 50.0f);
 		ImGui::TreePop();
 	}
 }

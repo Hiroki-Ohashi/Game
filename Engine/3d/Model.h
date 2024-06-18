@@ -16,6 +16,7 @@
 #include "Mesh.h"
 #include "Camera.h"
 #include "WorldTransform.h"
+#include "Light.h"
 
 class Model {
 public:
@@ -35,7 +36,6 @@ private:
 	void CreateMaterialResource();
 	void CreateWVPResource();
 	void CreateIndexResource();
-	void CreateDirectionalResource();
 
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(Microsoft::WRL::ComPtr<ID3D12Device> device, size_t sizeInbytes);
 
@@ -43,6 +43,7 @@ private:
 
 	WinApp* winapp_ = WinApp::GetInsTance();
 	TextureManager* texture_ = TextureManager::GetInstance();
+	Light* light_ = Light::GetInstance();
 
 	WorldTransform worldTransform_;
 

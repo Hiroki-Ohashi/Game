@@ -16,7 +16,6 @@ void Model::Initialize(const std::string& filename, EulerTransform transform) {
 	Model::CreateMaterialResource();
 	Model::CreateWVPResource();
 	Model::CreateIndexResource();
-	Model::CreateDirectionalResource();
 
 	cameraResource = CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(Camera));
 	cameraResource->Map(0, nullptr, reinterpret_cast<void**>(&camera));
@@ -24,9 +23,6 @@ void Model::Initialize(const std::string& filename, EulerTransform transform) {
 
 	uvTransform = { {1.0f, 1.0f, 1.0f},{0.0f, 0.0f, 0.0f},{0.0f, 0.0f, 0.0f}, };
 
-	directionalLightData.color = { 1.0f, 1.0f, 1.0f, 1.0f };
-	directionalLightData.direction = { 0.0f, -1.0f, 1.0f };
-	directionalLightData.intensity = 1.0f;
 }
 
 void Model::Update() {
@@ -110,7 +106,7 @@ void Model::DrawAnimation(Skeleton skeleton, Animation animation, Camera* camera
 	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResource.Get()->GetGPUVirtualAddress());
 	// TransformationMatrixCBufferの場所を設定
 	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource.Get()->GetGPUVirtualAddress());
-	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource.Get()->GetGPUVirtualAddress());
+	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(3, light_->GetDirectionalLightResource().Get()->GetGPUVirtualAddress());
 	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(4, cameraResource.Get()->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
 	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootDescriptorTable(2, texture_->GetTextureSRVHandleGPU(index));
@@ -165,12 +161,6 @@ void Model::CreateWVPResource() {
 
 	// 単位行列を書き込んでおく
 	wvpData->WVP = MakeIndentity4x4();
-}
-
-void Model::CreateDirectionalResource()
-{
-	directionalLightResource = CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(DirectionalLight));
-	directionalLightResource->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightData));
 }
 
 void Model::CreateIndexResource()

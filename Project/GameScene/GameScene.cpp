@@ -43,6 +43,9 @@ void GameScene::Initialize(){
 	//particle2_ = std::make_unique<Particles>();
 	//particle2_->Initialize("plane.obj", pos2, 8);
 
+	skyBox_ = std::make_unique<SkyBox>();
+	skyBox_->Initialize();
+
 	//Vector4 pos[Max][3];
 
 	//// 左下
@@ -72,6 +75,8 @@ void GameScene::Initialize(){
 
 	utillity = textureManager_->Load("resources/AnimatedCube_BaseColor.png");
 	white = textureManager_->Load("resources/white.png");
+
+	skybox = textureManager_->Load("resources/rostock_laage_airport_4k.dds");
 }
 
 void GameScene::Update(){
@@ -83,23 +88,26 @@ void GameScene::Update(){
 	}
 	
 	if (input_->PushKey(DIK_D)) {
-		camera_->cameraTransform.translate.x += 0.1f;
+		transform2.translate.x += speed;
 	}
 	if (input_->PushKey(DIK_A)) {
-		camera_->cameraTransform.translate.x -= 0.1f;
+		transform2.translate.x -= speed;
 	}
 	if (input_->PushKey(DIK_W)) {
-		camera_->cameraTransform.translate.y += 0.1f;
+		transform2.translate.z += speed;
 	}
 	if (input_->PushKey(DIK_S)) {
-		camera_->cameraTransform.translate.y -= 0.1f;
+		transform2.translate.z -= speed;
 	}
+
+	angle = std::atan2(transform2.translate.x, transform2.translate.z);
+	transform2.rotate.y = LerpShortAngle(transform2.rotate.y, angle, 1.0f);
 
 	// ゲームパッドの状態を得る変数(XINPUT)
 	XINPUT_STATE joyState;
 
 	if (Input::GetInsTance()->GetJoystickState(joyState)) {
-		const float sikii = 2.0f;
+		const float sikii = 5.0f;
 		bool isMoving = false;
 		//
 		Vector3 move = { (float)joyState.Gamepad.sThumbLX, 0.0f, (float)joyState.Gamepad.sThumbLY };
@@ -123,8 +131,9 @@ void GameScene::Update(){
 
 void GameScene::Draw(){
 
-	//sphere_->Draw(camera_, moon);
+	skyBox_->Draw(camera_, skybox);
 
+	//sphere_->Draw(camera_, moon);
 
 	//model_->Draw(camera_, uv);
 	model2_->Draw(camera_, uv);

@@ -11,6 +11,7 @@
     <FxCompile Include="resources\Shaders\SkinningObject3d.VS.hlsl" />
     <FxCompile Include="resources\Shaders\Skybox.VS.hlsl" />
     <FxCompile Include="resources\Shaders\Skybox.PS.hlsl" />
+    <FxCompile Include="resources\Shaders\EffectNone.PS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine\3d\Animation.cpp" />
@@ -43,6 +44,7 @@
     <ClCompile Include="Project\utillity\WorldTransform.cpp" />
     <ClCompile Include="Project\GameScene\TitleScene.cpp" />
     <ClCompile Include="Project\SkyBox\SkyBox.cpp" />
+    <ClCompile Include="Engine\Light\Light.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\3d\Animation.h" />
@@ -75,6 +77,7 @@
     <ClInclude Include="Project\utillity\WorldTransform.h" />
     <ClInclude Include="Project\GameScene\TitleScene.h" />
     <ClInclude Include="Project\SkyBox\SkyBox.h" />
+    <ClInclude Include="Engine\Light\Light.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\Shaders\Fullscreen.hlsli" />

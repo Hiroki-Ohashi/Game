@@ -11,6 +11,7 @@ public:
 private:
 	void CreatePSO();
 	void CreateVertexResource();
+	void createIndexResource();
 	void CreateMaterialResource();
 	void CreateWVP();
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(Microsoft::WRL::ComPtr<ID3D12Device> device, size_t sizeInbytes);
@@ -20,11 +21,13 @@ private:
 	WorldTransform worldTransform_;
 
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource;
+	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource;
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource;
 	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource;
 	Microsoft::WRL::ComPtr<ID3D12Resource> cameraResource;
 
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
+	D3D12_INDEX_BUFFER_VIEW indexBufferView{};
 
 	VertexData* vertexData;
 	Material* materialData;
@@ -34,11 +37,8 @@ private:
 	EulerTransform uvTransform;
 	TransformationMatrix* worldMatrix;
 
-	uint32_t vertexIndex = 6 * 6;
-
-	IDxcUtils* dxcUtils = nullptr;
-	IDxcCompiler3* dxcCompiler = nullptr;
-	IDxcIncludeHandler* includeHandler = nullptr;
+	uint32_t vertexIndex = 4 * 6;
+	uint32_t* indexData;
 
 	Microsoft::WRL::ComPtr<ID3DBlob> signatureBlob = nullptr;
 	Microsoft::WRL::ComPtr<ID3DBlob> errorBlob = nullptr;
@@ -48,4 +48,6 @@ private:
 
 	IDxcBlob* vertexShaderBlob;
 	IDxcBlob* pixelShaderBlob;
+
+	CameraForGpu camera;
 };

@@ -4,6 +4,7 @@
 #include "Camera.h"
 #include "WorldTransform.h"
 #include "TextureManager.h"
+#include "Light.h"
 
 class AnimationModel {
 public:
@@ -16,7 +17,6 @@ private:
 	void CreateMaterialResource();
 	void CreateWVPResource();
 	void CreateIndexResource();
-	void CreateDirectionalResource();
 
 	Skeleton CreateSkelton(const Node& rootNode);
 	int32_t CreateJoint(const Node& node, const std::optional<int32_t>& parent, std::vector<Joint>& joints);
@@ -27,6 +27,7 @@ private:
 private:
 	DirectXCommon* dir_ = DirectXCommon::GetInsTance();
 	TextureManager* texture_ = TextureManager::GetInstance();
+	Light* light_ = Light::GetInstance();
 	CameraForGpu camera;
 
 	WorldTransform worldTransform_;

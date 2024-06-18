@@ -58,7 +58,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\2d;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\3d;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\Base;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\Input;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\Manager;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\GameScene;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\utillity;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\resources;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\externals\DirectXTex;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\externals\imgui;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\GameObject\;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\GameManager;$(ProjectDir)externals\assimp\include;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\PostProcess;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\Light</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\2d;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\3d;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\Base;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\Input;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\Manager;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\GameScene;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\utillity;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\resources;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\externals\DirectXTex;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\externals\imgui;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\GameObject\;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\GameManager;$(ProjectDir)externals\assimp\include;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\PostProcess;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\Light;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\SkyBox</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -85,7 +85,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\2d;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\3d;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\Base;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\Input;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\Manager;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\GameScene;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\utillity;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\resources;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\externals\DirectXTex;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\externals\imgui;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\GameObject\;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\GameManager;$(ProjectDir)externals\assimp\include;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\PostProcess;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\Light</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\2d;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\3d;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\Base;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\Input;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\Manager;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\GameScene;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\utillity;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\resources;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\externals\DirectXTex;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\externals\imgui;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\GameObject\;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\GameManager;$(ProjectDir)externals\assimp\include;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\PostProcess;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\Light;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\SkyBox</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -106,6 +106,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\3d\Animation.cpp" />
     <ClCompile Include="Engine\3d\Particle.cpp" />
     <ClCompile Include="Engine\PostProcess\PostProcess.cpp" />
+    <ClCompile Include="Engine\Light\Light.cpp" />
     <ClCompile Include="Project\GameManager\IScene.cpp" />
     <ClCompile Include="Project\utillity\Camera.cpp" />
     <ClCompile Include="Engine\Base\DirectXCommon.cpp" />
@@ -138,6 +139,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\3d\Animation.h" />
     <ClInclude Include="Engine\3d\Particle.h" />
     <ClInclude Include="Engine\PostProcess\PostProcess.h" />
+    <ClInclude Include="Engine\Light\Light.h" />
     <ClInclude Include="Project\GameManager\IScene.h" />
     <ClInclude Include="Project\utillity\Camera.h" />
     <ClInclude Include="Engine\Base\DirectXCommon.h" />
@@ -188,6 +190,12 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </None>
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="resources\Shaders\EffectNone.PS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="resources\Shaders\Grayscale.PS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>

@@ -4,21 +4,65 @@ void SkyBox::Initialize()
 {
 	SkyBox::CreatePSO();
 	SkyBox::CreateVertexResource();
+	SkyBox::createIndexResource();
 	SkyBox::CreateMaterialResource();
 	SkyBox::CreateWVP();
 
-	transform = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+	transform = { {10.0f,10.0f,10.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 	uvTransform = { {1.0f, 1.0f, 1.0f},{0.0f, 0.0f, 0.0f},{0.0f, 0.0f, 0.0f}, };
 
+	cameraResource = CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(Camera));
+	cameraResource->Map(0, nullptr, reinterpret_cast<void**>(&camera));
+	camera.worldPosition = { 0.0f, 0.0f, -10.0f };
+
 	worldTransform_.translate = transform.translate;
+	worldTransform_.UpdateMatrix();
 }
 
 void SkyBox::Draw(Camera* camera, uint32_t index)
 {
+
+	//worldTransform_.TransferMatrix(wvpResourceData, camera);
+
+	Matrix4x4 uvtransformMatrix = MakeScaleMatrix(uvTransform.scale);
+	uvtransformMatrix = Multiply(uvtransformMatrix, MakeRotateZMatrix(uvTransform.rotate.z));
+	uvtransformMatrix = Multiply(uvtransformMatrix, MakeTranslateMatrix(uvTransform.translate));
+	materialData->uvTransform = uvtransformMatrix;
+
+	// Rootsignatureを設定。PSOに設定してるけど別途設定が必要
+	dir_->GetCommandList()->SetGraphicsRootSignature(rootSignature.Get());
+	dir_->GetCommandList()->SetPipelineState(graphicsPipelineState.Get()); // PSOを設定
+	// コマンドを積む
+	dir_->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView); // VBVを設定
+	dir_->GetCommandList()->IASetIndexBuffer(&indexBufferView); // VBVを設定
+	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
+	dir_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	// マテリアルCBufferの場所を設定
+	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResource.Get()->GetGPUVirtualAddress());
+	// TransformationMatrixCBufferの場所を設定
+	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
+	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(3, cameraResource->GetGPUVirtualAddress());
+	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
+	dir_->GetCommandList()->SetGraphicsRootDescriptorTable(2, texture_->GetTextureSRVHandleGPU(index));
+	// 描画(DrawCall/ドローコール)
+	dir_->GetCommandList()->DrawInstanced(36, 1, 0, 0);
 }
 
 void SkyBox::CreatePSO()
 {
+	// dxcCompilerを初期化
+	IDxcUtils* dxcUtils = nullptr;
+	IDxcCompiler3* dxcCompiler = nullptr;
+	HRESULT hr = DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&dxcUtils));
+	assert(SUCCEEDED(hr));
+	hr = DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&dxcCompiler));
+	assert(SUCCEEDED(hr));
+
+	// 現時点でincludeしないが、includeに対応するための設定を行っておく
+	IDxcIncludeHandler* includeHandler = nullptr;
+	hr = dxcUtils->CreateDefaultIncludeHandler(&includeHandler);
+	assert(SUCCEEDED(hr));
+
 	// RootSignature作成
 	D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature{};
 	descriptionRootSignature.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
@@ -31,7 +75,7 @@ void SkyBox::CreatePSO()
 	descriptorRange[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;//Offsetを自動計算
 
 
-	D3D12_ROOT_PARAMETER rootParameters[5] = {};
+	D3D12_ROOT_PARAMETER rootParameters[4] = {};
 	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; // CBVを使う
 	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
 	rootParameters[0].Descriptor.ShaderRegister = 0; // レジスタ番号0とバインド
@@ -48,10 +92,6 @@ void SkyBox::CreatePSO()
 	rootParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; // CBVを使う
 	rootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
 	rootParameters[3].Descriptor.ShaderRegister = 1; // レジスタ番号1
-
-	rootParameters[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; // CBVを使う
-	rootParameters[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // pixelshaderを使う
-	rootParameters[4].Descriptor.ShaderRegister = 2; // レジスタ番号2を使う
 
 	descriptionRootSignature.pParameters = rootParameters; // ルートパラメータ配列へのポインタ
 	descriptionRootSignature.NumParameters = _countof(rootParameters); // 配列の長さ
@@ -172,40 +212,74 @@ void SkyBox::CreateVertexResource()
 	vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
 
 	// 右面
-	vertexData[0].position = { 1.0f, 1.0f, 1.0f, 1.0f };
-	vertexData[1].position = { 1.0f, 1.0f, -1.0f, 1.0f };
-	vertexData[2].position = { 1.0f, -1.0f, 1.0f, 1.0f };
-	vertexData[3].position = { 1.0f, -1.0f, -1.0f, 1.0f };
+	vertexData[0].position = { 1.0f,1.0f,1.0f,1.0f };
+	vertexData[1].position = { 1.0f,1.0f,-1.0f,1.0f };
+	vertexData[2].position = { 1.0f,-1.0f,1.0f,1.0f };
+	vertexData[3].position = { 1.0f,-1.0f,-1.0f,1.0f };
 	// 左面
-	vertexData[4].position = { -1.0f, 1.0f, -1.0f, 1.0f };
-	vertexData[5].position = { -1.0f, 1.0f, 1.0f, 1.0f };
-	vertexData[6].position = { -1.0f, -1.0f, -1.0f, 1.0f };
-	vertexData[7].position = { -1.0f, -1.0f, 1.0f, 1.0f };
+	vertexData[4].position = { -1.0f,1.0f,-1.0f,1.0f };
+	vertexData[5].position = { -1.0f,1.0f,1.0f,1.0f };
+	vertexData[6].position = { -1.0f,-1.0f,-1.0f,1.0f };
+	vertexData[7].position = { -1.0f,-1.0f,1.0f,1.0f };
 	// 前面
-	vertexData[8].position = { -1.0f, 1.0f, 1.0f, 1.0f };
-	vertexData[9].position = { 1.0f, 1.0f, 1.0f, 1.0f };
-	vertexData[10].position = { -1.0f, -1.0f, 1.0f, 1.0f };
-	vertexData[11].position = { 1.0f, -1.0f, 1.0f, 1.0f };
-	//後面
-	vertexData[12].position = { -1.0f, 1.0f, -1.0f, 1.0f };
-	vertexData[13].position = { 1.0f, 1.0f, -1.0f, 1.0f };
-	vertexData[14].position = { -1.0f, -1.0f, -1.0f, 1.0f };
-	vertexData[15].position = { 1.0f, -1.0f, -1.0f, 1.0f };
+	vertexData[8].position = { -1.0f,1.0f,1.0f,1.0f };
+	vertexData[9].position = { 1.0f,1.0f,1.0f,1.0f };
+	vertexData[10].position = { -1.0f,-1.0f,1.0f,1.0f };
+	vertexData[11].position = { 1.0f,-1.0f,1.0f,1.0f };
+	// 後面
+	vertexData[12].position = { 1.0f,1.0f,-1.0f,1.0f };
+	vertexData[13].position = { -1.0f,1.0f,-1.0f,1.0f };
+	vertexData[14].position = { 1.0f,-1.0f,-1.0f,1.0f };
+	vertexData[15].position = { -1.0f,-1.0f,-1.0f,1.0f };
 	// 上面
-	vertexData[16].position = { -1.0f, 1.0f, 1.0f, 1.0f };
-	vertexData[17].position = { 1.0f, 1.0f, 1.0f, 1.0f };
-	vertexData[18].position = { -1.0f, -1.0f, 1.0f, 1.0f };
-	vertexData[19].position = { 1.0f, -1.0f, 1.0f, 1.0f };
+	vertexData[16].position = { -1.0f,1.0f,-1.0f,1.0f };
+	vertexData[17].position = { 1.0f,1.0f,-1.0f,1.0f };
+	vertexData[18].position = { -1.0f,1.0f,1.0f,1.0f };
+	vertexData[19].position = { 1.0f,1.0f,1.0f,1.0f };
 	// 下面
-	vertexData[20].position = { -1.0f, 1.0f, 1.0f, 1.0f };
-	vertexData[21].position = { 1.0f, 1.0f, 1.0f, 1.0f };
-	vertexData[22].position = { -1.0f, -1.0f, 1.0f, 1.0f };
-	vertexData[23].position = { 1.0f, -1.0f, 1.0f, 1.0f };
+	vertexData[20].position = { 1.0f,-1.0f,-1.0f,1.0f };
+	vertexData[21].position = { -1.0f,-1.0f,-1.0f,1.0f };
+	vertexData[22].position = { 1.0f,-1.0f,1.0f,1.0f };
+	vertexData[23].position = { -1.0f,-1.0f,1.0f,1.0f };
 
 	for (int i = 0; i < 24; i++) {
 		vertexData[i].normal = { 1.0f,1.0f,1.0f};
 		vertexData[i].texcoord = { 1.0f,1.0f};
 	}
+}
+
+void SkyBox::createIndexResource()
+{
+	// 頂点用のリソースを作る。
+	indexResource = CreateBufferResource(dir_->GetDevice(), sizeof(uint32_t) * 36);
+	// リソースの先頭のアドレスから使う
+	indexBufferView.BufferLocation = indexResource->GetGPUVirtualAddress();
+	// 使用するリソースのサイズは頂点3つ分のサイズ
+	indexBufferView.SizeInBytes = UINT(sizeof(uint32_t) * 36);
+	// indexはuint32_tとする
+	indexBufferView.Format = DXGI_FORMAT_R32_UINT;
+
+	// 書き込むためのアドレスを取得
+	indexResource->Map(0, nullptr, reinterpret_cast<void**>(&indexData));
+
+	// 右面
+	indexData[0] = 0; indexData[1] = 1; indexData[2] = 2;
+	indexData[3] = 2; indexData[4] = 1; indexData[5] = 3;
+	// 左面
+	indexData[6] = 4; indexData[7] = 5; indexData[8] = 6;
+	indexData[9] = 6; indexData[10] = 5; indexData[11] = 7;
+	// 前面
+	indexData[12] = 8; indexData[13] = 9; indexData[14] = 10;
+	indexData[15] = 10; indexData[16] = 9; indexData[17] = 11;
+	// 後面
+	indexData[18] = 12; indexData[19] = 13; indexData[20] = 14;
+	indexData[21] = 14; indexData[22] = 13; indexData[23] = 15;
+	// 上面
+	indexData[24] = 16; indexData[25] = 17; indexData[26] = 18;
+	indexData[27] = 18; indexData[28] = 17; indexData[29] = 19;
+	// 下面
+	indexData[30] = 20; indexData[31] = 21; indexData[32] = 22;
+	indexData[33] = 22; indexData[34] = 21; indexData[35] = 23;
 }
 
 void SkyBox::CreateMaterialResource()

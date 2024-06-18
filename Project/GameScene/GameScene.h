@@ -18,6 +18,7 @@
 #include "IScene.h"
 #include <PostProcess.h>
 #include "Animation.h"
+#include "SkyBox.h"
 
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -49,7 +50,7 @@ private:
 	TextureManager* textureManager_ = nullptr;
 	Camera* camera_ = nullptr;
 
-	//std::unique_ptr<Sphere> sphere_;
+	std::unique_ptr<Sphere> sphere_;
 
 	//std::unique_ptr<Model> model_;
 	//std::unique_ptr<Model> model2_;
@@ -62,6 +63,8 @@ private:
 	std::unique_ptr<Particles> particle2_ = nullptr;
 
 	std::unique_ptr<PostProcess> postProcess_ = nullptr;
+
+	std::unique_ptr<SkyBox> skyBox_ = nullptr;
 
 	CameraForGpu camera;
 
@@ -82,4 +85,5 @@ private:
 	uint32_t circle;
 	uint32_t utillity;
 	uint32_t white;
+	uint32_t skybox;
 };

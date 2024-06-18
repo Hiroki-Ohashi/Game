@@ -9,7 +9,6 @@ void Sphere::Initialize(){
 	Sphere::CreateVertexResourceSphere();
 	Sphere::CreateMaterialResourceSphere();
 	Sphere::CreateTransformationMatrixResourceSphere();
-	Sphere::CreateDirectionalResource();
 
 	worldTransform_.scale = { 0.5f,0.5f,0.5f };
 
@@ -20,12 +19,7 @@ void Sphere::Initialize(){
 
 	cameraResource = CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(Camera));
 	cameraResource->Map(0, nullptr, reinterpret_cast<void**>(&camera));
-	camera.worldPosition = { 0.0f, 0.0f, 0.0f };
-
-	directionalLightData->color = { 1.0f, 1.0f, 1.0f, 1.0f };
-	directionalLightData->direction = { 0.0f, -1.0f, 1.0f };
-	directionalLightData->intensity = 1.0f;
-}
+	camera.worldPosition = { 0.0f, 0.0f, 0.0f };}
 
 void Sphere::Update(){
 }
@@ -49,7 +43,7 @@ void Sphere::Draw(Camera* camera, uint32_t index){
 	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResourceSphere.Get()->GetGPUVirtualAddress());
 	// TransformationMatrixCBufferの場所を設定
 	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResourceSphere->GetGPUVirtualAddress());
-	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource->GetGPUVirtualAddress());
+	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(3, light_->GetDirectionalLightResource()->GetGPUVirtualAddress());
 	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(4, cameraResource->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
 	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootDescriptorTable(2, texture_->GetTextureSRVHandleGPU(index));
@@ -67,13 +61,13 @@ void Sphere::Draw(Camera* camera, uint32_t index){
 		ImGui::TreePop();
 	}*/
 
-	if (ImGui::TreeNode("SphereLight")) {
+	/*if (ImGui::TreeNode("SphereLight")) {
 		ImGui::SliderFloat3("Light Direction", &directionalLightData->direction.x, -1.0f, 1.0f);
 		directionalLightData->direction = Normalize(directionalLightData->direction);
 		ImGui::SliderFloat4("light color", &directionalLightData->color.x, 0.0f, 1.0f);
 		ImGui::SliderFloat("Intensity", &directionalLightData->intensity, 0.0f, 1.0f);
 		ImGui::TreePop();
-	}
+	}*/
 }
 
 void Sphere::Release() {
@@ -212,11 +206,6 @@ void Sphere::CreateTransformationMatrixResourceSphere(){
 	// 単位行列を書き込んでおく
 	wvpResourceDataSphere->WVP = MakeIndentity4x4();
 	wvpResourceDataSphere->World = MakeIndentity4x4();
-}
-
-void Sphere::CreateDirectionalResource(){
-	directionalLightResource = CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(DirectionalLight));
-	directionalLightResource->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightData));
 }
 
 Microsoft::WRL::ComPtr<ID3D12Resource> Sphere::CreateBufferResource(Microsoft::WRL::ComPtr<ID3D12Device> device, size_t sizeInbytes)

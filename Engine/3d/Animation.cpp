@@ -12,7 +12,8 @@ void AnimationModel::Initialize(const std::string& filename, EulerTransform tran
 	AnimationModel::CreateMaterialResource();
 	AnimationModel::CreateWVPResource();
 	AnimationModel::CreateIndexResource();
-	AnimationModel::CreateDirectionalResource();
+
+	light_->Initialize();
 
 	skeleton = CreateSkelton(modelData.rootNode);
 	skinCluster = CreateSkinCluster(dir_->GetDevice(), skeleton, modelData, dir_->GetSrvDescriptorHeap2(), texture_->GetDiscreptorSize());
@@ -23,11 +24,7 @@ void AnimationModel::Initialize(const std::string& filename, EulerTransform tran
 	worldTransform_.rotate = transform.rotate;
 	worldTransform_.UpdateMatrix();
 
-	materialData->enableLighting = true;
-
-	directionalLightData.color = { 1.0f, 1.0f, 1.0f, 1.0f };
-	directionalLightData.direction = { 0.0f, -1.0f, 1.0f };
-	directionalLightData.intensity = 1.0f;
+	materialData->enableLighting = false;
 
 	cameraResource = CreateBufferResource(dir_->GetDevice(), sizeof(Camera));
 	cameraResource->Map(0, nullptr, reinterpret_cast<void**>(&camera));
@@ -98,7 +95,7 @@ void AnimationModel::Draw(Camera* camera, uint32_t index)
 	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResource.Get()->GetGPUVirtualAddress());
 	// TransformationMatrixCBufferの場所を設定
 	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource.Get()->GetGPUVirtualAddress());
-	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource.Get()->GetGPUVirtualAddress());
+	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(3, light_->GetDirectionalLightResource().Get()->GetGPUVirtualAddress());
 	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(4, cameraResource.Get()->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
 	dir_->GetCommandList()->SetGraphicsRootDescriptorTable(2, texture_->GetTextureSRVHandleGPU(index));
@@ -106,13 +103,13 @@ void AnimationModel::Draw(Camera* camera, uint32_t index)
 	//DirectXCommon::GetInsTance()->GetCommandList()->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
 	dir_->GetCommandList()->DrawIndexedInstanced(UINT(modelData.indices.size()), 1, 0, 0, 0);
 
-	if (ImGui::TreeNode("Light")) {
+	/*if (ImGui::TreeNode("Light")) {
 		ImGui::SliderFloat3("Light Direction", &directionalLightData.direction.x, -1.0f, 1.0f);
 		directionalLightData.direction = Normalize(directionalLightData.direction);
 		ImGui::SliderFloat4("Light color", &directionalLightData.color.x, 0.0f, 1.0f);
 		ImGui::SliderFloat("Intensity", &directionalLightData.intensity, 0.0f, 1.0f);
 		ImGui::TreePop();
-	}
+	}*/
 }
 
 void AnimationModel::CreatePso()
@@ -251,7 +248,7 @@ void AnimationModel::CreatePso()
 	// RasterizerState
 	D3D12_RASTERIZER_DESC rasterizerDesc{};
 	// 裏面(時計回り)を表示しない
-	rasterizerDesc.CullMode = D3D12_CULL_MODE_NONE;
+	rasterizerDesc.CullMode = D3D12_CULL_MODE_BACK;
 	// 三角形の中を塗りつぶす
 	rasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
 
@@ -361,12 +358,6 @@ void AnimationModel::CreateIndexResource()
 
 	// 頂点データをリソースにコピー
 	std::memcpy(mappedIndex, modelData.indices.data(), sizeof(uint32_t) * modelData.indices.size());
-}
-
-void AnimationModel::CreateDirectionalResource()
-{
-	directionalLightResource = CreateBufferResource(dir_->GetDevice(), sizeof(DirectionalLight));
-	directionalLightResource->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightData));
 }
 
 Skeleton AnimationModel::CreateSkelton(const Node& rootNode)
