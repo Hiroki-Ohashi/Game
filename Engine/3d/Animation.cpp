@@ -23,6 +23,12 @@ void AnimationModel::Initialize(const std::string& filename, EulerTransform tran
 	worldTransform_.rotate = transform.rotate;
 	worldTransform_.UpdateMatrix();
 
+	materialData->enableLighting = true;
+
+	directionalLightData.color = { 1.0f, 1.0f, 1.0f, 1.0f };
+	directionalLightData.direction = { 0.0f, -1.0f, 1.0f };
+	directionalLightData.intensity = 1.0f;
+
 	cameraResource = CreateBufferResource(dir_->GetDevice(), sizeof(Camera));
 	cameraResource->Map(0, nullptr, reinterpret_cast<void**>(&camera));
 	camera.worldPosition = { 0.0f, 0.0f, -10.0f };
@@ -323,8 +329,6 @@ void AnimationModel::CreateMaterialResource()
 
 	materialData->uvTransform = MakeIndentity4x4();
 
-	materialData->enableLighting = false;
-
 	materialData->shininess = 70.0f;
 }
 
@@ -363,10 +367,6 @@ void AnimationModel::CreateDirectionalResource()
 {
 	directionalLightResource = CreateBufferResource(dir_->GetDevice(), sizeof(DirectionalLight));
 	directionalLightResource->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightData));
-
-	directionalLightData.color = { 1.0f, 1.0f, 1.0f, 1.0f };
-	directionalLightData.direction = { 0.0f, -1.0f, 1.0f };
-	directionalLightData.intensity = 1.0f;
 }
 
 Skeleton AnimationModel::CreateSkelton(const Node& rootNode)

@@ -17,6 +17,7 @@
 
 #include "Particle.h"
 #include "IScene.h"
+#include "PostProcess.h"
 
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -41,6 +42,8 @@ private:
 	std::unique_ptr<Sprite> sprite_ = nullptr;
 	std::unique_ptr<Sprite> sprite2_ = nullptr;
 
+	std::unique_ptr<PostProcess> postProcess_ = nullptr;
+
 	EulerTransform transform;
 	EulerTransform transform2;
 
@@ -49,4 +52,5 @@ private:
 	uint32_t uv;
 	uint32_t kusa;
 	uint32_t circle;
+	uint32_t cube;
 };
