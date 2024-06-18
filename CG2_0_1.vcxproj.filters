@@ -228,5 +228,6 @@
     <FxCompile Include="resources\Shaders\Grayscale.PS.hlsl" />
     <FxCompile Include="resources\Shaders\Fullscreen.VS.hlsl" />
     <FxCompile Include="resources\Shaders\Vignette.PS.hlsl" />
+    <FxCompile Include="resources\Shaders\GaussianBlur.PS.hlsl" />
   </ItemGroup>
 </Project>
