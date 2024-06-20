@@ -24,16 +24,13 @@ void AnimationModel::Initialize(const std::string& filename, EulerTransform tran
 	worldTransform_.rotate = transform.rotate;
 	worldTransform_.UpdateMatrix();
 
-	materialData->enableLighting = false;
-
 	cameraResource = CreateBufferResource(dir_->GetDevice(), sizeof(Camera));
-	cameraResource->Map(0, nullptr, reinterpret_cast<void**>(&camera));
-	camera.worldPosition = { 0.0f, 0.0f, -10.0f };
+	cameraResource->Map(0, nullptr, reinterpret_cast<void**>(&camera_));
 
 	uvTransform = { {1.0f, 1.0f, 1.0f},{0.0f, 0.0f, 0.0f},{0.0f, 0.0f, 0.0f}, };
 }
 
-void AnimationModel::Update(float time, Vector3 pos, Vector3 rotate)
+void AnimationModel::Update(float time)
 {
 	// アニメーションの時間を進める
 	animationTime += 1.0f / 60.0f;
@@ -60,9 +57,9 @@ void AnimationModel::Update(float time, Vector3 pos, Vector3 rotate)
 		skinCluster.mappedPalette[jointIndex].skeletonSpaceInverseTransposeMatrix = Transpose(Inverse(skinCluster.mappedPalette[jointIndex].skeletonSpaceMatrix));
 	}
 
-	worldTransform_.translate = pos;
+	/*worldTransform_.translate = pos;
 	worldTransform_.rotate = rotate;
-	worldTransform_.UpdateMatrix();
+	worldTransform_.UpdateMatrix();*/
 }
 
 void AnimationModel::Draw(Camera* camera, uint32_t index)
@@ -77,6 +74,9 @@ void AnimationModel::Draw(Camera* camera, uint32_t index)
 	worldTransform_.AnimationTransferMatrix(skeleton, animation, wvpData, camera);
 	worldTransform_.UpdateMatrix();
 
+	camera_.worldPosition = { camera->cameraTransform.translate.x, camera->cameraTransform.translate.y, camera->cameraTransform.translate.z };
+	light_->Update();
+
 	Matrix4x4 uvtransformMatrix = MakeScaleMatrix(uvTransform.scale);
 	uvtransformMatrix = Multiply(uvtransformMatrix, MakeRotateZMatrix(uvTransform.rotate.z));
 	uvtransformMatrix = Multiply(uvtransformMatrix, MakeTranslateMatrix(uvTransform.translate));
@@ -88,7 +88,7 @@ void AnimationModel::Draw(Camera* camera, uint32_t index)
 	};
 
 	dir_->GetCommandList()->IASetVertexBuffers(0, 2, vbvs); // VBVを設定
-	dir_->GetCommandList()->IASetIndexBuffer(&indexBufferView); // VBVを設定
+	dir_->GetCommandList()->IASetIndexBuffer(&indexBufferView); // IBVを設定
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
 	dir_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	// マテリアルCBufferの場所を設定
@@ -103,10 +103,16 @@ void AnimationModel::Draw(Camera* camera, uint32_t index)
 	//DirectXCommon::GetInsTance()->GetCommandList()->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
 	dir_->GetCommandList()->DrawIndexedInstanced(UINT(modelData.indices.size()), 1, 0, 0, 0);
 
+	if (ImGui::TreeNode("AnimationModel")) {
+		ImGui::DragFloat3("scale", &worldTransform_.scale.x, 0.01f, -50.0f, 50.0f);
+		ImGui::DragFloat3("rotate", &worldTransform_.rotate.x, 0.01f, -50.0f, 50.0f);
+		ImGui::DragFloat3("translate", &worldTransform_.translate.x, 0.01f, -50.0f, 50.0f);
+		ImGui::TreePop();
+	}
 	/*if (ImGui::TreeNode("Light")) {
 		ImGui::SliderFloat3("Light Direction", &directionalLightData.direction.x, -1.0f, 1.0f);
 		directionalLightData.direction = Normalize(directionalLightData.direction);
-		ImGui::SliderFloat4("Light color", &directionalLightData.color.x, 0.0f, 1.0f);
+		ImGui::SliderFloat4("light color", &directionalLightData.color.x, 0.0f, 1.0f);
 		ImGui::SliderFloat("Intensity", &directionalLightData.intensity, 0.0f, 1.0f);
 		ImGui::TreePop();
 	}*/
@@ -138,6 +144,12 @@ void AnimationModel::CreatePso()
 	descriptorRangeForInstancing[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 	descriptorRangeForInstancing[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
+	D3D12_DESCRIPTOR_RANGE descriptorRange[1] = {};
+	descriptorRange[0].BaseShaderRegister = 1;
+	descriptorRange[0].NumDescriptors = 1;
+	descriptorRange[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+	descriptorRange[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+
 	// RootParameter作成。複数設定できるので配列。今回は結果1つだけなので長さ1の配列
 	D3D12_ROOT_PARAMETER rootParameters[6] = {};
 	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
@@ -165,6 +177,11 @@ void AnimationModel::CreatePso()
 	rootParameters[5].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
 	rootParameters[5].DescriptorTable.pDescriptorRanges = descriptorRangeForInstancing;
 	rootParameters[5].DescriptorTable.NumDescriptorRanges = _countof(descriptorRangeForInstancing);
+
+	/*rootParameters[6].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	rootParameters[6].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
+	rootParameters[6].DescriptorTable.pDescriptorRanges = descriptorRange;
+	rootParameters[6].DescriptorTable.NumDescriptorRanges = _countof(descriptorRange);*/
 
 	descriptionRootSignature.pParameters = rootParameters; // ルートパラメータ配列へのポインタ
 	descriptionRootSignature.NumParameters = _countof(rootParameters); // 配列の長さ
@@ -326,6 +343,8 @@ void AnimationModel::CreateMaterialResource()
 
 	materialData->uvTransform = MakeIndentity4x4();
 
+	materialData->enableLighting = true;
+
 	materialData->shininess = 70.0f;
 }
 
@@ -358,6 +377,12 @@ void AnimationModel::CreateIndexResource()
 
 	// 頂点データをリソースにコピー
 	std::memcpy(mappedIndex, modelData.indices.data(), sizeof(uint32_t) * modelData.indices.size());
+}
+
+void AnimationModel::CreateDirectionalResource()
+{
+	directionalLightResource = CreateBufferResource(dir_->GetDevice(), sizeof(DirectionalLight));
+	directionalLightResource->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightData));
 }
 
 Skeleton AnimationModel::CreateSkelton(const Node& rootNode)

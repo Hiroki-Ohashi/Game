@@ -8,12 +8,23 @@ Light* Light::GetInstance()
 
 void Light::Initialize()
 {
-
-	directionalLightData.color = { 1.0f, 1.0f, 1.0f, 1.0f };
-	directionalLightData.direction = { 0.0f, -1.0f, 1.0f };
-	directionalLightData.intensity = 1.0f;
-
 	Light::CreateDirectionalResource();
+
+	directionalLightData->color = { 1.0f, 1.0f, 1.0f, 1.0f };
+	directionalLightData->direction = { 0.0f, -1.0f, 1.0f };
+	directionalLightData->intensity = 1.0f;
+}
+
+void Light::Update()
+{
+	directionalLightData->direction = Normalize(directionalLightData->direction);
+
+	if (ImGui::TreeNode("SphereLight")) {
+		ImGui::SliderFloat3("Light Direction", &directionalLightData->direction.x, -1.0f, 1.0f);
+		ImGui::SliderFloat4("light color", &directionalLightData->color.x, 0.0f, 1.0f);
+		ImGui::SliderFloat("Intensity", &directionalLightData->intensity, 0.0f, 1.0f);
+		ImGui::TreePop();
+	}
 }
 
 void Light::CreateDirectionalResource()

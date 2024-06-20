@@ -8,13 +8,15 @@ void SkyBox::Initialize()
 	SkyBox::CreateMaterialResource();
 	SkyBox::CreateWVP();
 
-	transform = { {10.0f,10.0f,10.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+	transform = { {1000.0f,1000.0f,1000.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 	uvTransform = { {1.0f, 1.0f, 1.0f},{0.0f, 0.0f, 0.0f},{0.0f, 0.0f, 0.0f}, };
 
 	cameraResource = CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(Camera));
 	cameraResource->Map(0, nullptr, reinterpret_cast<void**>(&camera));
-	camera.worldPosition = { 0.0f, 0.0f, -10.0f };
+	camera.worldPosition = { 0.0f, 0.0f, 0.0f };
 
+	worldTransform_.scale = transform.scale;
+	worldTransform_.rotate = transform.rotate;
 	worldTransform_.translate = transform.translate;
 	worldTransform_.UpdateMatrix();
 }
@@ -22,7 +24,7 @@ void SkyBox::Initialize()
 void SkyBox::Draw(Camera* camera, uint32_t index)
 {
 
-	//worldTransform_.TransferMatrix(wvpResourceData, camera);
+	worldTransform_.TransferMatrix(wvpResourceData, camera);
 
 	Matrix4x4 uvtransformMatrix = MakeScaleMatrix(uvTransform.scale);
 	uvtransformMatrix = Multiply(uvtransformMatrix, MakeRotateZMatrix(uvTransform.rotate.z));
@@ -45,7 +47,7 @@ void SkyBox::Draw(Camera* camera, uint32_t index)
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
 	dir_->GetCommandList()->SetGraphicsRootDescriptorTable(2, texture_->GetTextureSRVHandleGPU(index));
 	// 描画(DrawCall/ドローコール)
-	dir_->GetCommandList()->DrawInstanced(36, 1, 0, 0);
+	dir_->GetCommandList()->DrawIndexedInstanced(36, 1, 0, 0, 0);
 }
 
 void SkyBox::CreatePSO()
@@ -226,6 +228,7 @@ void SkyBox::CreateVertexResource()
 	vertexData[9].position = { 1.0f,1.0f,1.0f,1.0f };
 	vertexData[10].position = { -1.0f,-1.0f,1.0f,1.0f };
 	vertexData[11].position = { 1.0f,-1.0f,1.0f,1.0f };
+
 	// 後面
 	vertexData[12].position = { 1.0f,1.0f,-1.0f,1.0f };
 	vertexData[13].position = { -1.0f,1.0f,-1.0f,1.0f };
@@ -242,10 +245,10 @@ void SkyBox::CreateVertexResource()
 	vertexData[22].position = { 1.0f,-1.0f,1.0f,1.0f };
 	vertexData[23].position = { -1.0f,-1.0f,1.0f,1.0f };
 
-	for (int i = 0; i < 24; i++) {
+	/*for (int i = 0; i < 24; i++) {
 		vertexData[i].normal = { 1.0f,1.0f,1.0f};
 		vertexData[i].texcoord = { 1.0f,1.0f};
-	}
+	}*/
 }
 
 void SkyBox::createIndexResource()

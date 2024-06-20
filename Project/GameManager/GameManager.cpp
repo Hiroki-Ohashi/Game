@@ -14,9 +14,6 @@ GameManager::GameManager()
 	input = Input::GetInsTance();
 	input->Initialize();
 
-	light_ = Light::GetInstance();
-	light_->Initialize();
-
 	imgui =ImGuiManeger::GetInstance();
 	imgui->Initialize();
 

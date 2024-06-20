@@ -14,7 +14,6 @@ void GameScene::Initialize(){
 	camera_ = new Camera();
 	camera_->Initialize();
 
-
 	postProcess_ = std::make_unique<PostProcess>();
 	postProcess_->Initialize();
   
@@ -29,7 +28,7 @@ void GameScene::Initialize(){
 	model_->Initialize("simpleSkin.gltf", transform);*/
 
 	model2_ = std::make_unique<AnimationModel>();
-	model2_->Initialize("walk.gltf", transform2);
+	model2_->Initialize("sneakWalk.gltf", transform2);
 
 	//model3_ = std::make_unique<AnimationModel>();
 	//model3_->Initialize("sneakWalk.gltf", transform3);
@@ -121,19 +120,21 @@ void GameScene::Update(){
 		}
 	}
 	transform2.rotate.y = LerpShortAngle(transform2.rotate.y, angle, 1.0f);
+	model2_->SetTranslate(transform2.translate);
+	model2_->SetRotate(transform2.rotate);
 
 
 	//model_->Update(6.0f);
-	model2_->Update(1.0f, transform2.translate, transform2.rotate);
+	model2_->Update(1.0f);
 	//model3_->Update(1.0f);
 
 }
 
 void GameScene::Draw(){
 
-	skyBox_->Draw(camera_, skybox);
+	/*sphere_->Draw(camera_, moon);*/
 
-	//sphere_->Draw(camera_, moon);
+	skyBox_->Draw(camera_, skybox);
 
 	//model_->Draw(camera_, uv);
 	model2_->Draw(camera_, uv);

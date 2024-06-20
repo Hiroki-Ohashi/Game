@@ -58,12 +58,10 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource;
 	Microsoft::WRL::ComPtr<ID3D12Resource> cameraResource;
 	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource;
-	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource;
 
 	VertexData* vertexData;
 	Material* materialData;
 	TransformationMatrix* wvpData;
-	DirectionalLight directionalLightData;
 
 	EulerTransform transform;
 	EulerTransform uvTransform;

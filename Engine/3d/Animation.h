@@ -9,14 +9,20 @@
 class AnimationModel {
 public:
 	void Initialize(const std::string& filename, EulerTransform transform);
-	void Update(float time, Vector3 pos, Vector3 rotate);
+	void Update(float time);
 	void Draw(Camera* camera, uint32_t index);
+
+	void SetTranslate(Vector3 translate) const { translate = worldTransform_.translate; }
+	void SetScale(Vector3 scale) { scale = worldTransform_.scale; }
+	void SetRotate(Vector3 rotate) { rotate = worldTransform_.rotate; }
+
 private:
 	void CreatePso();
 	void CreateVertexResource();
 	void CreateMaterialResource();
 	void CreateWVPResource();
 	void CreateIndexResource();
+	void CreateDirectionalResource();
 
 	Skeleton CreateSkelton(const Node& rootNode);
 	int32_t CreateJoint(const Node& node, const std::optional<int32_t>& parent, std::vector<Joint>& joints);
@@ -28,7 +34,7 @@ private:
 	DirectXCommon* dir_ = DirectXCommon::GetInsTance();
 	TextureManager* texture_ = TextureManager::GetInstance();
 	Light* light_ = Light::GetInstance();
-	CameraForGpu camera;
+	CameraForGpu camera_;
 
 	WorldTransform worldTransform_;
 	EulerTransform transform;
@@ -61,5 +67,5 @@ private:
 	VertexData* vertexData;
 	Material* materialData;
 	TransformationMatrix* wvpData;
-	DirectionalLight directionalLightData;
+	DirectionalLight* directionalLightData;
 };

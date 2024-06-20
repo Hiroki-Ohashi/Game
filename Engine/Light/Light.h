@@ -7,6 +7,7 @@ public:
 	static Light* GetInstance();
 
 	void Initialize();
+	void Update();
 
 	Microsoft::WRL::ComPtr<ID3D12Resource> GetDirectionalLightResource() {return directionalLightResource;}
 private:
@@ -15,5 +16,5 @@ private:
 private:
 	DirectXCommon* dir_ = DirectXCommon::GetInsTance();
 	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource;
-	DirectionalLight directionalLightData;
+	DirectionalLight* directionalLightData;
 };
