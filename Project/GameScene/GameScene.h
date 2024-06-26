@@ -19,7 +19,7 @@
 #include <PostProcess.h>
 #include "Animation.h"
 #include "SkyBox.h"
-#include <Player.h>
+#include <Player/Player.h>
 
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -49,7 +49,9 @@ private:
 	std::unique_ptr<PostProcess> postProcess_ = nullptr;
 
 	std::unique_ptr<Player> player_;
+	std::unique_ptr<SkyBox> skyBox_;
 
 private:
-	int32_t playerTex;
+	uint32_t playerTex;
+	uint32_t skybox;
 };

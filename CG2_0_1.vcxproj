@@ -107,7 +107,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\3d\Particle.cpp" />
     <ClCompile Include="Engine\PostProcess\PostProcess.cpp" />
     <ClCompile Include="Engine\Light\Light.cpp" />
-    <ClCompile Include="Project\GameObject\Player.cpp" />
+    <ClCompile Include="Project\GameObject\Player\Player.cpp" />
     <ClCompile Include="Project\GameManager\IScene.cpp" />
     <ClCompile Include="Project\utillity\Camera.cpp" />
     <ClCompile Include="Engine\Base\DirectXCommon.cpp" />
@@ -141,7 +141,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\3d\Particle.h" />
     <ClInclude Include="Engine\PostProcess\PostProcess.h" />
     <ClInclude Include="Engine\Light\Light.h" />
-    <ClInclude Include="Project\GameObject\Player.h" />
+    <ClInclude Include="Project\GameObject\Player\Player.h" />
     <ClInclude Include="Project\GameManager\IScene.h" />
     <ClInclude Include="Project\utillity\Camera.h" />
     <ClInclude Include="Engine\Base\DirectXCommon.h" />

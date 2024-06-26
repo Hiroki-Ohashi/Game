@@ -14,10 +14,17 @@ void GameScene::Initialize(){
 	postProcess_ = std::make_unique<PostProcess>();
 	postProcess_->Initialize();
 
+	// player
 	player_ = std::make_unique<Player>();
 	player_->Init();
 
+	// skybox
+	skyBox_ = std::make_unique<SkyBox>();
+	skyBox_->Initialize();
+
+	// texture
 	playerTex = textureManager_->Load("resources/uvChecker.png");
+	skybox = textureManager_->Load("resources/skybox.dds");
 }
 
 void GameScene::Update(){
@@ -29,6 +36,7 @@ void GameScene::Update(){
 void GameScene::Draw()
 {
 	player_->Draw(camera_, playerTex);
+	skyBox_->Draw(camera_, skybox);
 }
 
 

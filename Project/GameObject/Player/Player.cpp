@@ -15,6 +15,20 @@ void Player::Init()
 
 void Player::Update()
 {
+	// キーボード移動処理
+	if (input_->PushKey(DIK_W)) {
+		worldtransform_.translate.y += speed;
+	}
+	if (input_->PushKey(DIK_S)) {
+		worldtransform_.translate.y -= speed;
+	}
+	if (input_->PushKey(DIK_A)) {
+		worldtransform_.translate.x -= speed;
+	}
+	if (input_->PushKey(DIK_D)) {
+		worldtransform_.translate.x += speed;
+	}
+
 	if (ImGui::TreeNode("Player")) {
 		ImGui::DragFloat3("Rotate.y ", &worldtransform_.rotate.x, 0.01f);
 		ImGui::DragFloat3("Transform", &worldtransform_.translate.x, 0.01f);
