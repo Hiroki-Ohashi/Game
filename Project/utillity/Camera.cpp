@@ -2,7 +2,7 @@
 #include "imgui.h"
 
 void Camera::Initialize(){
-	cameraTransform = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -10.0f} };
+	cameraTransform = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -20.0f} };
 }
 
 void Camera::Update(){

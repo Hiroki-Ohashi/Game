@@ -19,6 +19,7 @@
 #include <PostProcess.h>
 #include "Animation.h"
 #include "SkyBox.h"
+#include <Player.h>
 
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -44,5 +45,11 @@ public:
 
 private:
 	TextureManager* textureManager_ = nullptr;
-	std::unique_ptr<Camera> camera_ = nullptr;
+	Camera* camera_ = nullptr;
+	std::unique_ptr<PostProcess> postProcess_ = nullptr;
+
+	std::unique_ptr<Player> player_;
+
+private:
+	int32_t playerTex;
 };

@@ -25,7 +25,6 @@ public:
 	void Update();
 
 	void Draw(Camera* camera, uint32_t index);
-	void DrawAnimation(Skeleton skeleton, Animation animation, Camera* camera, uint32_t index, SkinCluster skinCluster);
 
 	ModelData GetModelData() { return modelData; }
 	void SetWorldTransform(WorldTransform worldtransform) { worldTransform_ = worldtransform; }
@@ -35,7 +34,6 @@ private:
 	void CreateVertexResource();
 	void CreateMaterialResource();
 	void CreateWVPResource();
-	void CreateIndexResource();
 
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(Microsoft::WRL::ComPtr<ID3D12Device> device, size_t sizeInbytes);
 
@@ -68,6 +66,6 @@ private:
 
 	bool isModel;
 
-	CameraForGpu camera;
+	CameraForGpu camera_;
 
 };

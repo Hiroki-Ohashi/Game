@@ -46,6 +46,7 @@
     <ClCompile Include="Project\GameScene\TitleScene.cpp" />
     <ClCompile Include="Project\SkyBox\SkyBox.cpp" />
     <ClCompile Include="Engine\Light\Light.cpp" />
+    <ClCompile Include="Project\GameObject\Player.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\3d\Animation.h" />
@@ -79,6 +80,7 @@
     <ClInclude Include="Project\GameScene\TitleScene.h" />
     <ClInclude Include="Project\SkyBox\SkyBox.h" />
     <ClInclude Include="Engine\Light\Light.h" />
+    <ClInclude Include="Project\GameObject\Player.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\Shaders\Fullscreen.hlsli" />

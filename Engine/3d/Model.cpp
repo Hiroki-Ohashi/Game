@@ -14,22 +14,21 @@ void Model::Initialize(const std::string& filename, EulerTransform transform) {
 
 	DirectX::ScratchImage mipImages2 = texture_->LoadTexture(modelData.material.textureFilePath);
 
-	worldTransform_.translate = transform.translate;
-	worldTransform_.scale = transform.scale;
-	worldTransform_.rotate = transform.rotate;
-
 	Model::CreateVertexResource();
 	Model::CreateMaterialResource();
 	Model::CreateWVPResource();
-	Model::CreateIndexResource();
 
 	light_->Initialize();
 
 	cameraResource = CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(Camera));
-	cameraResource->Map(0, nullptr, reinterpret_cast<void**>(&camera));
-	camera.worldPosition = { 0.0f, 0.0f, 0.0f };
+	cameraResource->Map(0, nullptr, reinterpret_cast<void**>(&camera_));
+
+	worldTransform_.translate = transform.translate;
+	worldTransform_.scale = transform.scale;
+	worldTransform_.rotate = transform.rotate;
 
 	uvTransform = { {1.0f, 1.0f, 1.0f},{0.0f, 0.0f, 0.0f},{0.0f, 0.0f, 0.0f}, };
+
 
 }
 
@@ -46,7 +45,9 @@ void Model::Draw(Camera* camera, uint32_t index) {
 	//wvpData->World = Multiply(wvpData->World, *camera->transformationMatrixData);
 	//wvpData->WVP = wvpData->World;
 
-	worldTransform_.GltfTransferMatrix(modelData, wvpData, camera);
+	camera_.worldPosition = { camera->cameraTransform.translate.x, camera->cameraTransform.translate.y, camera->cameraTransform.translate.z };
+	light_->Update();
+	worldTransform_.TransferMatrix(wvpData, camera);
 
 	Matrix4x4 uvtransformMatrix = MakeScaleMatrix(uvTransform.scale);
 	uvtransformMatrix = Multiply(uvtransformMatrix, MakeRotateZMatrix(uvTransform.rotate.z));
@@ -56,7 +57,6 @@ void Model::Draw(Camera* camera, uint32_t index) {
 
 	// コマンドを積む
 	DirectXCommon::GetInsTance()->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView); // VBVを設定
-	DirectXCommon::GetInsTance()->GetCommandList()->IASetIndexBuffer(&indexBufferView); // VBVを設定
 	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
 	DirectXCommon::GetInsTance()->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	// マテリアルCBufferの場所を設定
@@ -68,11 +68,10 @@ void Model::Draw(Camera* camera, uint32_t index) {
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
 	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootDescriptorTable(2, texture_->GetTextureSRVHandleGPU(index));
 	// 描画(DrawCall/ドローコール)
-	//DirectXCommon::GetInsTance()->GetCommandList()->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
-	DirectXCommon::GetInsTance()->GetCommandList()->DrawIndexedInstanced(UINT(modelData.indices.size()), 1, 0, 0, 0);
+	DirectXCommon::GetInsTance()->GetCommandList()->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
 
 
-	if (ImGui::TreeNode("Model")) {
+	/*if (ImGui::TreeNode("Model")) {
 		ImGui::SliderAngle("Rotate.y ", &worldTransform_.rotate.y);
 		ImGui::DragFloat3("Transform", &worldTransform_.translate.x, 0.01f, -10.0f, 10.0f);
 
@@ -80,7 +79,7 @@ void Model::Draw(Camera* camera, uint32_t index) {
 		ImGui::DragFloat2("UVScale", &uvTransform.scale.x, 0.01f, -10.0f, 10.0f);
 		ImGui::SliderAngle("UVRotate", &uvTransform.rotate.z);
 		ImGui::TreePop();
-	}
+	}*/
 
 	/*if (ImGui::TreeNode("Light")) {
 		ImGui::SliderFloat3("Light Direction", &directionalLightData.direction.x, -1.0f, 1.0f);
@@ -89,38 +88,6 @@ void Model::Draw(Camera* camera, uint32_t index) {
 		ImGui::SliderFloat("Intensity", &directionalLightData.intensity, 0.0f, 1.0f);
 		ImGui::TreePop();
 	}*/
-}
-
-void Model::DrawAnimation(Skeleton skeleton, Animation animation, Camera* camera, uint32_t index, SkinCluster skinCluster)
-{
-	worldTransform_.AnimationTransferMatrix(skeleton, animation, wvpData, camera);
-
-	Matrix4x4 uvtransformMatrix = MakeScaleMatrix(uvTransform.scale);
-	uvtransformMatrix = Multiply(uvtransformMatrix, MakeRotateZMatrix(uvTransform.rotate.z));
-	uvtransformMatrix = Multiply(uvtransformMatrix, MakeTranslateMatrix(uvTransform.translate));
-	materialData->uvTransform = uvtransformMatrix;
-
-	D3D12_VERTEX_BUFFER_VIEW vbvs[2] = {
-		vertexBufferView,
-		skinCluster.influenceBufferView
-	};
-
-	// コマンドを積む
-	DirectXCommon::GetInsTance()->GetCommandList()->IASetVertexBuffers(0, 2, vbvs); // VBVを設定
-	DirectXCommon::GetInsTance()->GetCommandList()->IASetIndexBuffer(&indexBufferView); // VBVを設定
-	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
-	DirectXCommon::GetInsTance()->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	// マテリアルCBufferの場所を設定
-	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResource.Get()->GetGPUVirtualAddress());
-	// TransformationMatrixCBufferの場所を設定
-	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource.Get()->GetGPUVirtualAddress());
-	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(3, light_->GetDirectionalLightResource().Get()->GetGPUVirtualAddress());
-	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(4, cameraResource.Get()->GetGPUVirtualAddress());
-	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootDescriptorTable(2, texture_->GetTextureSRVHandleGPU(index));
-	// 描画(DrawCall/ドローコール)
-	//DirectXCommon::GetInsTance()->GetCommandList()->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
-	DirectXCommon::GetInsTance()->GetCommandList()->DrawIndexedInstanced(UINT(modelData.indices.size()), 1, 0, 0, 0);
 }
 
 void Model::CreateVertexResource() {
@@ -155,7 +122,7 @@ void Model::CreateMaterialResource() {
 
 	materialData->uvTransform = MakeIndentity4x4();
 
-	materialData->enableLighting = false;
+	materialData->enableLighting = true;
 
 	materialData->shininess = 70.0f;
 }
@@ -169,25 +136,6 @@ void Model::CreateWVPResource() {
 
 	// 単位行列を書き込んでおく
 	wvpData->WVP = MakeIndentity4x4();
-}
-
-void Model::CreateIndexResource()
-{
-	// 頂点用のリソースを作る。
-	indexResource = CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(uint32_t) * modelData.indices.size());
-
-	// リソースの先頭のアドレスから使う
-	indexBufferView.BufferLocation = indexResource->GetGPUVirtualAddress();
-	// 使用するリソースのサイズは頂点3つ分のサイズ
-	indexBufferView.SizeInBytes = UINT(sizeof(uint32_t) * modelData.indices.size());
-	// 1頂点あたりのサイズ
-	indexBufferView.Format = DXGI_FORMAT_R32_UINT;
-
-	// 書き込むためのアドレスを取得
-	indexResource->Map(0, nullptr, reinterpret_cast<void**>(&mappedIndex));
-
-	// 頂点データをリソースにコピー
-	std::memcpy(mappedIndex, modelData.indices.data(), sizeof(uint32_t) * modelData.indices.size());
 }
 
 Microsoft::WRL::ComPtr<ID3D12Resource> Model::CreateBufferResource(Microsoft::WRL::ComPtr<ID3D12Device> device, size_t sizeInbytes)
