@@ -24,7 +24,7 @@ void GameScene::Initialize(){
 
 	// texture
 	playerTex = textureManager_->Load("resources/uvChecker.png");
-	skybox = textureManager_->Load("resources/skybox.dds");
+	skybox = textureManager_->Load("resources/rostock_laage_airport_4k.dds");
 }
 
 void GameScene::Update(){
