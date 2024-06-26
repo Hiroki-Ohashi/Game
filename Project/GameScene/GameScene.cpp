@@ -20,15 +20,15 @@ void GameScene::Initialize(){
 	/*sphere_ = std::make_unique<Sphere>();
 	sphere_->Initialize();*/
 
-	transform = { { 1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{-1.0f,-1.0f,3.0f} };
-	transform2 = { { 1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,-1.0f,3.0f} };
-	transform3 = { { 1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{1.0f,-1.0f,3.0f} };
+	transform = { { 1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{-1.0f,0.0f,3.0f} };
+	transform2 = { { 1.0f,1.0f,1.0f},{0.0f,3.2f,0.0f},{0.0f,0.0f,3.0f} };
+	transform3 = { { 1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{1.0f,0.0f,3.0f} };
 
 	/*model_ = std::make_unique<AnimationModel>();
 	model_->Initialize("simpleSkin.gltf", transform);*/
 
 	model2_ = std::make_unique<AnimationModel>();
-	model2_->Initialize("sneakWalk.gltf", transform2);
+	model2_->Initialize("walk.gltf", transform2);
 
 	//model3_ = std::make_unique<AnimationModel>();
 	//model3_->Initialize("sneakWalk.gltf", transform3);
@@ -137,7 +137,7 @@ void GameScene::Draw(){
 	skyBox_->Draw(camera_, skybox);
 
 	//model_->Draw(camera_, uv);
-	model2_->Draw(camera_, uv);
+	model2_->Draw(camera_, white, skybox);
 	//model3_->Draw(camera_, uv);
 
 	//particle_->Draw(camera_, circle);

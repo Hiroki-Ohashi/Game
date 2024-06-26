@@ -10,7 +10,7 @@ class AnimationModel {
 public:
 	void Initialize(const std::string& filename, EulerTransform transform);
 	void Update(float time);
-	void Draw(Camera* camera, uint32_t index);
+	void Draw(Camera* camera, uint32_t index, uint32_t index2);
 
 	void SetTranslate(Vector3 translate) const { translate = worldTransform_.translate; }
 	void SetScale(Vector3 scale) { scale = worldTransform_.scale; }

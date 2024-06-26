@@ -19,7 +19,7 @@ void Light::Update()
 {
 	directionalLightData->direction = Normalize(directionalLightData->direction);
 
-	if (ImGui::TreeNode("SphereLight")) {
+	if (ImGui::TreeNode("Light")) {
 		ImGui::SliderFloat3("Light Direction", &directionalLightData->direction.x, -1.0f, 1.0f);
 		ImGui::SliderFloat4("light color", &directionalLightData->color.x, 0.0f, 1.0f);
 		ImGui::SliderFloat("Intensity", &directionalLightData->intensity, 0.0f, 1.0f);

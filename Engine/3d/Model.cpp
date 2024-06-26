@@ -4,7 +4,13 @@
 
 void Model::Initialize(const std::string& filename, EulerTransform transform) {
 	// モデル読み込み
-	modelData = texture_->LoadModelFile("resources", filename);
+	std::wstring filePathW = Convert::ConvertString(filename);;
+	if (filePathW.ends_with(L".obj")) {
+		modelData = texture_->LoadObjFile("resources", filename);
+	}
+	else {
+		modelData = texture_->LoadModelFile("resources", filename);
+	}
 
 	DirectX::ScratchImage mipImages2 = texture_->LoadTexture(modelData.material.textureFilePath);
 

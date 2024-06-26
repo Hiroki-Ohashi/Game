@@ -62,7 +62,7 @@ void AnimationModel::Update(float time)
 	worldTransform_.UpdateMatrix();*/
 }
 
-void AnimationModel::Draw(Camera* camera, uint32_t index)
+void AnimationModel::Draw(Camera* camera, uint32_t index, uint32_t index2)
 {
 
 	// コマンドを積む
@@ -99,6 +99,7 @@ void AnimationModel::Draw(Camera* camera, uint32_t index)
 	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(4, cameraResource.Get()->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
 	dir_->GetCommandList()->SetGraphicsRootDescriptorTable(2, texture_->GetTextureSRVHandleGPU(index));
+	dir_->GetCommandList()->SetGraphicsRootDescriptorTable(6, texture_->GetTextureSRVHandleGPU(index2));
 	// 描画(DrawCall/ドローコール)
 	//DirectXCommon::GetInsTance()->GetCommandList()->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
 	dir_->GetCommandList()->DrawIndexedInstanced(UINT(modelData.indices.size()), 1, 0, 0, 0);
@@ -109,13 +110,6 @@ void AnimationModel::Draw(Camera* camera, uint32_t index)
 		ImGui::DragFloat3("translate", &worldTransform_.translate.x, 0.01f, -50.0f, 50.0f);
 		ImGui::TreePop();
 	}
-	/*if (ImGui::TreeNode("Light")) {
-		ImGui::SliderFloat3("Light Direction", &directionalLightData.direction.x, -1.0f, 1.0f);
-		directionalLightData.direction = Normalize(directionalLightData.direction);
-		ImGui::SliderFloat4("light color", &directionalLightData.color.x, 0.0f, 1.0f);
-		ImGui::SliderFloat("Intensity", &directionalLightData.intensity, 0.0f, 1.0f);
-		ImGui::TreePop();
-	}*/
 }
 
 void AnimationModel::CreatePso()
@@ -151,7 +145,7 @@ void AnimationModel::CreatePso()
 	descriptorRange[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
 	// RootParameter作成。複数設定できるので配列。今回は結果1つだけなので長さ1の配列
-	D3D12_ROOT_PARAMETER rootParameters[6] = {};
+	D3D12_ROOT_PARAMETER rootParameters[8] = {};
 	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
 	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 	rootParameters[0].Descriptor.ShaderRegister = 0;
@@ -178,10 +172,15 @@ void AnimationModel::CreatePso()
 	rootParameters[5].DescriptorTable.pDescriptorRanges = descriptorRangeForInstancing;
 	rootParameters[5].DescriptorTable.NumDescriptorRanges = _countof(descriptorRangeForInstancing);
 
-	/*rootParameters[6].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-	rootParameters[6].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
+	rootParameters[6].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	rootParameters[6].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 	rootParameters[6].DescriptorTable.pDescriptorRanges = descriptorRange;
-	rootParameters[6].DescriptorTable.NumDescriptorRanges = _countof(descriptorRange);*/
+	rootParameters[6].DescriptorTable.NumDescriptorRanges = _countof(descriptorRange);
+
+	rootParameters[7].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	rootParameters[7].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
+	rootParameters[7].DescriptorTable.pDescriptorRanges = descriptorRange;
+	rootParameters[7].DescriptorTable.NumDescriptorRanges = _countof(descriptorRange);
 
 	descriptionRootSignature.pParameters = rootParameters; // ルートパラメータ配列へのポインタ
 	descriptionRootSignature.NumParameters = _countof(rootParameters); // 配列の長さ
@@ -273,7 +272,7 @@ void AnimationModel::CreatePso()
 	IDxcBlob* vertexShaderBlob = Convert::CompileShader(L"resources/Shaders/SkinningObject3d.VS.hlsl", L"vs_6_0", dxcUtils, dxcCompiler, includeHandler);
 	assert(vertexShaderBlob != nullptr);
 
-	IDxcBlob* pixelShaderBlob = Convert::CompileShader(L"resources/Shaders/Object3d.PS.hlsl", L"ps_6_0", dxcUtils, dxcCompiler, includeHandler);
+	IDxcBlob* pixelShaderBlob = Convert::CompileShader(L"resources/Shaders/SkinningObject3d.PS.hlsl", L"ps_6_0", dxcUtils, dxcCompiler, includeHandler);
 	assert(pixelShaderBlob != nullptr);
 
 	// DepthStencilStateの設定
