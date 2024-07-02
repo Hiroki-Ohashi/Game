@@ -1,31 +1,29 @@
 #include "Animation.h"
 
-void AnimationModel::Initialize(const std::string& filename, EulerTransform transform)
+void AnimationModel::Initialize(const std::string& filename, EulerTransform transform, Camera* camera, uint32_t index)
 {
 	modelData = texture_->LoadModelFile("resources", filename);
 	DirectX::ScratchImage mipImages2 = texture_->LoadTexture(modelData.material.textureFilePath);
 
-	animation = texture_->LoadAnimation("resources", filename);
+	animation = texture_->LoadAnimationFile("resources", filename);
 
 	AnimationModel::CreatePso();
 	AnimationModel::CreateVertexResource();
 	AnimationModel::CreateMaterialResource();
 	AnimationModel::CreateWVPResource();
 	AnimationModel::CreateIndexResource();
+	AnimationModel::CreateCameraResource(camera);
 
 	light_->Initialize();
 
 	skeleton = CreateSkelton(modelData.rootNode);
-	skinCluster = CreateSkinCluster(dir_->GetDevice(), skeleton, modelData, dir_->GetSrvDescriptorHeap2(), texture_->GetDiscreptorSize());
+	skinCluster = CreateSkinCluster(dir_->GetDevice(), skeleton, modelData, dir_->GetSrvDescriptorHeap2(), texture_->GetDiscreptorSize(), index);
 
 	worldTransform_.Initialize();
 	worldTransform_.translate = transform.translate;
 	worldTransform_.scale = transform.scale;
 	worldTransform_.rotate = transform.rotate;
 	worldTransform_.UpdateMatrix();
-
-	cameraResource = CreateBufferResource(dir_->GetDevice(), sizeof(Camera));
-	cameraResource->Map(0, nullptr, reinterpret_cast<void**>(&camera_));
 
 	uvTransform = { {1.0f, 1.0f, 1.0f},{0.0f, 0.0f, 0.0f},{0.0f, 0.0f, 0.0f}, };
 }
@@ -57,9 +55,7 @@ void AnimationModel::Update(float time)
 		skinCluster.mappedPalette[jointIndex].skeletonSpaceInverseTransposeMatrix = Transpose(Inverse(skinCluster.mappedPalette[jointIndex].skeletonSpaceMatrix));
 	}
 
-	/*worldTransform_.translate = pos;
-	worldTransform_.rotate = rotate;
-	worldTransform_.UpdateMatrix();*/
+	worldTransform_.UpdateMatrix();
 }
 
 void AnimationModel::Draw(Camera* camera, uint32_t index, uint32_t index2)
@@ -72,9 +68,8 @@ void AnimationModel::Draw(Camera* camera, uint32_t index, uint32_t index2)
 	dir_->GetCommandList()->SetGraphicsRootDescriptorTable(5, skinCluster.paletteSrvHandle.second);
 
 	worldTransform_.AnimationTransferMatrix(skeleton, animation, wvpData, camera);
-	worldTransform_.UpdateMatrix();
 
-	camera_.worldPosition = { camera->cameraTransform.translate.x, camera->cameraTransform.translate.y, camera->cameraTransform.translate.z };
+	camera_->worldPosition = { camera->cameraTransform.translate.x, camera->cameraTransform.translate.y, camera->cameraTransform.translate.z };
 	light_->Update();
 
 	Matrix4x4 uvtransformMatrix = MakeScaleMatrix(uvTransform.scale);
@@ -94,8 +89,8 @@ void AnimationModel::Draw(Camera* camera, uint32_t index, uint32_t index2)
 	// マテリアルCBufferの場所を設定
 	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResource.Get()->GetGPUVirtualAddress());
 	// TransformationMatrixCBufferの場所を設定
-	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource.Get()->GetGPUVirtualAddress());
-	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(3, light_->GetDirectionalLightResource().Get()->GetGPUVirtualAddress());
+	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
+	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(3, light_->GetDirectionalLightResource()->GetGPUVirtualAddress());
 	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(4, cameraResource.Get()->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
 	dir_->GetCommandList()->SetGraphicsRootDescriptorTable(2, texture_->GetTextureSRVHandleGPU(index));
@@ -138,6 +133,7 @@ void AnimationModel::CreatePso()
 	descriptorRangeForInstancing[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 	descriptorRangeForInstancing[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
+	// 環境マップ用
 	D3D12_DESCRIPTOR_RANGE descriptorRange[1] = {};
 	descriptorRange[0].BaseShaderRegister = 1;
 	descriptorRange[0].NumDescriptors = 1;
@@ -145,7 +141,7 @@ void AnimationModel::CreatePso()
 	descriptorRange[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
 	// RootParameter作成。複数設定できるので配列。今回は結果1つだけなので長さ1の配列
-	D3D12_ROOT_PARAMETER rootParameters[8] = {};
+	D3D12_ROOT_PARAMETER rootParameters[7] = {};
 	rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
 	rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 	rootParameters[0].Descriptor.ShaderRegister = 0;
@@ -176,11 +172,6 @@ void AnimationModel::CreatePso()
 	rootParameters[6].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 	rootParameters[6].DescriptorTable.pDescriptorRanges = descriptorRange;
 	rootParameters[6].DescriptorTable.NumDescriptorRanges = _countof(descriptorRange);
-
-	rootParameters[7].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-	rootParameters[7].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
-	rootParameters[7].DescriptorTable.pDescriptorRanges = descriptorRange;
-	rootParameters[7].DescriptorTable.NumDescriptorRanges = _countof(descriptorRange);
 
 	descriptionRootSignature.pParameters = rootParameters; // ルートパラメータ配列へのポインタ
 	descriptionRootSignature.NumParameters = _countof(rootParameters); // 配列の長さ
@@ -384,6 +375,14 @@ void AnimationModel::CreateDirectionalResource()
 	directionalLightResource->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightData));
 }
 
+void AnimationModel::CreateCameraResource(Camera* camera)
+{
+
+	cameraResource = CreateBufferResource(dir_->GetDevice(), sizeof(CameraForGpu));
+	cameraResource->Map(0, nullptr, reinterpret_cast<void**>(&camera_));
+	camera_->worldPosition = { camera->cameraTransform.translate.x, camera->cameraTransform.translate.y, camera->cameraTransform.translate.z };
+}
+
 Skeleton AnimationModel::CreateSkelton(const Node& rootNode)
 {
 	Skeleton skeleton;
@@ -419,7 +418,7 @@ int32_t AnimationModel::CreateJoint(const Node& node, const std::optional<int32_
 	return joint.index;
 }
 
-SkinCluster AnimationModel::CreateSkinCluster(const Microsoft::WRL::ComPtr<ID3D12Device>& device, const Skeleton& skeleton, const ModelData& modelData, const Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>& descriptorHeap, uint32_t descriptorSize)
+SkinCluster AnimationModel::CreateSkinCluster(const Microsoft::WRL::ComPtr<ID3D12Device>& device, const Skeleton& skeleton, const ModelData& modelData, const Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>& descriptorHeap, uint32_t descriptorSize, uint32_t index)
 {
 	SkinCluster skinCluster;
 
@@ -428,8 +427,8 @@ SkinCluster AnimationModel::CreateSkinCluster(const Microsoft::WRL::ComPtr<ID3D1
 	WellForGPU* mappedPalette = nullptr;
 	skinCluster.paletteResource->Map(0, nullptr, reinterpret_cast<void**>(&mappedPalette));
 	skinCluster.mappedPalette = { mappedPalette, skeleton.joints.size() }; // spanを使ってアクセスするようにする
-	skinCluster.paletteSrvHandle.first = texture_->GetCPUDescriptorHandle(descriptorHeap, descriptorSize, 10);
-	skinCluster.paletteSrvHandle.second = texture_->GetGPUDescriptorHandle(descriptorHeap, descriptorSize, 10);
+	skinCluster.paletteSrvHandle.first = texture_->GetCPUDescriptorHandle(descriptorHeap, descriptorSize, 10 + index);
+	skinCluster.paletteSrvHandle.second = texture_->GetGPUDescriptorHandle(descriptorHeap, descriptorSize, 10 + index);
 
 	// palette用のsrvを作成
 	D3D12_SHADER_RESOURCE_VIEW_DESC paletteSrvDesc{};

@@ -12,8 +12,9 @@ struct Camera {
 
 	static WinApp* winapp_;
 
+	Matrix4x4 worldMatrix = {};
+
 	EulerTransform cameraTransform;
-	Matrix4x4 worldMatrix;
 	Matrix4x4 cameraMatrix;
 	Matrix4x4 viewMatrix;
 	Matrix4x4 projectionMatrix;

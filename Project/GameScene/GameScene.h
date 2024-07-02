@@ -52,12 +52,12 @@ private:
 
 	std::unique_ptr<Sphere> sphere_;
 
-	//std::unique_ptr<Model> model_;
+	std::unique_ptr<Model> model4_;
 	//std::unique_ptr<Model> model2_;
 
-	//std::unique_ptr<AnimationModel> model_;
+	std::unique_ptr<AnimationModel> model_;
 	std::unique_ptr<AnimationModel> model2_;
-	//std::unique_ptr<AnimationModel> model3_;
+	std::unique_ptr<AnimationModel> model3_;
 
 	std::unique_ptr<Particles> particle_ = nullptr;
 	std::unique_ptr<Particles> particle2_ = nullptr;
@@ -71,6 +71,7 @@ private:
 	EulerTransform transform;
 	EulerTransform transform2;
 	EulerTransform transform3;
+	EulerTransform transform4;
 
 	Vector3 pos = { -2.0f, 0.0f, 10.0f };
 	Vector3 pos2 = { 2.0f, 0.0f, 10.0f };

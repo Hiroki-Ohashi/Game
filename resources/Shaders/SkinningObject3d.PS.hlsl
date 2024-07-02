@@ -30,7 +30,7 @@ struct PixelShaderOutput {
 
 PixelShaderOutput main(VertexShaderOutput input) {
 	PixelShaderOutput output;
-	output.color = float4(0, 0, 0, 0); // 初期化
+	output.color = float32_t4(0.0f, 0.0f, 0.0f, 0.0f); // 初期化
 	/*float32_t4 textureColor = gTexture.Sample(gSampler, input.texcoord);*/
 	
 	float4 transformeduv = mul(float32_t4(input.texcoord, 0.0f, 1.0f), gMaterial.uvTransform);
@@ -38,7 +38,7 @@ PixelShaderOutput main(VertexShaderOutput input) {
 
 	if (gMaterial.enableLighting != 0) {
 		// half lambert
-		//float NdotL =dot(normalize(input.normal), -gDirectionalLight.direction);
+		//float NdotL = dot(normalize(input.normal), -gDirectionalLight.direction);
 		float NdotL = saturate(dot(normalize(input.normal), -gDirectionalLight.direction));
 		float cos = pow(NdotL * 0.5f + 0.5f, 2.0f);
 
@@ -56,9 +56,8 @@ PixelShaderOutput main(VertexShaderOutput input) {
 		float32_t3 cameraToPosition = normalize(input.worldPosition - gCamera.worldPosition);
 		float32_t3 reflectedVector = reflect(cameraToPosition, normalize(input.normal));
 		float32_t4 environmentColor = gEnvironmentTexture.Sample(gSampler, reflectedVector);
-		environmentColor.rgb *= 1.0f;
 
-		//output.color.rgb = diffuse + specular + environmentColor.rgb;
+		//output.color.rgb = diffuse + specular;
 		output.color.rgb += environmentColor.rgb;
 		output.color.a = gMaterial.color.a * textureColor.a;
 	}

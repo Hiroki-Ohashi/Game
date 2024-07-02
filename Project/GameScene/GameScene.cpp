@@ -20,21 +20,19 @@ void GameScene::Initialize(){
 	/*sphere_ = std::make_unique<Sphere>();
 	sphere_->Initialize();*/
 
-	transform = { { 1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{-1.0f,0.0f,3.0f} };
-	transform2 = { { 1.0f,1.0f,1.0f},{0.0f,3.2f,0.0f},{0.0f,0.0f,3.0f} };
-	transform3 = { { 1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{1.0f,0.0f,3.0f} };
+	transform = { { 1.0f,1.0f,1.0f},{0.0f,3.0f,0.0f},{1.0f,0.0f,0.0f} };
+	transform2 = { { 1.0f,1.0f,1.0f},{0.0f,3.0f,0.0f},{0.0f,0.0f,0.0f} };
+	transform3 = { { 1.0f,1.0f,1.0f},{0.0f,3.0f,0.0f},{-1.0f,0.0f,0.0f} };
+	transform4 = { { 0.5f,0.5f,0.5f},{0.0f,0.0f,0.0f},{0.0f,-1.0f,0.0f} };
 
-	/*model_ = std::make_unique<AnimationModel>();
-	model_->Initialize("simpleSkin.gltf", transform);*/
+	model_ = std::make_unique<AnimationModel>();
+	model_->Initialize("simpleSkin.gltf", transform, camera_, 0);
 
 	model2_ = std::make_unique<AnimationModel>();
-	model2_->Initialize("walk.gltf", transform2);
+	model2_->Initialize("walk.gltf", transform2, camera_, 1);
 
-	//model3_ = std::make_unique<AnimationModel>();
-	//model3_->Initialize("sneakWalk.gltf", transform3);
-
-	//model2_ = std::make_unique<Model>();
-	//model2_->Initialize("plane.obj", transform2);
+	model3_ = std::make_unique<AnimationModel>();
+	model3_->Initialize("sneakWalk.gltf", transform3, camera_, 2);
 
 	//particle_ = std::make_unique<Particles>();
 	//particle_->Initialize("plane.obj", pos, 7);
@@ -44,6 +42,10 @@ void GameScene::Initialize(){
 
 	skyBox_ = std::make_unique<SkyBox>();
 	skyBox_->Initialize();
+
+
+	model4_ = std::make_unique<Model>();
+	model4_->Initialize("cube.obj", transform4);
 
 	//Vector4 pos[Max][3];
 
@@ -124,9 +126,9 @@ void GameScene::Update(){
 	model2_->SetRotate(transform2.rotate);
 
 
-	//model_->Update(6.0f);
+	model_->Update(6.0f);
 	model2_->Update(1.0f);
-	//model3_->Update(1.0f);
+	model3_->Update(0.9f);
 
 }
 
@@ -134,11 +136,13 @@ void GameScene::Draw(){
 
 	/*sphere_->Draw(camera_, moon);*/
 
+	model4_->Draw(camera_, uv);
+
 	skyBox_->Draw(camera_, skybox);
 
-	//model_->Draw(camera_, uv);
+	model_->Draw(camera_, uv, skybox);
 	model2_->Draw(camera_, white, skybox);
-	//model3_->Draw(camera_, uv);
+	model3_->Draw(camera_, uv, skybox);
 
 	//particle_->Draw(camera_, circle);
 	//particle2_->Draw(camera_, uv);
