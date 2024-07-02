@@ -26,7 +26,6 @@
 #pragma comment(lib, "dxguid.lib")
 #pragma comment(lib, "dxcompiler.lib")
 
-
 class GameScene : public IScene {
 public:
 	~GameScene();
@@ -37,7 +36,7 @@ public:
 	void Update() override;
 	// 描画
 	void Draw() override;
-
+	// ポストエフェクト
 	void PostDraw() override;
   
 	// 解放
@@ -48,10 +47,13 @@ private:
 	Camera* camera_ = nullptr;
 	std::unique_ptr<PostProcess> postProcess_ = nullptr;
 
+	// プレイヤー
 	std::unique_ptr<Player> player_;
+	// 天球
 	std::unique_ptr<SkyBox> skyBox_;
 
 private:
+	// テクスチャ
 	uint32_t playerTex;
 	uint32_t skybox;
 };
