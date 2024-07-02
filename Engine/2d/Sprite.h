@@ -14,7 +14,7 @@
 
 class Sprite {
 public:
-	void Initialize(Vector2 pos, Vector2 scale);
+	void Initialize(Vector2 pos, Vector2 scale, float index);
 
 	void Update();
 

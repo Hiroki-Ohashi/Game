@@ -19,28 +19,29 @@ void GameScene::Initialize(){
 	player_->Initialize();
 
 	// skybox
-	skyBox_ = std::make_unique<SkyBox>();
-	skyBox_->Initialize();
-
 	skydome_ = std::make_unique<Skydome>();
 	skydome_->Initialize();
 
 	// texture
 	playerTex = textureManager_->Load("resources/white.png");
-	skybox = textureManager_->Load("resources/rostock_laage_airport_4k.dds");
 }
 
 void GameScene::Update(){
 
 	camera_->Update();
 	player_->Update();
+
+	camera_->cameraTransform.translate.z = player_->GetPos().z - 50.0f;
+
+	if (input_->TriggerKey(DIK_RETURN)) {
+		sceneNo = TITLE;
+	}
 }
 
 void GameScene::Draw()
 {
 	skydome_->Draw(camera_);
 	player_->Draw(camera_, playerTex);
-	//skyBox_->Draw(camera_, skybox);
 }
 
 

@@ -29,6 +29,8 @@ public:
 	ModelData GetModelData() { return modelData; }
 	void SetWorldTransform(WorldTransform worldtransform) { worldTransform_ = worldtransform; }
 
+	void SetLight(bool isLight) { materialData->enableLighting = isLight; }
+
 private:
 
 	void CreateVertexResource();

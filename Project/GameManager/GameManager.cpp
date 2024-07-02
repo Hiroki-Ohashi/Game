@@ -43,6 +43,8 @@ void GameManager::Run()
 
 	MSG msg{};
 
+	sceneArr_[currentSceneNo_]->Initialize();
+
 	// ウインドウの×ボタンが押されるまでループ
 	while (msg.message != WM_QUIT) {
 		// Windowにメッセージが来てたら最優先で処理させる

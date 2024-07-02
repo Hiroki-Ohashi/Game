@@ -57,5 +57,4 @@ private:
 private:
 	// テクスチャ
 	uint32_t playerTex;
-	uint32_t skybox;
 };

@@ -136,12 +136,14 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Project\GameScene\TitleScene.cpp" />
     <ClCompile Include="Project\SkyBox\SkyBox.cpp" />
     <ClCompile Include="Project\SkyBox\Skydome.cpp" />
+    <ClCompile Include="Project\GameObject\Player\PlayerBullet.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\3d\Animation.h" />
     <ClInclude Include="Engine\3d\Particle.h" />
     <ClInclude Include="Engine\PostProcess\PostProcess.h" />
     <ClInclude Include="Engine\Light\Light.h" />
+    <ClInclude Include="Project\GameObject\Player\PlayerBullet.h" />
     <ClInclude Include="Project\GameObject\Player\Player.h" />
     <ClInclude Include="Project\GameManager\IScene.h" />
     <ClInclude Include="Project\utillity\Camera.h" />

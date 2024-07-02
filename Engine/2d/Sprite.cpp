@@ -2,52 +2,23 @@
 #include "imgui.h"
 
 
-void Sprite::Initialize(Vector2 pos, Vector2 scale){
+void Sprite::Initialize(Vector2 pos, Vector2 scale, float index){
 
-	//Sprite::CreatePso();
 	Sprite::CreateVertexResourceSprite(pos, scale);
 	Sprite::CreateMaterialResourceSprite();
 	Sprite::CreateTransformationMatrixResourceSprite();
 
 	transformSprite = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
-	uvTransformSprite = {{1.0f, 1.0f, 1.0f},{0.0f, 0.0f, 0.0f},{0.0f, 0.0f, 0.0f},};
-
-
-	//// アンカーポイントから見た頂点座標
-	//float left = (0.0f - anchorPoint.x);
-	//float right = (1.0f - anchorPoint.x);
-	//float top = (0.0f - anchorPoint.y);
-	//float bottom = (1.0f - anchorPoint.y);
-	//// 矩形のデータ
-	//vertexDataSprite[0].position = { left,bottom, 0.0f, 1.0f };// 左下
-	//vertexDataSprite[1].position = { left,top, 0.0f, 1.0f };// 左上
-	//vertexDataSprite[2].position = { right,bottom, 0.0f, 1.0f };// 右下
-	//vertexDataSprite[3].position = { right,top, 0.0f, 1.0f };// 右上
-
-
-	//ID3D12Resource* textureBuffer = texture_->GetTextureResource(textureIndex).Get();
-	//D3D12_RESOURCE_DESC resDesc = textureBuffer->GetDesc();
-
-	//float tex_left = textureLeftTop.x / resDesc.Width;
-	//float tex_right = (textureLeftTop.x + textureSize.x) / resDesc.Width;
-	//float tex_top = textureLeftTop.y / resDesc.Height;
-	//float tex_bottom = (textureLeftTop.y + textureSize.y) / resDesc.Height;
-
-	//// 頂点のUVに反映
-	//vertexDataSprite[0].texcoord = { tex_left, tex_bottom };
-	//vertexDataSprite[0].normal = { 0.0f,0.0f,-1.0f };
-	//vertexDataSprite[1].texcoord = { tex_left, tex_top };
-	//vertexDataSprite[1].normal = { 0.0f,0.0f,-1.0f };
-	//vertexDataSprite[2].texcoord = { tex_right, tex_bottom };
-	//vertexDataSprite[2].normal = { 0.0f,0.0f,-1.0f };
-	//vertexDataSprite[3].texcoord = { tex_right, tex_top };
-	//vertexDataSprite[3].normal = { 0.0f,0.0f,-1.0f };
+	uvTransformSprite = { {1.0f, 1.0f, 1.0f},{0.0f, 0.0f, 0.0f},{0.0f, 0.0f, 0.0f}, };
 
 	// SpriteはLightingしないのでfalseを設定
 	materialDataSprite->enableLighting = false;
 
+	transformSprite.translate.x = pos.x;
+	transformSprite.translate.y = pos.y;
+
 	// 白を設定
-	materialDataSprite->color = { 1.0f, 1.0f, 1.0f, 1.0f };
+	materialDataSprite->color = { 1.0f, 1.0f, 1.0f, index };
 }
 
 void Sprite::Update(){

@@ -1,5 +1,12 @@
 #include "Player.h"
 
+Player::~Player() {
+	// bullet_の解放
+	for (PlayerBullet* bullet : bullets_) {
+		delete bullet;
+	}
+}
+
 void Player::Initialize()
 {
 	transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
@@ -15,19 +22,51 @@ void Player::Initialize()
 
 void Player::Update()
 {
+	// デスフラグの立った弾を排除
+	bullets_.remove_if([](PlayerBullet* bullet) {
+		if (bullet->IsDead()) {
+			delete bullet;
+			return true;
+		}
+		return false;
+		});
+
+	transform_.translate.z += 1.0f;
+
 	// キーボード移動処理
 	if (input_->PushKey(DIK_W)) {
-		worldtransform_.translate.y += speed;
+		transform_.translate.y += speed;
 	}
 	if (input_->PushKey(DIK_S)) {
-		worldtransform_.translate.y -= speed;
+		transform_.translate.y -= speed;
 	}
 	if (input_->PushKey(DIK_A)) {
-		worldtransform_.translate.x -= speed;
+		transform_.translate.x -= speed;
 	}
 	if (input_->PushKey(DIK_D)) {
-		worldtransform_.translate.x += speed;
+		transform_.translate.x += speed;
 	}
+
+	Attack();
+
+	// 移動限界座標
+	const float kMoveLimitX = 16.5f;
+	const float kMoveLimitY = 8.5f;
+
+	// 範囲超えない処理
+	transform_.translate.x = max(transform_.translate.x, -kMoveLimitX);
+	transform_.translate.x = std::min(transform_.translate.x, +kMoveLimitX);
+	transform_.translate.y = max(transform_.translate.y, -kMoveLimitY);
+	transform_.translate.y = std::min(transform_.translate.y, +kMoveLimitY);
+
+	// 弾更新
+	for (PlayerBullet* bullet : bullets_) {
+		bullet->Update();
+	}
+
+	worldtransform_.translate = transform_.translate;
+	worldtransform_.UpdateMatrix();
+	model_->SetWorldTransform(worldtransform_);
 
 	if (ImGui::TreeNode("Player")) {
 		ImGui::DragFloat3("Rotate.y ", &worldtransform_.rotate.x, 0.01f);
@@ -38,11 +77,27 @@ void Player::Update()
 		//ImGui::SliderAngle("UVRotate", &worldtransform_.rotate.z);
 		ImGui::TreePop();
 	}
-	worldtransform_.UpdateMatrix();
-	model_->SetWorldTransform(worldtransform_);
 }
 
 void Player::Draw(Camera* camera_, uint32_t index)
 {
 	model_->Draw(camera_, index);
+
+	// 弾描画
+	for (PlayerBullet* bullet : bullets_) {
+		bullet->Draw(camera_);
+	}
+}
+
+void Player::Attack()
+{
+	if (input_->TriggerKey(DIK_SPACE)) {
+
+		// 弾を生成し、初期化
+		PlayerBullet* newBullet = new PlayerBullet();
+		newBullet->Initialize(transform_.translate);
+
+		// 弾を登録
+		bullets_.push_back(newBullet);
+	}
 }
