@@ -13,6 +13,7 @@
     <FxCompile Include="resources\Shaders\Skybox.PS.hlsl" />
     <FxCompile Include="resources\Shaders\EffectNone.PS.hlsl" />
     <FxCompile Include="resources\Shaders\SkinningObject3d.PS.hlsl" />
+    <FxCompile Include="resources\Shaders\GaussianBlur.PS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine\3d\Animation.cpp" />
