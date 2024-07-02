@@ -20,6 +20,7 @@
 #include "Animation.h"
 #include "SkyBox.h"
 #include <Player/Player.h>
+#include <Skydome.h>
 
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -51,6 +52,7 @@ private:
 	std::unique_ptr<Player> player_;
 	// 天球
 	std::unique_ptr<SkyBox> skyBox_;
+	std::unique_ptr<Skydome> skydome_;
 
 private:
 	// テクスチャ

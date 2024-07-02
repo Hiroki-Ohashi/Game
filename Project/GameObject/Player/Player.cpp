@@ -1,6 +1,6 @@
 #include "Player.h"
 
-void Player::Init()
+void Player::Initialize()
 {
 	transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 
