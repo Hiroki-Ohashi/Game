@@ -18,6 +18,8 @@ void Player::Initialize()
 	worldtransform_.rotate = transform_.rotate;
 	worldtransform_.translate = transform_.translate;
 	worldtransform_.UpdateMatrix();
+
+	bulletTex = textureManager_->Load("resources/white.png");
 }
 
 void Player::Update()
@@ -49,6 +51,11 @@ void Player::Update()
 
 	Attack();
 
+	// 弾更新
+	for (PlayerBullet* bullet : bullets_) {
+		bullet->Update();
+	}
+
 	// 移動限界座標
 	const float kMoveLimitX = 16.5f;
 	const float kMoveLimitY = 8.5f;
@@ -58,11 +65,6 @@ void Player::Update()
 	transform_.translate.x = std::min(transform_.translate.x, +kMoveLimitX);
 	transform_.translate.y = max(transform_.translate.y, -kMoveLimitY);
 	transform_.translate.y = std::min(transform_.translate.y, +kMoveLimitY);
-
-	// 弾更新
-	for (PlayerBullet* bullet : bullets_) {
-		bullet->Update();
-	}
 
 	worldtransform_.translate = transform_.translate;
 	worldtransform_.UpdateMatrix();
@@ -79,13 +81,13 @@ void Player::Update()
 	}
 }
 
-void Player::Draw(Camera* camera_, uint32_t index)
+void Player::Draw(Camera* camera_)
 {
-	model_->Draw(camera_, index);
+	model_->Draw(camera_, bulletTex);
 
 	// 弾描画
 	for (PlayerBullet* bullet : bullets_) {
-		bullet->Draw(camera_);
+		bullet->Draw(camera_, bulletTex);
 	}
 }
 

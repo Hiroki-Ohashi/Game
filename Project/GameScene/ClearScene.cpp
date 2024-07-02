@@ -1,10 +1,10 @@
-#include "TitleScene.h"
+#include "ClearScene.h"
 
-TitleScene::~TitleScene()
+ClearScene::~ClearScene()
 {
 }
 
-void TitleScene::Initialize()
+void ClearScene::Initialize()
 {
 	textureManager_->Initialize();
 
@@ -14,24 +14,22 @@ void TitleScene::Initialize()
 	title_ = std::make_unique<Sprite>();
 	title_->Initialize(Vector2{ 0.0f, 0.0f }, Vector2{ 1280.0f, 720.0f }, 1.0f);
 
-	title = textureManager_->Load("resources/start.png");
-
+	title = textureManager_->Load("resources/clear.png");
 }
 
-
-void TitleScene::Update()
+void ClearScene::Update()
 {
 	if (input_->TriggerKey(DIK_SPACE)) {
-		sceneNo = STAGE;
+		sceneNo = TITLE;
 	}
 }
 
-void TitleScene::Draw()
+void ClearScene::Draw()
 {
 	title_->Draw(title);
 }
 
-void TitleScene::PostDraw()
+void ClearScene::PostDraw()
 {
 	postProcess_->Draw();
 }

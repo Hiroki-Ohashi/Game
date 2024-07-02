@@ -297,6 +297,22 @@ void Sprite::CreatePso()
 	assert(SUCCEEDED(hr));
 }
 
+void Sprite::FadeIn(float speed)
+{
+	materialDataSprite->color.w += speed;
+	if (materialDataSprite->color.w >= 1.0f) {
+		speed = 0.0f;
+	}
+}
+
+void Sprite::FadeOut(float speed)
+{
+	materialDataSprite->color.w -= speed;
+	if (materialDataSprite->color.w <= 0.0f) {
+		speed = 0.0f;
+	}
+}
+
 Microsoft::WRL::ComPtr<ID3D12Resource> Sprite::CreateBufferResource(Microsoft::WRL::ComPtr<ID3D12Device> device, size_t sizeInbytes)
 {
 	Microsoft::WRL::ComPtr<ID3D12Resource> Resource = nullptr;

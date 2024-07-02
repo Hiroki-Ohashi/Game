@@ -4,7 +4,8 @@
 // シーン名
 enum SCENE {
 	TITLE,
-	STAGE
+	STAGE,
+	CLEAR
 };
 
 class IScene {

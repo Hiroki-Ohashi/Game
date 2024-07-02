@@ -13,7 +13,7 @@ PixelShaderOutput main(VertexShaderOutput input) {
     
     float32_t2 correct = input.texcoord * (1.0f - input.texcoord.yx);
     float vignette = correct.x * correct.y * 16.0f;
-    vignette = saturate(pow(vignette, 0.8f));
+    vignette = saturate(pow(vignette, 0.0f));
     output.color.rgb *= vignette;
 
     return output;

@@ -6,6 +6,7 @@
 #include "IScene.h"
 #include "TitleScene.h"
 #include "GameScene.h"
+#include <ClearScene.h>
 
 #include "ImGuiManeger.h"
 #include "imgui.h"

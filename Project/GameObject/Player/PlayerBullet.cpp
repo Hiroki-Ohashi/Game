@@ -11,13 +11,11 @@ void PlayerBullet::Initialize(Vector3 pos)
 	worldtransform_.rotate = transform.rotate;
 	worldtransform_.translate = transform.translate;
 	worldtransform_.UpdateMatrix();
-
-	bulletTex = textureManager_->Load("resources/white.png");
 }
 
 void PlayerBullet::Update()
 {
-	transform.translate.z += 1.0f;
+	transform.translate.z += 2.0f;
 
 	worldtransform_.translate = transform.translate;
 	model_->SetWorldTransform(worldtransform_);
@@ -28,7 +26,7 @@ void PlayerBullet::Update()
 	}
 }
 
-void PlayerBullet::Draw(Camera* camera)
+void PlayerBullet::Draw(Camera* camera, uint32_t index)
 {
-	model_->Draw(camera, bulletTex);
+	model_->Draw(camera, index);
 }

@@ -103,6 +103,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Project\GameScene\ClearScene.cpp" />
     <ClCompile Include="Engine\3d\Animation.cpp" />
     <ClCompile Include="Engine\3d\Particle.cpp" />
     <ClCompile Include="Engine\PostProcess\PostProcess.cpp" />
@@ -137,8 +138,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Project\SkyBox\SkyBox.cpp" />
     <ClCompile Include="Project\SkyBox\Skydome.cpp" />
     <ClCompile Include="Project\GameObject\Player\PlayerBullet.cpp" />
+    <ClCompile Include="Project\GameObject\Stage\Stage.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Project\GameScene\ClearScene.h" />
     <ClInclude Include="Engine\3d\Animation.h" />
     <ClInclude Include="Engine\3d\Particle.h" />
     <ClInclude Include="Engine\PostProcess\PostProcess.h" />
@@ -173,6 +176,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Project\GameScene\TitleScene.h" />
     <ClInclude Include="Project\SkyBox\SkyBox.h" />
     <ClInclude Include="Project\SkyBox\Skydome.h" />
+    <ClInclude Include="Project\GameObject\Stage\Stage.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />
