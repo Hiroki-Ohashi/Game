@@ -47,6 +47,16 @@ public:
 
 	void CheckAllCollisions();
 
+	/// <summary>
+	/// 敵発生データの読み込み
+	/// </summary>
+	void LoadEnemyPopData();
+
+	/// <summary>
+	/// 敵発生コマンドの更新
+	/// </summary>
+	void UpdateEnemyPopCommands();
+
 	void EnemySpown(Vector3 pos);
 	void AddEnemyBullet(EnemyBullet* enemyBullet);
 	void AddEnemy(Enemy* enemy);
@@ -77,4 +87,12 @@ private:
 	bool isGame;
 
 	Vector3 pos_ = { 0.0f, 0.0f, 500.0f };
+
+	// 待機タイマー
+	int32_t waitTimer_;
+	// 待機フラグ
+	bool isWait_ = false;
+
+	// 敵発生コマンド
+	std::stringstream enemyPopCommands;
 };

@@ -21,6 +21,7 @@ void Enemy::Initialize(Vector3 pos)
 
 void Enemy::Update()
 {
+
 	attackTimer--;
 
 	if (attackTimer <= 0) {
@@ -35,6 +36,13 @@ void Enemy::Update()
 	}
 
 	model_->SetWorldTransform(worldtransform_);
+
+	if (ImGui::TreeNode("Enemy")) {
+		ImGui::DragFloat3("Rotate.y ", &worldtransform_.rotate.x, 0.01f);
+		ImGui::DragFloat3("Transform", &worldtransform_.translate.x, 0.01f);
+		ImGui::Checkbox("isDead", &isDead_);
+		ImGui::TreePop();
+	}
 }
 
 void Enemy::Draw(Camera* camera)

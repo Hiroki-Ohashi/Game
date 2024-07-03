@@ -16,6 +16,7 @@ public:
 
 	void Attack();
 	void OnCollision() { isDead_ = true; }
+	void SetIsDead(bool isDead) { isDead_ = isDead; }
 
 	bool IsDead() const { return isDead_; }
 	Vector3 GetPos() { return worldtransform_.translate; }
@@ -35,5 +36,5 @@ private:
 	// 発射タイマー
 	int32_t attackTimer = 10;
 	static const int kFireInterval = 120;
-	bool isDead_ = false;
+	bool isDead_;
 };
