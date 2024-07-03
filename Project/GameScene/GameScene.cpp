@@ -83,6 +83,8 @@ void GameScene::Draw()
 {
 	skydome_->Draw(camera_);
 
+	stage_->Draw(camera_);
+
 	player_->Draw(camera_);
 
 	// 敵キャラの描画
@@ -94,8 +96,6 @@ void GameScene::Draw()
 	for (EnemyBullet* bullet : enemyBullets_) {
 		bullet->Draw(camera_, enemyBulletTex);
 	}
-
-	stage_->Draw(camera_);
 }
 
 

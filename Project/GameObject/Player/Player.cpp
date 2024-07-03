@@ -32,9 +32,9 @@ void Player::Update()
 			return true;
 		}
 		return false;
-		});
+	});
 
-	transform_.translate.z += 1.0f;
+	transform_.translate.z += 0.5f;
 
 	// キーボード移動処理
 	if (input_->PushKey(DIK_W)) {
