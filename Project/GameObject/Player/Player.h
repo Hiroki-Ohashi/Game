@@ -24,4 +24,5 @@ private:
 	std::list<PlayerBullet*> bullets_;
 	float speed = 0.2f;
 	uint32_t bulletTex;
+	uint32_t playerTex;
 };

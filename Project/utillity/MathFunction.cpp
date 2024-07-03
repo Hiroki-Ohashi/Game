@@ -601,7 +601,33 @@ Quaternion LerpQuaternion(const Quaternion& v1, const Quaternion& v2, float t)
 }
 
 
-Quaternion Slerp(const Quaternion& q0, const Quaternion& q1, float t)
+Vector3 Slerp(const Vector3& v1, const Vector3& v2, float t)
+{
+	Vector3 p;
+
+	Vector3 s;
+	Vector3 e;
+
+	s = Normalize(v1);
+	e = Normalize(v2);
+	float angle = acos(Dot(s, e));
+	// SinΘ
+	float SinTh = sin(angle);
+
+	// 補間係数
+	float Ps = sin(angle * (1 - t));
+	float Pe = sin(angle * t);
+
+	p.x = (Ps * s.x + Pe * e.x) / SinTh;
+	p.y = (Ps * s.y + Pe * e.y) / SinTh;
+	p.z = (Ps * s.z + Pe * e.z) / SinTh;
+
+	p = Normalize(p);
+
+	return p;
+}
+
+Quaternion SlerpQuaternion(const Quaternion& q0, const Quaternion& q1, float t)
 {
 	Quaternion result{};
 	Vector3 q0Vector = { q0.x,q0.y,q0.z };
@@ -670,7 +696,7 @@ Quaternion CalculateValueRotate(const std::vector<KeyframeQuaternion>& keyframes
 		if (keyframes[index].time <= time && time <= keyframes[nextIndex].time) {
 			//範囲内を補間する
 			float t = (time - keyframes[index].time) / (keyframes[nextIndex].time - keyframes[index].time);
-			return Slerp(keyframes[index].value, keyframes[nextIndex].value, t);
+			return SlerpQuaternion(keyframes[index].value, keyframes[nextIndex].value, t);
 		}
 	}
 	// ここまできた場合は一番後の時刻よりも後ろなので最後の値を返すことにする

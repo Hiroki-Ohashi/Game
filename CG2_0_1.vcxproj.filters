@@ -51,6 +51,8 @@
     <ClCompile Include="Project\GameObject\Player\PlayerBullet.cpp" />
     <ClCompile Include="Project\GameScene\ClearScene.cpp" />
     <ClCompile Include="Project\GameObject\Stage\Stage.cpp" />
+    <ClCompile Include="Project\GameObject\Enemy\Enemy.cpp" />
+    <ClCompile Include="Project\GameObject\Enemy\EnemyBullet.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\3d\Animation.h" />
@@ -89,6 +91,8 @@
     <ClInclude Include="Project\GameObject\Player\PlayerBullet.h" />
     <ClInclude Include="Project\GameScene\ClearScene.h" />
     <ClInclude Include="Project\GameObject\Stage\Stage.h" />
+    <ClInclude Include="Project\GameObject\Enemy\Enemy.h" />
+    <ClInclude Include="Project\GameObject\Enemy\EnemyBullet.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\Shaders\Fullscreen.hlsli" />

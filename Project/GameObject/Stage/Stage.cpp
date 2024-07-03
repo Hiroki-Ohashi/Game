@@ -2,7 +2,7 @@
 
 void Stage::Initialize()
 {
-	transform_ = { {30.0f,1.0f,10000.0f},{0.0f,0.0f,0.0f},{0.0f,-15.0f,0.0f} };
+	transform_ = { {10000.0f,1.0f,10000.0f},{0.0f,0.0f,0.0f},{0.0f,-20.0f,0.0f} };
 
 	model_ = std::make_unique<Model>();
 	model_->Initialize("cube.obj", transform_);
@@ -12,7 +12,7 @@ void Stage::Initialize()
 	worldtransform_.translate = transform_.translate;
 	worldtransform_.UpdateMatrix();
 
-	stageTex = textureManager_->Load("resources/kusa.png");
+	stageTex = textureManager_->Load("resources/uvChecker.png");
 }
 
 void Stage::Update()

@@ -19,6 +19,7 @@ void Player::Initialize()
 	worldtransform_.translate = transform_.translate;
 	worldtransform_.UpdateMatrix();
 
+	playerTex = textureManager_->Load("resources/white.png");
 	bulletTex = textureManager_->Load("resources/white.png");
 }
 

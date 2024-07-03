@@ -22,6 +22,7 @@
 #include <Player/Player.h>
 #include <Skydome.h>
 #include <Stage/Stage.h>
+#include <Enemy/Enemy.h>
 
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -44,12 +45,22 @@ public:
 	// 解放
 	void Release();
 
+	void EnemySpown(Vector3 pos);
+	void AddEnemyBullet(EnemyBullet* enemyBullet);
+	void AddEnemy(Enemy* enemy);
+
 private:
 	Camera* camera_ = nullptr;
+	TextureManager* textureManager_ = TextureManager::GetInstance();
 	std::unique_ptr<PostProcess> postProcess_ = nullptr;
 
 	// プレイヤー
 	std::unique_ptr<Player> player_;
+
+	// 敵
+	std::list<Enemy*> enemys_;
+	// 敵弾
+	std::list<EnemyBullet*> enemyBullets_;
 
 	// ステージ
 	std::unique_ptr<Stage> stage_;
@@ -59,7 +70,9 @@ private:
 
 private:
 	// テクスチャ
-	uint32_t playerTex;
+	uint32_t enemyBulletTex;
 	bool isFade;
 	bool isGame;
+
+	Vector3 pos_ = { 0.0f, 0.0f, 500.0f };
 };
