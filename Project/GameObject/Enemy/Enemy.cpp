@@ -14,6 +14,8 @@ void Enemy::Initialize(Vector3 pos)
 	worldtransform_.translate = transform_.translate;
 	worldtransform_.UpdateMatrix();
 
+	isDead_ = false;
+
 	enemyTex = textureManager_->Load("resources/black.png");
 }
 

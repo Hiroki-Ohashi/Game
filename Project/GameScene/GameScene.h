@@ -45,6 +45,8 @@ public:
 	// 解放
 	void Release();
 
+	void CheckAllCollisions();
+
 	void EnemySpown(Vector3 pos);
 	void AddEnemyBullet(EnemyBullet* enemyBullet);
 	void AddEnemy(Enemy* enemy);

@@ -8,9 +8,10 @@ public:
 	void Update();
 	void Draw(Camera* camera, uint32_t index);
 
-	bool IsDead() const { return isDead_; }
-	Vector3 GetPosition() { return transform.translate; }
 	void OnCollision() { isDead_ = true; }
+
+	bool IsDead() const { return isDead_; }
+	Vector3 GetPos() { return worldtransform_.translate; }
 private:
 
 	std::unique_ptr<Model> model_;

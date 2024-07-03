@@ -61,12 +61,16 @@ void GameScene::Update(){
 		return false;
 	});
 
+	CheckAllCollisions();
+
 	stage_->Update();
 
 	camera_->cameraTransform.translate.z = player_->GetPos().z - 50.0f;
 
-	if (input_->TriggerKey(DIK_RETURN)) {
-		sceneNo = CLEAR;
+	for (Enemy* enemy : enemys_) {
+		if (enemy->IsDead() == true) {
+			sceneNo = CLEAR;
+		}
 	}
 }
 
@@ -96,6 +100,103 @@ void GameScene::PostDraw()
 }
 
 void GameScene::Release() {
+}
+
+void GameScene::CheckAllCollisions()
+{
+	// 判定衝突AとBの座標
+	Vector3 posA, posB;
+
+	// 自弾リストの取得
+	const std::list<PlayerBullet*>& playerBullets = player_->GetBullets();
+	// 敵弾リストの取得
+	const std::list<EnemyBullet*>& enemyBullets = enemyBullets_;
+
+#pragma region 自キャラと敵弾の当たり判定
+	// 自キャラの座標
+	posA = player_->GetPos();
+
+	// 自キャラと敵弾すべての当たり判定
+	for (EnemyBullet* bullet : enemyBullets) {
+		// 敵弾の座標
+		posB = bullet->GetPos();
+
+		float p2eBX = (posB.x - posA.x) * (posB.x - posA.x);
+		float p2eBY = (posB.y - posA.y) * (posB.y - posA.y);
+		float p2eBZ = (posB.z - posA.z) * (posB.z - posA.z);
+
+		float pRadius = 1.0f;
+		float eBRadius = 1.0f;
+
+		float L = (pRadius + eBRadius) * (pRadius + eBRadius);
+
+		if (p2eBX + p2eBY + p2eBZ <= L) {
+			// 自キャラの衝突時コールバックを呼び出す
+			player_->OnCollision();
+			// 敵弾の衝突時コールバックを呼び出す
+			bullet->OnCollision();
+		}
+	}
+
+#pragma endregion
+
+#pragma region 自弾と敵キャラの当たり判定
+	// 敵キャラと自弾すべての当たり判定
+	for (PlayerBullet* bullet : playerBullets) {
+		for (Enemy* enemy : enemys_) {
+
+			// 敵キャラの座標
+			posA = enemy->GetPos();
+
+			// 自弾の座標
+			posB = bullet->GetPos();
+
+			float e2pBX = (posB.x - posA.x) * (posB.x - posA.x);
+			float e2pBY = (posB.y - posA.y) * (posB.y - posA.y);
+			float e2pBZ = (posB.z - posA.z) * (posB.z - posA.z);
+
+			float eRadius = 1.0f;
+			float pBRadius = 1.0f;
+
+			float L = (eRadius + pBRadius);
+
+			if (e2pBX + e2pBY + e2pBZ <= L) {
+				// 敵キャラの衝突時コールバックを呼び出す
+				enemy->OnCollision();
+				// 自弾の衝突時コールバックを呼び出す
+				bullet->OnCollision();
+			}
+		}
+	}
+#pragma endregion
+
+#pragma region 自弾と敵弾の当たり判定
+	// 敵弾と自弾すべての当たり判定
+	for (PlayerBullet* playerBullet : playerBullets) {
+		for (EnemyBullet* enemyBullet : enemyBullets) {
+			// 敵弾の座標
+			posA = playerBullet->GetPos();
+			// 自弾の座標
+			posB = enemyBullet->GetPos();
+
+			float pB2eBX = (posB.x - posA.x) * (posB.x - posA.x);
+			float pB2eBY = (posB.y - posA.y) * (posB.y - posA.y);
+			float pB2eBZ = (posB.z - posA.z) * (posB.z - posA.z);
+
+			float pBRadius = 1.0f;
+			float eBRadius = 1.0f;
+
+			float L = (pBRadius + eBRadius) * (pBRadius + eBRadius);
+
+			if (pB2eBX + pB2eBY + pB2eBZ <= L) {
+				// 自弾の衝突時コールバックを呼び出す
+				playerBullet->OnCollision();
+				// 敵弾の衝突時コールバックを呼び出す
+				enemyBullet->OnCollision();
+			}
+		}
+	}
+#pragma endregion
 }
 
 void GameScene::EnemySpown(Vector3 pos)

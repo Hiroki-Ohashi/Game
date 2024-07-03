@@ -10,8 +10,10 @@ public:
 	void Update();
 	void Draw(Camera* camera, uint32_t index);
 
+	void OnCollision() { isDead_ = true; }
+
 	bool IsDead() const { return isDead_; }
-	Vector3 GetPosition() { return transform.translate; }
+	Vector3 GetPos() { return worldtransform_.translate; }
 	void SetPlayer(Player* player) { player_ = player; }
 private:
 

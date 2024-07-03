@@ -12,7 +12,11 @@ public:
 	void Update();
 	void Draw(Camera* camera_);
 
-	Vector3 GetPos() { return transform_.translate; }
+	void OnCollision() {}
+
+	Vector3 GetPos() { return worldtransform_.translate; }
+	// 弾リストを取得
+	const std::list<PlayerBullet*>& GetBullets() const { return bullets_; }
 private:
 	void Attack();
 private:
