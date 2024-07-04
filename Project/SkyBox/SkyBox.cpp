@@ -26,10 +26,10 @@ void SkyBox::Draw(Camera* camera, uint32_t index)
 
 	worldTransform_.TransferMatrix(wvpResourceData, camera);
 
-	Matrix4x4 uvtransformMatrix = MakeScaleMatrix(uvTransform.scale);
+	/*Matrix4x4 uvtransformMatrix = MakeScaleMatrix(uvTransform.scale);
 	uvtransformMatrix = Multiply(uvtransformMatrix, MakeRotateZMatrix(uvTransform.rotate.z));
 	uvtransformMatrix = Multiply(uvtransformMatrix, MakeTranslateMatrix(uvTransform.translate));
-	materialData->uvTransform = uvtransformMatrix;
+	materialData->uvTransform = uvtransformMatrix;*/
 
 	// Rootsignatureを設定。PSOに設定してるけど別途設定が必要
 	dir_->GetCommandList()->SetGraphicsRootSignature(rootSignature.Get());
