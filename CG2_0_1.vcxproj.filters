@@ -10,6 +10,7 @@
     <FxCompile Include="resources\Shaders\Object3d.VS.hlsl" />
     <FxCompile Include="resources\Shaders\Vignette.PS.hlsl" />
     <FxCompile Include="resources\Shaders\SkinningObject3d.VS.hlsl" />
+    <FxCompile Include="resources\Shaders\BoxFilter.PS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine\3d\Animation.cpp" />
@@ -41,6 +42,7 @@
     <ClCompile Include="Engine\Base\WinApp.cpp" />
     <ClCompile Include="Project\utillity\WorldTransform.cpp" />
     <ClCompile Include="Project\GameScene\TitleScene.cpp" />
+    <ClCompile Include="Project\GameScene\ClearScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\3d\Animation.h" />
@@ -72,6 +74,7 @@
     <ClInclude Include="Engine\Base\WinApp.h" />
     <ClInclude Include="Project\utillity\WorldTransform.h" />
     <ClInclude Include="Project\GameScene\TitleScene.h" />
+    <ClInclude Include="Project\GameScene\ClearScene.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\Shaders\Fullscreen.hlsli" />

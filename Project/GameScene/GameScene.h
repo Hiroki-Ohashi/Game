@@ -42,41 +42,14 @@ public:
 	void Release();
 
 private:
-
-	// 三角形の数
-	static const int Max = 2;
-
 	TextureManager* textureManager_ = nullptr;
 	Camera* camera_ = nullptr;
 
-	//std::unique_ptr<Sphere> sphere_;
-
-	//std::unique_ptr<Model> model_;
-	//std::unique_ptr<Model> model2_;
-
-	std::unique_ptr<AnimationModel> model_;
 	std::unique_ptr<AnimationModel> model2_;
-	std::unique_ptr<AnimationModel> model3_;
-
-	std::unique_ptr<Particles> particle_ = nullptr;
-	std::unique_ptr<Particles> particle2_ = nullptr;
 
 	std::unique_ptr<PostProcess> postProcess_ = nullptr;
 
-	CameraForGpu camera;
-
 	EulerTransform transform;
-	EulerTransform transform2;
-	EulerTransform transform3;
 
-	Vector3 pos = { -2.0f, 0.0f, 10.0f };
-	Vector3 pos2 = { 2.0f, 0.0f, 10.0f };
-
-	uint32_t monsterBall;
-	uint32_t moon;
 	uint32_t uv;
-	uint32_t kusa;
-	uint32_t circle;
-	uint32_t utillity;
-	uint32_t white;
 };
