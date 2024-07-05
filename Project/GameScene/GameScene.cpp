@@ -70,7 +70,7 @@ void GameScene::Update(){
 
 	stage_->Update();
 
-	camera_->cameraTransform.translate.z = player_->GetPos().z - 50.0f;
+	camera_->cameraTransform.translate = { player_->GetPos().x, player_->GetPos().y,  player_->GetPos().z - 50.0f };
 
 	for (Enemy* enemy : enemys_) {
 		if (enemy->IsDead() == true) {
