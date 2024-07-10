@@ -1,22 +1,18 @@
 #include "GameScene.h"
 
 GameScene::~GameScene(){
-	/*for (int i = 0; i < Max; i++) {
-		delete triangle_[i];
-	}*/
 	delete camera_;
 }
 
 void GameScene::Initialize(){
 	textureManager_ = TextureManager::GetInstance();
-	textureManager_->Initialize();
 
 	camera_ = new Camera();
 	camera_->Initialize();
 
 
 	postProcess_ = std::make_unique<PostProcess>();
-	postProcess_->Initialize(GRAY);
+	postProcess_->Initialize(HSV);
 
 	transform = { { 1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,-1.0f,3.0f} };
 

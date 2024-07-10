@@ -6,7 +6,8 @@ enum Type {
 	GRAY,
 	VIGNETTE,
 	BOX,
-	GAUSSIAN
+	GAUSSIAN,
+	HSV
 };
 
 class PostProcess {
@@ -19,6 +20,7 @@ private:
 	void CreateVignettePSO();
 	void CreateBoxPSO();
 	void CreateGaussianPSO();
+	void CreateHSVPSO();
 private:
 	DirectXCommon* dir_ = DirectXCommon::GetInsTance();
 

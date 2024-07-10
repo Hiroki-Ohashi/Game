@@ -47,7 +47,7 @@ PixelShaderOutput main(VertexShaderOutput input)
     float32_t2 uvStepSize = float32_t2(rcp(width), rcp(height));
     
     // kernelを求める weightは後で使う
-    uint32_t weight = 0.0f;
+    float32_t weight = 0.0f;
     float32_t kernel5x5[5][5];
     for (int32_t x = 0; x < KenelSize; ++x)
     {

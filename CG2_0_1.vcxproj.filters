@@ -11,6 +11,7 @@
     <FxCompile Include="resources\Shaders\Vignette.PS.hlsl" />
     <FxCompile Include="resources\Shaders\SkinningObject3d.VS.hlsl" />
     <FxCompile Include="resources\Shaders\BoxFilter.PS.hlsl" />
+    <FxCompile Include="resources\Shaders\HSVFilter.PS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine\3d\Animation.cpp" />
