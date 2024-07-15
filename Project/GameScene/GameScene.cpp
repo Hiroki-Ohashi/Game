@@ -24,6 +24,9 @@ void GameScene::Initialize() {
 	player_ = std::make_unique<Player>();
 	player_->Initialize();
 
+	boss_ = std::make_unique<Boss>();
+	boss_->Initialize(pos2_);
+
 	// stage
 	stage_ = std::make_unique<Stage>();
 	stage_->Initialize();
@@ -48,6 +51,10 @@ void GameScene::Update(){
 
 	UpdateEnemyPopCommands();
 
+	if (player_->GetPos().z >= 550.0f) {
+		boss_->Update();
+	}
+
 	for (Enemy* enemy : enemys_) {
 		enemy->Update();
 	}
@@ -70,12 +77,16 @@ void GameScene::Update(){
 
 	stage_->Update();
 
-	camera_->cameraTransform.translate = { player_->GetPos().x, player_->GetPos().y,  player_->GetPos().z - 50.0f };
+	camera_->cameraTransform.translate = { player_->GetPos().x, player_->GetPos().y + 5.0f,  player_->GetPos().z - 50.0f };
 
-	for (Enemy* enemy : enemys_) {
+	/*for (Enemy* enemy : enemys_) {
 		if (enemy->IsDead() == true) {
 			sceneNo = CLEAR;
 		}
+	}*/
+
+	if (boss_->IsDead() == true) {
+		sceneNo = CLEAR;
 	}
 }
 
@@ -95,6 +106,10 @@ void GameScene::Draw()
 	// 弾描画
 	for (EnemyBullet* bullet : enemyBullets_) {
 		bullet->Draw(camera_, enemyBulletTex);
+	}
+
+	if (player_->GetPos().z >= 550.0f) {
+		boss_->Draw(camera_);
 	}
 }
 
@@ -202,6 +217,34 @@ void GameScene::CheckAllCollisions()
 		}
 	}
 #pragma endregion
+
+#pragma region 自弾と敵キャラの当たり判定
+	// 自キャラの座標
+	posA = boss_->GetPos();
+
+	// 自キャラと敵弾すべての当たり判定
+	for (PlayerBullet* playerBullet : playerBullets) {
+		// 敵弾の座標
+		posB = playerBullet->GetPos();
+
+		float p2eBX = (posB.x - posA.x) * (posB.x - posA.x);
+		float p2eBY = (posB.y - posA.y) * (posB.y - posA.y);
+		float p2eBZ = (posB.z - posA.z) * (posB.z - posA.z);
+
+		float pRadius = 10.0f;
+		float eBRadius = 1.0f;
+
+		float L = (pRadius + eBRadius) * (pRadius + eBRadius);
+
+		if (p2eBX + p2eBY + p2eBZ <= L) {
+			// 自キャラの衝突時コールバックを呼び出す
+			boss_->OnCollision();
+			// 敵弾の衝突時コールバックを呼び出す
+			playerBullet->OnCollision();
+		}
+	}
+#pragma endregion
+
 }
 
 void GameScene::LoadEnemyPopData()

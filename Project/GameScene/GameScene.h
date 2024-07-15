@@ -23,6 +23,7 @@
 #include <Skydome.h>
 #include <Stage/Stage.h>
 #include <Enemy/Enemy.h>
+#include <Enemy/Boss.h>
 
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -71,6 +72,7 @@ private:
 
 	// 敵
 	std::list<Enemy*> enemys_;
+	std::unique_ptr<Boss> boss_;
 	// 敵弾
 	std::list<EnemyBullet*> enemyBullets_;
 
@@ -87,6 +89,7 @@ private:
 	bool isGame;
 
 	Vector3 pos_ = { 0.0f, 0.0f, 500.0f };
+	Vector3 pos2_ = { 0.0f, 0.0f, 700.0f };
 
 	// 待機タイマー
 	int32_t waitTimer_;
