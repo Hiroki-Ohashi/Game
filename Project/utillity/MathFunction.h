@@ -56,6 +56,17 @@ struct VertexData {
 	Vector3 normal;
 };
 
+struct LevelData {
+	ObjectData objects;
+};
+
+struct ObjectData {
+	Vector3 translation;
+	Vector3 rotation;
+	Vector3 scaling;
+};
+
+
 struct Material {
 	Vector4 color;
 	int32_t enableLighting;

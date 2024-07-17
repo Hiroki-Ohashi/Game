@@ -12,7 +12,7 @@ void GameScene::Initialize(){
 
 
 	postProcess_ = std::make_unique<PostProcess>();
-	postProcess_->Initialize(HSV);
+	postProcess_->Initialize(GRAY);
 
 	transform = { { 1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,-1.0f,3.0f} };
 
