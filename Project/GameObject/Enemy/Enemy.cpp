@@ -54,13 +54,15 @@ void Enemy::Draw(Camera* camera)
 
 void Enemy::Attack()
 {
+	assert(player_);
+
 	Vector3 end = player_->GetPos();
 	Vector3 start = transform_.translate;
 
 	Vector3 diff;
 	diff.x = end.x - start.x;
 	diff.y = end.y - start.y;
-	diff.z = end.z + start.z;
+	diff.z = end.z - start.z;
 
 	diff = Normalize(diff);
 

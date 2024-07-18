@@ -89,16 +89,13 @@ private:
 	uint32_t enemyBulletTex;
 	uint32_t bossBulletTex;
 
-	bool isFade;
-	bool isGame;
-
 	Vector3 pos_ = { 0.0f, 0.0f, 500.0f };
 	Vector3 pos2_ = { 0.0f, 0.0f, 500.0f };
 
 	// 待機タイマー
 	int32_t waitTimer_;
 	// 待機フラグ
-	bool isWait_ = false;
+	bool isWait_;
 
 	// 敵発生コマンド
 	std::stringstream enemyPopCommands;

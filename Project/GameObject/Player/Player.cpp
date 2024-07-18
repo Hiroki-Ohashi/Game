@@ -84,7 +84,7 @@ void Player::Update()
 	// 自機から3Dレティクルへの距離
 	const float kDistancePlayerTo3DReticle = 50.0f;
 	// 自機から3Dレティクルへのオフセット(Z+向き)
-	Vector3 offset = { 0, 0, 1.0f };
+	Vector3 offset = { 0, 0, 1.5f };
 	// 自機のワールド行列の回転を反映
 	offset = Transforme(offset, worldtransform_.matWorld);
 	// ベクトルの長さを変える
@@ -114,10 +114,6 @@ void Player::Update()
 	if (ImGui::TreeNode("Player")) {
 		ImGui::DragFloat3("Rotate.y ", &worldtransform_.rotate.x, 0.01f);
 		ImGui::DragFloat3("Transform", &worldtransform_.translate.x, 0.01f);
-
-		//ImGui::DragFloat2("UVTransform", &worldtransform_.translate.x, 0.01f, -10.0f, 10.0f);
-		//ImGui::DragFloat2("UVScale", &worldtransform_.scale.x, 0.01f, -10.0f, 10.0f);
-		//ImGui::SliderAngle("UVRotate", &worldtransform_.rotate.z);
 		ImGui::TreePop();
 	}
 }

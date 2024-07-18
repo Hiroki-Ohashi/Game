@@ -14,7 +14,7 @@ public:
 
 	void OnCollision() {}
 
-	Vector3 GetPos() const { return worldtransform_.translate; }
+	Vector3 GetPos() { return worldtransform_.translate; }
 	Vector3 Get3DWorldPosition();
 	// 弾リストを取得
 	const std::list<PlayerBullet*>& GetBullets() const { return bullets_; }

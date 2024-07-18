@@ -28,6 +28,7 @@ void GameScene::Initialize() {
 	player_ = std::make_unique<Player>();
 	player_->Initialize();
 
+	// boss
 	boss_ = std::make_unique<Boss>();
 	boss_->Initialize(pos2_);
 	boss_->SetPlayer(player_.get());
@@ -44,20 +45,20 @@ void GameScene::Initialize() {
 	enemyBulletTex = textureManager_->Load("resources/black.png");
 	bossBulletTex = textureManager_->Load("resources/white.png");
 
-	LoadEnemyPopData();
-
 	for (Enemy* enemy : enemys_) {
 		enemy->SetIsDead(false);
 	}
+
+	LoadEnemyPopData();
 }
 
 void GameScene::Update(){
 
+	UpdateEnemyPopCommands();
+
 	camera_->Update();
 
 	player_->Update();
-
-	UpdateEnemyPopCommands();
 
 	if (player_->GetPos().z >= 400.0f) {
 
@@ -385,10 +386,10 @@ void GameScene::EnemySpown(Vector3 pos)
 	Enemy* enemy_ = new Enemy();
 	// 敵キャラの初期化
 	enemy_->Initialize(pos);
-	// 敵キャラにゲームシーンを渡す
-	enemy_->SetGameScene(this);
 	// 敵キャラに自キャラのアドレスを渡す
 	enemy_->SetPlayer(player_.get());
+	// 敵キャラにゲームシーンを渡す
+	enemy_->SetGameScene(this);
 	AddEnemy(enemy_);
 }
 

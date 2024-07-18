@@ -34,8 +34,8 @@ private:
 	// シーンを保持
 	std::unique_ptr<IScene> sceneArr_[3];
 
-	int currentSceneNo_;
-	int prvSceneNo_;
-	int sceneNo;
+	int currentSceneNo_ = TITLE;
+	int prvSceneNo_ = 0;
+	int sceneNo = 0;
 
 };

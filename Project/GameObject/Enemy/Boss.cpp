@@ -15,7 +15,6 @@ void Boss::Initialize(Vector3 pos)
 	worldtransform_.UpdateMatrix();
 
 	isDead_ = false;
-
 	hp_ = 10;
 
 	enemyTex = textureManager_->Load("resources/black.png");
@@ -23,7 +22,6 @@ void Boss::Initialize(Vector3 pos)
 
 void Boss::Update()
 {
-
 	transform_.translate.x += speedX;
 	transform_.translate.y += speedY;
 
@@ -86,7 +84,7 @@ void Boss::Attack()
 	Vector3 diff;
 	diff.x = end.x - start.x;
 	diff.y = end.y - start.y;
-	diff.z = end.z + start.z;
+	diff.z = end.z - start.z;
 
 	diff = Normalize(diff);
 
