@@ -60,6 +60,7 @@ public:
 
 	void EnemySpown(Vector3 pos);
 	void AddEnemyBullet(EnemyBullet* enemyBullet);
+	void AddBossBullet(BossBullet* bossBullet);
 	void AddEnemy(Enemy* enemy);
 
 private:
@@ -75,6 +76,7 @@ private:
 	std::unique_ptr<Boss> boss_;
 	// 敵弾
 	std::list<EnemyBullet*> enemyBullets_;
+	std::list<BossBullet*> bossBullets_;
 
 	// ステージ
 	std::unique_ptr<Stage> stage_;
@@ -85,11 +87,13 @@ private:
 private:
 	// テクスチャ
 	uint32_t enemyBulletTex;
+	uint32_t bossBulletTex;
+
 	bool isFade;
 	bool isGame;
 
 	Vector3 pos_ = { 0.0f, 0.0f, 500.0f };
-	Vector3 pos2_ = { 0.0f, 0.0f, 700.0f };
+	Vector3 pos2_ = { 0.0f, 0.0f, 500.0f };
 
 	// 待機タイマー
 	int32_t waitTimer_;

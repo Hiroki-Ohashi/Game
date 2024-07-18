@@ -193,6 +193,8 @@ float Length(const Vector3& v);
 Vector3 Normalize(const Vector3& v1);
 Vector3 Cross(const Vector3& v1, const Vector3& v2);
 Vector3 Transforme(const Vector3& vector, const Matrix4x4& matrix);
+// ベクトル足し算
+Vector3 Add(const Vector3& v1, const Vector3& v2);
 Matrix4x4 Transpose(const Matrix4x4& m);
 
 // 単位行列の作成

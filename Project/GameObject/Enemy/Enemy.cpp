@@ -54,10 +54,6 @@ void Enemy::Draw(Camera* camera)
 
 void Enemy::Attack()
 {
-	// 弾の速度
-	const float kBulletSpeed = 20.0f;
-
-
 	Vector3 end = player_->GetPos();
 	Vector3 start = transform_.translate;
 
@@ -67,10 +63,6 @@ void Enemy::Attack()
 	diff.z = end.z + start.z;
 
 	diff = Normalize(diff);
-
-	diff.x *= kBulletSpeed;
-	diff.y *= kBulletSpeed;
-	diff.z *= kBulletSpeed;
 
 	Vector3 velocity(diff.x, diff.y, diff.z);
 

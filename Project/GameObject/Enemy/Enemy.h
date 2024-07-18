@@ -15,6 +15,7 @@ public:
 	void Draw(Camera* camera);
 
 	void Attack();
+
 	void OnCollision() { isDead_ = true; }
 	void SetIsDead(bool isDead) { isDead_ = isDead; }
 

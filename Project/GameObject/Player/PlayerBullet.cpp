@@ -1,6 +1,6 @@
 #include "PlayerBullet.h"
 
-void PlayerBullet::Initialize(Vector3 pos)
+void PlayerBullet::Initialize(Vector3 pos, Vector3 velocity)
 {
 	transform = { {0.3f,0.3f,0.5f},{0.0f,0.0f,0.0f},{pos.x,pos.y,pos.z} };
 
@@ -11,13 +11,16 @@ void PlayerBullet::Initialize(Vector3 pos)
 	worldtransform_.rotate = transform.rotate;
 	worldtransform_.translate = transform.translate;
 	worldtransform_.UpdateMatrix();
+
+	velo = velocity;
 }
 
 void PlayerBullet::Update()
 {
-	transform.translate.z += 2.0f;
-
-	worldtransform_.translate = transform.translate;
+	worldtransform_.translate.x += velo.x;
+	worldtransform_.translate.y += velo.y;
+	worldtransform_.translate.z += velo.z;
+	worldtransform_.UpdateMatrix();
 	model_->SetWorldTransform(worldtransform_);
 
 	// 時間経過でデス

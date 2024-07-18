@@ -1,9 +1,9 @@
-#include "EnemyBullet.h"
+#include "BossBullet.h"
 #include <Player/Player.h>
 
-void EnemyBullet::Initialize(Vector3 pos, Vector3 velocity)
+void BossBullet::Initialize(Vector3 pos, Vector3 velocity)
 {
-	transform = { {0.3f,0.3f,0.5f},{0.0f,0.0f,0.0f},{pos.x,pos.y,pos.z} };
+	transform = { {1.0f,1.0f,1.5f},{0.0f,0.0f,0.0f},{pos.x,pos.y,pos.z} };
 
 	model_ = std::make_unique<Model>();
 	model_->Initialize("cube.obj", transform);
@@ -16,7 +16,7 @@ void EnemyBullet::Initialize(Vector3 pos, Vector3 velocity)
 	velocity_ = velocity;
 }
 
-void EnemyBullet::Update()
+void BossBullet::Update()
 {
 	// 敵弾から自キャラへのベクトル計算
 	Vector3 toPlayer;
@@ -54,7 +54,7 @@ void EnemyBullet::Update()
 	}
 }
 
-void EnemyBullet::Draw(Camera* camera, uint32_t index)
+void BossBullet::Draw(Camera* camera, uint32_t index)
 {
 	model_->Draw(camera, index);
 }

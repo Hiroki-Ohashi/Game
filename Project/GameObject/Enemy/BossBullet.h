@@ -1,8 +1,10 @@
 #pragma once
-#include <Camera.h>
+#include <WorldTransform.h>
 #include <Model.h>
 
-class PlayerBullet {
+class Player;
+
+class BossBullet {
 public:
 	void Initialize(Vector3 pos, Vector3 velocity);
 	void Update();
@@ -12,16 +14,19 @@ public:
 
 	bool IsDead() const { return isDead_; }
 	Vector3 GetPos() { return worldtransform_.translate; }
+	void SetPlayer(Player* player) { player_ = player; }
 private:
+
 	std::unique_ptr<Model> model_;
 	EulerTransform transform;
 	WorldTransform worldtransform_;
-private:
+	// 自機
+	Player* player_ = nullptr;
+	// 速度
+	Vector3 velocity_;
+
 	// デスタイマー
 	static const int32_t kLifeTime = 60 * 5;
 	int32_t deathTimer_ = kLifeTime;
 	bool isDead_ = false;
-
-	// 速度
-	Vector3 velo;
 };

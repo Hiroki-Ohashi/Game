@@ -8,6 +8,10 @@ GameScene::~GameScene(){
 		delete bullet;
 	}
 
+	for (BossBullet* bullet : bossBullets_) {
+		delete bullet;
+	}
+
 	for (Enemy* enemy : enemys_) {
 		delete enemy;
 	}
@@ -26,6 +30,8 @@ void GameScene::Initialize() {
 
 	boss_ = std::make_unique<Boss>();
 	boss_->Initialize(pos2_);
+	boss_->SetPlayer(player_.get());
+	boss_->SetGameScene(this);
 
 	// stage
 	stage_ = std::make_unique<Stage>();
@@ -36,6 +42,7 @@ void GameScene::Initialize() {
 	skydome_->Initialize();
 
 	enemyBulletTex = textureManager_->Load("resources/black.png");
+	bossBulletTex = textureManager_->Load("resources/white.png");
 
 	LoadEnemyPopData();
 
@@ -47,12 +54,27 @@ void GameScene::Initialize() {
 void GameScene::Update(){
 
 	camera_->Update();
+
 	player_->Update();
 
 	UpdateEnemyPopCommands();
 
-	if (player_->GetPos().z >= 550.0f) {
+	if (player_->GetPos().z >= 400.0f) {
+
 		boss_->Update();
+
+		// ボス弾更新
+		for (BossBullet* bullet : bossBullets_) {
+			bullet->Update();
+		}
+
+		bossBullets_.remove_if([](BossBullet* bullet) {
+			if (bullet->IsDead()) {
+				delete bullet;
+				return true;
+			}
+			return false;
+			});
 	}
 
 	for (Enemy* enemy : enemys_) {
@@ -64,7 +86,7 @@ void GameScene::Update(){
 		bullet->Update();
 	}
 
-	// デスフラグんお立った弾を排除
+	// デスフラグの立った弾を排除
 	enemyBullets_.remove_if([](EnemyBullet* bullet) {
 		if (bullet->IsDead()) {
 			delete bullet;
@@ -77,13 +99,7 @@ void GameScene::Update(){
 
 	stage_->Update();
 
-	camera_->cameraTransform.translate = { player_->GetPos().x, player_->GetPos().y + 5.0f,  player_->GetPos().z - 50.0f };
-
-	/*for (Enemy* enemy : enemys_) {
-		if (enemy->IsDead() == true) {
-			sceneNo = CLEAR;
-		}
-	}*/
+	camera_->cameraTransform.translate = { player_->GetPos().x, player_->GetPos().y + 3.0f,  player_->GetPos().z - 50.0f };
 
 	if (boss_->IsDead() == true) {
 		sceneNo = CLEAR;
@@ -96,8 +112,6 @@ void GameScene::Draw()
 
 	stage_->Draw(camera_);
 
-	player_->Draw(camera_);
-
 	// 敵キャラの描画
 	for (Enemy* enemy : enemys_) {
 		enemy->Draw(camera_);
@@ -108,8 +122,16 @@ void GameScene::Draw()
 		bullet->Draw(camera_, enemyBulletTex);
 	}
 
-	if (player_->GetPos().z >= 550.0f) {
+	player_->Draw(camera_);
+
+	if (player_->GetPos().z >= 400.0f) {
+
 		boss_->Draw(camera_);
+
+		// ボス弾描画
+		for (BossBullet* bullet : bossBullets_) {
+			bullet->Draw(camera_, bossBulletTex);
+		}
 	}
 }
 
@@ -131,6 +153,7 @@ void GameScene::CheckAllCollisions()
 	const std::list<PlayerBullet*>& playerBullets = player_->GetBullets();
 	// 敵弾リストの取得
 	const std::list<EnemyBullet*>& enemyBullets = enemyBullets_;
+	const std::list<BossBullet*>& bossBullets = bossBullets_;
 
 #pragma region 自キャラと敵弾の当たり判定
 	// 自キャラの座標
@@ -218,7 +241,7 @@ void GameScene::CheckAllCollisions()
 	}
 #pragma endregion
 
-#pragma region 自弾と敵キャラの当たり判定
+#pragma region 自弾とボスの当たり判定
 	// 自キャラの座標
 	posA = boss_->GetPos();
 
@@ -231,18 +254,48 @@ void GameScene::CheckAllCollisions()
 		float p2eBY = (posB.y - posA.y) * (posB.y - posA.y);
 		float p2eBZ = (posB.z - posA.z) * (posB.z - posA.z);
 
-		float pRadius = 10.0f;
+		float pRadius = 15.0f;
 		float eBRadius = 1.0f;
 
 		float L = (pRadius + eBRadius) * (pRadius + eBRadius);
 
 		if (p2eBX + p2eBY + p2eBZ <= L) {
 			// 自キャラの衝突時コールバックを呼び出す
-			boss_->OnCollision();
+			if (player_->GetPos().z >= 400.0f) {
+				boss_->OnCollision();
+			}
 			// 敵弾の衝突時コールバックを呼び出す
 			playerBullet->OnCollision();
 		}
 	}
+#pragma endregion
+
+#pragma region 自キャラとボス弾の当たり判定
+	// 自キャラの座標
+	posA = player_->GetPos();
+
+	// 自キャラと敵弾すべての当たり判定
+	for (BossBullet* bullet : bossBullets) {
+		// 敵弾の座標
+		posB = bullet->GetPos();
+
+		float p2eBX = (posB.x - posA.x) * (posB.x - posA.x);
+		float p2eBY = (posB.y - posA.y) * (posB.y - posA.y);
+		float p2eBZ = (posB.z - posA.z) * (posB.z - posA.z);
+
+		float pRadius = 1.0f;
+		float eBRadius = 1.0f;
+
+		float L = (pRadius + eBRadius) * (pRadius + eBRadius);
+
+		if (p2eBX + p2eBY + p2eBZ <= L) {
+			// 自キャラの衝突時コールバックを呼び出す
+			player_->OnCollision();
+			// 敵弾の衝突時コールバックを呼び出す
+			bullet->OnCollision();
+		}
+	}
+
 #pragma endregion
 
 }
@@ -343,6 +396,12 @@ void GameScene::AddEnemyBullet(EnemyBullet* enemyBullet)
 {
 	// リストに登録する
 	enemyBullets_.push_back(enemyBullet);
+}
+
+void GameScene::AddBossBullet(BossBullet* bossBullet)
+{
+	// リストに登録する
+	bossBullets_.push_back(bossBullet);
 }
 
 void GameScene::AddEnemy(Enemy* enemy)
