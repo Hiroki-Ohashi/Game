@@ -125,6 +125,81 @@ MaterialData TextureManager::LoadMaterialTemplateFile(const std::string& directo
 	return materialData;
 }
 
+ModelData TextureManager::LoadObjFile(const std::string& directoryPath, const std::string& filename)
+{
+	// 必要な変数の宣言
+	ModelData modelData; // 構築するModelData
+	std::vector<Vector4> positions; // 位置
+	std::vector<Vector3> normals; // 法線
+	std::vector<Vector2> texcoords; // テクスチャ座標
+	std::string line; // ファイルから読んだ1行を格納するもの
+
+	// ファイルを開くために開く
+	std::ifstream file(directoryPath + "/" + filename); // ファイルを開く
+	assert(file.is_open()); // とりあえず開けなかったら止める
+
+	while (std::getline(file, line)) {
+		std::string identifier;
+		std::istringstream s(line);
+		s >> identifier; // 先頭の識別子を読む
+		if (identifier == "v") {
+			Vector4 position;
+			s >> position.x >> position.y >> position.z;
+			position.z *= -1.0f;
+			position.w = 1.0f;
+			positions.push_back(position);
+		}
+		else if (identifier == "vt") {
+			Vector2 texcoord;
+			s >> texcoord.x >> texcoord.y;
+			texcoord.y = 1.0f - texcoord.y;
+			texcoords.push_back(texcoord);
+		}
+		else if (identifier == "vn") {
+			Vector3 normal;
+			s >> normal.x >> normal.y >> normal.z;
+			normal.z *= -1.0f;
+			normals.push_back(normal);
+		}
+		else if (identifier == "f") {
+			VertexData triangle[3];
+			// 面は三角形限定。その他は未対応
+			for (int32_t faceVertex = 0; faceVertex < 3; ++faceVertex) {
+				std::string  vertexDefinition;
+				s >> vertexDefinition;
+				// 頂点の要素へのIndexは「位置/uv/法線」で格納されているので、分解してIndexを取得する
+				std::istringstream v(vertexDefinition);
+				uint32_t  elementIndices[3];
+				for (int32_t element = 0; element < 3; ++element) {
+					std::string index;
+					std::getline(v, index, '/'); // 区切りでインデックスを読んでいく
+					elementIndices[element] = std::stoi(index);
+				}
+				// 要素へのIndexから、実際の要素の値を取得して、頂点を構築する
+				Vector4 position = positions[elementIndices[0] - 1];
+				Vector2 texcoord = texcoords[elementIndices[1] - 1];
+				Vector3 normal = normals[elementIndices[2] - 1];
+				VertexData vertex = { position, texcoord, normal };
+				modelData.vertices.push_back(vertex);
+				triangle[faceVertex] = { position, texcoord, normal };
+			}
+			// 頂点を逆順で登録することで、回り順を逆にする
+			modelData.vertices.push_back(triangle[2]);
+			modelData.vertices.push_back(triangle[1]);
+			modelData.vertices.push_back(triangle[0]);
+		}
+		else if (identifier == "mtllib") {
+			// materialtemplateLibraryファイルの名前を取得する
+			std::string materialFilename;
+			s >> materialFilename;
+			// 基本的にobjファイルと同一階層にmtlは存在させるので、ディレクトリ名とファイル名を渡す
+			modelData.material = LoadMaterialTemplateFile(directoryPath, materialFilename);
+		}
+
+	}
+	return modelData;
+}
+
 Animation TextureManager::LoadAnimationFile(const std::string& directoryPath, const std::string& filename)
 {
 	Animation animation; //今回作るアニメーション
@@ -209,8 +284,16 @@ void TextureManager::SetTexture(const std::string& filePath, uint32_t index)
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
 	srvDesc.Format = metadata.format;
 	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D; // 2Dテクスチャ
-	srvDesc.Texture2D.MipLevels = UINT(metadata.mipLevels);
+	if (metadata.IsCubemap()) {
+		srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURECUBE;
+		srvDesc.TextureCube.MostDetailedMip = 0; // unionがTextureCubeになったが、内部パラメータの意味はTexture2dと変わらない
+		srvDesc.TextureCube.MipLevels = UINT_MAX;
+		srvDesc.TextureCube.ResourceMinLODClamp = 0.0f;
+	}
+	else {
+		srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;// 2Dテクスチャ
+		srvDesc.Texture2D.MipLevels = UINT(metadata.mipLevels);
+	}
 
 	// SRVを作成するDescriptorHeapの場所を決める
 	textureSrvHandleCPU[index] = GetCPUDescriptorHandle(dir_->GetSrvDescriptorHeap2(), descriptorSizeSRV, index);
@@ -263,12 +346,24 @@ DirectX::ScratchImage TextureManager::LoadTexture(const std::string& filePath) {
 	// テクスチャファイルを読んでプログラムで扱えるようにする
 	DirectX::ScratchImage image{};
 	std::wstring filePathW = Convert::ConvertString(filePath);;
-	HRESULT hr = DirectX::LoadFromWICFile(filePathW.c_str(), DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
+	HRESULT hr;
+	if (filePathW.ends_with(L".dds")) {// .ddsで終わっていたらddsとみなす。
+		hr = DirectX::LoadFromDDSFile(filePathW.c_str(), DirectX::DDS_FLAGS_NONE, nullptr, image);
+	}
+	else {
+		hr = DirectX::LoadFromWICFile(filePathW.c_str(), DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
+	}
+
 	assert(SUCCEEDED(hr));
 
 	// ミップマップの作成
 	DirectX::ScratchImage mipImages{};
-	hr = DirectX::GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_SRGB, 0, mipImages);
+	if (DirectX::IsCompressed(image.GetMetadata().format)) {// 圧縮フォーマットかどうか調べる
+		mipImages = std::move(image); // 圧縮フォーマットならそのまま使うのでmoveする
+	}
+	else {
+		hr = DirectX::GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_SRGB, 4, mipImages);
+	}
 	assert(SUCCEEDED(hr));
 
 	return mipImages;

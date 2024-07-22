@@ -10,8 +10,8 @@ void GameScene::Initialize(){
 	camera_ = new Camera();
 	camera_->Initialize();
 
-
 	postProcess_ = std::make_unique<PostProcess>();
+
 	postProcess_->Initialize(GRAY);
 
 	transform = { { 1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,-1.0f,3.0f} };
@@ -56,12 +56,10 @@ void GameScene::Update(){
 		postProcess_->Initialize(GAUSSIAN);
 	}
 
-
 	model_->Update(1.0f);
 }
 
 void GameScene::Draw(){
-
 	model_->Draw(camera_, uv);
 }
 

@@ -16,6 +16,7 @@
 #include "Mesh.h"
 #include "Camera.h"
 #include "WorldTransform.h"
+#include "Light.h"
 
 class Model {
 public:
@@ -24,7 +25,6 @@ public:
 	void Update();
 
 	void Draw(Camera* camera, uint32_t index);
-	void DrawAnimation(Skeleton skeleton, Animation animation, Camera* camera, uint32_t index, SkinCluster skinCluster);
 
 	ModelData GetModelData() { return modelData; }
 	void SetWorldTransform(WorldTransform worldtransform) { worldTransform_ = worldtransform; }
@@ -34,8 +34,7 @@ private:
 	void CreateVertexResource();
 	void CreateMaterialResource();
 	void CreateWVPResource();
-	void CreateIndexResource();
-	void CreateDirectionalResource();
+	void CreatePso();
 
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(Microsoft::WRL::ComPtr<ID3D12Device> device, size_t sizeInbytes);
 
@@ -43,6 +42,7 @@ private:
 
 	WinApp* winapp_ = WinApp::GetInsTance();
 	TextureManager* texture_ = TextureManager::GetInstance();
+	Light* light_ = Light::GetInstance();
 
 	WorldTransform worldTransform_;
 
@@ -57,18 +57,19 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource;
 	Microsoft::WRL::ComPtr<ID3D12Resource> cameraResource;
 	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource;
-	Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource;
 
 	VertexData* vertexData;
 	Material* materialData;
 	TransformationMatrix* wvpData;
-	DirectionalLight directionalLightData;
 
 	EulerTransform transform;
 	EulerTransform uvTransform;
 
 	bool isModel;
 
-	CameraForGpu camera;
+	CameraForGpu camera_;
+
+	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineState = nullptr;
 
 };

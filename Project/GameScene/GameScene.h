@@ -18,6 +18,7 @@
 #include "IScene.h"
 #include <PostProcess.h>
 #include "Animation.h"
+#include "SkyBox.h"
 
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -44,7 +45,7 @@ public:
 private:
 	TextureManager* textureManager_ = nullptr;
 	Camera* camera_ = nullptr;
-
+  
 	std::unique_ptr<AnimationModel> model_;
 
 	std::unique_ptr<PostProcess> postProcess_ = nullptr;

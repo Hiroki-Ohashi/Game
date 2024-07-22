@@ -17,6 +17,7 @@
 
 #include "Particle.h"
 #include "IScene.h"
+#include "PostProcess.h"
 
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -37,4 +38,6 @@ public:
 private:
 
 	TextureManager* textureManager_ = TextureManager::GetInstance();
+
+	std::unique_ptr<PostProcess> postProcess_ = nullptr;
 };

@@ -137,7 +137,9 @@ void PostProcess::CreateGrayPSO()
 	vertexShaderBlob_ = Convert::CompileShader(L"resources/Shaders/Fullscreen.VS.hlsl", L"vs_6_0", dxcUtils, dxcCompiler, includeHandler);
 	assert(vertexShaderBlob_ != nullptr);
 
-	pixelShaderBlob_ = Convert::CompileShader(L"resources/Shaders/Grayscale.PS.hlsl", L"ps_6_0", dxcUtils, dxcCompiler, includeHandler);
+	//pixelShaderBlob_ = Convert::CompileShader(L"resources/Shaders/Grayscale.PS.hlsl", L"ps_6_0", dxcUtils, dxcCompiler, includeHandler);
+	pixelShaderBlob_ = Convert::CompileShader(L"resources/Shaders/EffectNone.PS.hlsl", L"ps_6_0", dxcUtils, dxcCompiler, includeHandler);
+	//pixelShaderBlob_ = Convert::CompileShader(L"resources/Shaders/GaussianBlur.PS.hlsl", L"ps_6_0", dxcUtils, dxcCompiler, includeHandler);
 	assert(pixelShaderBlob_ != nullptr);
 
 	// PSO
