@@ -12,12 +12,12 @@ void GameScene::Initialize(){
 
 
 	postProcess_ = std::make_unique<PostProcess>();
-	postProcess_->Initialize(HSV);
+	postProcess_->Initialize(GRAY);
 
 	transform = { { 1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,-1.0f,3.0f} };
 
-	model2_ = std::make_unique<AnimationModel>();
-	model2_->Initialize("walk.gltf", transform);
+	model_ = std::make_unique<AnimationModel>();
+	model_->Initialize("walk.gltf", transform);
 
 	uv = textureManager_->Load("resources/uvChecker.png");
 }
@@ -57,12 +57,12 @@ void GameScene::Update(){
 	}
 
 
-	model2_->Update(1.0f);
+	model_->Update(1.0f);
 }
 
 void GameScene::Draw(){
 
-	model2_->Draw(camera_, uv);
+	model_->Draw(camera_, uv);
 }
 
 

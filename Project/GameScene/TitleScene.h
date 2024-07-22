@@ -37,16 +37,4 @@ public:
 private:
 
 	TextureManager* textureManager_ = TextureManager::GetInstance();
-
-	std::unique_ptr<Sprite> sprite_ = nullptr;
-	std::unique_ptr<Sprite> sprite2_ = nullptr;
-
-	EulerTransform transform;
-	EulerTransform transform2;
-
-	uint32_t monsterBall;
-	uint32_t moon;
-	uint32_t uv;
-	uint32_t kusa;
-	uint32_t circle;
 };
