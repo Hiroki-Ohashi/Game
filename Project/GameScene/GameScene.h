@@ -45,6 +45,12 @@ public:
 private:
 	TextureManager* textureManager_ = nullptr;
 	Camera* camera_ = nullptr;
+  
+	std::unique_ptr<AnimationModel> model_;
 
 	std::unique_ptr<PostProcess> postProcess_ = nullptr;
+
+	EulerTransform transform;
+
+	uint32_t uv;
 };

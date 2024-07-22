@@ -333,7 +333,7 @@ void AnimationModel::CreateMaterialResource()
 
 	materialData->uvTransform = MakeIndentity4x4();
 
-	materialData->enableLighting = true;
+	materialData->enableLighting = false;
 
 	materialData->shininess = 70.0f;
 }
