@@ -19,7 +19,7 @@ public:
 	void OnCollision() { isDead_ = true; }
 	void SetIsDead(bool isDead) { isDead_ = isDead; }
 
-	bool IsDead() const { return isDead_; }
+	bool IsDead(){ return isDead_; }
 	Vector3 GetPos() { return worldtransform_.translate; }
 	void SetGameScene(GameScene* gameScene) { gameScene_ = gameScene; }
 	void SetPlayer(Player* player) { player_ = player; }

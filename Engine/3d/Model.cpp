@@ -11,7 +11,7 @@ void Model::Initialize(const std::string& filename, EulerTransform transform) {
 	else {
 		modelData = texture_->LoadModelFile("resources", filename);
 	}
-
+	 
 	DirectX::ScratchImage mipImages2 = texture_->LoadTexture(modelData.material.textureFilePath);
 
 	Model::CreateVertexResource();

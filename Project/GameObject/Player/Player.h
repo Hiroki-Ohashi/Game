@@ -23,6 +23,7 @@ private:
 private:
 	TextureManager* textureManager_ = TextureManager::GetInstance();
 	Input* input_ = Input::GetInsTance();
+
 	WorldTransform worldtransform_;
 	EulerTransform transform_;
 	std::unique_ptr<Model> model_;
