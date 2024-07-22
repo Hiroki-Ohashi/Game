@@ -4,6 +4,7 @@
 #include <cassert>
 #include <json.hpp>
 #include "MathFunction.h"
+#include <Model.h>
 
 void Json::ConpileJsonFile(const std::string& kDefaultBaseDirectory, const std::string& filename, const std::string& kExtension)
 {
@@ -77,6 +78,24 @@ void Json::ConpileJsonFile(const std::string& kDefaultBaseDirectory, const std::
 		// TODO: オブジェクト走査を再帰関数にまとめ、再帰呼出で枝を走査する
 		if (object.contains("children")) {
 
+		}
+
+		// レベルデータからオブジェクトを生成、配置
+		for (auto& objectData : levelData->objects) {
+			// ファイル名から登録済みモデルを検索
+			Model* model = nullptr;
+			decltype(models)::iterator it = models.find(objectData.fileName);
+			if (it != models.end()) { model = it->second; }
+			// モデルを指定して3Dオブジェクトを生成
+			Object3d* newObject = Object3d::Create(model);
+			// 座標
+			newObject->SetPosition(objectData.translation);
+			// 回転角
+			newObject->SetRotation(objectData.rotation);
+			// スケーリング
+			newObject->SetScale(objectData.scaling);
+			// 配列に登録
+			objects.push_back(newObject);
 		}
 	}
 }
