@@ -3,6 +3,7 @@
 
 
 enum Type {
+	NONE,
 	GRAY,
 	VIGNETTE,
 	BOX,
@@ -16,6 +17,7 @@ public:
 	void Draw();
 
 private:
+	void CreatePSO();
 	void CreateGrayPSO();
 	void CreateVignettePSO();
 	void CreateBoxPSO();

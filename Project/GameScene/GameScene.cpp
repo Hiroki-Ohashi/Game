@@ -13,9 +13,9 @@ void GameScene::Initialize(){
 
 	postProcess_ = std::make_unique<PostProcess>();
 
-	postProcess_->Initialize(GRAY);
+	postProcess_->Initialize(NONE);
 
-	transform = { { 1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,-1.0f,3.0f} };
+	transform = { { 1.0f,1.0f,1.0f},{0.0f,3.0f,0.0f},{0.0f,-1.0f,3.0f} };
 
 	model_ = std::make_unique<AnimationModel>();
 	model_->Initialize("walk.gltf", transform, camera_, 0);
@@ -49,15 +49,18 @@ void GameScene::Update(){
 	}
 
 	if (input_->PushKey(DIK_1)) {
-		postProcess_->Initialize(GRAY);
+		postProcess_->Initialize(NONE);
 	}
 	if (input_->PushKey(DIK_2)) {
-		postProcess_->Initialize(VIGNETTE);
+		postProcess_->Initialize(GRAY);
 	}
 	if (input_->PushKey(DIK_3)) {
-		postProcess_->Initialize(BOX);
+		postProcess_->Initialize(VIGNETTE);
 	}
 	if (input_->PushKey(DIK_4)) {
+		postProcess_->Initialize(BOX);
+	}
+	if (input_->PushKey(DIK_5)) {
 		postProcess_->Initialize(GAUSSIAN);
 	}
 
