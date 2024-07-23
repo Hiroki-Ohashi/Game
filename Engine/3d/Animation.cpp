@@ -16,6 +16,9 @@ void AnimationModel::Initialize(const std::string& filename, EulerTransform tran
 
 	light_->Initialize();
 
+	cameraResource = CreateBufferResource(dir_->GetDevice(), sizeof(Camera));
+	cameraResource->Map(0, nullptr, reinterpret_cast<void**>(&camera_));
+
 	skeleton = CreateSkelton(modelData.rootNode);
 	skinCluster = CreateSkinCluster(dir_->GetDevice(), skeleton, modelData, dir_->GetSrvDescriptorHeap2(), texture_->GetDiscreptorSize(), index);
 
@@ -68,8 +71,10 @@ void AnimationModel::Draw(Camera* camera, uint32_t index, uint32_t index2)
 	dir_->GetCommandList()->SetGraphicsRootDescriptorTable(5, skinCluster.paletteSrvHandle.second);
 
 	worldTransform_.AnimationTransferMatrix(skeleton, animation, wvpData, camera);
+	worldTransform_.UpdateMatrix();
 
 	camera_->worldPosition = { camera->cameraTransform.translate.x, camera->cameraTransform.translate.y, camera->cameraTransform.translate.z };
+
 	light_->Update();
 
 	Matrix4x4 uvtransformMatrix = MakeScaleMatrix(uvTransform.scale);
@@ -89,7 +94,7 @@ void AnimationModel::Draw(Camera* camera, uint32_t index, uint32_t index2)
 	// マテリアルCBufferの場所を設定
 	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResource.Get()->GetGPUVirtualAddress());
 	// TransformationMatrixCBufferの場所を設定
-	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
+	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource.Get()->GetGPUVirtualAddress());
 	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(3, light_->GetDirectionalLightResource()->GetGPUVirtualAddress());
 	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(4, cameraResource.Get()->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
@@ -333,7 +338,7 @@ void AnimationModel::CreateMaterialResource()
 
 	materialData->uvTransform = MakeIndentity4x4();
 
-	materialData->enableLighting = false;
+	materialData->enableLighting = true;
 
 	materialData->shininess = 70.0f;
 }

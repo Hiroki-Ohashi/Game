@@ -48,9 +48,14 @@ private:
   
 	std::unique_ptr<AnimationModel> model_;
 
+	std::unique_ptr<SkyBox> skyBox_;
+
 	std::unique_ptr<PostProcess> postProcess_ = nullptr;
+
+	CameraForGpu camera;
 
 	EulerTransform transform;
 
 	uint32_t uv;
+	uint32_t skyTex;
 };

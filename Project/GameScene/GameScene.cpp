@@ -6,6 +6,7 @@ GameScene::~GameScene(){
 
 void GameScene::Initialize(){
 	textureManager_ = TextureManager::GetInstance();
+	textureManager_->Initialize();
 
 	camera_ = new Camera();
 	camera_->Initialize();
@@ -17,9 +18,13 @@ void GameScene::Initialize(){
 	transform = { { 1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,-1.0f,3.0f} };
 
 	model_ = std::make_unique<AnimationModel>();
-	model_->Initialize("walk.gltf", transform);
+	model_->Initialize("walk.gltf", transform, camera_, 0);
+
+	skyBox_ = std::make_unique<SkyBox>();
+	skyBox_->Initialize();
 
 	uv = textureManager_->Load("resources/uvChecker.png");
+	skyTex = textureManager_->Load("resources/rostock_laage_airport_4k.dds");
 }
 
 void GameScene::Update(){
@@ -60,7 +65,10 @@ void GameScene::Update(){
 }
 
 void GameScene::Draw(){
-	model_->Draw(camera_, uv);
+
+	skyBox_->Draw(camera_, skyTex);
+
+	model_->Draw(camera_, uv, skyTex);
 }
 
 

@@ -9,7 +9,7 @@ void TitleScene::Initialize()
 	textureManager_->Initialize();
 
 	postProcess_ = std::make_unique<PostProcess>();
-	postProcess_->Initialize();
+	postProcess_->Initialize(GRAY);
 }
 
 
