@@ -24,7 +24,7 @@ Vector3 Cross(const Vector3& v1, const Vector3& v2)
 	return Cross;
 }
 
-Vector3 Transforme(const Vector3& vector, const Matrix4x4& matrix) {
+Vector3 Transform(const Vector3& vector, const Matrix4x4& matrix) {
 	Vector3 result;
 	result.x = vector.x * matrix.m[0][0] + vector.y * matrix.m[1][0] + vector.z * matrix.m[2][0] + 1.0f * matrix.m[3][0];
 	result.y = vector.x * matrix.m[0][1] + vector.y * matrix.m[1][1] + vector.z * matrix.m[2][1] + 1.0f * matrix.m[3][1];
@@ -354,11 +354,13 @@ Matrix4x4 MakeOrthographicMatrix(float left, float top, float right, float botto
 }
 
 Vector3 Normalize(const Vector3& v) {
-	Vector3 m3;
-	float mag = 1 / sqrtf(v.x * v.x + v.y * v.y + v.z * v.z);
-	m3 = { v.x * mag, v.y * mag, v.z * mag };
+	Vector3 Normalize;
 
-	return m3;
+	float mag = 1 / sqrtf(v.x * v.x + v.y * v.y + v.z * v.z);
+
+	Normalize = { v.x * mag, v.y * mag, v.z * mag };
+
+	return Normalize;
 }
 
 Matrix4x4 MakeScaleMatrix(const Vector3& scale) {
