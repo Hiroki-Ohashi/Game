@@ -28,7 +28,7 @@ void Enemy::Update()
 
 		if (isDead_ == false) {
 			// 攻撃処理
-			Attack();
+			//Attack();
 		}
 
 		// 発射タイマーを初期化

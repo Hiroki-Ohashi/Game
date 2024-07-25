@@ -14,6 +14,7 @@ public:
 	void Update();
 	void Draw(Camera* camera);
 
+	void approach();
 	void Attack();
 
 	void OnCollision() { hp_ -= 1; }
@@ -40,6 +41,9 @@ private:
 	float speedX = 0.5f;
 	float speedY = 0.3f;
 
+	float downSpeedY = 0.5f;
+	float rotSpeedY = 0.3f;
+	bool isApproach;
 	// 発射タイマー
 	int32_t attackTimer = 10;
 	static const int kFireInterval = 120;

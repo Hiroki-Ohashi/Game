@@ -15,6 +15,7 @@ void Boss::Initialize(Vector3 pos)
 	worldtransform_.UpdateMatrix();
 
 	isDead_ = false;
+	isApproach = true;
 	hp_ = 10;
 
 	enemyTex = textureManager_->Load("resources/black.png");
@@ -22,24 +23,38 @@ void Boss::Initialize(Vector3 pos)
 
 void Boss::Update()
 {
-	transform_.translate.x += speedX;
-	transform_.translate.y += speedY;
-
-	if (transform_.translate.x >= 30.0f) {
-		speedX *= -1;
-	}
-	else if (transform_.translate.x <= -30.0f) {
-		speedX *= -1;
-	}
-
-	if (transform_.translate.y >= 30.0f) {
-		speedY *= -1;
-	}
-	else if (transform_.translate.y <= -30.0f) {
-		speedY *= -1;
-	}
-
 	transform_.translate.z += 0.5f;
+
+	if (isApproach == true) {
+		transform_.translate.y -= downSpeedY;
+		worldtransform_.rotate.y -= rotSpeedY;
+
+		if (transform_.translate.y <= 0.0f) {
+			downSpeedY = 0.0f;
+			rotSpeedY = 0.0f;
+			worldtransform_.rotate.y = 0.0f;
+			isApproach = false;
+		}
+	}
+
+	if (isApproach == false) {
+		transform_.translate.x += speedX;
+		transform_.translate.y += speedY;
+
+		if (transform_.translate.x >= 30.0f) {
+			speedX *= -1;
+		}
+		else if (transform_.translate.x <= -30.0f) {
+			speedX *= -1;
+		}
+
+		if (transform_.translate.y >= 30.0f) {
+			speedY *= -1;
+		}
+		else if (transform_.translate.y <= -30.0f) {
+			speedY *= -1;
+		}
+	}
 
 	attackTimer--;
 
@@ -74,6 +89,13 @@ void Boss::Draw(Camera* camera)
 	if (isDead_ == false) {
 		model_->Draw(camera, enemyTex);
 	}
+}
+
+void Boss::approach()
+{
+
+	worldtransform_.UpdateMatrix();
+	model_->SetWorldTransform(worldtransform_);
 }
 
 void Boss::Attack()

@@ -60,7 +60,7 @@ void GameScene::Update(){
 
 	player_->Update();
 
-	if (player_->GetPos().z >= 400.0f) {
+	if (player_->GetPos().z >= 500.0f) {
 
 		boss_->Update();
 
@@ -100,8 +100,8 @@ void GameScene::Update(){
 
 	stage_->Update();
 
-	//camera_->cameraTransform.translate = { player_->GetPos().x, player_->GetPos().y + 3.0f,  player_->GetPos().z - 50.0f };
-	camera_->cameraTransform.translate = { 0.0f, 0.0f,  player_->GetPos().z - 50.0f };
+	camera_->cameraTransform.translate = { player_->GetPos().x, player_->GetPos().y + 3.0f,  player_->GetPos().z - 70.0f };
+	//camera_->cameraTransform.translate = { 0.0f, 0.0f,  player_->GetPos().z - 50.0f };
 
 	if (boss_->IsDead() == true) {
 		sceneNo = CLEAR;
@@ -126,7 +126,7 @@ void GameScene::Draw()
 
 	player_->Draw(camera_);
 
-	if (player_->GetPos().z >= 400.0f) {
+	if (player_->GetPos().z >= 500.0f) {
 
 		boss_->Draw(camera_);
 
@@ -256,14 +256,14 @@ void GameScene::CheckAllCollisions()
 		float p2eBY = (posB.y - posA.y) * (posB.y - posA.y);
 		float p2eBZ = (posB.z - posA.z) * (posB.z - posA.z);
 
-		float pRadius = 15.0f;
+		float pRadius = 20.0f;
 		float eBRadius = 1.0f;
 
 		float L = (pRadius + eBRadius) * (pRadius + eBRadius);
 
 		if (p2eBX + p2eBY + p2eBZ <= L) {
 			// 自キャラの衝突時コールバックを呼び出す
-			if (player_->GetPos().z >= 400.0f) {
+			if (player_->GetPos().z >= 500.0f) {
 				boss_->OnCollision();
 			}
 			// 敵弾の衝突時コールバックを呼び出す

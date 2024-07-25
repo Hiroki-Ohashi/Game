@@ -18,11 +18,8 @@ void EnemyBullet::Initialize(Vector3 pos, Vector3 velocity)
 
 	// Y軸周り角度（Θy）
 	worldtransform_.rotate.y = std::atan2(velocity_.x, velocity_.z);
-
 	float velocityXZ = sqrt((velocity_.x * velocity_.x) + (velocity_.z * velocity_.z));
-
 	worldtransform_.rotate.x = std::atan2(-velocity_.y, velocityXZ);
-
 	worldtransform_.UpdateMatrix();
 }
 

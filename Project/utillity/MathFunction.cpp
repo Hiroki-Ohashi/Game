@@ -47,6 +47,15 @@ Vector3 Add(const Vector3& v1, const Vector3& v2)
 	return result;
 }
 
+Vector3 TransformNormal(const Vector3& v, const Matrix4x4& m)
+{
+	Vector3 result{
+		v.x * m.m[0][0] + v.y * m.m[1][0] + v.z * m.m[2][0],
+		v.x * m.m[0][1] + v.y * m.m[1][1] + v.z * m.m[2][1],
+		v.x * m.m[0][2] + v.y * m.m[1][2] + v.z * m.m[2][2] };
+	return result;
+}
+
 // 転置行列
 Matrix4x4 Transpose(const Matrix4x4& m) {
 	Matrix4x4 Transpose;
@@ -344,13 +353,12 @@ Matrix4x4 MakeOrthographicMatrix(float left, float top, float right, float botto
 	return result;
 }
 
-Vector3 Normalize(const Vector3& v1) {
-	Vector3 Result = v1;
-	float length = sqrt(v1.x * v1.x + v1.y * v1.y + v1.z * v1.z);
-	Result.x /= length;
-	Result.y /= length;
-	Result.z /= length;
-	return Result;
+Vector3 Normalize(const Vector3& v) {
+	Vector3 m3;
+	float mag = 1 / sqrtf(v.x * v.x + v.y * v.y + v.z * v.z);
+	m3 = { v.x * mag, v.y * mag, v.z * mag };
+
+	return m3;
 }
 
 Matrix4x4 MakeScaleMatrix(const Vector3& scale) {

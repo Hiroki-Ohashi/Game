@@ -90,7 +90,7 @@ private:
 	uint32_t bossBulletTex;
 
 	Vector3 pos_ = { 0.0f, 0.0f, 500.0f };
-	Vector3 pos2_ = { 0.0f, 0.0f, 500.0f };
+	Vector3 pos2_ = { 0.0f, 80.0f, 700.0f };
 
 	// 待機タイマー
 	int32_t waitTimer_;
