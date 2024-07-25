@@ -23,11 +23,10 @@ void WorldTransform::GltfTransferMatrix(ModelData modelData, TransformationMatri
 void WorldTransform::AnimationTransferMatrix(Skeleton skeleton, Animation animation, TransformationMatrix* wvpData, Camera* camera)
 {
 	wvpData->WVP = Multiply(worldMatrix, *camera->transformationMatrixData);
-	wvpData->WorldInverseTranspose = Transpose(Inverse(wvpData->WVP));
-
 	for (Joint& joint : skeleton.joints) {
 		wvpData->World = Multiply(joint.skeltonSpaceMatrix, worldMatrix);
 	}
+	wvpData->WorldInverseTranspose = Transpose(Inverse(wvpData->WVP));
 }
 
 void WorldTransform::UpdateMatrix() {

@@ -16,7 +16,7 @@ void AnimationModel::Initialize(const std::string& filename, EulerTransform tran
 
 	light_->Initialize();
 
-	cameraResource = CreateBufferResource(dir_->GetDevice(), sizeof(Camera));
+	cameraResource = CreateBufferResource(dir_->GetDevice(), sizeof(CameraForGpu));
 	cameraResource->Map(0, nullptr, reinterpret_cast<void**>(&camera_));
 
 	skeleton = CreateSkelton(modelData.rootNode);
@@ -77,10 +77,10 @@ void AnimationModel::Draw(Camera* camera, uint32_t index, uint32_t index2)
 
 	light_->Update();
 
-	Matrix4x4 uvtransformMatrix = MakeScaleMatrix(uvTransform.scale);
-	uvtransformMatrix = Multiply(uvtransformMatrix, MakeRotateZMatrix(uvTransform.rotate.z));
-	uvtransformMatrix = Multiply(uvtransformMatrix, MakeTranslateMatrix(uvTransform.translate));
-	materialData->uvTransform = uvtransformMatrix;
+	//Matrix4x4 uvtransformMatrix = MakeScaleMatrix(uvTransform.scale);
+	//uvtransformMatrix = Multiply(uvtransformMatrix, MakeRotateZMatrix(uvTransform.rotate.z));
+	//uvtransformMatrix = Multiply(uvtransformMatrix, MakeTranslateMatrix(uvTransform.translate));
+	//materialData->uvTransform = uvtransformMatrix;
 
 	D3D12_VERTEX_BUFFER_VIEW vbvs[2] = {
 		vertexBufferView,

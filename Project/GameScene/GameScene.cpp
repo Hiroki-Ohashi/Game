@@ -23,7 +23,7 @@ void GameScene::Initialize(){
 	skyBox_ = std::make_unique<SkyBox>();
 	skyBox_->Initialize();
 
-	uv = textureManager_->Load("resources/uvChecker.png");
+	uv = textureManager_->Load("resources/white.png");
 	skyTex = textureManager_->Load("resources/rostock_laage_airport_4k.dds");
 }
 
