@@ -18,6 +18,7 @@
 #include "IScene.h"
 #include <PostProcess.h>
 #include "Animation.h"
+#include "Json.h"
 
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -48,6 +49,9 @@ private:
 	std::unique_ptr<AnimationModel> model2_;
 
 	std::unique_ptr<PostProcess> postProcess_ = nullptr;
+
+	std::unique_ptr<Json> json_ = nullptr;
+	LevelData* levelData_ = nullptr;
 
 	EulerTransform transform;
 

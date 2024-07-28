@@ -24,10 +24,13 @@ public:
 	void Update();
 
 	void Draw(Camera* camera, uint32_t index);
-	void DrawAnimation(Skeleton skeleton, Animation animation, Camera* camera, uint32_t index, SkinCluster skinCluster);
 
 	ModelData GetModelData() { return modelData; }
 	void SetWorldTransform(WorldTransform worldtransform) { worldTransform_ = worldtransform; }
+
+	void SetPosition(Vector3 pos) { worldTransform_.translate = pos; }
+	void SetRotation(Vector3 rot) { worldTransform_.rotate = rot; }
+	void SetScale(Vector3 scale) { worldTransform_.scale = scale; }
 
 private:
 

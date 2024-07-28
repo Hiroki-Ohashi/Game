@@ -12,12 +12,16 @@ void GameScene::Initialize(){
 
 
 	postProcess_ = std::make_unique<PostProcess>();
-	postProcess_->Initialize(GRAY);
+	postProcess_->Initialize(VIGNETTE);
 
 	transform = { { 1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,-1.0f,3.0f} };
 
 	model2_ = std::make_unique<AnimationModel>();
 	model2_->Initialize("walk.gltf", transform);
+
+	json_ = std::make_unique<Json>();
+	levelData_ = json_->LoadJson("01_11");
+	json_->Adoption(levelData_);
 
 	uv = textureManager_->Load("resources/uvChecker.png");
 }
@@ -57,12 +61,13 @@ void GameScene::Update(){
 	}
 
 
-	model2_->Update(1.0f);
+	//model2_->Update(1.0f);
 }
 
 void GameScene::Draw(){
 
-	model2_->Draw(camera_, uv);
+	//model2_->Draw(camera_, uv);
+	json_->Draw(*camera_, uv);
 }
 
 

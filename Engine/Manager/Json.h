@@ -1,7 +1,18 @@
 #pragma once
 #include <string>
+#include <iostream>
+#include <fstream>
+#include <cassert>
+#include <json.hpp>
+#include "MathFunction.h"
+#include <Model.h>
 
 class Json {
 public:
-	void ConpileJsonFile(const std::string& kDefaultBaseDirectory, const std::string& filename, const std::string& kExtension);
+	LevelData* LoadJson(const std::string& fileName);
+	void Adoption(LevelData* levelData);
+	void Draw(Camera& camera, uint32_t index);
+
+private:
+	std::vector<std::unique_ptr<Model>> objects_;
 };

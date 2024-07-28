@@ -2,7 +2,7 @@
 #include "imgui.h"
 
 void Camera::Initialize(){
-	cameraTransform = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -10.0f} };
+	cameraTransform = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -50.0f} };
 }
 
 void Camera::Update(){
@@ -14,7 +14,8 @@ void Camera::Update(){
 	transformationMatrixData = &worldViewProjectionMatrix;
 
 	if (ImGui::TreeNode("Camera")) {
-		ImGui::DragFloat3("Camera Transform", &cameraTransform.translate.x, 0.01f, -50.0f, 50.0f);
+		ImGui::DragFloat3("Camera Transform", &cameraTransform.translate.x, 0.01f);
+		ImGui::DragFloat3("Camera Rotate", &cameraTransform.rotate.x, 0.01f);
 		ImGui::TreePop();
 	}
 }

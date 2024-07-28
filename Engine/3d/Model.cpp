@@ -42,7 +42,8 @@ void Model::Draw(Camera* camera, uint32_t index) {
 	//wvpData->World = Multiply(wvpData->World, *camera->transformationMatrixData);
 	//wvpData->WVP = wvpData->World;
 
-	worldTransform_.GltfTransferMatrix(modelData, wvpData, camera);
+	//worldTransform_.GltfTransferMatrix(modelData, wvpData, camera);
+	worldTransform_.TransferMatrix(wvpData, camera);
 
 	Matrix4x4 uvtransformMatrix = MakeScaleMatrix(uvTransform.scale);
 	uvtransformMatrix = Multiply(uvtransformMatrix, MakeRotateZMatrix(uvTransform.rotate.z));
@@ -85,38 +86,6 @@ void Model::Draw(Camera* camera, uint32_t index) {
 		ImGui::SliderFloat("Intensity", &directionalLightData.intensity, 0.0f, 1.0f);
 		ImGui::TreePop();
 	}
-}
-
-void Model::DrawAnimation(Skeleton skeleton, Animation animation, Camera* camera, uint32_t index, SkinCluster skinCluster)
-{
-	worldTransform_.AnimationTransferMatrix(skeleton, animation, wvpData, camera);
-
-	Matrix4x4 uvtransformMatrix = MakeScaleMatrix(uvTransform.scale);
-	uvtransformMatrix = Multiply(uvtransformMatrix, MakeRotateZMatrix(uvTransform.rotate.z));
-	uvtransformMatrix = Multiply(uvtransformMatrix, MakeTranslateMatrix(uvTransform.translate));
-	materialData->uvTransform = uvtransformMatrix;
-
-	D3D12_VERTEX_BUFFER_VIEW vbvs[2] = {
-		vertexBufferView,
-		skinCluster.influenceBufferView
-	};
-
-	// コマンドを積む
-	DirectXCommon::GetInsTance()->GetCommandList()->IASetVertexBuffers(0, 2, vbvs); // VBVを設定
-	DirectXCommon::GetInsTance()->GetCommandList()->IASetIndexBuffer(&indexBufferView); // VBVを設定
-	// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
-	DirectXCommon::GetInsTance()->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	// マテリアルCBufferの場所を設定
-	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResource.Get()->GetGPUVirtualAddress());
-	// TransformationMatrixCBufferの場所を設定
-	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource.Get()->GetGPUVirtualAddress());
-	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource.Get()->GetGPUVirtualAddress());
-	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(4, cameraResource.Get()->GetGPUVirtualAddress());
-	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-	DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootDescriptorTable(2, texture_->GetTextureSRVHandleGPU(index));
-	// 描画(DrawCall/ドローコール)
-	//DirectXCommon::GetInsTance()->GetCommandList()->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
-	DirectXCommon::GetInsTance()->GetCommandList()->DrawIndexedInstanced(UINT(modelData.indices.size()), 1, 0, 0, 0);
 }
 
 void Model::CreateVertexResource() {
