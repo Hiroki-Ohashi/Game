@@ -69,6 +69,24 @@ LevelData* Json::LoadJson(const std::string& fileName)
 			objectData.scaling.y = transform["scaling"][2].get<float>();
 			objectData.scaling.z = transform["scaling"][1].get<float>();
 		}
+		//// camera
+		//if (type.compare("CAMERA") == 0) {
+		//	// トランスフォームのパラメータ読み込み
+		//	nlohmann::json& transform = object["transform"];
+		//	// 平行移動
+		//	camera_.cameraTransform.translate.x = (float)transform["translation"][0];
+		//	camera_.cameraTransform.translate.y = (float)transform["translation"][2];
+		//	camera_.cameraTransform.translate.z = (float)transform["translation"][1];
+		//	// 回転角
+		//	camera_.cameraTransform.rotate.x = -((float)transform["rotation"][0] - std::numbers::pi_v<float> / 2.0f);
+		//	camera_.cameraTransform.rotate.y = -(float)transform["rotation"][2];
+		//	camera_.cameraTransform.rotate.z = -(float)transform["rotation"][1];
+		//	// スケーリング
+		//	camera_.cameraTransform.scale.x = (float)transform["scaling"][0];
+		//	camera_.cameraTransform.scale.y = (float)transform["scaling"][2];
+		//	camera_.cameraTransform.scale.z = (float)transform["scaling"][1];
+
+		//}
 
 		// TODO: オブジェクト走査を再帰関数にまとめ、再帰呼出で枝を走査する
 		if (object.contains("children")) {
@@ -85,7 +103,7 @@ void Json::Adoption(LevelData* levelData)
 	for (auto& objectData : levelData->objects) {
 		// モデルを指定して3Dオブジェクトを生成
 		std::unique_ptr<Model> newObject = std::make_unique<Model>();
-		newObject->Initialize("cube.obj", { { 1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} });
+		newObject->Initialize(objectData.filename + ".obj", { { 1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} });
 		newObject->SetPosition(objectData.translation);
 		newObject->SetRotation(objectData.rotation);
 		newObject->SetScale(objectData.scaling);

@@ -70,8 +70,8 @@ void Model::Draw(Camera* camera, uint32_t index) {
 
 
 	if (ImGui::TreeNode("Model")) {
-		ImGui::SliderAngle("Rotate.y ", &worldTransform_.rotate.y);
-		ImGui::DragFloat3("Transform", &worldTransform_.translate.x, 0.01f, -10.0f, 10.0f);
+		ImGui::DragFloat3("Rotate", &worldTransform_.rotate.x, 0.01f);
+		ImGui::DragFloat3("Transform", &worldTransform_.translate.x, 0.01f);
 
 		ImGui::DragFloat2("UVTransform", &uvTransform.translate.x, 0.01f, -10.0f, 10.0f);
 		ImGui::DragFloat2("UVScale", &uvTransform.scale.x, 0.01f, -10.0f, 10.0f);

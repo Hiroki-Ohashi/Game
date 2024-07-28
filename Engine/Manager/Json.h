@@ -15,4 +15,5 @@ public:
 
 private:
 	std::vector<std::unique_ptr<Model>> objects_;
+	Camera camera_;
 };

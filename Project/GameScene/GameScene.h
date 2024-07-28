@@ -56,4 +56,6 @@ private:
 	EulerTransform transform;
 
 	uint32_t uv;
+	uint32_t right;
+	uint32_t left;
 };
