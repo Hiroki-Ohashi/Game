@@ -20,7 +20,7 @@ void GameScene::Initialize(){
 	model2_->Initialize("walk.gltf", transform);
 
 	json_ = std::make_unique<Json>();
-	levelData_ = json_->LoadJson("01_11");
+	levelData_ = json_->LoadJson("level");
 	json_->Adoption(levelData_);
 
 	uv = textureManager_->Load("resources/uvChecker.png");
