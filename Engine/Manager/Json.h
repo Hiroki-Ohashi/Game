@@ -11,7 +11,10 @@ class Json {
 public:
 	LevelData* LoadJson(const std::string& fileName);
 	void Adoption(LevelData* levelData);
+	void Update();
 	void Draw(Camera& camera, uint32_t index);
+
+	const Camera &GetCamera() { return camera_; }
 
 private:
 	std::vector<std::unique_ptr<Model>> objects_;

@@ -3,6 +3,8 @@
 
 LevelData* Json::LoadJson(const std::string& fileName)
 {
+	camera_.Initialize();
+
 	// 連結してフルパスを得る
 	const std::string fullpath = "resources/" + fileName + ".json";
 
@@ -62,29 +64,33 @@ LevelData* Json::LoadJson(const std::string& fileName)
 			objectData.translation.z = transform["translation"][1].get<float>();
 			// Rotation
 			objectData.rotation.x = transform["rotation"][0].get<float>();
-			objectData.rotation.y = transform["rotation"][2].get<float>();
+			objectData.rotation.y = (transform["rotation"][2].get<float>() + std::numbers::pi_v<float>);
 			objectData.rotation.z = transform["rotation"][1].get<float>();
 			// Scaling
 			objectData.scaling.x = transform["scaling"][0].get<float>();
 			objectData.scaling.y = transform["scaling"][2].get<float>();
 			objectData.scaling.z = transform["scaling"][1].get<float>();
 		}
-		//// camera
-		//if (type.compare("CAMERA") == 0) {
-		//	// トランスフォームのパラメータ読み込み
-		//	nlohmann::json& transform = object["transform"];
-		//	// 平行移動
-		//	camera_.cameraTransform.translate.x = (float)transform["translation"][0];
-		//	camera_.cameraTransform.translate.y = (float)transform["translation"][2];
-		//	camera_.cameraTransform.translate.z = (float)transform["translation"][1];
-		//	// 回転角
-		//	camera_.cameraTransform.rotate.x = -((float)transform["rotation"][0] - std::numbers::pi_v<float> / 2.0f);
-		//	camera_.cameraTransform.rotate.y = -(float)transform["rotation"][2];
-		//	camera_.cameraTransform.rotate.z = -(float)transform["rotation"][1];
-		//	// スケーリング
-		//	camera_.cameraTransform.scale.x = (float)transform["scaling"][0];
-		//	camera_.cameraTransform.scale.y = (float)transform["scaling"][2];
-		//	camera_.cameraTransform.scale.z = (float)transform["scaling"][1];
+
+		// CAMERA
+		if (type.compare("CAMERA") == 0) {
+
+			// トランスフォームのパラメータ読み込み
+			nlohmann::json& transform = object["transform"];
+			// Translation
+			camera_.cameraTransform.translate.x = transform["translation"][0].get<float>();
+			camera_.cameraTransform.translate.y = transform["translation"][2].get<float>();
+			camera_.cameraTransform.translate.z = transform["translation"][1].get<float>();
+			// Rotation
+			camera_.cameraTransform.rotate.x = -(transform["rotation"][0].get<float>() - std::numbers::pi_v<float> / 2.0f);
+			camera_.cameraTransform.rotate.y = -transform["rotation"][2].get<float>();
+			camera_.cameraTransform.rotate.z = -transform["rotation"][1].get<float>();
+			// Scaling
+			camera_.cameraTransform.scale.x = transform["scaling"][0].get<float>();
+			camera_.cameraTransform.scale.y = transform["scaling"][2].get<float>();
+			camera_.cameraTransform.scale.z = transform["scaling"][1].get<float>();
+		}
+		
 
 		//}
 
@@ -109,6 +115,11 @@ void Json::Adoption(LevelData* levelData)
 		newObject->SetScale(objectData.scaling);
 		objects_.push_back(std::move(newObject));
 	}
+}
+
+void Json::Update()
+{
+	camera_.Update();
 }
 
 void Json::Draw(Camera& camera, uint32_t index)

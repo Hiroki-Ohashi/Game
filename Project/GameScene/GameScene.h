@@ -44,7 +44,7 @@ public:
 
 private:
 	TextureManager* textureManager_ = nullptr;
-	Camera* camera_ = nullptr;
+	Camera camera_;
 
 	std::unique_ptr<AnimationModel> model2_;
 

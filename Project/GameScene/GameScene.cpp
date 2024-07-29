@@ -1,14 +1,12 @@
 #include "GameScene.h"
 
 GameScene::~GameScene(){
-	delete camera_;
 }
 
 void GameScene::Initialize(){
 	textureManager_ = TextureManager::GetInstance();
 
-	camera_ = new Camera();
-	camera_->Initialize();
+	camera_.Initialize();
 
 
 	postProcess_ = std::make_unique<PostProcess>();
@@ -27,24 +25,25 @@ void GameScene::Initialize(){
 }
 
 void GameScene::Update(){
-
-	camera_->Update();
+	camera_.Update();
+	json_->Update();
+	camera_.cameraTransform = json_->GetCamera().cameraTransform;
 
 	if (input_->TriggerKey(DIK_SPACE)) {
 		sceneNo = TITLE;
 	}
 	
 	if (input_->PushKey(DIK_D)) {
-		camera_->cameraTransform.translate.x += 0.1f;
+		camera_.cameraTransform.translate.x += 0.1f;
 	}
 	if (input_->PushKey(DIK_A)) {
-		camera_->cameraTransform.translate.x -= 0.1f;
+		camera_.cameraTransform.translate.x -= 0.1f;
 	}
 	if (input_->PushKey(DIK_W)) {
-		camera_->cameraTransform.translate.y += 0.1f;
+		camera_.cameraTransform.translate.y += 0.1f;
 	}
 	if (input_->PushKey(DIK_S)) {
-		camera_->cameraTransform.translate.y -= 0.1f;
+		camera_.cameraTransform.translate.y -= 0.1f;
 	}
 
 	if (input_->PushKey(DIK_1)) {
@@ -67,7 +66,7 @@ void GameScene::Update(){
 void GameScene::Draw(){
 
 	//model2_->Draw(camera_, uv);
-	json_->Draw(*camera_, uv);
+	json_->Draw(camera_, uv);
 }
 
 
