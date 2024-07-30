@@ -235,6 +235,8 @@ Matrix4x4 MakeTranslateMatrix(const Vector3& translate);
 
 Matrix4x4 MakeRotateAxisAngle(const Vector3& axis, float angle);
 
+float LerpShortAngle(float a, float b, float t);
+
 Quaternion Multiply(const Quaternion& lhs, const Quaternion& rhs);
 float Dot(const  Quaternion& q0, const  Quaternion& q1);
 Quaternion IdentityQuaternion();

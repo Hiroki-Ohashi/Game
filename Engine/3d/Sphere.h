@@ -12,6 +12,7 @@
 #include "TextureManager.h"
 #include "Camera.h"
 #include "WorldTransform.h"
+#include "Light.h"
 
 class Sphere {
 public:
@@ -35,7 +36,7 @@ public:
 	DirectionalLight* GetDirectionalLightData(){return directionalLightData;}
 
 private:
-
+	Light* light_ = Light::GetInstance();
 	TextureManager* texture_ = TextureManager::GetInstance();
 	WorldTransform worldTransform_;
 
@@ -59,5 +60,5 @@ private:
 	uint32_t vertexIndex = (kSubdivision * kSubdivision) * 6;
 
 	DirectionalLight* directionalLightData;
-	CameraForGpu camera;
+	CameraForGpu camera_;
 };

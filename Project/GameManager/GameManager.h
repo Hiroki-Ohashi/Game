@@ -9,6 +9,7 @@
 
 #include "ImGuiManeger.h"
 #include "imgui.h"
+#include "Light.h"
 
 
 class GameManager {
@@ -26,6 +27,7 @@ private:
 	Mesh* mesh = nullptr;
 	Input* input = nullptr;
 	ImGuiManeger* imgui = nullptr;
+	Light* light_ = nullptr;
 
 
 	// シーンを保持

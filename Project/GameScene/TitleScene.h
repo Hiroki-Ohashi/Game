@@ -17,6 +17,7 @@
 
 #include "Particle.h"
 #include "IScene.h"
+#include "PostProcess.h"
 
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -38,15 +39,5 @@ private:
 
 	TextureManager* textureManager_ = TextureManager::GetInstance();
 
-	std::unique_ptr<Sprite> sprite_ = nullptr;
-	std::unique_ptr<Sprite> sprite2_ = nullptr;
-
-	EulerTransform transform;
-	EulerTransform transform2;
-
-	uint32_t monsterBall;
-	uint32_t moon;
-	uint32_t uv;
-	uint32_t kusa;
-	uint32_t circle;
+	std::unique_ptr<PostProcess> postProcess_ = nullptr;
 };

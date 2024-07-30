@@ -12,6 +12,10 @@
     <FxCompile Include="resources\Shaders\SkinningObject3d.VS.hlsl" />
     <FxCompile Include="resources\Shaders\BoxFilter.PS.hlsl" />
     <FxCompile Include="resources\Shaders\HSVFilter.PS.hlsl" />
+    <FxCompile Include="resources\Shaders\Skybox.VS.hlsl" />
+    <FxCompile Include="resources\Shaders\Skybox.PS.hlsl" />
+    <FxCompile Include="resources\Shaders\EffectNone.PS.hlsl" />
+    <FxCompile Include="resources\Shaders\SkinningObject3d.PS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine\3d\Animation.cpp" />
@@ -45,6 +49,8 @@
     <ClCompile Include="Project\GameScene\TitleScene.cpp" />
     <ClCompile Include="Project\GameScene\ClearScene.cpp" />
     <ClCompile Include="Engine\Manager\Json.cpp" />
+    <ClCompile Include="Project\SkyBox\SkyBox.cpp" />
+    <ClCompile Include="Engine\Light\Light.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\3d\Animation.h" />
@@ -79,11 +85,14 @@
     <ClInclude Include="Project\GameScene\ClearScene.h" />
     <ClInclude Include="externals\json\json.hpp" />
     <ClInclude Include="Engine\Manager\Json.h" />
+    <ClInclude Include="Project\SkyBox\SkyBox.h" />
+    <ClInclude Include="Engine\Light\Light.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\Shaders\Fullscreen.hlsli" />
     <None Include="resources\Shaders\Particle.hlsli" />
     <None Include="resources\Shaders\Object3d.hlsli" />
+    <None Include="resources\Shaders\Skybox.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="externals\imgui\LICENSE.txt" />

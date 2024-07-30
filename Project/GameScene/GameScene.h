@@ -19,6 +19,7 @@
 #include <PostProcess.h>
 #include "Animation.h"
 #include "Json.h"
+#include "SkyBox.h"
 
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -50,6 +51,15 @@ private:
 
 	std::unique_ptr<Json> json_ = nullptr;
 	LevelData* levelData_ = nullptr;
+  
+	std::unique_ptr<AnimationModel> model_;
+
+	std::unique_ptr<SkyBox> skyBox_;
+
+	CameraForGpu camera;
+
+	EulerTransform transform;
 
 	uint32_t uv;
+	uint32_t skyTex;
 };
