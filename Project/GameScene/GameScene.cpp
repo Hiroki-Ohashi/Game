@@ -1,19 +1,20 @@
 #include "GameScene.h"
 
 GameScene::~GameScene(){
-	delete camera_;
 }
 
 void GameScene::Initialize(){
 	textureManager_ = TextureManager::GetInstance();
 	textureManager_->Initialize();
 
-	camera_ = new Camera();
-	camera_->Initialize();
+	camera_.Initialize();
 
 	postProcess_ = std::make_unique<PostProcess>();
+  postProcess_->Initialize(NONE);
 
-	postProcess_->Initialize(NONE);
+	json_ = std::make_unique<Json>();
+	levelData_ = json_->LoadJson("level");
+	json_->Adoption(levelData_);
 
 	transform = { { 1.0f,1.0f,1.0f},{0.0f,3.0f,0.0f},{0.0f,-1.0f,3.0f} };
 
@@ -28,8 +29,9 @@ void GameScene::Initialize(){
 }
 
 void GameScene::Update(){
-
-	camera_->Update();
+	camera_.Update();
+	json_->Update();
+	camera_.cameraTransform = json_->GetCamera().cameraTransform;
 
 	if (input_->TriggerKey(DIK_SPACE)) {
 		sceneNo = TITLE;
@@ -72,6 +74,8 @@ void GameScene::Draw(){
 	skyBox_->Draw(camera_, skyTex);
 
 	model_->Draw(camera_, uv, skyTex);
+  
+  json_->Draw(camera_, uv);
 }
 
 

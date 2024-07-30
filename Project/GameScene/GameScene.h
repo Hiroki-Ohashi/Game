@@ -18,6 +18,7 @@
 #include "IScene.h"
 #include <PostProcess.h>
 #include "Animation.h"
+#include "Json.h"
 #include "SkyBox.h"
 
 #pragma comment(lib, "d3d12.lib")
@@ -44,13 +45,16 @@ public:
 
 private:
 	TextureManager* textureManager_ = nullptr;
-	Camera* camera_ = nullptr;
+	Camera camera_;
+
+	std::unique_ptr<PostProcess> postProcess_ = nullptr;
+
+	std::unique_ptr<Json> json_ = nullptr;
+	LevelData* levelData_ = nullptr;
   
 	std::unique_ptr<AnimationModel> model_;
 
 	std::unique_ptr<SkyBox> skyBox_;
-
-	std::unique_ptr<PostProcess> postProcess_ = nullptr;
 
 	CameraForGpu camera;
 

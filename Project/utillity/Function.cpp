@@ -1,13 +1,6 @@
 #include "Function.h"
-#include <Windows.h>
-#include <cstdint>
-#include <string>
-#include <format>
-#include <d3d12.h>
-#include <dxgi1_6.h>
-#include <cassert>
-#include <dxgidebug.h>
-#include <dxcapi.h>
+#include <iostream>
+#include <fstream>
 
 // string -> wstring
 std::wstring Convert::ConvertString(const std::string& str)

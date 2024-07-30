@@ -48,6 +48,7 @@
     <ClCompile Include="Project\utillity\WorldTransform.cpp" />
     <ClCompile Include="Project\GameScene\TitleScene.cpp" />
     <ClCompile Include="Project\GameScene\ClearScene.cpp" />
+    <ClCompile Include="Engine\Manager\Json.cpp" />
     <ClCompile Include="Project\SkyBox\SkyBox.cpp" />
     <ClCompile Include="Engine\Light\Light.cpp" />
   </ItemGroup>
@@ -82,6 +83,8 @@
     <ClInclude Include="Project\utillity\WorldTransform.h" />
     <ClInclude Include="Project\GameScene\TitleScene.h" />
     <ClInclude Include="Project\GameScene\ClearScene.h" />
+    <ClInclude Include="externals\json\json.hpp" />
+    <ClInclude Include="Engine\Manager\Json.h" />
     <ClInclude Include="Project\SkyBox\SkyBox.h" />
     <ClInclude Include="Engine\Light\Light.h" />
   </ItemGroup>
