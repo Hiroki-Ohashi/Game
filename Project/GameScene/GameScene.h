@@ -46,16 +46,10 @@ private:
 	TextureManager* textureManager_ = nullptr;
 	Camera camera_;
 
-	std::unique_ptr<AnimationModel> model2_;
-
 	std::unique_ptr<PostProcess> postProcess_ = nullptr;
 
 	std::unique_ptr<Json> json_ = nullptr;
 	LevelData* levelData_ = nullptr;
 
-	EulerTransform transform;
-
 	uint32_t uv;
-	uint32_t right;
-	uint32_t left;
 };
