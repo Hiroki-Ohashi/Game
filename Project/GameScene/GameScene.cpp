@@ -1,8 +1,6 @@
 #include "GameScene.h"
 
 GameScene::~GameScene(){
-	delete camera_;
-
 	// bullet_の解放
 	for (EnemyBullet* bullet : enemyBullets_) {
 		delete bullet;
@@ -18,11 +16,10 @@ GameScene::~GameScene(){
 }
 
 void GameScene::Initialize() {
-	camera_ = new Camera();
-	camera_->Initialize();
+	camera_.Initialize();
 
 	postProcess_ = std::make_unique<PostProcess>();
-	postProcess_->Initialize();
+	postProcess_->Initialize(NONE);
 
 	// player
 	player_ = std::make_unique<Player>();
@@ -44,6 +41,7 @@ void GameScene::Initialize() {
 
 	enemyBulletTex = textureManager_->Load("resources/black.png");
 	bossBulletTex = textureManager_->Load("resources/white.png");
+	uv = textureManager_->Load("resources/uvChecker.png");
 
 	for (Enemy* enemy : enemys_) {
 		enemy->SetIsDead(false);
@@ -51,7 +49,7 @@ void GameScene::Initialize() {
 
 	LoadEnemyPopData();
   
-  json_ = std::make_unique<Json>();
+    json_ = std::make_unique<Json>();
 	levelData_ = json_->LoadJson("level");
 	json_->Adoption(levelData_);
 }
@@ -60,7 +58,7 @@ void GameScene::Update(){
 
 	UpdateEnemyPopCommands();
 
-	camera_->Update();
+	camera_.Update();
 
 	player_->Update();
 
@@ -82,9 +80,8 @@ void GameScene::Update(){
 			});
 	}
 
-	camera_.Update();
-	json_->Update();
-	camera_.cameraTransform = json_->GetCamera().cameraTransform;
+	//json_->Update();
+	//camera_.cameraTransform = json_->GetCamera().cameraTransform;
   
 	for (Enemy* enemy : enemys_) {
 		enemy->Update();
@@ -108,7 +105,7 @@ void GameScene::Update(){
 
 	stage_->Update();
 
-	camera_->cameraTransform.translate = { player_->GetPos().x, player_->GetPos().y + 3.0f,  player_->GetPos().z - 70.0f };
+	camera_.cameraTransform.translate = { player_->GetPos().x, player_->GetPos().y + 3.0f,  player_->GetPos().z - 70.0f };
 	//camera_->cameraTransform.translate = { 0.0f, 0.0f,  player_->GetPos().z - 50.0f };
 
 	if (boss_->IsDead() == true) {
@@ -118,31 +115,32 @@ void GameScene::Update(){
 
 void GameScene::Draw()
 {
-  json_->Draw(camera_, uv);
   
-	skydome_->Draw(camera_);
+	skydome_->Draw(&camera_);
 
-	stage_->Draw(camera_);
+	stage_->Draw(&camera_);
+
+	//json_->Draw(camera_, bossBulletTex);
 
 	// 敵キャラの描画
 	for (Enemy* enemy : enemys_) {
-		enemy->Draw(camera_);
+		enemy->Draw(&camera_);
 	}
 
 	// 弾描画
 	for (EnemyBullet* bullet : enemyBullets_) {
-		bullet->Draw(camera_, enemyBulletTex);
+		bullet->Draw(&camera_, enemyBulletTex);
 	}
 
-	player_->Draw(camera_);
+	player_->Draw(&camera_);
 
 	if (player_->GetPos().z >= 500.0f) {
 
-		boss_->Draw(camera_);
+		boss_->Draw(&camera_);
 
 		// ボス弾描画
 		for (BossBullet* bullet : bossBullets_) {
-			bullet->Draw(camera_, bossBulletTex);
+			bullet->Draw(&camera_, bossBulletTex);
 		}
 	}
 }

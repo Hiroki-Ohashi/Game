@@ -36,9 +36,14 @@ void Model::Initialize(const std::string& filename, EulerTransform transform) {
 
 void Model::Update() {
 
-	ImGui::Begin("Model");
-	ImGui::DragFloat3("Rotate", &worldTransform_.rotate.x, 0.01f, -100.0f, 100.0f);
-	ImGui::End();
+	if (ImGui::TreeNode("Model")) {
+		ImGui::DragFloat3("Rotate", &worldTransform_.rotate.x, 0.01f);
+		ImGui::DragFloat3("Transform", &worldTransform_.translate.x, 0.01f);
+		ImGui::DragFloat3("Scale", &worldTransform_.scale.x, 0.01f);
+		ImGui::TreePop();
+	}
+
+	worldTransform_.UpdateMatrix();
 }
 
 void Model::Draw(Camera* camera, uint32_t index) {
@@ -50,6 +55,7 @@ void Model::Draw(Camera* camera, uint32_t index) {
 	camera_.worldPosition = { camera->cameraTransform.translate.x, camera->cameraTransform.translate.y, camera->cameraTransform.translate.z };
 	light_->Update();
 	worldTransform_.TransferMatrix(wvpData, camera);
+	worldTransform_.UpdateMatrix();
 
 	Matrix4x4 uvtransformMatrix = MakeScaleMatrix(uvTransform.scale);
 	uvtransformMatrix = Multiply(uvtransformMatrix, MakeRotateZMatrix(uvTransform.rotate.z));
@@ -72,9 +78,6 @@ void Model::Draw(Camera* camera, uint32_t index) {
 	// 描画(DrawCall/ドローコール)
 	DirectXCommon::GetInsTance()->GetCommandList()->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
 
-	if (ImGui::TreeNode("Model")) {
-		ImGui::DragFloat3("Rotate", &worldTransform_.rotate.x, 0.01f);
-		ImGui::DragFloat3("Transform", &worldTransform_.translate.x, 0.01f);
 	/*if (ImGui::TreeNode("Model")) {
 		ImGui::SliderAngle("Rotate.y ", &worldTransform_.rotate.y);
 		ImGui::DragFloat3("Transform", &worldTransform_.translate.x, 0.01f, -10.0f, 10.0f);

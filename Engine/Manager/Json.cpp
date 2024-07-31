@@ -120,6 +120,9 @@ void Json::Adoption(LevelData* levelData)
 void Json::Update()
 {
 	camera_.Update();
+	for (auto& object : objects_) {
+		object->Update();
+	}
 }
 
 void Json::Draw(Camera& camera, uint32_t index)

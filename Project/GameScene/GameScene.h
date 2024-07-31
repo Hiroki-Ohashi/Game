@@ -65,7 +65,7 @@ public:
 	void AddEnemy(Enemy* enemy);
 
 private:
-	Camera* camera_ = nullptr;
+	Camera camera_;
 	TextureManager* textureManager_ = TextureManager::GetInstance();
 	std::unique_ptr<PostProcess> postProcess_ = nullptr;
 
@@ -90,6 +90,7 @@ private:
 	// テクスチャ
 	uint32_t enemyBulletTex;
 	uint32_t bossBulletTex;
+	uint32_t uv;
 
 	Vector3 pos_ = { 0.0f, 0.0f, 500.0f };
 	Vector3 pos2_ = { 0.0f, 80.0f, 700.0f };
