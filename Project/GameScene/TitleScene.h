@@ -46,5 +46,4 @@ private:
 	EulerTransform transform;
 
 	uint32_t title;
-
 };

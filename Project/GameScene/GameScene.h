@@ -18,6 +18,7 @@
 #include "IScene.h"
 #include <PostProcess.h>
 #include "Animation.h"
+#include "Json.h"
 #include "SkyBox.h"
 #include <Player/Player.h>
 #include <Skydome.h>
@@ -45,7 +46,7 @@ public:
   
 	// 解放
 	void Release();
-
+  
 	void CheckAllCollisions();
 
 	/// <summary>
@@ -77,13 +78,14 @@ private:
 	// 敵弾
 	std::list<EnemyBullet*> enemyBullets_;
 	std::list<BossBullet*> bossBullets_;
-
+  
+	std::unique_ptr<Json> json_ = nullptr;
+	LevelData* levelData_ = nullptr;
+  
 	// ステージ
 	std::unique_ptr<Stage> stage_;
-
 	// 天球
 	std::unique_ptr<Skydome> skydome_;
-
 private:
 	// テクスチャ
 	uint32_t enemyBulletTex;

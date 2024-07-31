@@ -29,6 +29,9 @@ public:
 	ModelData GetModelData() { return modelData; }
 	void SetWorldTransform(WorldTransform worldtransform) { worldTransform_ = worldtransform; }
 
+	void SetPosition(Vector3 pos) { worldTransform_.translate = pos; }
+	void SetRotation(Vector3 rot) { worldTransform_.rotate = rot; }
+	void SetScale(Vector3 scale) { worldTransform_.scale = scale; }
 	void SetLight(bool isLight) { materialData->enableLighting = isLight; }
 
 private:
@@ -36,6 +39,7 @@ private:
 	void CreateVertexResource();
 	void CreateMaterialResource();
 	void CreateWVPResource();
+	void CreatePso();
 
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(Microsoft::WRL::ComPtr<ID3D12Device> device, size_t sizeInbytes);
 
@@ -69,5 +73,8 @@ private:
 	bool isModel;
 
 	CameraForGpu camera_;
+
+	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature = nullptr;
+	Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineState = nullptr;
 
 };

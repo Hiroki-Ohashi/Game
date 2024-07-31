@@ -1,6 +1,7 @@
 #pragma once
 #include "IScene.h"
 #include <TextureManager.h>
+#include <Camera.h>
 #include <Sprite.h>
 #include <PostProcess.h>
 
@@ -26,5 +27,4 @@ private:
 	uint32_t title;
 
 	bool isFade;
-
 };

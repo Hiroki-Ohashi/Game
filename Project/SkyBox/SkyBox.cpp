@@ -8,7 +8,7 @@ void SkyBox::Initialize()
 	SkyBox::CreateMaterialResource();
 	SkyBox::CreateWVP();
 
-	transform = { {100.0f,100.0f,100.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+	transform = { {1000.0f,1000.0f,1000.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 	uvTransform = { {1.0f, 1.0f, 1.0f},{0.0f, 0.0f, 0.0f},{0.0f, 0.0f, 0.0f}, };
 
 	cameraResource = CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(Camera));
@@ -26,10 +26,10 @@ void SkyBox::Draw(Camera* camera, uint32_t index)
 
 	worldTransform_.TransferMatrix(wvpResourceData, camera);
 
-	Matrix4x4 uvtransformMatrix = MakeScaleMatrix(uvTransform.scale);
+	/*Matrix4x4 uvtransformMatrix = MakeScaleMatrix(uvTransform.scale);
 	uvtransformMatrix = Multiply(uvtransformMatrix, MakeRotateZMatrix(uvTransform.rotate.z));
 	uvtransformMatrix = Multiply(uvtransformMatrix, MakeTranslateMatrix(uvTransform.translate));
-	materialData->uvTransform = uvtransformMatrix;
+	materialData->uvTransform = uvtransformMatrix;*/
 
 	// Rootsignatureを設定。PSOに設定してるけど別途設定が必要
 	dir_->GetCommandList()->SetGraphicsRootSignature(rootSignature.Get());

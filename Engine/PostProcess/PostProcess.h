@@ -1,12 +1,28 @@
 #pragma once
 #include "DirectXCommon.h"
 
+
+enum Type {
+	NONE,
+	GRAY,
+	VIGNETTE,
+	BOX,
+	GAUSSIAN,
+	HSV
+};
+
 class PostProcess {
 public:
-	void Initialize();
+	void Initialize(Type type);
 	void Draw();
+
 private:
 	void CreatePSO();
+	void CreateGrayPSO();
+	void CreateVignettePSO();
+	void CreateBoxPSO();
+	void CreateGaussianPSO();
+	void CreateHSVPSO();
 private:
 	DirectXCommon* dir_ = DirectXCommon::GetInsTance();
 

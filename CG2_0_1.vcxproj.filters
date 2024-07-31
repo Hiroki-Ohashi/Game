@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <FxCompile Include="resources\Shaders\GaussianBlur.PS.hlsl" />
     <FxCompile Include="resources\Shaders\Grayscale.PS.hlsl" />
     <FxCompile Include="resources\Shaders\Fullscreen.VS.hlsl" />
     <FxCompile Include="resources\Shaders\Particle.PS.hlsl" />
@@ -9,6 +10,8 @@
     <FxCompile Include="resources\Shaders\Object3d.VS.hlsl" />
     <FxCompile Include="resources\Shaders\Vignette.PS.hlsl" />
     <FxCompile Include="resources\Shaders\SkinningObject3d.VS.hlsl" />
+    <FxCompile Include="resources\Shaders\BoxFilter.PS.hlsl" />
+    <FxCompile Include="resources\Shaders\HSVFilter.PS.hlsl" />
     <FxCompile Include="resources\Shaders\Skybox.VS.hlsl" />
     <FxCompile Include="resources\Shaders\Skybox.PS.hlsl" />
     <FxCompile Include="resources\Shaders\EffectNone.PS.hlsl" />
@@ -44,6 +47,8 @@
     <ClCompile Include="Engine\Base\WinApp.cpp" />
     <ClCompile Include="Project\utillity\WorldTransform.cpp" />
     <ClCompile Include="Project\GameScene\TitleScene.cpp" />
+    <ClCompile Include="Project\GameScene\ClearScene.cpp" />
+    <ClCompile Include="Engine\Manager\Json.cpp" />
     <ClCompile Include="Project\SkyBox\SkyBox.cpp" />
     <ClCompile Include="Engine\Light\Light.cpp" />
     <ClCompile Include="Project\GameObject\Player\Player.cpp" />
@@ -86,6 +91,9 @@
     <ClInclude Include="Engine\Base\WinApp.h" />
     <ClInclude Include="Project\utillity\WorldTransform.h" />
     <ClInclude Include="Project\GameScene\TitleScene.h" />
+    <ClInclude Include="Project\GameScene\ClearScene.h" />
+    <ClInclude Include="externals\json\json.hpp" />
+    <ClInclude Include="Engine\Manager\Json.h" />
     <ClInclude Include="Project\SkyBox\SkyBox.h" />
     <ClInclude Include="Engine\Light\Light.h" />
     <ClInclude Include="Project\GameObject\Player\Player.h" />

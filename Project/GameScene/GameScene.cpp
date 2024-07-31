@@ -50,6 +50,10 @@ void GameScene::Initialize() {
 	}
 
 	LoadEnemyPopData();
+  
+  json_ = std::make_unique<Json>();
+	levelData_ = json_->LoadJson("level");
+	json_->Adoption(levelData_);
 }
 
 void GameScene::Update(){
@@ -78,6 +82,10 @@ void GameScene::Update(){
 			});
 	}
 
+	camera_.Update();
+	json_->Update();
+	camera_.cameraTransform = json_->GetCamera().cameraTransform;
+  
 	for (Enemy* enemy : enemys_) {
 		enemy->Update();
 	}
@@ -110,6 +118,8 @@ void GameScene::Update(){
 
 void GameScene::Draw()
 {
+  json_->Draw(camera_, uv);
+  
 	skydome_->Draw(camera_);
 
 	stage_->Draw(camera_);
@@ -255,7 +265,6 @@ void GameScene::CheckAllCollisions()
 		float p2eBX = (posB.x - posA.x) * (posB.x - posA.x);
 		float p2eBY = (posB.y - posA.y) * (posB.y - posA.y);
 		float p2eBZ = (posB.z - posA.z) * (posB.z - posA.z);
-
 		float pRadius = 15.0f;
 		float eBRadius = 1.0f;
 
@@ -363,7 +372,6 @@ void GameScene::UpdateEnemyPopCommands()
 			// 敵を発生させる
 			EnemySpown(Vector3(x, y, z));
 		}
-
 		// WAITコマンド
 		else if (word.find("WAIT") == 0) {
 			getline(line_stream, word, ',');

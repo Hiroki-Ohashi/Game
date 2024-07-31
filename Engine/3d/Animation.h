@@ -8,7 +8,7 @@
 
 class AnimationModel {
 public:
-	void Initialize(const std::string& filename, EulerTransform transform);
+	void Initialize(const std::string& filename, EulerTransform transform, Camera* camera, uint32_t index);
 	void Update(float time);
 	void Draw(Camera* camera, uint32_t index, uint32_t index2);
 
@@ -23,10 +23,11 @@ private:
 	void CreateWVPResource();
 	void CreateIndexResource();
 	void CreateDirectionalResource();
+	void CreateCameraResource(Camera* camera);
 
 	Skeleton CreateSkelton(const Node& rootNode);
 	int32_t CreateJoint(const Node& node, const std::optional<int32_t>& parent, std::vector<Joint>& joints);
-	SkinCluster CreateSkinCluster(const Microsoft::WRL::ComPtr<ID3D12Device>& device, const Skeleton& skeleton, const ModelData& modelData, const Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>& descriptorHeap, uint32_t descriptorSize);
+	SkinCluster CreateSkinCluster(const Microsoft::WRL::ComPtr<ID3D12Device>& device, const Skeleton& skeleton, const ModelData& modelData, const Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>& descriptorHeap, uint32_t descriptorSize, uint32_t index);
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(Microsoft::WRL::ComPtr<ID3D12Device> device, size_t sizeInbytes);
 	void ApplyAnimation(Skeleton& skeleton, const Animation& animation, float animationTime);
 
@@ -34,17 +35,20 @@ private:
 	DirectXCommon* dir_ = DirectXCommon::GetInsTance();
 	TextureManager* texture_ = TextureManager::GetInstance();
 	Light* light_ = Light::GetInstance();
-	CameraForGpu camera_;
+	CameraForGpu* camera_ = nullptr;
 
 	WorldTransform worldTransform_;
 	EulerTransform transform;
 	EulerTransform uvTransform;
 
-	Animation animation;
+	uint32_t index = 0;
+	static const int maxIndex = 100;
+
+	Animation animation{};
 	float animationTime = 0.0f;
 
-	Skeleton skeleton;
-	SkinCluster skinCluster;
+	Skeleton skeleton{};
+	SkinCluster skinCluster{};
 	Joint joint;
 
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature = nullptr;
