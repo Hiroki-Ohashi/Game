@@ -58,13 +58,13 @@ public:
 private:
 	DirectXCommon* dir_ = DirectXCommon::GetInsTance();
 
-	static const int kMaxTexture = 100;
-	uint32_t textureIndex_;
-
 	// DescriptorSizeを取得しておく
 	uint32_t descriptorSizeRTV;
 	uint32_t descriptorSizeDSV;
 	uint32_t descriptorSizeSRV;
+
+	static const int kMaxTexture = 100;
+	uint32_t textureIndex_;
 
 	Microsoft::WRL::ComPtr< ID3D12Resource> intermediateResource[kMaxTexture];
 	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource[kMaxTexture];

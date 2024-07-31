@@ -14,7 +14,7 @@
 
 class Sprite {
 public:
-	void Initialize(Vector2 pos, Vector2 scale);
+	void Initialize(Vector2 pos, Vector2 scale, float index);
 
 	void Update();
 
@@ -26,6 +26,9 @@ public:
 	void CreateMaterialResourceSprite();
 	void CreateTransformationMatrixResourceSprite();
 	void CreatePso();
+
+	void FadeIn(float speed);
+	void FadeOut(float speed);
 
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(Microsoft::WRL::ComPtr<ID3D12Device> device, size_t sizeInbytes);
 
@@ -43,6 +46,9 @@ public:
 	void SetSize(Vector2 size) { textureSize = size; }
 
 	void SetTextureLeftTop(const Vector2 textureLeftTop_) { this->textureLeftTop = textureLeftTop_; }
+
+	void SetAlpha(float alpha) { materialDataSprite->color.w = alpha; }
+	float GetAlpha() { return materialDataSprite->color.w; }
 
 	// テクスチャのサイズをスプライトに合わせる
 	void AdjustTextureSize();

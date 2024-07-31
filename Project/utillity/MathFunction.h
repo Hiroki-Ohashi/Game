@@ -208,9 +208,13 @@ struct SkinCluster {
 
 float Dot(const Vector3& v1, const Vector3& v2);
 float Length(const Vector3& v);
-Vector3 Normalize(const Vector3& v1);
+Vector3 Normalize(const Vector3& v);
 Vector3 Cross(const Vector3& v1, const Vector3& v2);
-Vector3 Transforme(const Vector3& vector, const Matrix4x4& matrix);
+Vector3 Transform(const Vector3& vector, const Matrix4x4& matrix);
+// ベクトル足し算
+Vector3 Add(const Vector3& v1, const Vector3& v2);
+// ベクトル変換
+Vector3 TransformNormal(const Vector3& v, const Matrix4x4& m);
 Matrix4x4 Transpose(const Matrix4x4& m);
 
 // 単位行列の作成
@@ -257,7 +261,8 @@ Matrix4x4 MakeRotateMatrix(const Quaternion quaternion);
 Vector3 Lerp(const Vector3& v1, const Vector3& v2, float t);
 Quaternion LerpQuaternion(const Quaternion& v1, const Quaternion& v2, float t);
 
-Quaternion Slerp(const Quaternion& q0, const Quaternion& q1, float t);
+Vector3 Slerp(const Vector3& v1, const Vector3& v2, float t);
+Quaternion SlerpQuaternion(const Quaternion& q0, const Quaternion& q1, float t);
 
 Vector3 CalculateValue(const std::vector<KeyframeVector3>& keyframes, float time);
 Quaternion CalculateValueRotate(const std::vector<KeyframeQuaternion>& keyframes, float time);

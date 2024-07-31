@@ -2,6 +2,8 @@
 #include "IScene.h"
 #include <TextureManager.h>
 #include <Camera.h>
+#include <Sprite.h>
+#include <PostProcess.h>
 
 class ClearScene : public IScene {
 public:
@@ -15,10 +17,14 @@ public:
 private:
 
 	TextureManager* textureManager_ = TextureManager::GetInstance();
-	Camera* camera_ = nullptr;
+
+	std::unique_ptr<Sprite> title_ = nullptr;
+
+	std::unique_ptr<PostProcess> postProcess_ = nullptr;
 
 	EulerTransform transform;
-	EulerTransform transform2;
 
-	uint32_t uv;
+	uint32_t title;
+
+	bool isFade;
 };

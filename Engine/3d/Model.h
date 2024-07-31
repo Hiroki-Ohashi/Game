@@ -32,6 +32,7 @@ public:
 	void SetPosition(Vector3 pos) { worldTransform_.translate = pos; }
 	void SetRotation(Vector3 rot) { worldTransform_.rotate = rot; }
 	void SetScale(Vector3 scale) { worldTransform_.scale = scale; }
+	void SetLight(bool isLight) { materialData->enableLighting = isLight; }
 
 private:
 

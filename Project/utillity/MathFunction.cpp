@@ -24,7 +24,7 @@ Vector3 Cross(const Vector3& v1, const Vector3& v2)
 	return Cross;
 }
 
-Vector3 Transforme(const Vector3& vector, const Matrix4x4& matrix) {
+Vector3 Transform(const Vector3& vector, const Matrix4x4& matrix) {
 	Vector3 result;
 	result.x = vector.x * matrix.m[0][0] + vector.y * matrix.m[1][0] + vector.z * matrix.m[2][0] + 1.0f * matrix.m[3][0];
 	result.y = vector.x * matrix.m[0][1] + vector.y * matrix.m[1][1] + vector.z * matrix.m[2][1] + 1.0f * matrix.m[3][1];
@@ -35,6 +35,24 @@ Vector3 Transforme(const Vector3& vector, const Matrix4x4& matrix) {
 	result.y /= w;
 	result.z /= w;
 
+	return result;
+}
+
+Vector3 Add(const Vector3& v1, const Vector3& v2)
+{
+	Vector3 result;
+	result.x = v1.x + v2.x;
+	result.y = v1.y + v2.y;
+	result.z = v1.z + v2.z;
+	return result;
+}
+
+Vector3 TransformNormal(const Vector3& v, const Matrix4x4& m)
+{
+	Vector3 result{
+		v.x * m.m[0][0] + v.y * m.m[1][0] + v.z * m.m[2][0],
+		v.x * m.m[0][1] + v.y * m.m[1][1] + v.z * m.m[2][1],
+		v.x * m.m[0][2] + v.y * m.m[1][2] + v.z * m.m[2][2] };
 	return result;
 }
 
@@ -335,13 +353,14 @@ Matrix4x4 MakeOrthographicMatrix(float left, float top, float right, float botto
 	return result;
 }
 
-Vector3 Normalize(const Vector3& v1) {
-	Vector3 Result = v1;
-	float length = sqrt(v1.x * v1.x + v1.y * v1.y + v1.z * v1.z);
-	Result.x /= length;
-	Result.y /= length;
-	Result.z /= length;
-	return Result;
+Vector3 Normalize(const Vector3& v) {
+	Vector3 Normalize;
+
+	float mag = 1 / sqrtf(v.x * v.x + v.y * v.y + v.z * v.z);
+
+	Normalize = { v.x * mag, v.y * mag, v.z * mag };
+
+	return Normalize;
 }
 
 Matrix4x4 MakeScaleMatrix(const Vector3& scale) {
@@ -601,7 +620,33 @@ Quaternion LerpQuaternion(const Quaternion& v1, const Quaternion& v2, float t)
 }
 
 
-Quaternion Slerp(const Quaternion& q0, const Quaternion& q1, float t)
+Vector3 Slerp(const Vector3& v1, const Vector3& v2, float t)
+{
+	Vector3 p;
+
+	Vector3 s;
+	Vector3 e;
+
+	s = Normalize(v1);
+	e = Normalize(v2);
+	float angle = acos(Dot(s, e));
+	// SinΘ
+	float SinTh = sin(angle);
+
+	// 補間係数
+	float Ps = sin(angle * (1 - t));
+	float Pe = sin(angle * t);
+
+	p.x = (Ps * s.x + Pe * e.x) / SinTh;
+	p.y = (Ps * s.y + Pe * e.y) / SinTh;
+	p.z = (Ps * s.z + Pe * e.z) / SinTh;
+
+	p = Normalize(p);
+
+	return p;
+}
+
+Quaternion SlerpQuaternion(const Quaternion& q0, const Quaternion& q1, float t)
 {
 	Quaternion result{};
 	Vector3 q0Vector = { q0.x,q0.y,q0.z };
@@ -670,7 +715,7 @@ Quaternion CalculateValueRotate(const std::vector<KeyframeQuaternion>& keyframes
 		if (keyframes[index].time <= time && time <= keyframes[nextIndex].time) {
 			//範囲内を補間する
 			float t = (time - keyframes[index].time) / (keyframes[nextIndex].time - keyframes[index].time);
-			return Slerp(keyframes[index].value, keyframes[nextIndex].value, t);
+			return SlerpQuaternion(keyframes[index].value, keyframes[nextIndex].value, t);
 		}
 	}
 	// ここまできた場合は一番後の時刻よりも後ろなので最後の値を返すことにする

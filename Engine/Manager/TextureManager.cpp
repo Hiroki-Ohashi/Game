@@ -354,7 +354,7 @@ DirectX::ScratchImage TextureManager::LoadTexture(const std::string& filePath) {
 		hr = DirectX::LoadFromWICFile(filePathW.c_str(), DirectX::WIC_FLAGS_FORCE_SRGB, nullptr, image);
 	}
 
-	assert(SUCCEEDED(hr));
+	//assert(SUCCEEDED(hr));
 
 	// ミップマップの作成
 	DirectX::ScratchImage mipImages{};
@@ -364,7 +364,8 @@ DirectX::ScratchImage TextureManager::LoadTexture(const std::string& filePath) {
 	else {
 		hr = DirectX::GenerateMipMaps(image.GetImages(), image.GetImageCount(), image.GetMetadata(), DirectX::TEX_FILTER_SRGB, 4, mipImages);
 	}
-	assert(SUCCEEDED(hr));
+
+	//assert(SUCCEEDED(hr));
 
 	return mipImages;
 }

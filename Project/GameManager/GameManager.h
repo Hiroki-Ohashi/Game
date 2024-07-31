@@ -6,6 +6,7 @@
 #include "IScene.h"
 #include "TitleScene.h"
 #include "GameScene.h"
+#include <ClearScene.h>
 
 #include "ImGuiManeger.h"
 #include "imgui.h"
@@ -33,8 +34,8 @@ private:
 	// シーンを保持
 	std::unique_ptr<IScene> sceneArr_[3];
 
-	int currentSceneNo_;
-	int prvSceneNo_;
-	int sceneNo;
+	int currentSceneNo_ = TITLE;
+	int prvSceneNo_ = 0;
+	int sceneNo = 0;
 
 };

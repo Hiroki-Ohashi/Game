@@ -2,26 +2,6 @@
 
 GameManager::GameManager()
 {
-	winapp = WinApp::GetInsTance();
-	winapp->Initialize(L"CG2");
-
-	directX = DirectXCommon::GetInsTance();
-	directX->Initialize();
-
-	mesh = new Mesh;
-	mesh->Initialize();
-
-	input = Input::GetInsTance();
-	input->Initialize();
-
-	imgui =ImGuiManeger::GetInstance();
-	imgui->Initialize();
-
-	// 各シーンの配列
-	sceneArr_[TITLE] = std::make_unique<TitleScene>();
-	sceneArr_[STAGE] = std::make_unique<GameScene>();
-
-	currentSceneNo_ = TITLE;
 }
 
 
@@ -40,8 +20,31 @@ void GameManager::Run()
 {
 	CoInitializeEx(0, COINIT_MULTITHREADED);
 
+	winapp = WinApp::GetInsTance();
+	winapp->Initialize(L"CG2");
+
+	directX = DirectXCommon::GetInsTance();
+	directX->Initialize();
+
+	mesh = new Mesh;
+	mesh->Initialize();
+
+	input = Input::GetInsTance();
+	input->Initialize();
+
+	imgui = ImGuiManeger::GetInstance();
+	imgui->Initialize();
+
+	// 各シーンの配列
+	sceneArr_[TITLE] = std::make_unique<TitleScene>();
+	sceneArr_[STAGE] = std::make_unique<GameScene>();
+	sceneArr_[CLEAR] = std::make_unique<ClearScene>();
+
+	currentSceneNo_ = TITLE;
 
 	MSG msg{};
+
+	sceneArr_[currentSceneNo_]->Initialize();
 
 	// ウインドウの×ボタンが押されるまでループ
 	while (msg.message != WM_QUIT) {

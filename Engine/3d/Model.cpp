@@ -11,7 +11,7 @@ void Model::Initialize(const std::string& filename, EulerTransform transform) {
 	else {
 		modelData = texture_->LoadModelFile("resources", filename);
 	}
-
+	 
 	DirectX::ScratchImage mipImages2 = texture_->LoadTexture(modelData.material.textureFilePath);
 
 	Model::CreatePso();
@@ -46,6 +46,7 @@ void Model::Draw(Camera* camera, uint32_t index) {
 	//wvpData->World = MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
 	//wvpData->World = Multiply(wvpData->World, *camera->transformationMatrixData);
 	//wvpData->WVP = wvpData->World;
+
 	camera_.worldPosition = { camera->cameraTransform.translate.x, camera->cameraTransform.translate.y, camera->cameraTransform.translate.z };
 	light_->Update();
 	worldTransform_.TransferMatrix(wvpData, camera);
@@ -71,10 +72,12 @@ void Model::Draw(Camera* camera, uint32_t index) {
 	// 描画(DrawCall/ドローコール)
 	DirectXCommon::GetInsTance()->GetCommandList()->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
 
-
 	if (ImGui::TreeNode("Model")) {
 		ImGui::DragFloat3("Rotate", &worldTransform_.rotate.x, 0.01f);
 		ImGui::DragFloat3("Transform", &worldTransform_.translate.x, 0.01f);
+	/*if (ImGui::TreeNode("Model")) {
+		ImGui::SliderAngle("Rotate.y ", &worldTransform_.rotate.y);
+		ImGui::DragFloat3("Transform", &worldTransform_.translate.x, 0.01f, -10.0f, 10.0f);
 
 		ImGui::DragFloat2("UVTransform", &uvTransform.translate.x, 0.01f, -10.0f, 10.0f);
 		ImGui::DragFloat2("UVScale", &uvTransform.scale.x, 0.01f, -10.0f, 10.0f);
@@ -138,6 +141,7 @@ void Model::CreateWVPResource() {
 	// 単位行列を書き込んでおく
 	wvpData->WVP = MakeIndentity4x4();
 }
+
 
 void Model::CreatePso()
 {
