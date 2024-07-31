@@ -21,7 +21,7 @@ public:
 	void SetIsDead(bool isDead) { isDead_ = isDead; }
 
 	bool IsDead() const { return isDead_; }
-	Vector3 GetPos() { return worldtransform_.translate; }
+	Vector3 GetPos() { return transform_.translate; }
 	void SetGameScene(GameScene* gameScene) { gameScene_ = gameScene; }
 	void SetPlayer(Player* player) { player_ = player; }
 private:

@@ -57,25 +57,25 @@ void Player::Update()
 	// 押した方向で移動ベクトルを変更(左右)
 	if (input_->PushKey(DIK_A)) {
 		move.x -= kCharacterSpeed;
-		worldtransform_.rotate.y -= kRotSpeed;
+		//worldtransform_.rotate.y -= kRotSpeed;
 	}
 	else if (input_->PushKey(DIK_D)) {
 		move.x += kCharacterSpeed;
-		worldtransform_.rotate.y += kRotSpeed;
+		//worldtransform_.rotate.y += kRotSpeed;
 	}
 	// 押した方向で移動ベクトルを変更(上下)
 	if (input_->PushKey(DIK_W)) {
 		move.y -= kCharacterSpeed;
-		worldtransform_.rotate.x -= kRotSpeed;
+		//worldtransform_.rotate.x -= kRotSpeed;
 	}
 	else if (input_->PushKey(DIK_S)) {
 		move.y += kCharacterSpeed;
-		worldtransform_.rotate.x += kRotSpeed;
+		//worldtransform_.rotate.x += kRotSpeed;
 	}
 
 	// 座標移動(ベクトルの加算)
-	/*worldtransform_.translate.x += move.x;
-	worldtransform_.translate.y -= move.y;*/
+	worldtransform_.translate.x += move.x;
+	worldtransform_.translate.y -= move.y;
 
 	// 移動限界座標
 	const float kMoveLimitX = 20.0f;
@@ -89,7 +89,7 @@ void Player::Update()
 	worldtransform_.UpdateMatrix();
 
 	// 自機から3Dレティクルへの距離
-	const float kDistancePlayerTo3DReticle = 10.0f;
+	const float kDistancePlayerTo3DReticle = 70.0f;
 	// 自機から3Dレティクルへのオフセット(Z+向き)
 	Vector3 offset = { 0.0f, 0.0f, 1.0f };
 	// 自機のワールド行列の回転を反映
@@ -104,9 +104,9 @@ void Player::Update()
 	reticleWorldtransform_.translate.z = worldtransform_.translate.z + offset.z;
 	reticleWorldtransform_.UpdateMatrix();
 
-	//worldtransform_.translate.z += 0.5f;
-	//worldtransform_.rotate.z += 0.05f;
-	//reticleWorldtransform_.translate.z += 0.5f;
+	worldtransform_.translate.z += 0.5f;
+	worldtransform_.rotate.z += 0.05f;
+	reticleWorldtransform_.translate.z += 0.5f;
 
 	model_->SetWorldTransform(worldtransform_);
 	reticleModel_->SetWorldTransform(reticleWorldtransform_);

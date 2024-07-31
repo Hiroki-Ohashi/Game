@@ -256,7 +256,7 @@ void GameScene::CheckAllCollisions()
 		float p2eBY = (posB.y - posA.y) * (posB.y - posA.y);
 		float p2eBZ = (posB.z - posA.z) * (posB.z - posA.z);
 
-		float pRadius = 20.0f;
+		float pRadius = 15.0f;
 		float eBRadius = 1.0f;
 
 		float L = (pRadius + eBRadius) * (pRadius + eBRadius);

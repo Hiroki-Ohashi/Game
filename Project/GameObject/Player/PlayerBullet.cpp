@@ -31,5 +31,7 @@ void PlayerBullet::Update()
 
 void PlayerBullet::Draw(Camera* camera, uint32_t index)
 {
-	model_->Draw(camera, index);
+	if (isDead_ == false) {
+		model_->Draw(camera, index);
+	}
 }
