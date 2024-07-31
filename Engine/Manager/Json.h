@@ -3,7 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <cassert>
-#include <json.hpp>
+#include "json.hpp"
 #include "MathFunction.h"
 #include <Model.h>
 

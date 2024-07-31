@@ -46,6 +46,7 @@ void Model::Draw(Camera* camera, uint32_t index) {
 	//wvpData->World = MakeAffineMatrix(transform.scale, transform.rotate, transform.translate);
 	//wvpData->World = Multiply(wvpData->World, *camera->transformationMatrixData);
 	//wvpData->WVP = wvpData->World;
+
 	camera_.worldPosition = { camera->cameraTransform.translate.x, camera->cameraTransform.translate.y, camera->cameraTransform.translate.z };
 	light_->Update();
 	worldTransform_.TransferMatrix(wvpData, camera);
@@ -80,7 +81,7 @@ void Model::Draw(Camera* camera, uint32_t index) {
 		ImGui::DragFloat2("UVScale", &uvTransform.scale.x, 0.01f, -10.0f, 10.0f);
 		ImGui::SliderAngle("UVRotate", &uvTransform.rotate.z);
 		ImGui::TreePop();
-	}*/
+	}
 
 	/*if (ImGui::TreeNode("Light")) {
 		ImGui::SliderFloat3("Light Direction", &directionalLightData.direction.x, -1.0f, 1.0f);

@@ -10,21 +10,21 @@ void GameScene::Initialize(){
 	camera_.Initialize();
 
 	postProcess_ = std::make_unique<PostProcess>();
-  postProcess_->Initialize(NONE);
+    postProcess_->Initialize(NONE);
+
+	transform = { { 1.0f,1.0f,1.0f},{0.0f,3.0f,0.0f},{0.0f,-1.0f,3.0f} };
+
+	model_ = std::make_unique<AnimationModel>();
+	model_->Initialize("walk.gltf", transform, &camera_, 0);
+
+	skyBox_ = std::make_unique<SkyBox>();
+	skyBox_->Initialize();
 
 	json_ = std::make_unique<Json>();
 	levelData_ = json_->LoadJson("level");
 	json_->Adoption(levelData_);
 
-	transform = { { 1.0f,1.0f,1.0f},{0.0f,3.0f,0.0f},{0.0f,-1.0f,3.0f} };
-
-	model_ = std::make_unique<AnimationModel>();
-	model_->Initialize("walk.gltf", transform, camera_, 0);
-
-	skyBox_ = std::make_unique<SkyBox>();
-	skyBox_->Initialize();
-
-	uv = textureManager_->Load("resources/white.png");
+	uv = textureManager_->Load("resources/uvChecker.png");
 	skyTex = textureManager_->Load("resources/rostock_laage_airport_4k.dds");
 }
 
@@ -38,16 +38,16 @@ void GameScene::Update(){
 	}
 	
 	if (input_->PushKey(DIK_D)) {
-		camera_->cameraTransform.translate.x += 0.1f;
+		camera_.cameraTransform.translate.x += 0.1f;
 	}
 	if (input_->PushKey(DIK_A)) {
-		camera_->cameraTransform.translate.x -= 0.1f;
+		camera_.cameraTransform.translate.x -= 0.1f;
 	}
 	if (input_->PushKey(DIK_W)) {
-		camera_->cameraTransform.translate.y += 0.1f;
+		camera_.cameraTransform.translate.y += 0.1f;
 	}
 	if (input_->PushKey(DIK_S)) {
-		camera_->cameraTransform.translate.y -= 0.1f;
+		camera_.cameraTransform.translate.y -= 0.1f;
 	}
 
 	if (input_->PushKey(DIK_1)) {
@@ -70,12 +70,11 @@ void GameScene::Update(){
 }
 
 void GameScene::Draw(){
+	json_->Draw(camera_, uv);
 
-	skyBox_->Draw(camera_, skyTex);
+	skyBox_->Draw(&camera_, skyTex);
 
-	model_->Draw(camera_, uv, skyTex);
-  
-  json_->Draw(camera_, uv);
+	model_->Draw(&camera_, uv, skyTex);
 }
 
 
