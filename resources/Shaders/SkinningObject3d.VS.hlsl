@@ -53,7 +53,7 @@ VertexShaderOutput main(VertexShaderInput input) {
     output.position = mul(skinned.position, gTransformationMatrix.WVP);
     output.worldPosition = mul(skinned.position, gTransformationMatrix.World).xyz;
     output.texcoord = input.texcoord;
-    output.normal = normalize(mul(skinned.normal, (float32_t3x3)gTransformationMatrix.World));
+    output.normal = normalize(mul(skinned.normal, (float32_t3x3)gTransformationMatrix.WVP));
 
     return output;
 }

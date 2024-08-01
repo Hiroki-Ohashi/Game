@@ -24,14 +24,14 @@ void GameScene::Initialize(){
 	levelData_ = json_->LoadJson("level");
 	json_->Adoption(levelData_);
 
-	uv = textureManager_->Load("resources/uvChecker.png");
+	uv = textureManager_->Load("resources/white.png");
 	skyTex = textureManager_->Load("resources/rostock_laage_airport_4k.dds");
 }
 
 void GameScene::Update(){
 	camera_.Update();
-	json_->Update();
-	camera_.cameraTransform = json_->GetCamera().cameraTransform;
+	//json_->Update();
+	//camera_.cameraTransform = json_->GetCamera().cameraTransform;
 
 	if (input_->TriggerKey(DIK_SPACE)) {
 		sceneNo = TITLE;
@@ -70,7 +70,7 @@ void GameScene::Update(){
 }
 
 void GameScene::Draw(){
-	json_->Draw(camera_, uv);
+	//json_->Draw(camera_, uv);
 
 	skyBox_->Draw(&camera_, skyTex);
 
