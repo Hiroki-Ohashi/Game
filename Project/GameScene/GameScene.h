@@ -82,8 +82,6 @@ private:
 	std::unique_ptr<Json> json_ = nullptr;
 	LevelData* levelData_ = nullptr;
   
-	// ステージ
-	std::unique_ptr<Stage> stage_;
 	// 天球
 	std::unique_ptr<Skydome> skydome_;
 private:
@@ -92,8 +90,8 @@ private:
 	uint32_t bossBulletTex;
 	uint32_t uv;
 
-	Vector3 pos_ = { 0.0f, 0.0f, 500.0f };
-	Vector3 pos2_ = { 0.0f, 80.0f, 700.0f };
+	Vector3 pos_ = { 0.0f, 25.0f, 500.0f };
+	Vector3 pos2_ = { 0.0f, 100.0f, 800.0f };
 
 	// 待機タイマー
 	int32_t waitTimer_;

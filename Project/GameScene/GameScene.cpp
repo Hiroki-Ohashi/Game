@@ -31,10 +31,6 @@ void GameScene::Initialize() {
 	boss_->SetPlayer(player_.get());
 	boss_->SetGameScene(this);
 
-	// stage
-	stage_ = std::make_unique<Stage>();
-	stage_->Initialize();
-
 	// skybox
 	skydome_ = std::make_unique<Skydome>();
 	skydome_->Initialize();
@@ -80,7 +76,7 @@ void GameScene::Update(){
 			});
 	}
 
-	//json_->Update();
+	json_->Update();
 	//camera_.cameraTransform = json_->GetCamera().cameraTransform;
   
 	for (Enemy* enemy : enemys_) {
@@ -103,9 +99,7 @@ void GameScene::Update(){
 
 	CheckAllCollisions();
 
-	stage_->Update();
-
-	camera_.cameraTransform.translate = { player_->GetPos().x, player_->GetPos().y + 3.0f,  player_->GetPos().z - 70.0f };
+	camera_.cameraTransform.translate = { player_->GetPos().x, player_->GetPos().y + 3.0f,  player_->GetPos().z - 40.0f };
 	//camera_->cameraTransform.translate = { 0.0f, 0.0f,  player_->GetPos().z - 50.0f };
 
 	if (boss_->IsDead() == true) {
@@ -118,9 +112,9 @@ void GameScene::Draw()
   
 	skydome_->Draw(&camera_);
 
-	stage_->Draw(&camera_);
+	json_->Draw(camera_, uv);
 
-	//json_->Draw(camera_, bossBulletTex);
+	player_->BulletDraw(&camera_);
 
 	// 敵キャラの描画
 	for (Enemy* enemy : enemys_) {
@@ -132,8 +126,6 @@ void GameScene::Draw()
 		bullet->Draw(&camera_, enemyBulletTex);
 	}
 
-	player_->Draw(&camera_);
-
 	if (player_->GetPos().z >= 500.0f) {
 
 		boss_->Draw(&camera_);
@@ -143,6 +135,8 @@ void GameScene::Draw()
 			bullet->Draw(&camera_, bossBulletTex);
 		}
 	}
+
+	player_->Draw(&camera_);
 }
 
 
@@ -263,7 +257,7 @@ void GameScene::CheckAllCollisions()
 		float p2eBX = (posB.x - posA.x) * (posB.x - posA.x);
 		float p2eBY = (posB.y - posA.y) * (posB.y - posA.y);
 		float p2eBZ = (posB.z - posA.z) * (posB.z - posA.z);
-		float pRadius = 15.0f;
+		float pRadius = 20.0f;
 		float eBRadius = 1.0f;
 
 		float L = (pRadius + eBRadius) * (pRadius + eBRadius);

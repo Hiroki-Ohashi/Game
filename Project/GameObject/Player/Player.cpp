@@ -9,14 +9,14 @@ Player::~Player() {
 
 void Player::Initialize()
 {
-	transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+	transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,25.0f,0.0f} };
 	reticleTransform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{transform_.translate.x,transform_.translate.y,transform_.translate.z + 50.0f} };
 
 	model_ = std::make_unique<Model>();
 	model_->Initialize("player.obj", transform_);
 
 	reticleModel_ = std::make_unique<Model>();
-	reticleModel_->Initialize("plane.obj", reticleTransform_);
+	reticleModel_->Initialize("board.obj", reticleTransform_);
 
 	worldtransform_.Initialize();
 	worldtransform_.scale = transform_.scale;
@@ -50,63 +50,86 @@ void Player::Update()
 	Vector3 move = { 0, 0, 0 };
 	Vector3 rot = { 0, 0, 0 };
 	// キャラクターの移動速さ
-	const float kCharacterSpeed = 0.2f;
+	const float kCharacterSpeed = 0.3f;
 	// 回転速さ[ラジアン/frame]
-	const float kRotSpeed = 0.02f;
+	float kRotSpeed = 0.01f;
 
 	// 押した方向で移動ベクトルを変更(左右)
 	if (input_->PushKey(DIK_A)) {
 		move.x -= kCharacterSpeed;
-		//worldtransform_.rotate.y -= kRotSpeed;
+		worldtransform_.rotate.y -= kRotSpeed;
 	}
-	else if (input_->PushKey(DIK_D)) {
+	
+	if (input_->PushKey(DIK_D)) {
 		move.x += kCharacterSpeed;
-		//worldtransform_.rotate.y += kRotSpeed;
+		worldtransform_.rotate.y += kRotSpeed;
 	}
+
 	// 押した方向で移動ベクトルを変更(上下)
 	if (input_->PushKey(DIK_W)) {
 		move.y -= kCharacterSpeed;
-		//worldtransform_.rotate.x -= kRotSpeed;
+		worldtransform_.rotate.x -= kRotSpeed;
 	}
 	else if (input_->PushKey(DIK_S)) {
 		move.y += kCharacterSpeed;
-		//worldtransform_.rotate.x += kRotSpeed;
+		worldtransform_.rotate.x += kRotSpeed;
 	}
 
-	// 座標移動(ベクトルの加算)
-	worldtransform_.translate.x += move.x;
-	worldtransform_.translate.y -= move.y;
+	// ゲームパッドの状態を得る変数(XINPUT)
+	XINPUT_STATE joyState;
 
-	// 移動限界座標
-	const float kMoveLimitX = 20.0f;
-	const float kMoveLimitY = 20.0f;
+	// ゲームパッド状態取得
+	if (Input::GetInsTance()->GetJoystickState(joyState)) {
+		/*worldtransform_.translate.x += (float)joyState.Gamepad.sThumbLX / SHRT_MAX * kCharacterSpeed;
+		worldtransform_.translate.y += (float)joyState.Gamepad.sThumbLY / SHRT_MAX * kCharacterSpeed;
 
-	// 範囲超えない処理
-	worldtransform_.translate.x = max(worldtransform_.translate.x, -kMoveLimitX);
-	worldtransform_.translate.x = std::min(worldtransform_.translate.x, +kMoveLimitX);
-	worldtransform_.translate.y = max(worldtransform_.translate.y, -kMoveLimitY);
-	worldtransform_.translate.y = std::min(worldtransform_.translate.y, +kMoveLimitY);
-	worldtransform_.UpdateMatrix();
+		worldtransform_.translate.x += (float)joyState.Gamepad.sThumbLX / SHRT_MAX * kCharacterSpeed;
+		worldtransform_.translate.y += (float)joyState.Gamepad.sThumbLY / SHRT_MAX * kCharacterSpeed;*/
 
-	// 自機から3Dレティクルへの距離
-	const float kDistancePlayerTo3DReticle = 70.0f;
-	// 自機から3Dレティクルへのオフセット(Z+向き)
-	Vector3 offset = { 0.0f, 0.0f, 1.0f };
-	// 自機のワールド行列の回転を反映
-	offset = TransformNormal(offset, worldtransform_.matWorld);
-	// ベクトルの長さを変える
-	offset.x = Normalize(offset).x * kDistancePlayerTo3DReticle;
-	offset.y = Normalize(offset).y * kDistancePlayerTo3DReticle;
-	offset.z = Normalize(offset).z * kDistancePlayerTo3DReticle;
-	// 3Dレティクルの座標を設定
-	reticleWorldtransform_.translate.x = worldtransform_.translate.x + offset.x;
-	reticleWorldtransform_.translate.y = worldtransform_.translate.y + offset.y;
-	reticleWorldtransform_.translate.z = worldtransform_.translate.z + offset.z;
+		reticleWorldtransform_.translate.x += (float)joyState.Gamepad.sThumbLX / SHRT_MAX * kCharacterSpeed;
+		reticleWorldtransform_.translate.y += (float)joyState.Gamepad.sThumbLY / SHRT_MAX * kCharacterSpeed;
+
+		reticleWorldtransform_.translate.x += (float)joyState.Gamepad.sThumbLX / SHRT_MAX * kCharacterSpeed;
+		reticleWorldtransform_.translate.y += (float)joyState.Gamepad.sThumbLY / SHRT_MAX * kCharacterSpeed;
+	}
+
 	reticleWorldtransform_.UpdateMatrix();
 
-	worldtransform_.translate.z += 0.5f;
-	worldtransform_.rotate.z += 0.05f;
-	reticleWorldtransform_.translate.z += 0.5f;
+	Vector3 end = reticleWorldtransform_.translate;
+	Vector3 start = worldtransform_.translate;
+
+	Vector3 diff;
+	diff.x = end.x - start.x;
+	diff.y = end.y - start.y;
+	diff.z = end.z - start.z;
+
+	diff = Normalize(diff);
+
+	Vector3 velocity(diff.x, diff.y, diff.z);
+
+	float t = 0.0f;
+
+	// 引数で受け取った速度をメンバ変数に代入
+	Vector3 velocity_ = Slerp(velocity, worldtransform_.translate, t);
+
+	velocity_.x *= 0.1f;
+	velocity_.y *= 0.1f;
+	velocity_.z *= 0.1f;
+
+	// Y軸周り角度（Θy）
+	worldtransform_.rotate.y = std::atan2(velocity_.x, velocity_.z);
+
+	float velocityXZ = sqrt((velocity_.x * velocity_.x) + (velocity_.z * velocity_.z));
+	worldtransform_.rotate.x = std::atan2(-velocity_.y, velocityXZ);
+
+	// 座標移動(ベクトルの加算)
+	worldtransform_.translate.x += velocity.x;
+	worldtransform_.translate.y += velocity.y;
+	worldtransform_.translate.z += velocity.z;
+	worldtransform_.UpdateMatrix();
+
+	//worldtransform_.translate.z += 0.5f;
+	reticleWorldtransform_.translate.z += 1.0f;
 
 	model_->SetWorldTransform(worldtransform_);
 	reticleModel_->SetWorldTransform(reticleWorldtransform_);
@@ -130,6 +153,10 @@ void Player::Draw(Camera* camera_)
 {
 	model_->Draw(camera_, bulletTex);
 	reticleModel_->Draw(camera_, reticleTex);
+}
+
+void Player::BulletDraw(Camera* camera_)
+{
 
 	// 弾描画
 	for (PlayerBullet* bullet : bullets_) {
@@ -153,7 +180,7 @@ void Player::Attack()
 	if (input_->TriggerKey(DIK_SPACE)) {
 
 		// 弾の速度
-		const float kBulletSpeed = 2.0f;
+		const float kBulletSpeed = 5.0f;
 		Vector3 velocity(0, 0, kBulletSpeed);
 
 		// 速度ベクトルを自機の向きに併せて回転させる
@@ -174,5 +201,33 @@ void Player::Attack()
 
 		// 弾を登録
 		bullets_.push_back(newBullet);
+	}
+
+	XINPUT_STATE joyState{};
+	if (Input::GetInsTance()->GetJoystickState(joyState)) {
+		if (Input::GetInsTance()->PressedButton(joyState, XINPUT_GAMEPAD_RIGHT_SHOULDER)) {
+			// 弾の速度
+			const float kBulletSpeed = 5.0f;
+			Vector3 velocity(0, 0, kBulletSpeed);
+
+			// 速度ベクトルを自機の向きに併せて回転させる
+			velocity = TransformNormal(velocity, worldtransform_.matWorld);
+
+			// 自機から照準オブジェクトへのベクトル
+			velocity.x = Get3DWorldPosition().x - GetPos().x;
+			velocity.y = Get3DWorldPosition().y - GetPos().y;
+			velocity.z = Get3DWorldPosition().z - GetPos().z;
+
+			velocity.x = Normalize(velocity).x * kBulletSpeed;
+			velocity.y = Normalize(velocity).y * kBulletSpeed;
+			velocity.z = Normalize(velocity).z * kBulletSpeed;
+
+			// 弾を生成し、初期化
+			PlayerBullet* newBullet = new PlayerBullet();
+			newBullet->Initialize(worldtransform_.translate, velocity);
+
+			// 弾を登録
+			bullets_.push_back(newBullet);
+		}
 	}
 }

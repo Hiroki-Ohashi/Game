@@ -3,7 +3,7 @@
 
 LevelData* Json::LoadJson(const std::string& fileName)
 {
-	camera_.Initialize();
+	//camera_.Initialize();
 
 	// 連結してフルパスを得る
 	const std::string fullpath = "resources/" + fileName + ".json";
@@ -64,7 +64,7 @@ LevelData* Json::LoadJson(const std::string& fileName)
 			objectData.translation.z = transform["translation"][1].get<float>();
 			// Rotation
 			objectData.rotation.x = transform["rotation"][0].get<float>();
-			objectData.rotation.y = (transform["rotation"][2].get<float>() + std::numbers::pi_v<float>);
+			objectData.rotation.y = (transform["rotation"][2].get<float>() - std::numbers::pi_v<float>);
 			objectData.rotation.z = transform["rotation"][1].get<float>();
 			// Scaling
 			objectData.scaling.x = transform["scaling"][0].get<float>();
@@ -113,13 +113,14 @@ void Json::Adoption(LevelData* levelData)
 		newObject->SetPosition(objectData.translation);
 		newObject->SetRotation(objectData.rotation);
 		newObject->SetScale(objectData.scaling);
+		newObject->SetLight(true);
 		objects_.push_back(std::move(newObject));
 	}
 }
 
 void Json::Update()
 {
-	camera_.Update();
+	//camera_.Update();
 	for (auto& object : objects_) {
 		object->Update();
 	}

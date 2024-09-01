@@ -2,7 +2,7 @@
 
 void Stage::Initialize()
 {
-	transform_ = { {10000.0f,1.0f,10000.0f},{0.0f,0.0f,0.0f},{0.0f,-25.0f,0.0f} };
+	transform_ = { {10000.0f,1.0f,10000.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 
 	model_ = std::make_unique<Model>();
 	model_->Initialize("cube.obj", transform_);

@@ -11,6 +11,7 @@ public:
 	void Initialize();
 	void Update();
 	void Draw(Camera* camera_);
+	void BulletDraw(Camera* camera_);
 
 	void OnCollision() {}
 
@@ -37,4 +38,7 @@ private:
 	uint32_t bulletTex;
 	uint32_t playerTex;
 	uint32_t reticleTex;
+
+	bool isLeft;
+	bool isRight;
 };

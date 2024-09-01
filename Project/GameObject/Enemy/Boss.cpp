@@ -23,13 +23,13 @@ void Boss::Initialize(Vector3 pos)
 
 void Boss::Update()
 {
-	transform_.translate.z += 0.5f;
+	transform_.translate.z += 1.0f;
 
 	if (isApproach == true) {
 		transform_.translate.y -= downSpeedY;
 		worldtransform_.rotate.y -= rotSpeedY;
 
-		if (transform_.translate.y <= 0.0f) {
+		if (transform_.translate.y <= 25.0f) {
 			downSpeedY = 0.0f;
 			rotSpeedY = 0.0f;
 			worldtransform_.rotate.y = 0.0f;
@@ -48,10 +48,10 @@ void Boss::Update()
 			speedX *= -1;
 		}
 
-		if (transform_.translate.y >= 30.0f) {
+		if (transform_.translate.y >= 55.0f) {
 			speedY *= -1;
 		}
-		else if (transform_.translate.y <= -30.0f) {
+		else if (transform_.translate.y <= 0.0f) {
 			speedY *= -1;
 		}
 	}
