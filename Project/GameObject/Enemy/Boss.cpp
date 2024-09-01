@@ -16,9 +16,12 @@ void Boss::Initialize(Vector3 pos)
 
 	isDead_ = false;
 	isApproach = true;
-	hp_ = 10;
+	hp_ = 15;
 
 	enemyTex = textureManager_->Load("resources/black.png");
+	hit = textureManager_->Load("resources/red.png");
+
+	isHit_ = false;
 }
 
 void Boss::Update()
@@ -73,6 +76,14 @@ void Boss::Update()
 		isDead_ = true;
 	}
 
+	if (isHit_) {
+		hitTimer_ += 1;
+		if (hitTimer_ >= 5) {
+			isHit_ = false;
+			hitTimer_ = 0;
+		}
+	}
+
 	worldtransform_.translate = transform_.translate;
 	worldtransform_.UpdateMatrix();
 	model_->SetWorldTransform(worldtransform_);
@@ -87,13 +98,17 @@ void Boss::Update()
 void Boss::Draw(Camera* camera)
 {
 	if (isDead_ == false) {
-		model_->Draw(camera, enemyTex);
+		if (isHit_) {
+			model_->Draw(camera, hit);
+		}
+		else {
+			model_->Draw(camera, enemyTex);
+		}
 	}
 }
 
 void Boss::approach()
 {
-
 	worldtransform_.UpdateMatrix();
 	model_->SetWorldTransform(worldtransform_);
 }
@@ -119,4 +134,10 @@ void Boss::Attack()
 	newBullet->Initialize(transform_.translate, velocity);
 	// 弾を登録
 	gameScene_->AddBossBullet(newBullet);
+}
+
+void Boss::OnCollision()
+{
+	hp_ -= 1;
+	isHit_ = true;
 }

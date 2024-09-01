@@ -32,7 +32,7 @@ void ClearScene::Initialize()
 
 	json_ = std::make_unique<Json>();
 	levelData_ = json_->LoadJson("clear");
-	json_->Adoption(levelData_);
+	json_->Adoption(levelData_, true);
 }
 
 void ClearScene::Update()
@@ -41,7 +41,7 @@ void ClearScene::Update()
 
 	json_->Update();
 
-	if (input_->TriggerKey(DIK_RETURN)) {
+	if (input_->TriggerKey(DIK_A)) {
 		sceneNo = TITLE;
 	}
 

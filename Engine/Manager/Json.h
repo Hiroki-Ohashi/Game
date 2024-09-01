@@ -10,7 +10,7 @@
 class Json {
 public:
 	LevelData* LoadJson(const std::string& fileName);
-	void Adoption(LevelData* levelData);
+	void Adoption(LevelData* levelData, bool light);
 	void Update();
 	void Draw(Camera& camera, uint32_t index);
 

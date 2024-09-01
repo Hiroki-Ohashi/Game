@@ -17,7 +17,7 @@ public:
 	void approach();
 	void Attack();
 
-	void OnCollision() { hp_ -= 1; }
+	void OnCollision();
 	void SetIsDead(bool isDead) { isDead_ = isDead; }
 
 	bool IsDead() const { return isDead_; }
@@ -37,6 +37,7 @@ private:
 private:
 	uint32_t hp_;
 	uint32_t enemyTex;
+	uint32_t hit;
 
 	float speedX = 0.5f;
 	float speedY = 0.3f;
@@ -44,8 +45,12 @@ private:
 	float downSpeedY = 0.5f;
 	float rotSpeedY = 0.3f;
 	bool isApproach;
+
 	// 発射タイマー
 	int32_t attackTimer = 10;
 	static const int kFireInterval = 120;
 	bool isDead_;
+
+	int32_t hitTimer_;
+	bool isHit_;
 };

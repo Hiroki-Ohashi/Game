@@ -47,7 +47,7 @@ void GameScene::Initialize() {
   
     json_ = std::make_unique<Json>();
 	levelData_ = json_->LoadJson("level");
-	json_->Adoption(levelData_);
+	json_->Adoption(levelData_, false);
 }
 
 void GameScene::Update(){
@@ -257,8 +257,8 @@ void GameScene::CheckAllCollisions()
 		float p2eBX = (posB.x - posA.x) * (posB.x - posA.x);
 		float p2eBY = (posB.y - posA.y) * (posB.y - posA.y);
 		float p2eBZ = (posB.z - posA.z) * (posB.z - posA.z);
-		float pRadius = 20.0f;
-		float eBRadius = 1.0f;
+		float pRadius = 30.0f;
+		float eBRadius = 5.0f;
 
 		float L = (pRadius + eBRadius) * (pRadius + eBRadius);
 

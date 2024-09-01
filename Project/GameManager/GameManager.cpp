@@ -21,7 +21,7 @@ void GameManager::Run()
 	CoInitializeEx(0, COINIT_MULTITHREADED);
 
 	winapp = WinApp::GetInsTance();
-	winapp->Initialize(L"CG2");
+	winapp->Initialize(L"Gekitui");
 
 	directX = DirectXCommon::GetInsTance();
 	directX->Initialize();

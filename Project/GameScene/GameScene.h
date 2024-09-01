@@ -91,7 +91,7 @@ private:
 	uint32_t uv;
 
 	Vector3 pos_ = { 0.0f, 25.0f, 500.0f };
-	Vector3 pos2_ = { 0.0f, 100.0f, 800.0f };
+	Vector3 pos2_ = { 0.0f, 100.0f, 700.0f };
 
 	// 待機タイマー
 	int32_t waitTimer_;

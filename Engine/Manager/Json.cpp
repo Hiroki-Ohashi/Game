@@ -103,7 +103,7 @@ LevelData* Json::LoadJson(const std::string& fileName)
 	return levelData;
 }
 
-void Json::Adoption(LevelData* levelData)
+void Json::Adoption(LevelData* levelData, bool light)
 {
 	// レベルデータからオブジェクトを生成、配置
 	for (auto& objectData : levelData->objects) {
@@ -113,7 +113,7 @@ void Json::Adoption(LevelData* levelData)
 		newObject->SetPosition(objectData.translation);
 		newObject->SetRotation(objectData.rotation);
 		newObject->SetScale(objectData.scaling);
-		newObject->SetLight(true);
+		newObject->SetLight(light);
 		objects_.push_back(std::move(newObject));
 	}
 }

@@ -31,7 +31,7 @@ void TitleScene::Initialize()
 
 	json_ = std::make_unique<Json>();
 	levelData_ = json_->LoadJson("title");
-	json_->Adoption(levelData_);
+	json_->Adoption(levelData_, true);
 
 	blinking = true;
 }
@@ -42,7 +42,7 @@ void TitleScene::Update()
 	camera_.Update();
 	json_->Update();
 	
-	if (input_->TriggerKey(DIK_SPACE)) {
+	if (input_->TriggerKey(DIK_A)) {
 		sceneNo = STAGE;
 	}
 
