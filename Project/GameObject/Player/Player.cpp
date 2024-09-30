@@ -199,7 +199,7 @@ void Player::Attack()
 
 	XINPUT_STATE joyState{};
 	if (Input::GetInsTance()->GetJoystickState(joyState)) {
-		if (Input::GetInsTance()->PressedButton(joyState, XINPUT_GAMEPAD_RIGHT_SHOULDER)) {
+		if (Input::GetInsTance()->PressedButton(joyState, XINPUT_GAMEPAD_A)) {
 			// 弾の速度
 			const float kBulletSpeed = 5.0f;
 			Vector3 velocity(0, 0, kBulletSpeed);

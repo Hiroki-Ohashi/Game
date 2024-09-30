@@ -99,7 +99,7 @@ void GameScene::Update(){
 
 	CheckAllCollisions();
 
-	camera_.cameraTransform.translate = { player_->GetPos().x, player_->GetPos().y + 3.0f,  player_->GetPos().z - 40.0f };
+	camera_.cameraTransform.translate = { player_->GetPos().x, player_->GetPos().y + 3.0f,  player_->GetPos().z - 40.0f};
 	//camera_->cameraTransform.translate = { 0.0f, 0.0f,  player_->GetPos().z - 50.0f };
 
 	if (boss_->IsDead() == true) {
