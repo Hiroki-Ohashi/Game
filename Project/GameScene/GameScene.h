@@ -60,9 +60,9 @@ public:
 	void UpdateEnemyPopCommands();
 
 	void EnemySpown(Vector3 pos);
-	void AddEnemyBullet(EnemyBullet* enemyBullet);
-	void AddBossBullet(BossBullet* bossBullet);
-	void AddEnemy(Enemy* enemy);
+	void AddEnemyBullet(std::unique_ptr<EnemyBullet> enemyBullet);
+	void AddBossBullet(std::unique_ptr<BossBullet> bossBullet);
+	void AddEnemy(std::unique_ptr<Enemy> enemy);
 
 private:
 	Camera camera_;
@@ -73,11 +73,11 @@ private:
 	std::unique_ptr<Player> player_;
 
 	// 敵
-	std::list<Enemy*> enemys_;
+	std::vector<std::unique_ptr<Enemy>> enemys_;
 	std::unique_ptr<Boss> boss_;
 	// 敵弾
-	std::list<EnemyBullet*> enemyBullets_;
-	std::list<BossBullet*> bossBullets_;
+	std::vector<std::unique_ptr<EnemyBullet>> enemyBullets_;
+	std::vector<std::unique_ptr<BossBullet>> bossBullets_;
   
 	std::unique_ptr<Json> json_ = nullptr;
 	LevelData* levelData_ = nullptr;

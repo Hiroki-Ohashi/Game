@@ -28,7 +28,7 @@ void Enemy::Update()
 
 		if (isDead_ == false) {
 			// 攻撃処理
-			Attack();
+			//Attack();
 		}
 
 		// 発射タイマーを初期化
@@ -70,9 +70,9 @@ void Enemy::Attack()
 
 
 	// 弾を生成し、初期化
-	EnemyBullet* newBullet = new EnemyBullet();
+	std::unique_ptr<EnemyBullet> newBullet = std::make_unique<EnemyBullet>();
 	newBullet->SetPlayer(player_);
 	newBullet->Initialize(transform_.translate, velocity);
 	// 弾を登録
-	gameScene_->AddEnemyBullet(newBullet);
+	gameScene_->AddEnemyBullet(std::move(newBullet));
 }

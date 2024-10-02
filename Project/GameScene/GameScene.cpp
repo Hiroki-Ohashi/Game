@@ -1,18 +1,6 @@
 #include "GameScene.h"
 
 GameScene::~GameScene(){
-	// bullet_の解放
-	for (EnemyBullet* bullet : enemyBullets_) {
-		delete bullet;
-	}
-
-	for (BossBullet* bullet : bossBullets_) {
-		delete bullet;
-	}
-
-	for (Enemy* enemy : enemys_) {
-		delete enemy;
-	}
 }
 
 void GameScene::Initialize() {
@@ -39,7 +27,7 @@ void GameScene::Initialize() {
 	bossBulletTex = textureManager_->Load("resources/white.png");
 	uv = textureManager_->Load("resources/uvChecker.png");
 
-	for (Enemy* enemy : enemys_) {
+	for (std::unique_ptr<Enemy>& enemy : enemys_) {
 		enemy->SetIsDead(false);
 	}
 
@@ -63,39 +51,45 @@ void GameScene::Update(){
 		boss_->Update();
 
 		// ボス弾更新
-		for (BossBullet* bullet : bossBullets_) {
+		for (std::unique_ptr<BossBullet>& bullet : bossBullets_) {
 			bullet->Update();
 		}
 
-		bossBullets_.remove_if([](BossBullet* bullet) {
-			if (bullet->IsDead()) {
-				delete bullet;
-				return true;
-			}
-			return false;
-			});
+		bossBullets_.erase(
+			std::remove_if(
+				bossBullets_.begin(),
+				bossBullets_.end(),
+				[](const std::unique_ptr<BossBullet>& bullet) {
+					return bullet->IsDead();
+				}
+			),
+			bossBullets_.end()
+		);
 	}
 
 	json_->Update();
 	//camera_.cameraTransform = json_->GetCamera().cameraTransform;
   
-	for (Enemy* enemy : enemys_) {
+	for (std::unique_ptr<Enemy>& enemy : enemys_) {
 		enemy->Update();
 	}
 
 	// 弾更新
-	for (EnemyBullet* bullet : enemyBullets_) {
+	for (std::unique_ptr<EnemyBullet>& bullet : enemyBullets_) {
 		bullet->Update();
 	}
 
 	// デスフラグの立った弾を排除
-	enemyBullets_.remove_if([](EnemyBullet* bullet) {
-		if (bullet->IsDead()) {
-			delete bullet;
-			return true;
-		}
-		return false;
-	});
+	enemyBullets_.erase(
+		std::remove_if(
+			enemyBullets_.begin(),
+			enemyBullets_.end(),
+			[](const std::unique_ptr<EnemyBullet>& bullet) {
+				return bullet->IsDead();
+			}
+		),
+		enemyBullets_.end()
+	);
 
 	CheckAllCollisions();
 
@@ -117,12 +111,12 @@ void GameScene::Draw()
 	player_->BulletDraw(&camera_);
 
 	// 敵キャラの描画
-	for (Enemy* enemy : enemys_) {
+	for (std::unique_ptr<Enemy>& enemy : enemys_) {
 		enemy->Draw(&camera_);
 	}
 
 	// 弾描画
-	for (EnemyBullet* bullet : enemyBullets_) {
+	for (std::unique_ptr<EnemyBullet>& bullet : enemyBullets_) {
 		bullet->Draw(&camera_, enemyBulletTex);
 	}
 
@@ -131,7 +125,7 @@ void GameScene::Draw()
 		boss_->Draw(&camera_);
 
 		// ボス弾描画
-		for (BossBullet* bullet : bossBullets_) {
+		for (std::unique_ptr<BossBullet>& bullet : bossBullets_) {
 			bullet->Draw(&camera_, bossBulletTex);
 		}
 	}
@@ -154,17 +148,22 @@ void GameScene::CheckAllCollisions()
 	Vector3 posA, posB;
 
 	// 自弾リストの取得
-	const std::list<PlayerBullet*>& playerBullets = player_->GetBullets();
+	std::vector<std::unique_ptr<PlayerBullet>>& playerBullets = player_->GetBullets();
 	// 敵弾リストの取得
-	const std::list<EnemyBullet*>& enemyBullets = enemyBullets_;
-	const std::list<BossBullet*>& bossBullets = bossBullets_;
+	std::vector<std::unique_ptr<EnemyBullet>>& enemyBullets = enemyBullets_;
+	std::vector<std::unique_ptr<BossBullet>>& bossBullets = bossBullets_;
 
 #pragma region 自キャラと敵弾の当たり判定
 	// 自キャラの座標
 	posA = player_->GetPos();
 
 	// 自キャラと敵弾すべての当たり判定
-	for (EnemyBullet* bullet : enemyBullets) {
+	for (std::unique_ptr<EnemyBullet>& bullet : enemyBullets) {
+
+		if (bullet->IsDead()) {
+			continue; // 既に削除された弾はスキップ
+		}
+
 		// 敵弾の座標
 		posB = bullet->GetPos();
 
@@ -189,8 +188,17 @@ void GameScene::CheckAllCollisions()
 
 #pragma region 自弾と敵キャラの当たり判定
 	// 敵キャラと自弾すべての当たり判定
-	for (PlayerBullet* bullet : playerBullets) {
-		for (Enemy* enemy : enemys_) {
+	for (std::unique_ptr<PlayerBullet>& bullet : playerBullets) {
+
+		if (bullet->IsDead()) {
+			continue; // 既に削除された弾はスキップ
+		}
+
+		for (std::unique_ptr<Enemy>& enemy : enemys_) {
+
+			if (enemy->IsDead()) {
+				continue; // 既に削除された敵はスキップ
+			}
 
 			// 敵キャラの座標
 			posA = enemy->GetPos();
@@ -219,8 +227,18 @@ void GameScene::CheckAllCollisions()
 
 #pragma region 自弾と敵弾の当たり判定
 	// 敵弾と自弾すべての当たり判定
-	for (PlayerBullet* playerBullet : playerBullets) {
-		for (EnemyBullet* enemyBullet : enemyBullets) {
+	for (std::unique_ptr<PlayerBullet>& playerBullet : playerBullets) {
+
+		if (playerBullet->IsDead()) {
+			continue; // 既に削除された弾はスキップ
+		}
+
+		for (std::unique_ptr<EnemyBullet>& enemyBullet : enemyBullets) {
+
+			if (enemyBullet->IsDead()) {
+				continue; // 既に削除された弾はスキップ
+			}
+
 			// 敵弾の座標
 			posA = playerBullet->GetPos();
 			// 自弾の座標
@@ -250,7 +268,12 @@ void GameScene::CheckAllCollisions()
 	posA = boss_->GetPos();
 
 	// 自キャラと敵弾すべての当たり判定
-	for (PlayerBullet* playerBullet : playerBullets) {
+	for (std::unique_ptr<PlayerBullet>& playerBullet : playerBullets) {
+
+		if (playerBullet->IsDead()) {
+			continue; // 既に削除された弾はスキップ
+		}
+
 		// 敵弾の座標
 		posB = playerBullet->GetPos();
 
@@ -278,7 +301,12 @@ void GameScene::CheckAllCollisions()
 	posA = player_->GetPos();
 
 	// 自キャラと敵弾すべての当たり判定
-	for (BossBullet* bullet : bossBullets) {
+	for (std::unique_ptr<BossBullet>& bullet : bossBullets) {
+
+		if (bullet->IsDead()) {
+			continue; // 既に削除された弾はスキップ
+		}
+
 		// 敵弾の座標
 		posB = bullet->GetPos();
 
@@ -299,6 +327,44 @@ void GameScene::CheckAllCollisions()
 		}
 	}
 
+#pragma endregion
+
+#pragma region 自弾とボス弾の当たり判定
+	// 敵弾と自弾すべての当たり判定
+	for (std::unique_ptr<PlayerBullet>& playerBullet : playerBullets) {
+
+		if (playerBullet->IsDead()) {
+			continue; // 既に削除された弾はスキップ
+		}
+
+		for (std::unique_ptr<BossBullet>& bossBullet : bossBullets) {
+
+			if (bossBullet->IsDead()) {
+				continue; // 既に削除された弾はスキップ
+			}
+
+			// 敵弾の座標
+			posA = playerBullet->GetPos();
+			// 自弾の座標
+			posB = bossBullet->GetPos();
+
+			float pB2eBX = (posB.x - posA.x) * (posB.x - posA.x);
+			float pB2eBY = (posB.y - posA.y) * (posB.y - posA.y);
+			float pB2eBZ = (posB.z - posA.z) * (posB.z - posA.z);
+
+			float pBRadius = 1.0f;
+			float eBRadius = 1.0f;
+
+			float L = (pBRadius + eBRadius) * (pBRadius + eBRadius);
+
+			if (pB2eBX + pB2eBY + pB2eBZ <= L) {
+				// 自弾の衝突時コールバックを呼び出す
+				playerBullet->OnCollision();
+				// 敵弾の衝突時コールバックを呼び出す
+				bossBullet->OnCollision();
+			}
+		}
+	}
 #pragma endregion
 
 }
@@ -384,30 +450,30 @@ void GameScene::UpdateEnemyPopCommands()
 void GameScene::EnemySpown(Vector3 pos)
 {
 	// 敵キャラの生成
-	Enemy* enemy_ = new Enemy();
+	std::unique_ptr<Enemy> enemy_ = std::make_unique<Enemy>();
 	// 敵キャラの初期化
 	enemy_->Initialize(pos);
 	// 敵キャラに自キャラのアドレスを渡す
 	enemy_->SetPlayer(player_.get());
 	// 敵キャラにゲームシーンを渡す
 	enemy_->SetGameScene(this);
-	AddEnemy(enemy_);
+	AddEnemy(std::move(enemy_));
 }
 
-void GameScene::AddEnemyBullet(EnemyBullet* enemyBullet)
+void GameScene::AddEnemyBullet(std::unique_ptr<EnemyBullet> enemyBullet)
 {
 	// リストに登録する
-	enemyBullets_.push_back(enemyBullet);
+	enemyBullets_.push_back(std::move(enemyBullet));
 }
 
-void GameScene::AddBossBullet(BossBullet* bossBullet)
+void GameScene::AddBossBullet(std::unique_ptr<BossBullet> bossBullet)
 {
 	// リストに登録する
-	bossBullets_.push_back(bossBullet);
+	bossBullets_.push_back(std::move(bossBullet));
 }
 
-void GameScene::AddEnemy(Enemy* enemy)
+void GameScene::AddEnemy(std::unique_ptr<Enemy> enemy)
 {
 	// リストに登録する
-	enemys_.push_back(enemy);
+	enemys_.push_back(std::move(enemy));
 }

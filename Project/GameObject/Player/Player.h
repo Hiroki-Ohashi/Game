@@ -19,7 +19,7 @@ public:
 	Vector3 GetReticlePos() { return reticleWorldtransform_.translate; }
 	Vector3 Get3DWorldPosition();
 	// 弾リストを取得
-	const std::list<PlayerBullet*>& GetBullets() const { return bullets_; }
+	 std::vector<std::unique_ptr<PlayerBullet>>& GetBullets() { return bullets_; }
 private:
 	void Attack();
 private:
@@ -34,7 +34,7 @@ private:
 	WorldTransform reticleWorldtransform_;
 	EulerTransform reticleTransform_;
 
-	std::list<PlayerBullet*> bullets_;
+	std::vector<std::unique_ptr<PlayerBullet>> bullets_;
 
 	uint32_t bulletTex;
 	uint32_t playerTex;

@@ -1,10 +1,6 @@
 #include "Player.h"
 
 Player::~Player() {
-	// bullet_の解放
-	for (PlayerBullet* bullet : bullets_) {
-		delete bullet;
-	}
 }
 
 void Player::Initialize()
@@ -38,13 +34,16 @@ void Player::Initialize()
 void Player::Update()
 {
 	// デスフラグの立った弾を排除
-	bullets_.remove_if([](PlayerBullet* bullet) {
-		if (bullet->IsDead()) {
-			delete bullet;
-			return true;
-		}
-		return false;
-	});
+	bullets_.erase(
+		std::remove_if(
+			bullets_.begin(),
+			bullets_.end(),
+			[](const std::unique_ptr<PlayerBullet>& bullet) {
+				return bullet->IsDead();
+			}
+		),
+		bullets_.end()
+	);
 
 	// キャラクターの移動ベクトル
 	Vector3 move = { 0, 0, 0 };
@@ -132,7 +131,7 @@ void Player::Update()
 	Attack();
 
 	// 弾更新
-	for (PlayerBullet* bullet : bullets_) {
+	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
 		bullet->Update();
 	}
 
@@ -153,7 +152,7 @@ void Player::BulletDraw(Camera* camera_)
 {
 
 	// 弾描画
-	for (PlayerBullet* bullet : bullets_) {
+	for (std::unique_ptr<PlayerBullet> &bullet : bullets_) {
 		bullet->Draw(camera_, bulletTex);
 	}
 }
@@ -190,11 +189,11 @@ void Player::Attack()
 		velocity.z = Normalize(velocity).z * kBulletSpeed;
 
 		// 弾を生成し、初期化
-		PlayerBullet* newBullet = new PlayerBullet();
+		std::unique_ptr<PlayerBullet> newBullet = std::make_unique<PlayerBullet>();
 		newBullet->Initialize(worldtransform_.translate, velocity);
 
 		// 弾を登録
-		bullets_.push_back(newBullet);
+		bullets_.push_back(std::move(newBullet));
 	}
 
 	XINPUT_STATE joyState{};
@@ -217,11 +216,11 @@ void Player::Attack()
 			velocity.z = Normalize(velocity).z * kBulletSpeed;
 
 			// 弾を生成し、初期化
-			PlayerBullet* newBullet = new PlayerBullet();
+			std::unique_ptr<PlayerBullet> newBullet = std::make_unique<PlayerBullet>();
 			newBullet->Initialize(worldtransform_.translate, velocity);
 
 			// 弾を登録
-			bullets_.push_back(newBullet);
+			bullets_.push_back(std::move(newBullet));
 		}
 	}
 }

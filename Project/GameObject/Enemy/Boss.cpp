@@ -129,11 +129,11 @@ void Boss::Attack()
 
 
 	// 弾を生成し、初期化
-	BossBullet* newBullet = new BossBullet();
+	std::unique_ptr<BossBullet> newBullet = std::make_unique<BossBullet>();
 	newBullet->SetPlayer(player_);
 	newBullet->Initialize(transform_.translate, velocity);
 	// 弾を登録
-	gameScene_->AddBossBullet(newBullet);
+	gameScene_->AddBossBullet(std::move(newBullet));
 }
 
 void Boss::OnCollision()

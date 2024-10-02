@@ -28,7 +28,6 @@ private:
 	WorldTransform worldtransform_;
 	EulerTransform transform_;
 	std::unique_ptr<Model> model_;
-	std::list<EnemyBullet*> bullets_;
 
 	Player* player_ = nullptr;
 	GameScene* gameScene_ = nullptr;

@@ -239,26 +239,35 @@ Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Ve
 }
 
 Matrix4x4 MakePerspectiveMatrix(float fovY, float aspectRatio, float nearClip, float farClip) {
+	assert(nearClip > 0 && farClip > nearClip); // クリップ面のエラーチェック
+
 	Matrix4x4 mpm;
-	mpm.m[0][0] = 1 / aspectRatio * (1 / std::tan(fovY / 2));
+
+	float tanHalfFovY = std::tan(fovY / 2.0f); // FOVの半分のタンジェントを計算
+
+	mpm.m[0][0] = 1.0f / (aspectRatio * tanHalfFovY); // X軸のスケール
 	mpm.m[0][1] = 0;
 	mpm.m[0][2] = 0;
 	mpm.m[0][3] = 0;
 
 	mpm.m[1][0] = 0;
-	mpm.m[1][1] = 1 / std::tan(fovY / 2);
+	mpm.m[1][1] = 1.0f / tanHalfFovY; // Y軸のスケール
 	mpm.m[1][2] = 0;
 	mpm.m[1][3] = 0;
 
 	mpm.m[2][0] = 0;
 	mpm.m[2][1] = 0;
-	mpm.m[2][2] = farClip / (farClip - nearClip);
+	mpm.m[2][2] = farClip / (farClip - nearClip); // Z軸のスケール
 	mpm.m[2][3] = 1;
 
 	mpm.m[3][0] = 0;
 	mpm.m[3][1] = 0;
-	mpm.m[3][2] = (-nearClip * farClip) / (farClip - nearClip);
-	mpm.m[3][3] = 0;
+	mpm.m[3][2] = (-nearClip * farClip) / (farClip - nearClip); // Z軸のオフセット
+	mpm.m[3][3] = 0; // これは 0 ではなく 1 であるべきです
+
+	// m[2][3] = 1; の行を追加
+	mpm.m[2][3] = 1;
+
 	return mpm;
 }
 

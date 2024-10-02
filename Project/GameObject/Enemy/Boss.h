@@ -30,7 +30,6 @@ private:
 	EulerTransform transform_;
 
 	std::unique_ptr<Model> model_;
-	std::list<BossBullet*> bullets_;
 
 	Player* player_ = nullptr;
 	GameScene* gameScene_ = nullptr;
