@@ -13,11 +13,12 @@ public:
 	void Draw(Camera* camera_);
 	void BulletDraw(Camera* camera_);
 
-	void OnCollision() {}
+	void OnCollision() { isHit_ = true; }
 
 	Vector3 GetPos() { return worldtransform_.translate; }
 	Vector3 GetReticlePos() { return reticleWorldtransform_.translate; }
 	Vector3 Get3DWorldPosition();
+	Vector3 GetVelocity() { return velocity_; }
 	// 弾リストを取得
 	 std::vector<std::unique_ptr<PlayerBullet>>& GetBullets() { return bullets_; }
 private:
@@ -39,6 +40,12 @@ private:
 	uint32_t bulletTex;
 	uint32_t playerTex;
 	uint32_t reticleTex;
+	uint32_t hit;
+
+	Vector3 velocity_;
+
+	int32_t hitTimer_;
+	bool isHit_;
 
 	bool isLeft;
 	bool isRight;

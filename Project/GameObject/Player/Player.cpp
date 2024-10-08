@@ -29,6 +29,9 @@ void Player::Initialize()
 	playerTex = textureManager_->Load("resources/white.png");
 	reticleTex = textureManager_->Load("resources/reticle.png");
 	bulletTex = textureManager_->Load("resources/white.png");
+	hit = textureManager_->Load("resources/red.png");
+
+	isHit_ = false;
 }
 
 void Player::Update()
@@ -49,7 +52,7 @@ void Player::Update()
 	Vector3 move = { 0, 0, 0 };
 	Vector3 rot = { 0, 0, 0 };
 	// キャラクターの移動速さ
-	const float kCharacterSpeed = 0.3f;
+	const float kCharacterSpeed = 0.5f;
 	// 回転速さ[ラジアン/frame]
 	float kRotSpeed = 0.01f;
 
@@ -81,9 +84,6 @@ void Player::Update()
 	if (Input::GetInsTance()->GetJoystickState(joyState)) {
 		reticleWorldtransform_.translate.x += (float)joyState.Gamepad.sThumbLX / SHRT_MAX * kCharacterSpeed;
 		reticleWorldtransform_.translate.y += (float)joyState.Gamepad.sThumbLY / SHRT_MAX * kCharacterSpeed;
-
-		reticleWorldtransform_.translate.x += (float)joyState.Gamepad.sThumbLX / SHRT_MAX * kCharacterSpeed;
-		reticleWorldtransform_.translate.y += (float)joyState.Gamepad.sThumbLY / SHRT_MAX * kCharacterSpeed;
 	}
 
 	reticleWorldtransform_.UpdateMatrix();
@@ -103,7 +103,7 @@ void Player::Update()
 	float t = 0.0f;
 
 	// 引数で受け取った速度をメンバ変数に代入
-	Vector3 velocity_ = Slerp(velocity, worldtransform_.translate, t);
+	velocity_ = Slerp(velocity, worldtransform_.translate, t);
 
 	velocity_.x *= 0.1f;
 	velocity_.y *= 0.1f;
@@ -116,13 +116,12 @@ void Player::Update()
 	worldtransform_.rotate.x = std::atan2(-velocity_.y, velocityXZ);
 
 	// 座標移動(ベクトルの加算)
-	worldtransform_.translate.x += velocity.x;
-	worldtransform_.translate.y += velocity.y;
-	worldtransform_.translate.z += velocity.z;
+	worldtransform_.translate.x += velocity.x * 1.5f;
+	worldtransform_.translate.y += velocity.y * 1.5f;
+	worldtransform_.translate.z += velocity.z * 1.5f;
 	worldtransform_.UpdateMatrix();
 
-	//worldtransform_.translate.z += 0.5f;
-	reticleWorldtransform_.translate.z += 1.0f;
+	reticleWorldtransform_.translate.z += 1.5f;
 
 	model_->SetWorldTransform(worldtransform_);
 	reticleModel_->SetWorldTransform(reticleWorldtransform_);
@@ -135,6 +134,14 @@ void Player::Update()
 		bullet->Update();
 	}
 
+	if (isHit_) {
+		hitTimer_ += 1;
+		if (hitTimer_ >= 5) {
+			isHit_ = false;
+			hitTimer_ = 0;
+		}
+	}
+
 	if (ImGui::TreeNode("Player")) {
 		ImGui::DragFloat3("Rotate.y ", &worldtransform_.rotate.x, 0.01f);
 		ImGui::DragFloat3("Transform", &worldtransform_.translate.x, 0.01f);
@@ -144,7 +151,13 @@ void Player::Update()
 
 void Player::Draw(Camera* camera_)
 {
-	model_->Draw(camera_, bulletTex);
+	if (isHit_) {
+		model_->Draw(camera_, hit);
+	}
+	else {
+		model_->Draw(camera_, playerTex);
+	}
+
 	reticleModel_->Draw(camera_, reticleTex);
 }
 
@@ -200,7 +213,7 @@ void Player::Attack()
 	if (Input::GetInsTance()->GetJoystickState(joyState)) {
 		if (Input::GetInsTance()->PressedButton(joyState, XINPUT_GAMEPAD_A)) {
 			// 弾の速度
-			const float kBulletSpeed = 5.0f;
+			const float kBulletSpeed = 10.0f;
 			Vector3 velocity(0, 0, kBulletSpeed);
 
 			// 速度ベクトルを自機の向きに併せて回転させる

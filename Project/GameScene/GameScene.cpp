@@ -1,4 +1,5 @@
 #include "GameScene.h"
+#include <time.h>
 
 GameScene::~GameScene(){
 }
@@ -25,7 +26,7 @@ void GameScene::Initialize() {
 
 	enemyBulletTex = textureManager_->Load("resources/black.png");
 	bossBulletTex = textureManager_->Load("resources/white.png");
-	uv = textureManager_->Load("resources/uvChecker.png");
+	uv = textureManager_->Load("resources/map.png");
 
 	for (std::unique_ptr<Enemy>& enemy : enemys_) {
 		enemy->SetIsDead(false);
@@ -93,8 +94,29 @@ void GameScene::Update(){
 
 	CheckAllCollisions();
 
-	camera_.cameraTransform.translate = { player_->GetPos().x, player_->GetPos().y + 3.0f,  player_->GetPos().z - 40.0f};
-	//camera_->cameraTransform.translate = { 0.0f, 0.0f,  player_->GetPos().z - 50.0f };
+	if (isShake) {
+		shakeTimer -= 1;
+		if (shakeTimer >= 30) {
+			randX = rand() % 2 - 1;
+			randY = rand() % 2 - 1;
+		}
+		if (shakeTimer <= 0) {
+			isShake = false;
+		}
+	}
+	else 
+	{
+		randX = 0;
+		randY = 0;
+	}
+
+	camera_.cameraTransform.translate = { player_->GetPos().x + randX, player_->GetPos().y + 3.0f + randY,  player_->GetPos().z - 50.0f};
+
+	// Y軸周り角度（Θy）
+	camera_.cameraTransform.rotate.y = std::atan2(player_->GetVelocity().x, player_->GetVelocity().z);
+
+	float velocityXZ = sqrt((player_->GetVelocity().x * player_->GetVelocity().x) + (player_->GetVelocity().z * player_->GetVelocity().z));
+	camera_.cameraTransform.rotate.x = std::atan2(-player_->GetVelocity().y, velocityXZ);
 
 	if (boss_->IsDead() == true) {
 		sceneNo = CLEAR;
@@ -177,6 +199,10 @@ void GameScene::CheckAllCollisions()
 		float L = (pRadius + eBRadius) * (pRadius + eBRadius);
 
 		if (p2eBX + p2eBY + p2eBZ <= L) {
+
+			shakeTimer = 40;
+			isShake = true;
+
 			// 自キャラの衝突時コールバックを呼び出す
 			player_->OnCollision();
 			// 敵弾の衝突時コールバックを呼び出す
@@ -320,6 +346,10 @@ void GameScene::CheckAllCollisions()
 		float L = (pRadius + eBRadius) * (pRadius + eBRadius);
 
 		if (p2eBX + p2eBY + p2eBZ <= L) {
+
+			shakeTimer = 40;
+			isShake = true;
+
 			// 自キャラの衝突時コールバックを呼び出す
 			player_->OnCollision();
 			// 敵弾の衝突時コールバックを呼び出す

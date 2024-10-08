@@ -93,6 +93,12 @@ private:
 	Vector3 pos_ = { 0.0f, 25.0f, 500.0f };
 	Vector3 pos2_ = { 0.0f, 100.0f, 750.0f };
 
+	int randX = 0;
+	int randY = 0;
+
+	int32_t shakeTimer = 0;
+	bool isShake = false;
+
 	// 待機タイマー
 	int32_t waitTimer_;
 	// 待機フラグ

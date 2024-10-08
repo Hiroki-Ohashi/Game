@@ -13,7 +13,7 @@ void TitleScene::Initialize()
 	textureManager_->Initialize();
 
 	postProcess_ = std::make_unique<PostProcess>();
-	postProcess_->Initialize(NONE);
+	postProcess_->Initialize(NOISE);
 
 	// skybox
 	skydome_ = std::make_unique<Skydome>();
@@ -42,6 +42,8 @@ void TitleScene::Update()
 	camera_.Update();
 	json_->Update();
 	
+	postProcess_->NiseUpdate(0.1f);
+
 	if (input_->TriggerKey(DIK_A)) {
 		sceneNo = STAGE;
 	}
@@ -56,22 +58,22 @@ void TitleScene::Update()
 
 	}
 
-	camera_.cameraTransform.rotate.x -= cameraSpeedX;
-	camera_.cameraTransform.rotate.y -= cameraSpeedY;
-
-	if (camera_.cameraTransform.rotate.x <= 0.39f) {
-		cameraSpeedX *= -1;
+	if (camera_.cameraTransform.rotate.x < 0.40f) {
+		cameraSpeedX += 0.00005f;
 	}
-	else if (camera_.cameraTransform.rotate.x >= 0.41f) {
-		cameraSpeedX *= -1;
+	else if (camera_.cameraTransform.rotate.x >= 0.40f) {
+		cameraSpeedX -= 0.00005f;
 	}
 
-	if (camera_.cameraTransform.rotate.y <= -0.01f) {
-		cameraSpeedY *= -1;
+	if (camera_.cameraTransform.rotate.y < 0.0f) {
+		cameraSpeedY += 0.00005f;
 	}
-	else if (camera_.cameraTransform.rotate.y >= 0.01f) {
-		cameraSpeedY *= -1;
+	else if (camera_.cameraTransform.rotate.y >= 0.0f) {
+		cameraSpeedY -= 0.00005f;
 	}
+
+	camera_.cameraTransform.rotate.x += cameraSpeedX;
+	camera_.cameraTransform.rotate.y += cameraSpeedY;
 
 	timer += 1;
 
@@ -101,5 +103,5 @@ void TitleScene::Draw()
 
 void TitleScene::PostDraw()
 {
-	postProcess_->Draw();
+	postProcess_->NoiseDraw();
 }
