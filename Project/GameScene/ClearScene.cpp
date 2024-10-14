@@ -10,7 +10,9 @@ void ClearScene::Initialize()
 	textureManager_->Initialize();
 
 	postProcess_ = std::make_unique<PostProcess>();
-	postProcess_->Initialize(NONE);
+	postProcess_->Initialize(NOISE);
+	postProcess_->SetVignette(16.0f, 1.0f);
+	postProcess_->SetNoise(0.2f, 100.0f);
 
 	// skybox
 	skydome_ = std::make_unique<Skydome>();
@@ -39,10 +41,17 @@ void ClearScene::Update()
 {
 	camera_.Update();
 
+	postProcess_->NoiseUpdate(0.1f);
+
 	json_->Update();
 
+	if (postProcess_->GetNoiseStrength() > 1.0f) {
+		noiseStrength += 1.0f;
+		postProcess_->SetNoiseStrength(postProcess_->GetNoiseStrength() - noiseStrength);
+	}
+
 	if (input_->TriggerKey(DIK_A)) {
-		sceneNo = TITLE;
+		isVignette_ = true;
 	}
 
 	XINPUT_STATE joyState;
@@ -50,9 +59,18 @@ void ClearScene::Update()
 	if (Input::GetInsTance()->GetJoystickState(joyState)) {
 
 		if (Input::GetInsTance()->PressedButton(joyState, XINPUT_GAMEPAD_A)) {
-			sceneNo = TITLE;
+			isVignette_ = true;
 		}
 
+	}
+
+	if (isVignette_) {
+		postProcess_->VignetteFadeIn(0.1f, 0.1f);
+	}
+
+	if (postProcess_->GetVignetteLight() <= 0.0f) {
+		isVignette_ = false;
+		sceneNo = TITLE;
 	}
 
 	camera_.cameraTransform.rotate.y += 0.01f;
@@ -100,5 +118,5 @@ void ClearScene::Draw()
 
 void ClearScene::PostDraw()
 {
-	postProcess_->Draw();
+	postProcess_->NoiseDraw();
 }

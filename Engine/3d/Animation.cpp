@@ -1,6 +1,6 @@
 #include "Animation.h"
 
-void AnimationModel::Initialize(const std::string& filename, EulerTransform transform, Camera* camera, uint32_t index)
+void AnimationModel::Initialize(const std::string& filename, EulerTransform param, Camera* camera, uint32_t index_)
 {
 	modelData = texture_->LoadModelFile("resources", filename);
 	DirectX::ScratchImage mipImages2 = texture_->LoadTexture(modelData.material.textureFilePath);
@@ -20,12 +20,12 @@ void AnimationModel::Initialize(const std::string& filename, EulerTransform tran
 	cameraResource->Map(0, nullptr, reinterpret_cast<void**>(&camera_));
 
 	skeleton = CreateSkelton(modelData.rootNode);
-	skinCluster = CreateSkinCluster(dir_->GetDevice(), skeleton, modelData, dir_->GetSrvDescriptorHeap2(), texture_->GetDiscreptorSize(), index);
+	skinCluster = CreateSkinCluster(dir_->GetDevice(), skeleton, modelData, dir_->GetSrvDescriptorHeap2(), texture_->GetDiscreptorSize(), index_);
 
 	worldTransform_.Initialize();
-	worldTransform_.translate = transform.translate;
-	worldTransform_.scale = transform.scale;
-	worldTransform_.rotate = transform.rotate;
+	worldTransform_.translate = param.translate;
+	worldTransform_.scale = param.scale;
+	worldTransform_.rotate = param.rotate;
 	worldTransform_.UpdateMatrix();
 
 	uvTransform = { {1.0f, 1.0f, 1.0f},{0.0f, 0.0f, 0.0f},{0.0f, 0.0f, 0.0f}, };
@@ -41,13 +41,13 @@ void AnimationModel::Update(float time)
 	ApplyAnimation(skeleton, animation, animationTime);
 
 	// すべてのJointを更新。親が若いので通常ループで処理可能
-	for (Joint& joint : skeleton.joints) {
-		joint.localMatrix = MakeAffineMatrixQuaternion(joint.transform.scale, joint.transform.rotate, joint.transform.translate);
-		if (joint.parent) { // 親がいれば親の行列をかける
-			joint.skeltonSpaceMatrix = Multiply(joint.localMatrix, skeleton.joints[*joint.parent].skeltonSpaceMatrix);
+	for (Joint& joint_ : skeleton.joints) {
+		joint_.localMatrix = MakeAffineMatrixQuaternion(joint_.transform.scale, joint_.transform.rotate, joint_.transform.translate);
+		if (joint_.parent) { // 親がいれば親の行列をかける
+			joint_.skeltonSpaceMatrix = Multiply(joint_.localMatrix, skeleton.joints[*joint_.parent].skeltonSpaceMatrix);
 		}
 		else { // 親がいないのでLocalMatrixとskeletonSpaceMatrixは一致する
-			joint.skeltonSpaceMatrix = joint.localMatrix;
+			joint_.skeltonSpaceMatrix = joint_.localMatrix;
 		}
 	}
 
@@ -61,7 +61,7 @@ void AnimationModel::Update(float time)
 	worldTransform_.UpdateMatrix();
 }
 
-void AnimationModel::Draw(Camera* camera, uint32_t index, uint32_t index2)
+void AnimationModel::Draw(Camera* camera, uint32_t index_, uint32_t index2)
 {
 
 	// コマンドを積む
@@ -98,7 +98,7 @@ void AnimationModel::Draw(Camera* camera, uint32_t index, uint32_t index2)
 	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(3, light_->GetDirectionalLightResource()->GetGPUVirtualAddress());
 	dir_->GetCommandList()->SetGraphicsRootConstantBufferView(4, cameraResource.Get()->GetGPUVirtualAddress());
 	// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-	dir_->GetCommandList()->SetGraphicsRootDescriptorTable(2, texture_->GetTextureSRVHandleGPU(index));
+	dir_->GetCommandList()->SetGraphicsRootDescriptorTable(2, texture_->GetTextureSRVHandleGPU(index_));
 	dir_->GetCommandList()->SetGraphicsRootDescriptorTable(6, texture_->GetTextureSRVHandleGPU(index2));
 	// 描画(DrawCall/ドローコール)
 	//DirectXCommon::GetInsTance()->GetCommandList()->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
@@ -390,50 +390,50 @@ void AnimationModel::CreateCameraResource(Camera* camera)
 
 Skeleton AnimationModel::CreateSkelton(const Node& rootNode)
 {
-	Skeleton skeleton;
-	skeleton.root = CreateJoint(rootNode, {}, skeleton.joints);
+	Skeleton skeleton_;
+	skeleton_.root = CreateJoint(rootNode, {}, skeleton_.joints);
 
 	// 名前とIndexのマッピングを行いアクセスしやすくする
-	for (const Joint& joint : skeleton.joints) {
-		skeleton.jointmap.emplace(joint.name, joint.index);
+	for (const Joint& joint_ : skeleton_.joints) {
+		skeleton_.jointmap.emplace(joint_.name, joint_.index);
 	}
 
-	return skeleton;
+	return skeleton_;
 }
 
 int32_t AnimationModel::CreateJoint(const Node& node, const std::optional<int32_t>& parent, std::vector<Joint>& joints)
 {
-	Joint joint;
+	Joint joint_;
 	
-	joint.name = node.name;
-	joint.localMatrix = node.localmatrix;
-	joint.skeltonSpaceMatrix = MakeIndentity4x4();
-	joint.transform = node.transform;
-	joint.index = int32_t(joints.size());
-	joint.parent = parent;
+	joint_.name = node.name;
+	joint_.localMatrix = node.localmatrix;
+	joint_.skeltonSpaceMatrix = MakeIndentity4x4();
+	joint_.transform = node.transform;
+	joint_.index = int32_t(joints.size());
+	joint_.parent = parent;
 
-	joints.push_back(joint);
+	joints.push_back(joint_);
 	for (const Node& child : node.children) {
 		// 子jointを作成し、そのIndexを登録
-		int32_t childIndex = CreateJoint(child, joint.index, joints);
-		joints[joint.index].children.push_back(childIndex);
+		int32_t childIndex = CreateJoint(child, joint_.index, joints);
+		joints[joint_.index].children.push_back(childIndex);
 	}
 
 	// 自身のIndexを返す
-	return joint.index;
+	return joint_.index;
 }
 
-SkinCluster AnimationModel::CreateSkinCluster(const Microsoft::WRL::ComPtr<ID3D12Device>& device, const Skeleton& skeleton, const ModelData& modelData, const Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>& descriptorHeap, uint32_t descriptorSize, uint32_t index)
+SkinCluster AnimationModel::CreateSkinCluster(const Microsoft::WRL::ComPtr<ID3D12Device>& device, const Skeleton& skeleton_, const ModelData& modelData_, const Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>& descriptorHeap, uint32_t descriptorSize, uint32_t index_)
 {
-	SkinCluster skinCluster;
+	SkinCluster skinCluster_;
 
 	// palette用のResourceを確保
-	skinCluster.paletteResource = CreateBufferResource(device, sizeof(WellForGPU) * skeleton.joints.size());
+	skinCluster_.paletteResource = CreateBufferResource(device, sizeof(WellForGPU) * skeleton_.joints.size());
 	WellForGPU* mappedPalette = nullptr;
-	skinCluster.paletteResource->Map(0, nullptr, reinterpret_cast<void**>(&mappedPalette));
-	skinCluster.mappedPalette = { mappedPalette, skeleton.joints.size() }; // spanを使ってアクセスするようにする
-	skinCluster.paletteSrvHandle.first = texture_->GetCPUDescriptorHandle(descriptorHeap, descriptorSize, 10 + index);
-	skinCluster.paletteSrvHandle.second = texture_->GetGPUDescriptorHandle(descriptorHeap, descriptorSize, 10 + index);
+	skinCluster_.paletteResource->Map(0, nullptr, reinterpret_cast<void**>(&mappedPalette));
+	skinCluster_.mappedPalette = { mappedPalette, skeleton_.joints.size() }; // spanを使ってアクセスするようにする
+	skinCluster_.paletteSrvHandle.first = texture_->GetCPUDescriptorHandle(descriptorHeap, descriptorSize, 10 + index_);
+	skinCluster_.paletteSrvHandle.second = texture_->GetGPUDescriptorHandle(descriptorHeap, descriptorSize, 10 + index_);
 
 	// palette用のsrvを作成
 	D3D12_SHADER_RESOURCE_VIEW_DESC paletteSrvDesc{};
@@ -442,48 +442,48 @@ SkinCluster AnimationModel::CreateSkinCluster(const Microsoft::WRL::ComPtr<ID3D1
 	paletteSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
 	paletteSrvDesc.Buffer.FirstElement = 0;
 	paletteSrvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
-	paletteSrvDesc.Buffer.NumElements = UINT(skeleton.joints.size());
+	paletteSrvDesc.Buffer.NumElements = UINT(skeleton_.joints.size());
 	paletteSrvDesc.Buffer.StructureByteStride = sizeof(WellForGPU);
-	device->CreateShaderResourceView(skinCluster.paletteResource.Get(), &paletteSrvDesc, skinCluster.paletteSrvHandle.first);
+	device->CreateShaderResourceView(skinCluster_.paletteResource.Get(), &paletteSrvDesc, skinCluster_.paletteSrvHandle.first);
 	
 	// influence用のResourceを確保
-	skinCluster.influenceResource = CreateBufferResource(device, sizeof(VertexInfluence) * modelData.vertices.size());
+	skinCluster_.influenceResource = CreateBufferResource(device, sizeof(VertexInfluence) * modelData_.vertices.size());
 	VertexInfluence* mappedInfluence = nullptr;
-	skinCluster.influenceResource->Map(0, nullptr, reinterpret_cast<void**>(&mappedInfluence));
-	std::memset(mappedInfluence, 0, sizeof(VertexInfluence) * modelData.vertices.size());
-	skinCluster.mappedInfluence = { mappedInfluence, modelData.vertices.size() };
+	skinCluster_.influenceResource->Map(0, nullptr, reinterpret_cast<void**>(&mappedInfluence));
+	std::memset(mappedInfluence, 0, sizeof(VertexInfluence) * modelData_.vertices.size());
+	skinCluster_.mappedInfluence = { mappedInfluence, modelData_.vertices.size() };
 	
 	// influence用のVBVを作成
-	skinCluster.influenceBufferView.BufferLocation = skinCluster.influenceResource->GetGPUVirtualAddress();
-	skinCluster.influenceBufferView.SizeInBytes = UINT(sizeof(VertexInfluence) * modelData.vertices.size());
-	skinCluster.influenceBufferView.StrideInBytes = sizeof(VertexInfluence);
+	skinCluster_.influenceBufferView.BufferLocation = skinCluster_.influenceResource->GetGPUVirtualAddress();
+	skinCluster_.influenceBufferView.SizeInBytes = UINT(sizeof(VertexInfluence) * modelData_.vertices.size());
+	skinCluster_.influenceBufferView.StrideInBytes = sizeof(VertexInfluence);
 
 	// InverseBindPoseMatrixの保存領域を作成
-	skinCluster.inverseBindPoseMatrices.resize(skeleton.joints.size());
-	std::generate(skinCluster.inverseBindPoseMatrices.begin(), skinCluster.inverseBindPoseMatrices.end(), MakeIndentity4x4);
+	skinCluster_.inverseBindPoseMatrices.resize(skeleton_.joints.size());
+	std::generate(skinCluster_.inverseBindPoseMatrices.begin(), skinCluster_.inverseBindPoseMatrices.end(), MakeIndentity4x4);
 
 	// ModelDataのSkinCluster情報を解析してInfluenceの中身を埋める
-	for (const auto& JointWeight : modelData.skinClusterData) {// modelのSkinClusterの情報を更新
-		auto it = skeleton.jointmap.find(JointWeight.first);// jointWeight.firstはjoint名なので、skeltonに対象となるjointが含まれているか判断
-		if (it == skeleton.jointmap.end()) {// そんな名前のJointは存在しないので次に回す
+	for (const auto& JointWeight : modelData_.skinClusterData) {// modelのSkinClusterの情報を更新
+		auto it = skeleton_.jointmap.find(JointWeight.first);// jointWeight.firstはjoint名なので、skeltonに対象となるjointが含まれているか判断
+		if (it == skeleton_.jointmap.end()) {// そんな名前のJointは存在しないので次に回す
 			continue;
 		}
 
 		// (*it).secondにはjointのindexが入っているので、該当のindexのinverseBindPoseMatrixを代入
-		skinCluster.inverseBindPoseMatrices[(*it).second] = JointWeight.second.inverseBindPoseMatrix;
+		skinCluster_.inverseBindPoseMatrices[(*it).second] = JointWeight.second.inverseBindPoseMatrix;
 		for (const auto& vertexWeight : JointWeight.second.vertexWeights) {
-			auto& currentInfluence = skinCluster.mappedInfluence[vertexWeight.vertexIndex];// 該当のvertexIndexのinfluence情報を参照しておく
-			for (uint32_t index = 0; index < kNumMaxInfluence; ++index) {// 空いてるところに入れる
-				if (currentInfluence.weights[index] == 0.0f) {// weight == 0が空いてる状態なので、その場所にweightとjointのindexを代入
-					currentInfluence.weights[index] = vertexWeight.weight;
-					currentInfluence.jointIndices[index] = (*it).second;
+			auto& currentInfluence = skinCluster_.mappedInfluence[vertexWeight.vertexIndex];// 該当のvertexIndexのinfluence情報を参照しておく
+			for (uint32_t int_ = 0; int_ < kNumMaxInfluence; ++int_) {// 空いてるところに入れる
+				if (currentInfluence.weights[int_] == 0.0f) {// weight == 0が空いてる状態なので、その場所にweightとjointのindexを代入
+					currentInfluence.weights[int_] = vertexWeight.weight;
+					currentInfluence.jointIndices[int_] = (*it).second;
 					break;
 				}
 			}
 		}
 	}
 
-	return skinCluster;
+	return skinCluster_;
 }
 
 Microsoft::WRL::ComPtr<ID3D12Resource> AnimationModel::CreateBufferResource(Microsoft::WRL::ComPtr<ID3D12Device> device, size_t sizeInbytes)
@@ -507,7 +507,8 @@ Microsoft::WRL::ComPtr<ID3D12Resource> AnimationModel::CreateBufferResource(Micr
 	// バッファの場合はこれにする決まり
 	ResourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 	// 実際に頂点リソースを作る
-	HRESULT hr_ = device->CreateCommittedResource(
+	[[maybe_unused]]
+	HRESULT hr = device->CreateCommittedResource(
 		&uploadHeapProperties,
 		D3D12_HEAP_FLAG_NONE,
 		&ResourceDesc,
@@ -515,20 +516,20 @@ Microsoft::WRL::ComPtr<ID3D12Resource> AnimationModel::CreateBufferResource(Micr
 		nullptr,
 		IID_PPV_ARGS(&Resource));
 
-	assert(SUCCEEDED(hr_));
+	assert(SUCCEEDED(hr));
 
 	return Resource;
 }
 
-void AnimationModel::ApplyAnimation(Skeleton& skeleton, const Animation& animation, float animationTime)
+void AnimationModel::ApplyAnimation(Skeleton& skeleton_, const Animation& animation_, float animationTime_)
 {
-	for (Joint& joint : skeleton.joints) {
+	for (Joint& joint_ : skeleton_.joints) {
 		// 対象のJointのAnimationがあれば、値の適用を行う
-		if (auto it = animation.nodeAnimations.find(joint.name); it != animation.nodeAnimations.end()) {
+		if (auto it = animation_.nodeAnimations.find(joint_.name); it != animation_.nodeAnimations.end()) {
 			const NodeAnimation& rootNodeAnimation = (*it).second;
-			joint.transform.translate = CalculateValue(rootNodeAnimation.translate.keyframes, animationTime);
-			joint.transform.rotate = CalculateValueRotate(rootNodeAnimation.rotate.keyframes, animationTime);
-			joint.transform.scale = CalculateValue(rootNodeAnimation.scale.keyframes, animationTime);
+			joint_.transform.translate = CalculateValue(rootNodeAnimation.translate.keyframes, animationTime_);
+			joint_.transform.rotate = CalculateValueRotate(rootNodeAnimation.rotate.keyframes, animationTime_);
+			joint_.transform.scale = CalculateValue(rootNodeAnimation.scale.keyframes, animationTime_);
 		}
 	}
 }

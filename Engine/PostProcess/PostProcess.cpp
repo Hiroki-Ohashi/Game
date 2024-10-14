@@ -32,12 +32,39 @@ void PostProcess::Initialize(Type type)
 		noise_ = CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(NoiseParams));
 		noise_->Map(0, nullptr, reinterpret_cast<void**>(&noiseData_));
 		noiseData_->time = 1.0f;
+		noiseData_->lineStrength = 0.2f;
+		noiseData_->noiseStrength = 1.0f;
+		noiseData_->vignetteLight = 16.0f;
+		noiseData_->vignetteShape = 1.0f;
 	}
 }
 
-void PostProcess::NiseUpdate(float time)
+void PostProcess::NoiseUpdate(float time_)
 {
-	noiseData_->time += time;
+	noiseData_->time += time_;
+
+	if (time_ >= 10.0f) {
+		time_ = 1.0f;
+	}
+}
+
+void PostProcess::VignetteFadeIn(float light_, float shape_)
+{
+	if (noiseData_->vignetteLight >= 0.0f) {
+		noiseData_->vignetteShape += shape_;
+		noiseData_->vignetteLight -= light_;
+	}
+}
+
+void PostProcess::VignetteFadeOut(float light_, float shape_, float lightEnd, float shapeEnd)
+{
+	if (noiseData_->vignetteShape >= shapeEnd) {
+		noiseData_->vignetteShape -= shape_;
+	}
+
+	if (noiseData_->vignetteLight <= lightEnd) {
+		noiseData_->vignetteLight += light_;
+	}
 }
 
 void PostProcess::Draw()
@@ -1073,7 +1100,7 @@ Microsoft::WRL::ComPtr<ID3D12Resource> PostProcess::CreateBufferResource(Microso
 	// バッファの場合はこれにする決まり
 	ResourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 	// 実際に頂点リソースを作る
-	HRESULT hr_ = device->CreateCommittedResource(
+	[[maybe_unused]] HRESULT hr = device->CreateCommittedResource(
 		&uploadHeapProperties,
 		D3D12_HEAP_FLAG_NONE,
 		&ResourceDesc,
@@ -1081,7 +1108,7 @@ Microsoft::WRL::ComPtr<ID3D12Resource> PostProcess::CreateBufferResource(Microso
 		nullptr,
 		IID_PPV_ARGS(&Resource));
 
-	assert(SUCCEEDED(hr_));
+	assert(SUCCEEDED(hr));
 
 	return Resource;
 }

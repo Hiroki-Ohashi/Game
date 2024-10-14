@@ -242,7 +242,7 @@ Microsoft::WRL::ComPtr<ID3D12Resource> Sphere::CreateBufferResource(Microsoft::W
 	// バッファの場合はこれにする決まり
 	ResourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 	// 実際に頂点リソースを作る
-	HRESULT hr_ = device->CreateCommittedResource(
+	[[maybe_unused]] HRESULT hr_ = device->CreateCommittedResource(
 		&uploadHeapProperties,
 		D3D12_HEAP_FLAG_NONE,
 		&ResourceDesc,

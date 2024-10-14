@@ -38,7 +38,6 @@ private:
 	CameraForGpu* camera_ = nullptr;
 
 	WorldTransform worldTransform_;
-	EulerTransform transform;
 	EulerTransform uvTransform;
 
 	uint32_t index = 0;

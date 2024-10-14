@@ -8,7 +8,9 @@ void GameScene::Initialize() {
 	camera_.Initialize();
 
 	postProcess_ = std::make_unique<PostProcess>();
-	postProcess_->Initialize(NONE);
+	postProcess_->Initialize(NOISE);
+	postProcess_->SetVignette(0.0f, 16.0f);
+	postProcess_->SetNoise(0.0f, 0.0f);
 
 	// player
 	player_ = std::make_unique<Player>();
@@ -37,6 +39,9 @@ void GameScene::Initialize() {
     json_ = std::make_unique<Json>();
 	levelData_ = json_->LoadJson("level");
 	json_->Adoption(levelData_, false);
+
+	isVignette_ = true;
+	isNoise_ = false;
 }
 
 void GameScene::Update(){
@@ -45,7 +50,19 @@ void GameScene::Update(){
 
 	camera_.Update();
 
-	player_->Update();
+	postProcess_->NoiseUpdate(0.1f);
+
+	if (isVignette_) {
+		postProcess_->VignetteFadeOut(0.1f, 0.1f, 16.0f, 0.0f);
+	}
+
+	if (postProcess_->GetVignetteShape() <= 0.0f) {
+		isVignette_ = false;
+	}
+
+	if (isVignette_ == false) {
+		player_->Update();
+	}
 
 	if (player_->GetPos().z >= 500.0f) {
 
@@ -113,14 +130,27 @@ void GameScene::Update(){
 	camera_.cameraTransform.translate = { player_->GetPos().x + randX, player_->GetPos().y + 3.0f + randY,  player_->GetPos().z - 50.0f};
 
 	// Y軸周り角度（Θy）
-	camera_.cameraTransform.rotate.y = std::atan2(player_->GetVelocity().x, player_->GetVelocity().z);
+	//camera_.cameraTransform.rotate.y = std::atan2(player_->GetVelocity().x, player_->GetVelocity().z);
 
 	float velocityXZ = sqrt((player_->GetVelocity().x * player_->GetVelocity().x) + (player_->GetVelocity().z * player_->GetVelocity().z));
 	camera_.cameraTransform.rotate.x = std::atan2(-player_->GetVelocity().y, velocityXZ);
 
 	if (boss_->IsDead() == true) {
-		sceneNo = CLEAR;
+		isNoise_ = true;
 	}
+
+	if (isNoise_) {
+		if (noiseStrength <= 100.0f) {
+			noiseStrength += 1.0f;
+		}
+		
+		if(postProcess_->GetNoiseStrength() >= 100.0f){
+			noiseStrength = 0.0f;
+			sceneNo = CLEAR;
+		}
+	}
+
+	postProcess_->SetNoiseStrength(noiseStrength);
 }
 
 void GameScene::Draw()
@@ -158,7 +188,7 @@ void GameScene::Draw()
 
 void GameScene::PostDraw()
 {
-	postProcess_->Draw();
+	postProcess_->NoiseDraw();
 }
 
 void GameScene::Release() {

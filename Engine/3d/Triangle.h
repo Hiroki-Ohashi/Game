@@ -54,6 +54,4 @@ private:
 	Matrix4x4 worldMatrix;
 
 	bool isTriangle = false;
-
-	static inline HRESULT hr_;
 };

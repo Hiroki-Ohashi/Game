@@ -14,6 +14,7 @@ void TitleScene::Initialize()
 
 	postProcess_ = std::make_unique<PostProcess>();
 	postProcess_->Initialize(NOISE);
+	postProcess_->SetVignette(0.0f, 16.0f);
 
 	// skybox
 	skydome_ = std::make_unique<Skydome>();
@@ -42,10 +43,10 @@ void TitleScene::Update()
 	camera_.Update();
 	json_->Update();
 	
-	postProcess_->NiseUpdate(0.1f);
+	postProcess_->NoiseUpdate(0.1f);
 
 	if (input_->TriggerKey(DIK_A)) {
-		sceneNo = STAGE;
+		isVignette_ = true;
 	}
 
 	XINPUT_STATE joyState;
@@ -53,23 +54,35 @@ void TitleScene::Update()
 	if (Input::GetInsTance()->GetJoystickState(joyState)) {
 
 		if (Input::GetInsTance()->PressedButton(joyState, XINPUT_GAMEPAD_A)) {
-			sceneNo = STAGE;
+			isVignette_ = true;
 		}
 
 	}
 
+	if (isVignette_) {
+		postProcess_->VignetteFadeIn(0.1f, 0.1f);
+	}
+	else {
+		postProcess_->VignetteFadeOut(0.1f, 0.1f, 16.0f, 1.0f);
+	}
+
+	if (postProcess_->GetVignetteLight() <= 0.0f) {
+		isVignette_ = false;
+		sceneNo = STAGE;
+	}
+
 	if (camera_.cameraTransform.rotate.x < 0.40f) {
-		cameraSpeedX += 0.00005f;
+		cameraSpeedX += 0.000005f;
 	}
 	else if (camera_.cameraTransform.rotate.x >= 0.40f) {
-		cameraSpeedX -= 0.00005f;
+		cameraSpeedX -= 0.000005f;
 	}
 
 	if (camera_.cameraTransform.rotate.y < 0.0f) {
-		cameraSpeedY += 0.00005f;
+		cameraSpeedY += 0.000005f;
 	}
 	else if (camera_.cameraTransform.rotate.y >= 0.0f) {
-		cameraSpeedY -= 0.00005f;
+		cameraSpeedY -= 0.000005f;
 	}
 
 	camera_.cameraTransform.rotate.x += cameraSpeedX;
@@ -85,6 +98,11 @@ void TitleScene::Update()
 		else {
 			blinking = true;
 		}
+	}
+
+	if (ImGui::TreeNode("Vignette")) {
+		ImGui::Text("%f", postProcess_->GetVignetteShape());
+		ImGui::TreePop();
 	}
 }
 

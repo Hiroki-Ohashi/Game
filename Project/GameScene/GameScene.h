@@ -104,6 +104,11 @@ private:
 	// 待機フラグ
 	bool isWait_;
 
+	bool isVignette_;
+	bool isNoise_;
+
+	float noiseStrength = 0.0f;
+
 	// 敵発生コマンド
 	std::stringstream enemyPopCommands;
 };

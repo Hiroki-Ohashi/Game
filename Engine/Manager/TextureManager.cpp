@@ -202,20 +202,20 @@ ModelData TextureManager::LoadObjFile(const std::string& directoryPath, const st
 
 Animation TextureManager::LoadAnimationFile(const std::string& directoryPath, const std::string& filename)
 {
-	Animation animation; //今回作るアニメーション
+	Animation animation_; //今回作るアニメーション
 
 	Assimp::Importer importor;
 	std::string filePath = directoryPath + "/" + filename;
 	const aiScene* scene = importor.ReadFile(filePath.c_str(), 0);
 	assert(scene->mNumAnimations != 0); // アニメーションがない
 	aiAnimation* animationAssimp = scene->mAnimations[0]; // 最初のアニメーションだけ採用。もちろん複数対応するにこしたことはない
-	animation.duration = float(animationAssimp->mDuration / animationAssimp->mTicksPerSecond); // 時間の単位を秒に変換
+	animation_.duration = float(animationAssimp->mDuration / animationAssimp->mTicksPerSecond); // 時間の単位を秒に変換
 
 	// assimpでは個々のNodeのAnimationをchannelと呼んでいるのでchannelを回してNodeAnimationの情報をとってくる
 	for (uint32_t channelIndex = 0; channelIndex < animationAssimp->mNumChannels; ++channelIndex) {
 
 		aiNodeAnim* nodeAnimationAssimp = animationAssimp->mChannels[channelIndex];
-		NodeAnimation& nodeAnimation = animation.nodeAnimations[nodeAnimationAssimp->mNodeName.C_Str()];
+		NodeAnimation& nodeAnimation = animation_.nodeAnimations[nodeAnimationAssimp->mNodeName.C_Str()];
 
 		// translate
 		for (uint32_t keyIndex = 0; keyIndex < nodeAnimationAssimp->mNumPositionKeys; ++keyIndex) {
@@ -246,7 +246,7 @@ Animation TextureManager::LoadAnimationFile(const std::string& directoryPath, co
 
 	}
 
-	return animation;
+	return animation_;
 }
 
 Node TextureManager::ReadNode(aiNode* node)
@@ -328,7 +328,7 @@ Microsoft::WRL::ComPtr<ID3D12Resource> TextureManager::CreateTextureResource(Mic
 	// Resourceの生成
 	Microsoft::WRL::ComPtr< ID3D12Resource> resource = nullptr;
 
-	HRESULT hr_ = device->CreateCommittedResource(
+	[[maybe_unused]] HRESULT hr = device->CreateCommittedResource(
 		&heapProperties, // Heapの設定
 		D3D12_HEAP_FLAG_NONE, // Heapの特殊な設定。特になし
 		&resourceDesc, // Resourceの設定
@@ -336,7 +336,7 @@ Microsoft::WRL::ComPtr<ID3D12Resource> TextureManager::CreateTextureResource(Mic
 		nullptr, // Clear最適値。使わないのでnullptr
 		IID_PPV_ARGS(&resource)); // 作成するResourceポインタへのポインタ
 
-	assert(SUCCEEDED(hr_));
+	assert(SUCCEEDED(hr));
 
 	return resource;
 }
@@ -376,8 +376,8 @@ Microsoft::WRL::ComPtr<ID3D12Resource> TextureManager::UploadTextureData(ID3D12R
 	std::vector<D3D12_SUBRESOURCE_DATA>subresources;
 	DirectX::PrepareUpload(dir_->GetDevice(), mipImages.GetImages(), mipImages.GetImageCount(), mipImages.GetMetadata(), subresources);
 	uint64_t intermediateSize = GetRequiredIntermediateSize(texture, 0, UINT(subresources.size()));
-	Microsoft::WRL::ComPtr< ID3D12Resource> intermediateResource = CreateBufferResource(dir_->GetDevice(), intermediateSize);
-	UpdateSubresources(dir_->GetCommandList(), texture, intermediateResource.Get(), 0, 0, UINT(subresources.size()), subresources.data());
+	Microsoft::WRL::ComPtr< ID3D12Resource> intermediateResource_ = CreateBufferResource(dir_->GetDevice(), intermediateSize);
+	UpdateSubresources(dir_->GetCommandList(), texture, intermediateResource_.Get(), 0, 0, UINT(subresources.size()), subresources.data());
 	//Tetureへの転送後は利用できるようにD3D12_RESOURCE_STATE_COPY_DESTからD3D12_RESOURCE_STATE_GENERIC_READへResourceStateを変更する
 	D3D12_RESOURCE_BARRIER barrier{};
 	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
@@ -387,7 +387,7 @@ Microsoft::WRL::ComPtr<ID3D12Resource> TextureManager::UploadTextureData(ID3D12R
 	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
 	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_GENERIC_READ;
 	dir_->GetCommandList()->ResourceBarrier(1, &barrier);
-	return intermediateResource;
+	return intermediateResource_;
 }
 
 D3D12_CPU_DESCRIPTOR_HANDLE TextureManager::GetCPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap, uint32_t descriptorSize, uint32_t index) {
@@ -423,7 +423,7 @@ Microsoft::WRL::ComPtr<ID3D12Resource> TextureManager::CreateBufferResource(Micr
 	// バッファの場合はこれにする決まり
 	ResourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 	// 実際に頂点リソースを作る
-	HRESULT hr_ = device->CreateCommittedResource(
+	[[maybe_unused]] HRESULT hr = device->CreateCommittedResource(
 		&uploadHeapProperties,
 		D3D12_HEAP_FLAG_NONE,
 		&ResourceDesc,
@@ -431,7 +431,7 @@ Microsoft::WRL::ComPtr<ID3D12Resource> TextureManager::CreateBufferResource(Micr
 		nullptr,
 		IID_PPV_ARGS(&Resource));
 
-	assert(SUCCEEDED(hr_));
+	assert(SUCCEEDED(hr));
 
 	return Resource;
 }

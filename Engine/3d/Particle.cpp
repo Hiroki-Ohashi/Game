@@ -46,13 +46,13 @@ void Particles::Initialize(const std::string& filename, Vector3 pos, uint32_t in
 	std::mt19937 randomEngine(seedGenerator());
 
 	// 位置と速度を[-1,1]でランダムに初期化
-	for (uint32_t index = 0; index < kMaxInstance; ++index) {
-		instancingData_[index].WVP = MakeIndentity4x4();
-		instancingData_[index].World = MakeIndentity4x4();
-		instancingData_[index].color = { 1.0f, 1.0f, 1.0f, 1.0f };
-		particles[index] = MakeNewParticle(randomEngine);
-		instancingData_[index].color = particles[index].color;
-		particles[index].transform.translate = pos;
+	for (uint32_t index_ = 0; index_ < kMaxInstance; ++index_) {
+		instancingData_[index_].WVP = MakeIndentity4x4();
+		instancingData_[index_].World = MakeIndentity4x4();
+		instancingData_[index_].color = { 1.0f, 1.0f, 1.0f, 1.0f };
+		particles[index_] = MakeNewParticle(randomEngine);
+		instancingData_[index_].color = particles[index_].color;
+		particles[index_].transform.translate = pos;
 	}
 
 }
@@ -60,15 +60,15 @@ void Particles::Initialize(const std::string& filename, Vector3 pos, uint32_t in
 void Particles::Update() {
 }
 
-void Particles::Draw(Camera* camera, uint32_t index) {
+void Particles::Draw(Camera* camera_, uint32_t index) {
 	uint32_t numInstance = 0;
-	for (uint32_t index = 0; index < kMaxInstance; ++index) {
-		if (particles[index].lifeTime <= particles[index].currentTime) {
+	for (uint32_t index_ = 0; index_ < kMaxInstance; ++index_) {
+		if (particles[index_].lifeTime <= particles[index_].currentTime) {
 			continue;
 		}
 
 		Matrix4x4 worldMatrix = MakeAffineMatrix(particles[index].transform.scale, particles[index].transform.rotate, particles[index].transform.translate);
-		Matrix4x4 worldViewMatrix = Multiply(worldMatrix, Multiply(worldMatrix, Multiply(camera->viewMatrix, camera->projectionMatrix)));
+		Matrix4x4 worldViewMatrix = Multiply(worldMatrix, Multiply(worldMatrix, Multiply(camera_->viewMatrix, camera_->projectionMatrix)));
 		particles[index].transform.translate.x += particles[index].velocity.x * kDeltaTime;
 		particles[index].transform.translate.y += particles[index].velocity.y * kDeltaTime;
 		particles[index].transform.translate.z += particles[index].velocity.z * kDeltaTime;
@@ -331,7 +331,8 @@ Microsoft::WRL::ComPtr<ID3D12Resource> Particles::CreateBufferResource(Microsoft
 	// バッファの場合はこれにする決まり
 	ResourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 	// 実際に頂点リソースを作る
-	HRESULT hr_ = device->CreateCommittedResource(
+	[[maybe_unused]]
+	HRESULT hr = device->CreateCommittedResource(
 		&uploadHeapProperties,
 		D3D12_HEAP_FLAG_NONE,
 		&ResourceDesc,
@@ -339,7 +340,7 @@ Microsoft::WRL::ComPtr<ID3D12Resource> Particles::CreateBufferResource(Microsoft
 		nullptr,
 		IID_PPV_ARGS(&Resource));
 
-	assert(SUCCEEDED(hr_));
+	assert(SUCCEEDED(hr));
 
 	return Resource;
 }

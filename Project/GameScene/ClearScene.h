@@ -41,4 +41,7 @@ private:
 
 	uint32_t timer;
 	bool blinking;
+
+	bool isVignette_;
+	float noiseStrength = 0.0f;
 };

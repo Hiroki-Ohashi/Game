@@ -64,7 +64,7 @@ private:
 	uint32_t descriptorSizeSRV;
 
 	static const int kMaxTexture = 100;
-	uint32_t textureIndex_;
+	int32_t textureIndex_;
 
 	Microsoft::WRL::ComPtr< ID3D12Resource> intermediateResource[kMaxTexture];
 	Microsoft::WRL::ComPtr<ID3D12Resource> textureResource[kMaxTexture];

@@ -5,9 +5,9 @@
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPram);
 
 // ウィンドウプロシージャ
-LRESULT WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
+LRESULT WinApp::WindowProc(HWND hwnd_, UINT msg, WPARAM wparam, LPARAM lparam) {
 
-	if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wparam, lparam)) {
+	if (ImGui_ImplWin32_WndProcHandler(hwnd_, msg, wparam, lparam)) {
 		return true;
 	}
 
@@ -20,7 +20,7 @@ LRESULT WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 		return 0;
 	}
 	// 標準のメッセージ処理を行う
-	return DefWindowProc(hwnd, msg, wparam, lparam);
+	return DefWindowProc(hwnd_, msg, wparam, lparam);
 }
 
 WinApp* WinApp::GetInsTance()

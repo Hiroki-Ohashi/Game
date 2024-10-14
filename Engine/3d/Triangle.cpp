@@ -152,7 +152,7 @@ Microsoft::WRL::ComPtr<ID3D12Resource> Triangle::CreateBufferResource(Microsoft:
 	// バッファの場合はこれにする決まり
 	ResourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 	// 実際に頂点リソースを作る
-	HRESULT hr_ = device->CreateCommittedResource(
+	[[maybe_unused]] HRESULT hr = device->CreateCommittedResource(
 		&uploadHeapProperties,
 		D3D12_HEAP_FLAG_NONE,
 		&ResourceDesc,
@@ -160,7 +160,7 @@ Microsoft::WRL::ComPtr<ID3D12Resource> Triangle::CreateBufferResource(Microsoft:
 		nullptr,
 		IID_PPV_ARGS(&Resource));
 
-	assert(SUCCEEDED(hr_));
+	assert(SUCCEEDED(hr));
 
 	return Resource;
 }

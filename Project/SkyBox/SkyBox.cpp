@@ -21,10 +21,10 @@ void SkyBox::Initialize()
 	worldTransform_.UpdateMatrix();
 }
 
-void SkyBox::Draw(Camera* camera, uint32_t index)
+void SkyBox::Draw(Camera* camera_, uint32_t index)
 {
 
-	worldTransform_.TransferMatrix(wvpResourceData, camera);
+	worldTransform_.TransferMatrix(wvpResourceData, camera_);
 
 	/*Matrix4x4 uvtransformMatrix = MakeScaleMatrix(uvTransform.scale);
 	uvtransformMatrix = Multiply(uvtransformMatrix, MakeRotateZMatrix(uvTransform.rotate.z));
@@ -335,7 +335,7 @@ Microsoft::WRL::ComPtr<ID3D12Resource> SkyBox::CreateBufferResource(Microsoft::W
 	// バッファの場合はこれにする決まり
 	ResourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 	// 実際に頂点リソースを作る
-	HRESULT hr_ = device->CreateCommittedResource(
+	[[maybe_unused]] HRESULT hr_ = device->CreateCommittedResource(
 		&uploadHeapProperties,
 		D3D12_HEAP_FLAG_NONE,
 		&ResourceDesc,

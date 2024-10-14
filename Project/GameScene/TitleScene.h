@@ -54,8 +54,8 @@ private:
 private:
 	EulerTransform transform;
 
-	float cameraSpeedX = 0.001f;
-	float cameraSpeedY = 0.002f;
+	float cameraSpeedX = 0.0001f;
+	float cameraSpeedY = 0.0002f;
 
 	uint32_t title;
 	uint32_t start;
@@ -63,4 +63,6 @@ private:
 
 	uint32_t timer;
 	bool blinking;
+
+	bool isVignette_;
 };

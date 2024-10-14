@@ -9,11 +9,6 @@ void WorldTransform::TransferMatrix(TransformationMatrix* wvpData, Camera* camer
 	wvpData->WVP = wvpData->World;
 }
 
-void WorldTransform::sTransferMatrix(Microsoft::WRL::ComPtr<ID3D12Resource>& wvpResource, Camera& camera)
-{
-	
-}
-
 void WorldTransform::GltfTransferMatrix(ModelData modelData, TransformationMatrix* wvpData, Camera* camera)
 {
 	wvpData->WVP = Multiply(modelData.rootNode.localmatrix, Multiply(worldMatrix, *camera->transformationMatrixData));

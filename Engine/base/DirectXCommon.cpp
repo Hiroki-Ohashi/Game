@@ -195,8 +195,8 @@ void DirectXCommon::Fence(){
 	assert(SUCCEEDED(hr_));
 
 	// Fenceのsignalを待つためにイベントを作成する
-	HANDLE fenceEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
-	assert(fenceEvent != nullptr);
+	[[maybe_unused]] HANDLE fenceEvent_ = CreateEvent(NULL, FALSE, FALSE, NULL);
+	assert(fenceEvent_ != nullptr);
 }
 
 void DirectXCommon::RenderTexture(){
@@ -348,19 +348,18 @@ void DirectXCommon::Release(){
 #endif
 	CloseWindow(WinApp::GetInsTance()->GetHwnd());
 
-	struct D3DResourceLeakCheker {
-		~D3DResourceLeakCheker() {
-			// リソースリークチェック
-			Microsoft::WRL::ComPtr< IDXGIDebug1> debug;
-			if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug)))) {
-				debug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL);
-				debug->ReportLiveObjects(DXGI_DEBUG_APP, DXGI_DEBUG_RLO_ALL);
-				debug->ReportLiveObjects(DXGI_DEBUG_D3D12, DXGI_DEBUG_RLO_ALL);
-				debug->Release();
-			}
-		}
-
-	};
+	//struct D3DResourceLeakCheker {
+	//	~D3DResourceLeakCheker() {
+	//		// リソースリークチェック
+	//		Microsoft::WRL::ComPtr< IDXGIDebug1> debug;
+	//		if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug)))) {
+	//			debug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL);
+	//			debug->ReportLiveObjects(DXGI_DEBUG_APP, DXGI_DEBUG_RLO_ALL);
+	//			debug->ReportLiveObjects(DXGI_DEBUG_D3D12, DXGI_DEBUG_RLO_ALL);
+	//			debug->Release();
+	//		}
+	//	}
+	//};
 }
 
 // DescriptorHeap関数
@@ -372,7 +371,7 @@ Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> DirectXCommon::CreateDescriptorHeap
 	descriptorHeapDesc.Type = heapType;
 	descriptorHeapDesc.NumDescriptors = numDescriptors;
 	descriptorHeapDesc.Flags = shaderVisible ? D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE : D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-	HRESULT hr = device_->CreateDescriptorHeap(&descriptorHeapDesc, IID_PPV_ARGS(&descriptorHeap));
+	[[maybe_unused]] HRESULT hr = device->CreateDescriptorHeap(&descriptorHeapDesc, IID_PPV_ARGS(&descriptorHeap));
 	// ディスクリプタヒープが作れなかったので起動できない
 	assert(SUCCEEDED(hr));
 	return descriptorHeap;
@@ -402,7 +401,7 @@ Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCommon::CreateDepthStencilTextureR
 
 	// Resourceの生成
 	Microsoft::WRL::ComPtr<ID3D12Resource> resource = nullptr;
-	HRESULT hr = device->CreateCommittedResource(
+	[[maybe_unused]] HRESULT hr = device->CreateCommittedResource(
 		&heapProperties, // Heapの設定
 		D3D12_HEAP_FLAG_NONE, // Heapの特殊設定。特になし。
 		&resourceDesc, // Resourceの設定
@@ -440,7 +439,7 @@ Microsoft::WRL::ComPtr<ID3D12Resource> DirectXCommon::CreateRenderTextureResourc
 
 	// Resourceの生成
 	Microsoft::WRL::ComPtr<ID3D12Resource> resource = nullptr;
-	HRESULT hr = device->CreateCommittedResource(
+	[[maybe_unused]] HRESULT hr = device->CreateCommittedResource(
 		&heapProperties, // Heapの設定
 		D3D12_HEAP_FLAG_NONE, // Heapの特殊設定。特になし。
 		&resourceDesc, // Resourceの設定

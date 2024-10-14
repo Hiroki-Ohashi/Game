@@ -47,14 +47,14 @@ PixelShaderOutput main(VertexShaderOutput input) {
         output.color.rgb = diffuse + specular;
         output.color.a = gMaterial.color.a * textureColor.a;
 
-        if(textureColor.a == 0.0){
+        if(textureColor.a < 1.0){
            discard;
         }
 
     } else {
         output.color = gMaterial.color * textureColor;
 
-        if (textureColor.a <= 0.5)
+        if (textureColor.a < 1.0)
         {
             discard;
         }

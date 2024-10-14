@@ -2,7 +2,7 @@
 #include "imgui.h"
 #include <numbers>
 
-void Model::Initialize(const std::string& filename, EulerTransform transform) {
+void Model::Initialize(const std::string& filename, EulerTransform transform_) {
 	// モデル読み込み
 	std::wstring filePathW = Convert::ConvertString(filename);;
 	if (filePathW.ends_with(L".obj")) {
@@ -24,9 +24,9 @@ void Model::Initialize(const std::string& filename, EulerTransform transform) {
 	cameraResource = CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(Camera));
 	cameraResource->Map(0, nullptr, reinterpret_cast<void**>(&camera_));
 
-	worldTransform_.translate = transform.translate;
-	worldTransform_.scale = transform.scale;
-	worldTransform_.rotate = transform.rotate;
+	worldTransform_.translate = transform_.translate;
+	worldTransform_.scale = transform_.scale;
+	worldTransform_.rotate = transform_.rotate;
 	worldTransform_.UpdateMatrix();
 
 	uvTransform = { {1.0f, 1.0f, 1.0f},{0.0f, 0.0f, 0.0f},{0.0f, 0.0f, 0.0f}, };
@@ -331,7 +331,7 @@ Microsoft::WRL::ComPtr<ID3D12Resource> Model::CreateBufferResource(Microsoft::WR
 	// バッファの場合はこれにする決まり
 	ResourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 	// 実際に頂点リソースを作る
-	HRESULT hr_ = device->CreateCommittedResource(
+	[[maybe_unused]] HRESULT hr_ = device->CreateCommittedResource(
 		&uploadHeapProperties,
 		D3D12_HEAP_FLAG_NONE,
 		&ResourceDesc,
