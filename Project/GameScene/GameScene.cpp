@@ -127,7 +127,7 @@ void GameScene::Update(){
 		randY = 0;
 	}
 
-	camera_.cameraTransform.translate = { player_->GetPos().x + randX, player_->GetPos().y + 3.0f + randY,  player_->GetPos().z - 50.0f};
+	camera_.cameraTransform.translate = { player_->GetPos().x + randX, player_->GetPos().y + 3.0f + randY,  player_->GetPos().z - 30.0f};
 
 	// Y軸周り角度（Θy）
 	//camera_.cameraTransform.rotate.y = std::atan2(player_->GetVelocity().x, player_->GetVelocity().z);

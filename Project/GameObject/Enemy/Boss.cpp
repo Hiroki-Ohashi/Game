@@ -26,7 +26,7 @@ void Boss::Initialize(Vector3 pos)
 
 void Boss::Update()
 {
-	transform_.translate.z += 1.0f;
+	transform_.translate.z += 1.5f;
 
 	if (isApproach == true) {
 		transform_.translate.y -= downSpeedY;
