@@ -132,8 +132,8 @@ void GameScene::Update(){
 	// Y軸周り角度（Θy）
 	//camera_.cameraTransform.rotate.y = std::atan2(player_->GetVelocity().x, player_->GetVelocity().z);
 
-	float velocityXZ = sqrt((player_->GetVelocity().x * player_->GetVelocity().x) + (player_->GetVelocity().z * player_->GetVelocity().z));
-	camera_.cameraTransform.rotate.x = std::atan2(-player_->GetVelocity().y, velocityXZ);
+	//float velocityXZ = sqrt((player_->GetVelocity().x * player_->GetVelocity().x) + (player_->GetVelocity().z * player_->GetVelocity().z));
+	//camera_.cameraTransform.rotate.x = std::atan2(-player_->GetVelocity().y, velocityXZ);
 
 	if (boss_->IsDead() == true) {
 		isNoise_ = true;
@@ -155,7 +155,7 @@ void GameScene::Update(){
 
 void GameScene::Draw()
 {
-  
+
 	skydome_->Draw(&camera_);
 
 	json_->Draw(camera_, uv);
