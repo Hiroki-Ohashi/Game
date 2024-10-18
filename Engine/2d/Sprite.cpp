@@ -2,6 +2,15 @@
 #include "imgui.h"
 
 
+/// <summary>
+/// Sprite.cpp
+/// 2Dのスプライト生成のソースファイル
+/// </summary>
+
+Sprite::~Sprite()
+{
+}
+
 void Sprite::Initialize(Vector2 pos, Vector2 scale, float index){
 
 	Sprite::CreateVertexResourceSprite(pos, scale);

@@ -19,7 +19,7 @@ void ImGuiManeger::Initialize(){
 	ImGui::CreateContext();
 	ImGui::StyleColorsDark();
 	ImGui_ImplWin32_Init(WinApp::GetInsTance()->GetHwnd());
-	ImGui_ImplDX12_Init(DirectXCommon::GetInsTance()->GetDevice(),
+	ImGui_ImplDX12_Init(DirectXCommon::GetInsTance()->GetDevice().Get(),
 		DirectXCommon::GetInsTance()->GetSwapChainDesc().BufferCount,
 		DirectXCommon::GetInsTance()->GetRtvDesc().Format,
 		DirectXCommon::GetInsTance()->GetSrvDescriptorHeap().Get(),
@@ -42,7 +42,7 @@ void ImGuiManeger::Draw(){
 
 #ifdef _DEBUG
 	// 実際にcommandListのImGuiの描画コマンドを積む
-	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), DirectXCommon::GetInsTance()->GetCommandList());
+	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), DirectXCommon::GetInsTance()->GetCommandList().Get());
 #endif // DEBUG
 }
 

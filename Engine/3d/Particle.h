@@ -15,64 +15,86 @@
 #include "Camera.h"
 #include "WorldTransform.h"
 
+/// <summary>
+/// Particle.h
+/// パーティクル生成のヘッダーファイル
+/// </summary>
+
 class Particles {
 public:
+	// デストラクタ
+	~Particles();
+
+	// 初期化処理
 	void Initialize(const std::string& filename, Vector3 pos, uint32_t index);
-
+	// 更新処理
 	void Update();
-
+	// 描画処理
 	void Draw(Camera* camera, uint32_t index);
-
+	// 解放処理
 	void Release();
 
+	// Setter
+	void SetPos(Vector3 pos_) { pos_ = worldTransform_.translate; }
+	// ランダム生成
+	Particle MakeNewParticle(std::mt19937& randomEngine);
+private:
+	// vertex生成
 	void CreateVertexResource();
+	// material作成
 	void CreateMaterialResource();
+	// wvp作成
 	void CreateWVPResource();
-
+	// PSO作成
 	void CreatePso();
 
-	void SetPos(Vector3 pos_) { pos_ = worldTransform_.translate; }
-
+	// Resource生成
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(Microsoft::WRL::ComPtr<ID3D12Device> device, size_t sizeInbytes);
-
-	Particle MakeNewParticle(std::mt19937& randomEngine);
-
 private:
-
+	// シングルトン呼び出し
 	WinApp* winapp_ = WinApp::GetInsTance();
 	TextureManager* texture_ = TextureManager::GetInstance();
-	WorldTransform worldTransform_;
 
+	// Transform
+	WorldTransform worldTransform_;
+	EulerTransform uvTransform;
+
+	// model
 	ModelData modelData;
 
+	// BufferView
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
 
+	// Resource
 	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource;
 	Microsoft::WRL::ComPtr<ID3D12Resource> materialResource;
 	Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource;
 	Microsoft::WRL::ComPtr<ID3D12Resource> instancingResource;
 
+	// Data
 	VertexData* vertexData;
 	Material* materialData;
 	TransformationMatrix* wvpData;
+	ParticleForGpu* instancingData_;
 
-	EulerTransform uvTransform;
-
+	// PSO
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineState = nullptr;
 
+	// instanceの最大数
 	const static uint32_t kMaxInstance = 10;
+	Particle particles[kMaxInstance];
+
+	// DiscripterHndle
 	D3D12_CPU_DESCRIPTOR_HANDLE instancingSrvHandleCPU_;
 	D3D12_GPU_DESCRIPTOR_HANDLE instancingSrvHandleGPU_;
 
-	ParticleForGpu* instancingData_;
-
-	Particle particles[kMaxInstance];
-
-
+	// 描画条件
 	bool isModel;
 
+	// camera
 	CameraForGpu camera;
 
+	// deltaTime
 	const float kDeltaTime = 1.0f / 60.0f;
 };

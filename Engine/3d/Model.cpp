@@ -2,6 +2,15 @@
 #include "imgui.h"
 #include <numbers>
 
+/// <summary>
+/// Model.cpp
+/// 3Dのオブジェクト生成ソースファイル
+/// </summary>
+
+Model::~Model()
+{
+}
+
 void Model::Initialize(const std::string& filename, EulerTransform transform_) {
 	// モデル読み込み
 	std::wstring filePathW = Convert::ConvertString(filename);;

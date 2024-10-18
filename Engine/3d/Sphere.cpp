@@ -4,6 +4,15 @@
 #include "imgui.h"
 #include <numbers>
 
+/// <summary>
+/// Sphere.cpp
+/// 球体生成のソースファイル
+/// </summary>
+
+Sphere::~Sphere()
+{
+}
+
 void Sphere::Initialize(){
 
 	Sphere::CreateVertexResourceSphere();

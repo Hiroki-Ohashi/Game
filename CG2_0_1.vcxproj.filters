@@ -50,7 +50,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Project\GameScene\ClearScene.cpp" />
     <ClCompile Include="Engine\3d\Animation.cpp">
       <Filter>ソースファイル\Engine\3d</Filter>
     </ClCompile>
@@ -171,9 +170,11 @@
     <ClCompile Include="Project\utillity\WorldTransform.cpp">
       <Filter>ソースファイル\Project\utillity</Filter>
     </ClCompile>
+    <ClCompile Include="Project\GameScene\ClearScene.cpp">
+      <Filter>ソースファイル\Project\GameScene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Project\GameScene\ClearScene.h" />
     <ClInclude Include="externals\imgui\imconfig.h">
       <Filter>externals\imgui</Filter>
     </ClInclude>
@@ -299,6 +300,9 @@
     </ClInclude>
     <ClInclude Include="Project\utillity\WorldTransform.h">
       <Filter>ヘッダーファイル\Project\utillity</Filter>
+    </ClInclude>
+    <ClInclude Include="Project\GameScene\ClearScene.h">
+      <Filter>ヘッダーファイル\Project\GameScene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

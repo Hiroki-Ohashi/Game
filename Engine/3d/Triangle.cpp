@@ -1,5 +1,10 @@
 #include "Triangle.h"
 
+/// <summary>
+/// Triangle.cpp
+/// 3Dの三角形生成のソースファイル
+/// </summary>
+
 void Triangle::Initialize(Vector4* pos){
 
 	Triangle::CreateVertexResource(pos);

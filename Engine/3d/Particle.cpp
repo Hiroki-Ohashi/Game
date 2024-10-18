@@ -1,5 +1,15 @@
 #include "Particle.h"
 
+/// <summary>
+/// Particle.cpp
+/// パーティクル生成のソースファイル
+/// </summary>
+
+
+Particles::~Particles()
+{
+}
+
 void Particles::Initialize(const std::string& filename, Vector3 pos, uint32_t index) {
 
 	// モデル読み込み

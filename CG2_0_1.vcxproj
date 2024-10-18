@@ -45,9 +45,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>C:\Users\Ohashi\source\repos\CG2\CG2_0_1\externals\imgui;$(IncludePath)</IncludePath>
+    <TargetName>撃墜</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>C:\Users\Ohashi\source\repos\CG2\CG2_0_1\externals\imgui;$(IncludePath)</IncludePath>
+    <TargetName>撃墜</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>

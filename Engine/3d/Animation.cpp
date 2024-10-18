@@ -1,5 +1,14 @@
 #include "Animation.h"
 
+/// <summary>
+/// Animation.cpp
+/// 3Dアニメーション生成のソースファイル
+/// </summary>
+
+AnimationModel::~AnimationModel()
+{
+}
+
 void AnimationModel::Initialize(const std::string& filename, EulerTransform param, Camera* camera, uint32_t index_)
 {
 	modelData = texture_->LoadModelFile("resources", filename);
@@ -372,12 +381,6 @@ void AnimationModel::CreateIndexResource()
 
 	// 頂点データをリソースにコピー
 	std::memcpy(mappedIndex, modelData.indices.data(), sizeof(uint32_t) * modelData.indices.size());
-}
-
-void AnimationModel::CreateDirectionalResource()
-{
-	directionalLightResource = CreateBufferResource(dir_->GetDevice(), sizeof(DirectionalLight));
-	directionalLightResource->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightData));
 }
 
 void AnimationModel::CreateCameraResource(Camera* camera)
