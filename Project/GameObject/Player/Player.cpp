@@ -5,8 +5,8 @@ Player::~Player() {
 
 void Player::Initialize()
 {
-	transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,25.0f,0.0f} };
-	reticleTransform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{transform_.translate.x,transform_.translate.y,transform_.translate.z + 50.0f} };
+	transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,25.0f,-200.0f} };
+	reticleTransform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{transform_.translate.x,transform_.translate.y,transform_.translate.z + 40.0f} };
 
 	model_ = std::make_unique<Model>();
 	model_->Initialize("player.obj", transform_);

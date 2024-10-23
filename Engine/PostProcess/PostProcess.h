@@ -9,7 +9,8 @@ enum Type {
 	BOX,
 	GAUSSIAN,
 	HSV,
-	NOISE
+	NOISE,
+	RADIAL
 };
 
 struct NoiseParams {
@@ -18,6 +19,8 @@ struct NoiseParams {
 	float noiseStrength;
 	float vignetteLight;
 	float vignetteShape;
+	float blurStrength;
+	int sampleCount;
 };
 
 class PostProcess {
@@ -45,6 +48,18 @@ public:
 		noiseData_->vignetteShape = shape_;
 	}
 
+	// blurのGetterとSetter
+	float GetBlurStrength() { return noiseData_->blurStrength; }
+	void SetBlurStrength(float blurStrength_) { noiseData_->blurStrength = blurStrength_; }
+
+	int GetSampleCount() { return noiseData_->sampleCount; }
+	void SetSampleCount(int sampleCount_) { noiseData_->sampleCount = sampleCount_; }
+
+	void SetBlur(float blurStrength_, int sampleCount_) {
+		noiseData_->blurStrength = blurStrength_;
+		noiseData_->sampleCount = sampleCount_;
+	}
+
 	// noiseのGetterとSetter
 	float GetLineStrength() { return noiseData_->lineStrength; }
 	void SetLineStrength(float lineStrength_) { noiseData_->lineStrength = lineStrength_; }
@@ -65,6 +80,7 @@ private:
 	void CreateGaussianPSO();
 	void CreateHSVPSO();
 	void CreateNoisePSO();
+	void CreateRadialPSO();
 
 	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(Microsoft::WRL::ComPtr<ID3D12Device> device, size_t sizeInbytes);
 

@@ -79,6 +79,9 @@ private:
 	std::vector<std::unique_ptr<EnemyBullet>> enemyBullets_;
 	std::vector<std::unique_ptr<BossBullet>> bossBullets_;
   
+	std::unique_ptr<Sprite> ready_ = nullptr;
+	std::unique_ptr<Model> go_ = nullptr;
+
 	std::unique_ptr<Json> json_ = nullptr;
 	LevelData* levelData_ = nullptr;
   
@@ -89,6 +92,8 @@ private:
 	uint32_t enemyBulletTex;
 	uint32_t bossBulletTex;
 	uint32_t uv;
+	uint32_t ready;
+	uint32_t go;
 
 	Vector3 pos_ = { 0.0f, 25.0f, 500.0f };
 	Vector3 pos2_ = { 0.0f, 100.0f, 750.0f };
@@ -107,7 +112,12 @@ private:
 	bool isVignette_;
 	bool isNoise_;
 
-	float noiseStrength = 0.0f;
+	bool isApploach_;
+	int time_ = 0;
+	float blurStrength_ = 0.3f;
+	float noiseStrength;
+
+	EulerTransform transform_;
 
 	// 敵発生コマンド
 	std::stringstream enemyPopCommands;

@@ -2,10 +2,10 @@
 
 void PlayerBullet::Initialize(Vector3 pos, Vector3 velocity)
 {
-	transform = { {0.3f,0.3f,0.5f},{0.0f,0.0f,0.0f},{pos.x,pos.y,pos.z} };
+	transform = { {0.05f,0.05f,0.05f},{0.0f,0.0f,0.0f},{pos.x,pos.y,pos.z - 5.0f} };
 
 	model_ = std::make_unique<Model>();
-	model_->Initialize("cube.obj", transform);
+	model_->Initialize("misairu.obj", transform);
 
 	worldtransform_.scale = transform.scale;
 	worldtransform_.rotate = transform.rotate;
@@ -13,6 +13,12 @@ void PlayerBullet::Initialize(Vector3 pos, Vector3 velocity)
 	worldtransform_.UpdateMatrix();
 
 	velo = velocity;
+
+	// Y軸周り角度（Θy）
+	worldtransform_.rotate.y = std::atan2(velo.x, velo.z);
+
+	float velocityXZ = sqrt((velo.x * velo.x) + (velo.z * velo.z));
+	worldtransform_.rotate.x = std::atan2(-velo.y, velocityXZ);
 }
 
 void PlayerBullet::Update()

@@ -47,6 +47,7 @@
       <Filter>シェーダーファイル</Filter>
     </FxCompile>
     <FxCompile Include="resources\Shaders\Noise.PS.hlsl" />
+    <FxCompile Include="resources\Shaders\RadialBlur.PS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />

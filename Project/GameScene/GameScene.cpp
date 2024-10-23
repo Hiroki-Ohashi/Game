@@ -11,6 +11,7 @@ void GameScene::Initialize() {
 	postProcess_->Initialize(NOISE);
 	postProcess_->SetVignette(0.0f, 16.0f);
 	postProcess_->SetNoise(0.0f, 0.0f);
+	postProcess_->SetBlurStrength(0.0f);
 
 	// player
 	player_ = std::make_unique<Player>();
@@ -22,6 +23,15 @@ void GameScene::Initialize() {
 	boss_->SetPlayer(player_.get());
 	boss_->SetGameScene(this);
 
+	// ready
+	ready_ = std::make_unique<Sprite>();
+	ready_->Initialize(Vector2{ 200.0f, 25.0f }, Vector2{ 450.0, 150.0f }, 1.0f);
+
+	transform_ = { {10.0f,10.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,30.0f,-100.0f} };
+	go_ = std::make_unique<Model>();
+	go_->Initialize("board.obj", transform_);
+	go_->SetLight(false);
+
 	// skybox
 	skydome_ = std::make_unique<Skydome>();
 	skydome_->Initialize();
@@ -29,6 +39,8 @@ void GameScene::Initialize() {
 	enemyBulletTex = textureManager_->Load("resources/black.png");
 	bossBulletTex = textureManager_->Load("resources/white.png");
 	uv = textureManager_->Load("resources/map.png");
+	ready = textureManager_->Load("resources/ready.png");
+	go = textureManager_->Load("resources/go.png");
 
 	for (std::unique_ptr<Enemy>& enemy : enemys_) {
 		enemy->SetIsDead(false);
@@ -42,6 +54,10 @@ void GameScene::Initialize() {
 
 	isVignette_ = true;
 	isNoise_ = false;
+	isApploach_ = true;
+
+	camera_.cameraTransform.translate = { player_->GetPos().x, player_->GetPos().y + 3.0f,  player_->GetPos().z - 30.0f };
+	blurStrength_ = 0.3f;
 }
 
 void GameScene::Update(){
@@ -61,7 +77,9 @@ void GameScene::Update(){
 	}
 
 	if (isVignette_ == false) {
-		player_->Update();
+		if (isApploach_ == false) {
+			player_->Update();
+		}
 	}
 
 	if (player_->GetPos().z >= 500.0f) {
@@ -86,7 +104,6 @@ void GameScene::Update(){
 	}
 
 	json_->Update();
-	//camera_.cameraTransform = json_->GetCamera().cameraTransform;
   
 	for (std::unique_ptr<Enemy>& enemy : enemys_) {
 		enemy->Update();
@@ -127,13 +144,41 @@ void GameScene::Update(){
 		randY = 0;
 	}
 
-	camera_.cameraTransform.translate = { player_->GetPos().x + randX, player_->GetPos().y + 3.0f + randY,  player_->GetPos().z - 30.0f};
+	if (isVignette_ == false) {
+		if (isApploach_) {
+			camera_.cameraTransform.rotate.y += 0.035f;
 
-	// Y軸周り角度（Θy）
-	//camera_.cameraTransform.rotate.y = std::atan2(player_->GetVelocity().x, player_->GetVelocity().z);
+			EulerTransform origin = { {0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f},{player_->GetPos().x,player_->GetPos().y,player_->GetPos().z} };
+			// 追従対象からカメラまでのオフセット
+			Vector3 offset = { 0.0f, 3.0f, -30.0f };
+			// カメラの角度から回転行列を計算する
+			Matrix4x4 worldTransform = MakeRotateYMatrix(camera_.cameraTransform.rotate.y);
+			// オフセットをカメラの回転に合わせて回転させる
+			offset = TransformNormal(offset, worldTransform);
+			// 座標をコピーしてオフセット分ずらす
+			camera_.cameraTransform.translate.x = origin.translate.x + offset.x;
+			camera_.cameraTransform.translate.y = origin.translate.y + offset.y;
+			camera_.cameraTransform.translate.z = origin.translate.z + offset.z;
 
-	//float velocityXZ = sqrt((player_->GetVelocity().x * player_->GetVelocity().x) + (player_->GetVelocity().z * player_->GetVelocity().z));
-	//camera_.cameraTransform.rotate.x = std::atan2(-player_->GetVelocity().y, velocityXZ);
+			time_ += 1;
+
+			if (time_ >= 180) {
+				time_ = 0;
+				isApploach_ = false;
+				postProcess_->SetBlurStrength(blurStrength_);
+			}
+		}
+		else if (isApploach_ == false) {
+			camera_.cameraTransform.translate = { player_->GetPos().x + randX, player_->GetPos().y + 3.0f + randY,  player_->GetPos().z - 30.0f };
+
+			blurStrength_ -= 0.002f;
+			if (blurStrength_ <= 0.0f) {
+				blurStrength_ = 0.0f;
+			}
+
+			postProcess_->SetBlurStrength(blurStrength_);
+		}
+	}
 
 	if (boss_->IsDead() == true) {
 		isNoise_ = true;
@@ -180,6 +225,13 @@ void GameScene::Draw()
 		for (std::unique_ptr<BossBullet>& bullet : bossBullets_) {
 			bullet->Draw(&camera_, bossBulletTex);
 		}
+	}
+
+	if (isApploach_) {
+		ready_->Draw(ready);
+	}
+	else {
+		go_->Draw(&camera_, go);
 	}
 
 	player_->Draw(&camera_);
