@@ -7,6 +7,7 @@
 /// プレイヤー弾生成のヘッダーファイル
 /// </summary>
 
+// PlayerBulletクラス
 class PlayerBullet {
 public:
 	// 初期化処理

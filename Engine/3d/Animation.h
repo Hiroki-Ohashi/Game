@@ -11,6 +11,7 @@
 /// 3Dアニメーション生成のヘッダーファイル
 /// </summary>
 
+// Animationmodelクラス
 class AnimationModel {
 public:
 	// デストラクタ

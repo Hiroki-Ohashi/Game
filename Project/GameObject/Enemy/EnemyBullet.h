@@ -9,6 +9,7 @@ class Player;
 /// 敵弾生成のヘッダーファイル
 /// </summary>
 
+// EnemyBulletクラス
 class EnemyBullet {
 public:
 	// 初期化処理

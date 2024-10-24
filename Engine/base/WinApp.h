@@ -11,6 +11,7 @@
 /// Window生成のヘッダーファイル
 /// </summary>
 
+// WinAppクラス
 class WinApp {
 public:
 	// シングルトン

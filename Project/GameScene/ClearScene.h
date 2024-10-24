@@ -12,6 +12,7 @@
 /// クリアシーンのヘッダーファイル
 /// </summary>
 
+// ClearSceneクラス
 class ClearScene : public IScene {
 public:
 	// デストラクタ

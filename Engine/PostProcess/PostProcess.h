@@ -29,6 +29,7 @@ struct NoiseParams {
 	int sampleCount;
 };
 
+// postProcessクラス
 class PostProcess {
 public:
 	// 初期化処理

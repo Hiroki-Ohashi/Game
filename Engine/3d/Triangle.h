@@ -18,6 +18,7 @@
 /// 3Dの三角形生成のヘッダーファイル
 /// </summary>
 
+// Triangleクラス
 class Triangle {
 public:
 

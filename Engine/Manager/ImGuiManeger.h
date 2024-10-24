@@ -10,6 +10,7 @@ class WinApp;
 /// ImGui生成のヘッダーファイル
 /// </summary>
 
+// ImGuiManagerクラス
 class ImGuiManeger {
 public:
 	// シングルトン化

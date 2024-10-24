@@ -8,6 +8,7 @@
 /// カメラ生成のヘッダーファイル
 /// </summary>
 
+// Cameraクラス
 struct Camera {
 	// 初期化処理
 	void Initialize();

@@ -12,6 +12,7 @@
 /// Json生成のソースファイル
 /// </summary>
 
+// Jsonクラス
 class Json {
 public:
 	// Json読み込み

@@ -36,6 +36,7 @@
 /// ゲームシーンのヘッダーファイル
 /// </summary>
 
+// GameSceneクラス
 class GameScene : public IScene {
 public:
 	// デストラクタ

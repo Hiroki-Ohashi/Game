@@ -17,6 +17,7 @@
 #include "DirectXCommon.h"
 #include "d3dx12.h"
 
+// TextureManagerクラス
 class TextureManager {
 public:
 	// シングルトン

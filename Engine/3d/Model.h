@@ -23,6 +23,7 @@
 /// 3Dのオブジェクト生成のヘッダーファイル
 /// </summary>
 
+// Modelクラス
 class Model {
 public:
 	// デストラクタ

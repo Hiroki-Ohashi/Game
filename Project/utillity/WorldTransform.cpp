@@ -1,5 +1,10 @@
 #include "WorldTransform.h"
 
+/// <summary>
+/// WorldTransform.cpp
+/// ワールド座標生成のソースファイル
+/// </summary>
+
 void WorldTransform::Initialize() {
 
 }

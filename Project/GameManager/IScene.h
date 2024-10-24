@@ -13,6 +13,7 @@ enum SCENE {
 /// 現在Sceneのヘッダーファイル
 /// </summary>
 
+// ISceneクラス
 class IScene {
 protected:
 	// シーン番号

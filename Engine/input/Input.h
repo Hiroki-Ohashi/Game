@@ -16,6 +16,7 @@
 /// 入力処理のヘッダーファイル
 /// </summary>
 
+// inputクラス
 class Input {
 public:
 	// 入力sトラクタ

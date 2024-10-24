@@ -19,6 +19,7 @@
 /// 球体生成のヘッダーファイル
 /// </summary>
 
+// Sphereクラス
 class Sphere {
 public:
 	// デストラクタ

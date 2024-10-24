@@ -9,6 +9,7 @@ class Player;
 /// ボス弾生成のヘッダーファイル
 /// </summary>
 
+// BossBulletクラス
 class BossBullet {
 public:
 	// 初期化処理

@@ -7,6 +7,7 @@
 /// Skydome生成のヘッダーファイル
 /// </summary>
 
+// SkyDomeクラス
 class Skydome {
 public:
 	// 初期化処理

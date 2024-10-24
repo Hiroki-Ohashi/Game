@@ -8,6 +8,7 @@
 /// SkyBox生成のヘッダーファイル
 /// </summary>
 
+// Skyboxクラス
 class SkyBox {
 public:
 	// 初期化処理

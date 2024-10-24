@@ -7,6 +7,7 @@
 /// 高原生成のヘッダーファイル
 /// </summary>
 
+// Lightクラス
 class Light {
 public:
 	// シングルトン

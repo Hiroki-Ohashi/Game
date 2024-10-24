@@ -13,6 +13,7 @@ class GameScene;
 /// 敵生成のヘッダーファイル
 /// </summary>
 
+// Enemyクラス
 class Enemy {
 public:
 	// 初期化処理

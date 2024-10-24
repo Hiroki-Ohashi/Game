@@ -17,6 +17,7 @@
 /// 2Dのスプライト生成のヘッダーファイル
 /// </summary>
 
+// Spriteクラス
 class Sprite {
 public:
 	// デストラクタ

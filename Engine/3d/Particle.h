@@ -20,6 +20,7 @@
 /// パーティクル生成のヘッダーファイル
 /// </summary>
 
+// Particleクラス
 class Particles {
 public:
 	// デストラクタ

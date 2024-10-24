@@ -13,6 +13,7 @@
 class Player;
 class GameScene;
 
+// Bossクラス
 class Boss {
 public:
 	// 初期化処理

@@ -15,6 +15,7 @@
 /// logの関数をまとめたヘッダーファイル
 /// </summary>
 
+// Convertクラス
 class Convert {
 public:
 	// 文字コンバート

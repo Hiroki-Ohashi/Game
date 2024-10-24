@@ -9,7 +9,7 @@
 /// player生成のヘッダーファイル
 /// </summary>
 
-
+// Playerクラス
 class Player {
 public:
 	// デストラクタ

@@ -31,6 +31,7 @@
 /// クリアシーンのヘッダーファイル
 /// </summary>
 
+// TitleSceneクラス
 class TitleScene : public IScene {
 public:
 	// デストラクタ

@@ -20,6 +20,7 @@
 /// Mesh生成のソースファイル
 /// </summary>
 
+//Meshクラス
 class Mesh {
 public:
 	// シングルトン

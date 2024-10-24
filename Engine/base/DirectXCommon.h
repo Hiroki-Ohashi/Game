@@ -25,6 +25,7 @@
 /// DirectXのヘッダーファイル
 /// </summary>
 
+// DirectXCommonクラス
 class DirectXCommon {
 public:
 	// シングルトン化

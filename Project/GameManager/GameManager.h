@@ -17,6 +17,7 @@
 /// Sceneのマネージャーのヘッダーファイル
 /// </summary>
 
+// GameManagerクラス
 class GameManager {
 public:
 	// コンストラクタ
