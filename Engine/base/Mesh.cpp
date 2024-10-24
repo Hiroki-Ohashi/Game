@@ -1,5 +1,10 @@
 #include "Mesh.h"
 
+/// <summary>
+/// Mesh.cpp
+/// メッシュ生成のソースファイル
+/// </summary>
+
 Mesh* Mesh::GetInsTance()
 {
 	static Mesh instance;

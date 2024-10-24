@@ -1,5 +1,10 @@
 #include "PostProcess.h"
 
+/// <summary>
+/// postProcess.cpp
+/// ポストエフェクトのソースファイル
+/// </summary>
+
 void PostProcess::Initialize(Type type)
 {
 	if (type == NONE) {

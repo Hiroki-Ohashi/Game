@@ -3,18 +3,25 @@
 #include "MathFunction.h"
 #include "WinApp.h"
 
+/// <summary>
+/// Camera.h
+/// カメラ生成のヘッダーファイル
+/// </summary>
+
 struct Camera {
+	// 初期化処理
 	void Initialize();
-
+	// 更新処理
 	void Update();
-
+	// 描画処理
 	void Draw();
 
+	// シングルトン呼び出し
 	static WinApp* winapp_;
 
-	Matrix4x4 worldMatrix = {};
-
+	// cameraPamameter
 	EulerTransform cameraTransform;
+	Matrix4x4 worldMatrix = {};
 	Matrix4x4 cameraMatrix;
 	Matrix4x4 viewMatrix;
 	Matrix4x4 projectionMatrix;

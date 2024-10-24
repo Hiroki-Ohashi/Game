@@ -2,6 +2,11 @@
 #include <Player/Player.h>
 #include <cmath>
 
+/// <summary>
+/// EnemyBullet.cpp
+/// 弾生成のソースファイル
+/// </summary>
+
 void EnemyBullet::Initialize(Vector3 pos, Vector3 velocity)
 {
 	transform = { {0.3f,0.3f,0.5f},{0.0f,0.0f,0.0f},{pos.x,pos.y,pos.z} };

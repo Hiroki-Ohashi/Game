@@ -1,5 +1,10 @@
 #include "Skydome.h"
 
+/// <summary>
+/// Skydome.h
+/// Skydome生成のソースファイル
+/// </summary>
+
 void Skydome::Initialize()
 {
 	transform = { { 10000.0f,10000.0f,10000.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };

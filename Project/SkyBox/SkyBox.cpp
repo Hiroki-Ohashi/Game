@@ -1,5 +1,10 @@
 #include "SkyBox.h"
 
+/// <summary>
+/// SkyBox.h
+/// Skybox生成のソースファイル
+/// </summary>
+
 void SkyBox::Initialize()
 {
 	SkyBox::CreatePSO();

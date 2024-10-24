@@ -1,5 +1,10 @@
 #include "PlayerBullet.h"
 
+/// <summary>
+/// PlayerBullet.cpp
+/// プレイヤー弾生成のソースファイル
+/// </summary>
+
 void PlayerBullet::Initialize(Vector3 pos, Vector3 velocity)
 {
 	transform = { {0.05f,0.05f,0.05f},{0.0f,0.0f,0.0f},{pos.x,pos.y,pos.z - 5.0f} };

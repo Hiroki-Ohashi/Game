@@ -2,6 +2,11 @@
 
 #pragma comment(lib, "winmm.lib")
 
+/// <summary>
+/// WinApp.cpp
+/// ウインドウ生成のソースファイル
+/// </summary>
+
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPram);
 
 // ウィンドウプロシージャ

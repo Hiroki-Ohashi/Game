@@ -1,5 +1,10 @@
 #include "TextureManager.h"
 
+/// <summary>
+/// Texture.cpp
+/// テクスチャ生成のソースファイル
+/// </summary>
+
 TextureManager* TextureManager::GetInstance()
 {
 	static TextureManager instance;

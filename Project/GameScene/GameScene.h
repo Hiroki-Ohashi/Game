@@ -31,8 +31,14 @@
 #pragma comment(lib, "dxguid.lib")
 #pragma comment(lib, "dxcompiler.lib")
 
+/// <summary>
+/// GameScene.h
+/// ゲームシーンのヘッダーファイル
+/// </summary>
+
 class GameScene : public IScene {
 public:
+	// デストラクタ
 	~GameScene();
 
 	// 初期化
@@ -46,7 +52,7 @@ public:
   
 	// 解放
 	void Release();
-  
+	// 当たり判定
 	void CheckAllCollisions();
 
 	/// <summary>
@@ -59,14 +65,20 @@ public:
 	/// </summary>
 	void UpdateEnemyPopCommands();
 
+	// 敵生成
 	void EnemySpown(Vector3 pos);
+
+	// リスト登録
 	void AddEnemyBullet(std::unique_ptr<EnemyBullet> enemyBullet);
 	void AddBossBullet(std::unique_ptr<BossBullet> bossBullet);
 	void AddEnemy(std::unique_ptr<Enemy> enemy);
 
 private:
+	// カメラ
 	Camera camera_;
+	// シングルトン呼び出し
 	TextureManager* textureManager_ = TextureManager::GetInstance();
+	// postProcess
 	std::unique_ptr<PostProcess> postProcess_ = nullptr;
 
 	// プレイヤー
@@ -78,10 +90,12 @@ private:
 	// 敵弾
 	std::vector<std::unique_ptr<EnemyBullet>> enemyBullets_;
 	std::vector<std::unique_ptr<BossBullet>> bossBullets_;
-  
+
+	// スタート演出Model
 	std::unique_ptr<Sprite> ready_ = nullptr;
 	std::unique_ptr<Model> go_ = nullptr;
 
+	// json
 	std::unique_ptr<Json> json_ = nullptr;
 	LevelData* levelData_ = nullptr;
   
@@ -95,12 +109,13 @@ private:
 	uint32_t ready;
 	uint32_t go;
 
+	// bossParam
 	Vector3 pos_ = { 0.0f, 25.0f, 500.0f };
 	Vector3 pos2_ = { 0.0f, 100.0f, 750.0f };
 
+	// シェイク
 	int randX = 0;
 	int randY = 0;
-
 	int32_t shakeTimer = 0;
 	bool isShake = false;
 
@@ -109,14 +124,15 @@ private:
 	// 待機フラグ
 	bool isWait_;
 
+	// シーン遷移
 	bool isVignette_;
 	bool isNoise_;
 
+	// スタート演出
 	bool isApploach_;
 	int time_ = 0;
 	float blurStrength_ = 0.3f;
 	float noiseStrength;
-
 	EulerTransform transform_;
 
 	// 敵発生コマンド

@@ -2,6 +2,11 @@
 #include "Player/Player.h"
 #include "GameScene.h"
 
+/// <summary>
+/// Boss.cpp
+/// ボス生成のソースファイル
+/// </summary>
+
 void Boss::Initialize(Vector3 pos)
 {
 	transform_ = { {15.0f,15.0f,15.0f},{0.0f,0.0f,0.0f},{pos.x,pos.y,pos.z} };

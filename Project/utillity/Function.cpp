@@ -2,6 +2,11 @@
 #include <iostream>
 #include <fstream>
 
+/// <summary>
+/// Funcsion.cpp
+/// logの関数をまとめたソースファイル
+/// </summary>
+
 // string -> wstring
 std::wstring Convert::ConvertString(const std::string& str)
 {

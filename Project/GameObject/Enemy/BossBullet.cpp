@@ -1,6 +1,11 @@
 #include "BossBullet.h"
 #include <Player/Player.h>
 
+/// <summary>
+/// BossBullet.cpp
+/// ボス弾生成のソースファイル
+/// </summary>
+
 void BossBullet::Initialize(Vector3 pos, Vector3 velocity)
 {
 	transform = { {1.0f,1.0f,1.5f},{0.0f,0.0f,0.0f},{pos.x,pos.y,pos.z} };

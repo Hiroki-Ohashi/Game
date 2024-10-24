@@ -1,6 +1,11 @@
 #include "Camera.h"
 #include "imgui.h"
 
+/// <summary>
+/// Camera.cpp
+/// カメラ生成のソースファイル
+/// </summary>
+
 void Camera::Initialize(){
 	cameraTransform = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -50.0f} };
 }

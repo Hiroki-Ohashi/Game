@@ -10,14 +10,20 @@
 #include <dxcapi.h>
 #include "DirectXTex.h"
 
+/// <summary>
+/// Funcsion.ｈ
+/// logの関数をまとめたヘッダーファイル
+/// </summary>
+
 class Convert {
 public:
+	// 文字コンバート
 	static std::wstring ConvertString(const std::string& str);
-
+	// 文字変換
 	static std::string ConvertString(const std::wstring& str);
-
+	// ログ生成
 	static void Log(const std::string& message);
-
+	// シェーダーコンパイル
 	static IDxcBlob* CompileShader(
 		// CompilerするShaderファイルへのパス
 		const std::wstring& filePath,

@@ -1,6 +1,11 @@
 #include "GameScene.h"
 #include <time.h>
 
+/// <summary>
+/// GameScene.cpp
+/// ゲームシーンのソースファイル
+/// </summary>
+
 GameScene::~GameScene(){
 }
 

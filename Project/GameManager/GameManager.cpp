@@ -1,5 +1,10 @@
 #include "GameManager.h"
 
+/// <summary>
+/// GameManager.cpp
+/// Sceneのマネージャーのソースファイル
+/// </summary>
+
 GameManager::GameManager()
 {
 }

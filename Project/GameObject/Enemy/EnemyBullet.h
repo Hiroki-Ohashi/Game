@@ -4,19 +4,30 @@
 
 class Player;
 
+/// <summary>
+/// EnemyBullet.h
+/// 敵弾生成のヘッダーファイル
+/// </summary>
+
 class EnemyBullet {
 public:
+	// 初期化処理
 	void Initialize(Vector3 pos, Vector3 velocity);
+	// 更新処理
 	void Update();
+	// 描画処理
 	void Draw(Camera* camera, uint32_t index);
-
+	// 当たり判定処理
 	void OnCollision() { isDead_ = true; }
-
+	// 死亡判定
 	bool IsDead() const { return isDead_; }
+
+	// Getter
 	Vector3 GetPos() { return worldtransform_.translate; }
+	// Setter
 	void SetPlayer(Player* player) { player_ = player; }
 private:
-
+	// model
 	std::unique_ptr<Model> model_;
 	EulerTransform transform;
 	WorldTransform worldtransform_;

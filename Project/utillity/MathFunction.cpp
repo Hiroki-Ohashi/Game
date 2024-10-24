@@ -1,5 +1,10 @@
 #include "MathFunction.h"
 
+/// <summary>
+/// MathFuncsion.cpp
+/// 数学関数をまとめたソースファイル
+/// </summary>
+
 float Dot(const Vector3& v1, const Vector3& v2)
 {
 	float result;

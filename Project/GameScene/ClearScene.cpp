@@ -1,5 +1,10 @@
 #include "ClearScene.h"
 
+/// <summary>
+/// ClearScene.cpp
+/// クリアシーンのソースファイル
+/// </summary>
+
 ClearScene::~ClearScene()
 {
 }

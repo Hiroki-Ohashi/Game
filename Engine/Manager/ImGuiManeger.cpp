@@ -8,6 +8,11 @@
 #include "imgui_impl_dx12.h"
 #include "imgui_impl_win32.h"
 
+/// <summary>
+/// ImGuiManager.cpp
+/// ImGui生成のソースファイル
+/// </summary>
+
 ImGuiManeger* ImGuiManeger::GetInstance()
 {
 	static ImGuiManeger instance;

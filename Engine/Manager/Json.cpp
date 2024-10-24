@@ -1,6 +1,11 @@
 #include "Json.h"
 #include <numbers>
 
+/// <summary>
+/// Json.cpp
+/// Json生成のソースファイル
+/// </summary>
+
 LevelData* Json::LoadJson(const std::string& fileName)
 {
 	//camera_.Initialize();

@@ -11,10 +11,14 @@
 #pragma comment(lib,"xinput.lib")
 #pragma comment(lib, "dxguid.lib")
 
+/// <summary>
+/// Input.h
+/// 入力処理のヘッダーファイル
+/// </summary>
 
 class Input {
 public:
-
+	// 入力sトラクタ
 	struct ButtonState {
 		bool isPressed;
 		bool wasPressed;
@@ -22,6 +26,7 @@ public:
 		ButtonState() : isPressed(false), wasPressed(false) {}
 	};
 
+	// シングルトン
 	static Input* GetInsTance();
 
 	// 初期化

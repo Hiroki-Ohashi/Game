@@ -6,13 +6,19 @@
 #include "imgui_impl_dx12.h"
 #include "imgui_impl_win32.h"
 
+/// <summary>
+/// WinApp.h
+/// Window生成のヘッダーファイル
+/// </summary>
+
 class WinApp {
 public:
-
+	// シングルトン
 	static WinApp* GetInsTance();
-
+	// 初期化
 	void Initialize(const wchar_t* title);
 
+	// Getter
 	WNDCLASS GetHInstance() { return wc; }
 	static HWND GetHwnd() { return hwnd; }
 	static const int32_t GetKClientWidth() { return kClientWidth; }

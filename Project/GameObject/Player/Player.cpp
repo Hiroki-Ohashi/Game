@@ -1,5 +1,11 @@
 #include "Player.h"
 
+/// <summary>
+/// Player.cpp
+/// プレイヤー生成のソースファイル
+/// </summary>
+
+
 Player::~Player() {
 }
 

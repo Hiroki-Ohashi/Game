@@ -1,5 +1,10 @@
 #include "Light.h"
 
+/// <summary>
+/// Light.h
+/// 光源生成のヘッダーファイル
+/// </summary>
+
 Light* Light::GetInstance()
 {
 	static Light instance;

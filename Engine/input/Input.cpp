@@ -1,5 +1,10 @@
 #include "Input.h"
 
+/// <summary>
+/// Input.cpp
+/// 入力処理のソースファイル
+/// </summary>
+
 Input* Input::GetInsTance()
 {
 	static Input instance;

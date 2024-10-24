@@ -12,17 +12,24 @@
 #include "imgui.h"
 #include "Light.h"
 
+/// <summary>
+/// GameManager.h
+/// Sceneのマネージャーのヘッダーファイル
+/// </summary>
 
 class GameManager {
 public:
+	// コンストラクタ
 	GameManager();
+	// デストラクタ
 	~GameManager();
-
+	// シングルトン
 	static GameManager* GetInsTance();
-
+	// main
 	void Run();
 
 private:
+	// シングルトン呼び出し
 	WinApp* winapp = nullptr;
 	DirectXCommon* directX = nullptr;
 	Mesh* mesh = nullptr;
@@ -34,6 +41,7 @@ private:
 	// シーンを保持
 	std::unique_ptr<IScene> sceneArr_[3];
 
+	// シーン管理
 	int currentSceneNo_ = TITLE;
 	int prvSceneNo_ = 0;
 	int sceneNo = 0;

@@ -1,5 +1,10 @@
 #include "TitleScene.h"
 
+/// <summary>
+/// TileScene.cpp
+/// タイトルシーンのソースファイル
+/// </summary>
+
 TitleScene::~TitleScene()
 {
 }
