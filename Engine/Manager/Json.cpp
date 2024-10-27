@@ -11,7 +11,7 @@ LevelData* Json::LoadJson(const std::string& fileName)
 	//camera_.Initialize();
 
 	// 連結してフルパスを得る
-	const std::string fullpath = "resources/" + fileName + ".json";
+	const std::string fullpath = "resources/Json/" + fileName + ".json";
 
 	// ファイルストリーム
 	std::ifstream file;

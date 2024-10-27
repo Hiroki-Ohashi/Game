@@ -7,6 +7,7 @@
 #include "TitleScene.h"
 #include "GameScene.h"
 #include <ClearScene.h>
+#include "OverScene.h"
 
 #include "ImGuiManeger.h"
 #include "imgui.h"
@@ -40,7 +41,7 @@ private:
 
 
 	// シーンを保持
-	std::unique_ptr<IScene> sceneArr_[3];
+	std::unique_ptr<IScene> sceneArr_[4];
 
 	// シーン管理
 	int currentSceneNo_ = TITLE;

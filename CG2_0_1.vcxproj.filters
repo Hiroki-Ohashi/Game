@@ -174,6 +174,7 @@
     <ClCompile Include="Project\GameScene\ClearScene.cpp">
       <Filter>ソースファイル\Project\GameScene</Filter>
     </ClCompile>
+    <ClCompile Include="Project\GameScene\OverScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="externals\imgui\imconfig.h">
@@ -305,6 +306,7 @@
     <ClInclude Include="Project\GameScene\ClearScene.h">
       <Filter>ヘッダーファイル\Project\GameScene</Filter>
     </ClInclude>
+    <ClInclude Include="Project\GameScene\OverScene.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\Shaders\Fullscreen.hlsli">

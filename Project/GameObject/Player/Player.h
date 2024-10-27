@@ -24,13 +24,18 @@ public:
 	void BulletDraw(Camera* camera_);
 
 	// 当たり判定処理
-	void OnCollision() { isHit_ = true; }
+	void OnCollision() { 
+		isHit_ = true; 
+		HP -= 1;
+	}
 
 	// Getter
 	Vector3 GetPos() { return worldtransform_.translate; }
 	Vector3 GetReticlePos() { return reticleWorldtransform_.translate; }
 	Vector3 Get3DWorldPosition();
 	Vector3 GetVelocity() { return velocity_; }
+	int32_t GetHP() { return HP; }
+
 	// 弾リストを取得
 	 std::vector<std::unique_ptr<PlayerBullet>>& GetBullets() { return bullets_; }
 private:
@@ -70,4 +75,7 @@ private:
 	// 条件
 	bool isLeft;
 	bool isRight;
+
+	// HP
+	int32_t HP = 5;
 };

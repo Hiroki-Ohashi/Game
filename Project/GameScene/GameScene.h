@@ -127,7 +127,8 @@ private:
 
 	// シーン遷移
 	bool isVignette_;
-	bool isNoise_;
+	bool isGameClear_;
+	bool isGameOver_;
 
 	// スタート演出
 	bool isApploach_;

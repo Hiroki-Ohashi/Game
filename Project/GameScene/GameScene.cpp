@@ -55,14 +55,16 @@ void GameScene::Initialize() {
   
     json_ = std::make_unique<Json>();
 	levelData_ = json_->LoadJson("level");
-	json_->Adoption(levelData_, false);
+	json_->Adoption(levelData_, true);
 
 	isVignette_ = true;
-	isNoise_ = false;
-	isApploach_ = true;
+	isGameClear_ = false;
+	isApploach_ = false;
+	isGameOver_ = false;
 
 	camera_.cameraTransform.translate = { player_->GetPos().x, player_->GetPos().y + 3.0f,  player_->GetPos().z - 30.0f };
 	blurStrength_ = 0.3f;
+	noiseStrength = 0.0f;
 }
 
 void GameScene::Update(){
@@ -135,7 +137,7 @@ void GameScene::Update(){
 
 	if (isShake) {
 		shakeTimer -= 1;
-		if (shakeTimer >= 30) {
+		if (shakeTimer >= 10) {
 			randX = rand() % 2 - 1;
 			randY = rand() % 2 - 1;
 		}
@@ -186,16 +188,29 @@ void GameScene::Update(){
 	}
 
 	if (boss_->IsDead() == true) {
-		isNoise_ = true;
+		isGameClear_ = true;
 	}
 
-	if (isNoise_) {
+	if (player_->GetHP() <= 0) {
+		isGameOver_ = true;
+	}
+
+	if (isGameOver_) {
+		if (noiseStrength <= 100.0f) {
+			noiseStrength += 1.0f;
+		}
+
+		if (postProcess_->GetNoiseStrength() >= 100.0f) {
+			sceneNo = OVER;
+		}
+	}
+
+	if (isGameClear_) {
 		if (noiseStrength <= 100.0f) {
 			noiseStrength += 1.0f;
 		}
 		
 		if(postProcess_->GetNoiseStrength() >= 100.0f){
-			noiseStrength = 0.0f;
 			sceneNo = CLEAR;
 		}
 	}
@@ -292,6 +307,8 @@ void GameScene::CheckAllCollisions()
 
 			// 自キャラの衝突時コールバックを呼び出す
 			player_->OnCollision();
+			noiseStrength += 1.0f;
+			postProcess_->SetNoiseStrength(noiseStrength);
 			// 敵弾の衝突時コールバックを呼び出す
 			bullet->OnCollision();
 		}

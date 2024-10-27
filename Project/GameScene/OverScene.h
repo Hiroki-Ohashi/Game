@@ -1,0 +1,80 @@
+#pragma once
+#include "IScene.h"
+#include <TextureManager.h>
+#include <Camera.h>
+#include <Sprite.h>
+#include <PostProcess.h>
+#include <Skydome.h>
+#include <Json.h>
+
+/// <summary>
+/// OverScene.h
+/// クリアシーンのヘッダーファイル
+/// </summary>
+
+// ClearSceneクラス
+class OverScene : public IScene {
+public:
+	// デストラクタ
+	~OverScene();
+
+	// 初期化処理
+	void Initialize() override;
+	// 更新処理
+	void Update() override;
+	// 描画処理
+	void Draw() override;
+	void PostDraw() override;
+
+private:
+	// カメラ
+	Camera camera_;
+	// シングルトン呼び出し
+	TextureManager* textureManager_ = TextureManager::GetInstance();
+	// postProcess
+	std::unique_ptr<PostProcess> postProcess_ = nullptr;
+
+	// Sprite
+	std::unique_ptr<Sprite> gekitui_ = nullptr;
+	std::unique_ptr<Sprite> sareta_ = nullptr;
+	std::unique_ptr<Sprite> sentaku_ = nullptr;
+
+	// json
+	std::unique_ptr<Json> json_ = nullptr;
+	LevelData* levelData_ = nullptr;
+
+	std::unique_ptr<Json> jsonObject_ = nullptr;
+	LevelData* levelDataObject_ = nullptr;
+
+	std::unique_ptr<Model> yuka_ = nullptr;
+
+private:
+	// テクスチャ
+	uint32_t gekitui;
+	uint32_t sareta;
+
+	uint32_t sentaku;
+	uint32_t retry;
+	uint32_t title;
+
+	uint32_t yuka;
+	uint32_t player;
+
+	// param
+	EulerTransform transform_;
+
+	// cameraSpeed
+	float cameraSpeedX = 0.0001f;
+	float cameraSpeedY = 0.0002f;
+
+	// scene
+	uint32_t scenePrev;
+	float noiseStrength = 100.0f;
+
+	// タイマー
+	uint32_t timer;
+	bool blinking;
+
+	// ビネット
+	bool isVignette_;
+};
