@@ -12,4 +12,4 @@ int IScene::GetSceneNo()
 	return sceneNo;
 }
 
-int IScene::sceneNo = OVER;
+int IScene::sceneNo = TITLE;
