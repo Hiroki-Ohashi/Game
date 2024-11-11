@@ -70,7 +70,14 @@ struct VertexData {
 };
 
 // ObjectData
-struct ObjectData {
+//struct ObjectData {
+//	Vector3 translation;
+//	Vector3 rotation;
+//	Vector3 scaling;
+//};
+
+// EnemyData
+struct EnemyData {
 	Vector3 translation;
 	Vector3 rotation;
 	Vector3 scaling;
@@ -86,7 +93,15 @@ struct LevelData{
 		Vector3 scaling;
 	};
 
+	struct EnemyData {
+		std::string filename;
+		Vector3 translation;
+		Vector3 rotation;
+		Vector3 scaling;
+	};
+
 	std::vector<ObjectData> objects;
+	std::vector<EnemyData> enemys;
 };
 
 // Material

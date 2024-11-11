@@ -16,11 +16,14 @@ void Enemy::Initialize(Vector3 pos)
 
 	isDead_ = false;
 
-	enemyTex = textureManager_->Load("resources/black.png");
+	enemyTex = textureManager_->Load("resources/white.png");
+
+	attackTimer = kFireInterval;
 }
 
 void Enemy::Update()
 {
+	worldtransform_.UpdateMatrix();
 
 	attackTimer--;
 
@@ -28,7 +31,9 @@ void Enemy::Update()
 
 		if (isDead_ == false) {
 			// 攻撃処理
-			Attack();
+			if (player_->GetPos().z - worldtransform_.translate.z <= 50.0f) {
+				Attack();
+			}
 		}
 
 		// 発射タイマーを初期化
@@ -54,7 +59,7 @@ void Enemy::Draw(Camera* camera)
 
 void Enemy::Attack()
 {
-	assert(player_);
+	if (player_ == nullptr || gameScene_ == nullptr) return;
 
 	Vector3 end = player_->GetPos();
 	Vector3 start = transform_.translate;

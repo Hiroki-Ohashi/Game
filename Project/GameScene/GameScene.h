@@ -112,7 +112,7 @@ private:
 
 	// bossParam
 	Vector3 pos_ = { 0.0f, 25.0f, 500.0f };
-	Vector3 pos2_ = { 0.0f, 100.0f, 750.0f };
+	Vector3 pos2_ = { 0.0f, 100.0f, 1800.0f };
 
 	// シェイク
 	int randX = 0;

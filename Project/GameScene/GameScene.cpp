@@ -42,16 +42,16 @@ void GameScene::Initialize() {
 	skydome_->Initialize();
 
 	enemyBulletTex = textureManager_->Load("resources/black.png");
-	bossBulletTex = textureManager_->Load("resources/white.png");
+	bossBulletTex = textureManager_->Load("resources/red.png");
 	uv = textureManager_->Load("resources/map.png");
 	ready = textureManager_->Load("resources/ready.png");
 	go = textureManager_->Load("resources/go.png");
 
+	LoadEnemyPopData();
+
 	for (std::unique_ptr<Enemy>& enemy : enemys_) {
 		enemy->SetIsDead(false);
 	}
-
-	LoadEnemyPopData();
   
     json_ = std::make_unique<Json>();
 	levelData_ = json_->LoadJson("level");
@@ -62,7 +62,7 @@ void GameScene::Initialize() {
 	isApploach_ = true;
 	isGameOver_ = false;
 
-	camera_.cameraTransform.translate = { player_->GetPos().x, player_->GetPos().y + 3.0f,  player_->GetPos().z - 30.0f };
+	camera_.cameraTransform.translate = { player_->GetPos().x, player_->GetPos().y + 3.0f,  player_->GetPos().z - 20.0f };
 	blurStrength_ = 0.3f;
 	noiseStrength = 0.0f;
 }
@@ -74,6 +74,8 @@ void GameScene::Update(){
 	camera_.Update();
 
 	postProcess_->NoiseUpdate(0.1f);
+
+	json_->Update();
 
 	if (isVignette_) {
 		postProcess_->VignetteFadeOut(0.1f, 0.1f, 16.0f, 0.0f);
@@ -89,7 +91,7 @@ void GameScene::Update(){
 		}
 	}
 
-	if (player_->GetPos().z >= 500.0f) {
+	if (player_->GetPos().z >= 1600.0f) {
 
 		boss_->Update();
 
@@ -109,10 +111,12 @@ void GameScene::Update(){
 			bossBullets_.end()
 		);
 	}
-
-	json_->Update();
   
 	for (std::unique_ptr<Enemy>& enemy : enemys_) {
+		// 敵キャラに自キャラのアドレスを渡す
+		enemy->SetPlayer(player_.get());
+		// 敵キャラにゲームシーンを渡す
+		enemy->SetGameScene(this);
 		enemy->Update();
 	}
 
@@ -157,7 +161,7 @@ void GameScene::Update(){
 
 			EulerTransform origin = { {0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f},{player_->GetPos().x,player_->GetPos().y,player_->GetPos().z} };
 			// 追従対象からカメラまでのオフセット
-			Vector3 offset = { 0.0f, 3.0f, -30.0f };
+			Vector3 offset = { 0.0f, 3.0f, -20.0f };
 			// カメラの角度から回転行列を計算する
 			Matrix4x4 worldTransform = MakeRotateYMatrix(camera_.cameraTransform.rotate.y);
 			// オフセットをカメラの回転に合わせて回転させる
@@ -176,7 +180,7 @@ void GameScene::Update(){
 			}
 		}
 		else if (isApploach_ == false) {
-			camera_.cameraTransform.translate = { player_->GetPos().x + randX, player_->GetPos().y + 3.0f + randY,  player_->GetPos().z - 30.0f };
+			camera_.cameraTransform.translate = { player_->GetPos().x + randX, player_->GetPos().y + 3.0f + randY,  player_->GetPos().z - 20.0f };
 
 			blurStrength_ -= 0.002f;
 			if (blurStrength_ <= 0.0f) {
@@ -234,10 +238,10 @@ void GameScene::Draw()
 
 	// 弾描画
 	for (std::unique_ptr<EnemyBullet>& bullet : enemyBullets_) {
-		bullet->Draw(&camera_, enemyBulletTex);
+		bullet->Draw(&camera_, bossBulletTex);
 	}
 
-	if (player_->GetPos().z >= 500.0f) {
+	if (player_->GetPos().z >= 1600.0f) {
 
 		boss_->Draw(&camera_);
 
@@ -340,8 +344,8 @@ void GameScene::CheckAllCollisions()
 			float e2pBY = (posB.y - posA.y) * (posB.y - posA.y);
 			float e2pBZ = (posB.z - posA.z) * (posB.z - posA.z);
 
-			float eRadius = 1.0f;
-			float pBRadius = 1.0f;
+			float eRadius = 2.0f;
+			float pBRadius = 2.0f;
 
 			float L = (eRadius + pBRadius);
 
@@ -417,7 +421,7 @@ void GameScene::CheckAllCollisions()
 
 		if (p2eBX + p2eBY + p2eBZ <= L) {
 			// 自キャラの衝突時コールバックを呼び出す
-			if (player_->GetPos().z >= 500.0f) {
+			if (player_->GetPos().z >= 1600.0f) {
 				boss_->OnCollision();
 			}
 			// 敵弾の衝突時コールバックを呼び出す

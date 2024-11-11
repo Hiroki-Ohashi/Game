@@ -12,7 +12,7 @@ Player::~Player() {
 void Player::Initialize()
 {
 	transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,25.0f,-200.0f} };
-	reticleTransform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{transform_.translate.x,transform_.translate.y,transform_.translate.z + 40.0f} };
+	reticleTransform_ = { {0.5f,0.5f,0.5f},{0.0f,0.0f,0.0f},{transform_.translate.x,transform_.translate.y,transform_.translate.z + 10.0f} };
 
 	model_ = std::make_unique<Model>();
 	model_->Initialize("player.obj", transform_);
@@ -158,6 +158,7 @@ void Player::Update()
 
 void Player::Draw(Camera* camera_)
 {
+
 	if (isHit_) {
 		model_->Draw(camera_, hit);
 	}

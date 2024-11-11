@@ -26,6 +26,8 @@ void EnemyBullet::Initialize(Vector3 pos, Vector3 velocity)
 	float velocityXZ = sqrt((velocity_.x * velocity_.x) + (velocity_.z * velocity_.z));
 	worldtransform_.rotate.x = std::atan2(-velocity_.y, velocityXZ);
 	worldtransform_.UpdateMatrix();
+
+	isDead_ = false;
 }
 
 void EnemyBullet::Update()
@@ -41,15 +43,15 @@ void EnemyBullet::Update()
 	// 引数で受け取った速度をメンバ変数に代入
 	velocity_ = Slerp(toPlayer, transform.translate, t);
 
-	velocity_.x *= 0.5f;
-	velocity_.y *= 0.5f;
-	velocity_.z *= 0.5f;
+	velocity_.x *= 2.5f;
+	velocity_.y *= 2.5f;
+	velocity_.z *= 2.5f;
 
-	// Y軸周り角度（Θy）
-	worldtransform_.rotate.y = std::atan2(velocity_.x, velocity_.z);
+	//// Y軸周り角度（Θy）
+	//worldtransform_.rotate.y = std::atan2(velocity_.x, velocity_.z);
 
-	float velocityXZ = sqrt((velocity_.x * velocity_.x) + (velocity_.z * velocity_.z));
-	worldtransform_.rotate.x = std::atan2(-velocity_.y, velocityXZ);
+	//float velocityXZ = sqrt((velocity_.x * velocity_.x) + (velocity_.z * velocity_.z));
+	//worldtransform_.rotate.x = std::atan2(-velocity_.y, velocityXZ);
 
 	// 座標を移動させる(1フレーム分の移動量を足しこむ)
 	worldtransform_.translate.x += velocity_.x;
@@ -67,5 +69,7 @@ void EnemyBullet::Update()
 
 void EnemyBullet::Draw(Camera* camera, uint32_t index)
 {
-	model_->Draw(camera, index);
+	if (isDead_ == false) {
+		model_->Draw(camera, index);
+	}
 }

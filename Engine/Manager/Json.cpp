@@ -1,5 +1,7 @@
 #include "Json.h"
 #include <numbers>
+#include "Player/Player.h"
+#include "GameScene.h"
 
 /// <summary>
 /// Json.cpp
@@ -95,13 +97,37 @@ LevelData* Json::LoadJson(const std::string& fileName)
 			camera_.cameraTransform.scale.y = transform["scaling"][2].get<float>();
 			camera_.cameraTransform.scale.z = transform["scaling"][1].get<float>();
 		}
-		
 
-		//}
+		// Enemy
+		if (type.compare("ENEMY") == 0) {
+			// 要素追加
+			levelData->enemys.emplace_back(LevelData::EnemyData{});
+			// 今追加した要素の参照を得る
+			LevelData::EnemyData& EnemyData = levelData->enemys.back();
+
+			if (object.contains("file_name")) {
+				// ファイル名
+				EnemyData.filename = object["file_name"];
+			}
+
+			// トランスフォームのパラメータ読み込み
+			nlohmann::json& transform = object["transform"];
+			// Translation
+			EnemyData.translation.x = transform["translation"][0].get<float>();
+			EnemyData.translation.y = transform["translation"][2].get<float>();
+			EnemyData.translation.z = transform["translation"][1].get<float>();
+			// Rotation
+			EnemyData.rotation.x = transform["rotation"][0].get<float>();
+			EnemyData.rotation.y = (transform["rotation"][2].get<float>() - std::numbers::pi_v<float>);
+			EnemyData.rotation.z = transform["rotation"][1].get<float>();
+			// Scaling
+			EnemyData.scaling.x = transform["scaling"][0].get<float>();
+			EnemyData.scaling.y = transform["scaling"][2].get<float>();
+			EnemyData.scaling.z = transform["scaling"][1].get<float>();
+		}
 
 		// TODO: オブジェクト走査を再帰関数にまとめ、再帰呼出で枝を走査する
 		if (object.contains("children")) {
-
 		}
 	}
 
@@ -123,17 +149,45 @@ void Json::Adoption(LevelData* levelData, bool light)
 	}
 }
 
+void Json::EnemyAdoption(LevelData* levelData, Player* player, GameScene* gamescene)
+{
+	// レベルデータからオブジェクトを生成、配置
+	for (auto& EnemyData : levelData->enemys) {
+		// モデルを指定してEnemyを生成
+		std::unique_ptr<Enemy> newObject = std::make_unique<Enemy>();
+		newObject->Initialize({ 0.0f,0.0f,0.0f });
+		newObject->SetPosition(EnemyData.translation);
+		newObject->SetRotation(EnemyData.rotation);
+		newObject->SetScale(EnemyData.scaling);
+		// 敵キャラに自キャラのアドレスを渡す
+		newObject->SetPlayer(player);
+		// 敵キャラにゲームシーンを渡す
+		newObject->SetGameScene(gamescene);
+		newObject->SetIsDead(false);
+		enemys_.push_back(std::move(newObject));
+	}
+}
+
 void Json::Update()
 {
 	//camera_.Update();
+
 	for (auto& object : objects_) {
 		object->Update();
 	}
+
+	/*for (auto& enemy : enemys_) {
+		enemy->Update();
+	}*/
 }
 
 void Json::Draw(Camera& camera, uint32_t index)
 {
 	for (auto& object : objects_) {
 		object->Draw(&camera, index);
+	}
+
+	for (auto& enemy : enemys_) {
+		enemy->Draw(&camera);
 	}
 }

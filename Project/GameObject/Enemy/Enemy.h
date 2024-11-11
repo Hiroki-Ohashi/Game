@@ -35,6 +35,10 @@ public:
 	Vector3 GetPos() { return worldtransform_.translate; }
 
 	// Setter
+	void SetPosition(Vector3 pos) { worldtransform_.translate = pos; }
+	void SetRotation(Vector3 rotate) { worldtransform_.rotate = rotate; }
+	void SetScale(Vector3 scale) { worldtransform_.scale = scale; }
+	void SetLight(bool isLight) { model_->SetLight(isLight); }
 	void SetGameScene(GameScene* gameScene) { gameScene_ = gameScene; }
 	void SetPlayer(Player* player) { player_ = player; }
 private:
@@ -52,6 +56,6 @@ private:
 	uint32_t enemyTex;
 	// 発射タイマー
 	int32_t attackTimer = 10;
-	static const int kFireInterval = 120;
+	static const int kFireInterval = 180;
 	bool isDead_;
 };

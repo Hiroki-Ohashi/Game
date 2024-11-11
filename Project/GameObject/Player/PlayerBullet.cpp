@@ -7,7 +7,7 @@
 
 void PlayerBullet::Initialize(Vector3 pos, Vector3 velocity)
 {
-	transform = { {0.05f,0.05f,0.05f},{0.0f,0.0f,0.0f},{pos.x,pos.y,pos.z - 5.0f} };
+	transform = { {0.05f,0.05f,0.05f},{0.0f,0.0f,0.0f},{pos.x,pos.y,pos.z - 4.0f} };
 
 	model_ = std::make_unique<Model>();
 	model_->Initialize("misairu.obj", transform);
@@ -24,6 +24,8 @@ void PlayerBullet::Initialize(Vector3 pos, Vector3 velocity)
 
 	float velocityXZ = sqrt((velo.x * velo.x) + (velo.z * velo.z));
 	worldtransform_.rotate.x = std::atan2(-velo.y, velocityXZ);
+
+	isDead_ = false;
 }
 
 void PlayerBullet::Update()

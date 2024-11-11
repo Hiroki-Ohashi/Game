@@ -58,9 +58,9 @@ void BossBullet::Update()
 	worldtransform_.rotate.x = std::atan2(-velocity_.y, velocityXZ);
 
 	// 座標を移動させる(1フレーム分の移動量を足しこむ)
-	worldtransform_.translate.x += velocity_.x;
-	worldtransform_.translate.y += velocity_.y;
-	worldtransform_.translate.z += velocity_.z;
+	worldtransform_.translate.x += velocity_.x * 2.0f;
+	worldtransform_.translate.y += velocity_.y * 2.0f;
+	worldtransform_.translate.z += velocity_.z * 2.0f;
 
 	worldtransform_.UpdateMatrix();
 	model_->SetWorldTransform(worldtransform_);
