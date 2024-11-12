@@ -91,6 +91,8 @@ struct LevelData{
 		Vector3 translation;
 		Vector3 rotation;
 		Vector3 scaling;
+		// AABBのサイズ
+		Vector3 colliderSize;
 	};
 
 	struct EnemyData {

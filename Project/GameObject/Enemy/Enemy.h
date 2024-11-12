@@ -4,6 +4,7 @@
 #include <WorldTransform.h>
 #include <Model.h>
 #include "EnemyBullet.h"
+#include "Collider.h"
 
 class Player;
 class GameScene;
@@ -14,7 +15,7 @@ class GameScene;
 /// </summary>
 
 // Enemyクラス
-class Enemy {
+class Enemy : public Collider {
 public:
 	// 初期化処理
 	void Initialize(Vector3 pos);
@@ -25,7 +26,8 @@ public:
 	// 攻撃処理
 	void Attack();
 	// 当たり判定処理
-	void OnCollision() { isDead_ = true; }
+	void OnCollision() override;
+	Vector3 GetWorldPosition() const override;
 
 	// 死亡判定
 	void SetIsDead(bool isDead) { isDead_ = isDead; }
@@ -35,7 +37,10 @@ public:
 	Vector3 GetPos() { return worldtransform_.translate; }
 
 	// Setter
-	void SetPosition(Vector3 pos) { worldtransform_.translate = pos; }
+	void SetPosition(Vector3 pos) { 
+		worldtransform_.translate = pos;
+		posParam = pos;
+	}
 	void SetRotation(Vector3 rotate) { worldtransform_.rotate = rotate; }
 	void SetScale(Vector3 scale) { worldtransform_.scale = scale; }
 	void SetLight(bool isLight) { model_->SetLight(isLight); }
@@ -58,4 +63,9 @@ private:
 	int32_t attackTimer = 10;
 	static const int kFireInterval = 180;
 	bool isDead_;
+
+	// 初期位置
+	Vector3 posParam;
+
+	float speedY = 0.3f;
 };

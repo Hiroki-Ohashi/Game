@@ -8,21 +8,17 @@
 
 void BossBullet::Initialize(Vector3 pos, Vector3 velocity)
 {
-	transform = { {1.0f,1.0f,1.5f},{0.0f,0.0f,0.0f},{pos.x,pos.y,pos.z} };
+	transform = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{pos.x,pos.y,pos.z} };
 
 	model_ = std::make_unique<Model>();
-	model_->Initialize("cube.obj", transform);
+	model_->Initialize("misairu.obj", transform);
+	model_->SetLight(false);
 
 	velocity_ = velocity;
 
 	worldtransform_.scale = transform.scale;
 	worldtransform_.rotate = transform.rotate;
 	worldtransform_.translate = transform.translate;
-
-	// z方向に伸びた形状
-	worldtransform_.scale.x = 0.5f;
-	worldtransform_.scale.y = 0.5f;
-	worldtransform_.scale.z = 3.0f;
 
 	// Y軸周り角度（Θy）
 	worldtransform_.rotate.y = std::atan2(velocity_.x, velocity_.z);
@@ -58,9 +54,9 @@ void BossBullet::Update()
 	worldtransform_.rotate.x = std::atan2(-velocity_.y, velocityXZ);
 
 	// 座標を移動させる(1フレーム分の移動量を足しこむ)
-	worldtransform_.translate.x += velocity_.x * 2.0f;
-	worldtransform_.translate.y += velocity_.y * 2.0f;
-	worldtransform_.translate.z += velocity_.z * 2.0f;
+	worldtransform_.translate.x += velocity_.x * 3.0f;
+	worldtransform_.translate.y += velocity_.y * 3.0f;
+	worldtransform_.translate.z += velocity_.z * 3.0f;
 
 	worldtransform_.UpdateMatrix();
 	model_->SetWorldTransform(worldtransform_);
@@ -74,4 +70,21 @@ void BossBullet::Update()
 void BossBullet::Draw(Camera* camera, uint32_t index)
 {
 	model_->Draw(camera, index);
+}
+
+void BossBullet::OnCollision()
+{
+	isDead_ = true;
+}
+
+Vector3 BossBullet::GetWorldPosition() const
+{
+	// ワールド座標を入れる変数
+	Vector3 worldPos;
+	// ワールド行列の平行移動成分を取得（ワールド座標）
+	worldPos.x = worldtransform_.matWorld.m[3][0];
+	worldPos.y = worldtransform_.matWorld.m[3][1];
+	worldPos.z = worldtransform_.matWorld.m[3][2];
+
+	return worldPos;
 }

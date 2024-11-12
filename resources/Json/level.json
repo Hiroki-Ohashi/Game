@@ -2,6 +2,345 @@
     "name": "scene",
     "objects": [
         {
+            "type": "ENEMY",
+            "name": "enemy.001",
+            "transform": {
+                "translation": [
+                    -41.92185974121094,
+                    604.95703125,
+                    60.725914001464844
+                ],
+                "rotation": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            },
+            "file_name": "cube"
+        },
+      {
+        "type": "ENEMY",
+        "name": "enemy.002",
+        "transform": {
+          "translation": [
+            -35.36243438720703,
+            817.20751953125,
+            75.79206085205078
+          ],
+          "rotation": [
+            0.0,
+            -0.0,
+            0.0
+          ],
+          "scaling": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "file_name": "cube"
+      },
+      {
+        "type": "ENEMY",
+        "name": "enemy.003",
+        "transform": {
+          "translation": [
+            26.7919921875,
+            848.5089111328125,
+            27.27853012084961
+          ],
+          "rotation": [
+            0.0,
+            -0.0,
+            0.0
+          ],
+          "scaling": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        },
+        "file_name": "cube"
+      },
+      {
+        "type": "ENEMY",
+        "name": "enemy.004",
+        "transform": {
+          "translation": [
+            20.887493133544922,
+            1044.8367919921875,
+            44.026275634765625
+          ],
+          "rotation": [
+            0.0,
+            -0.0,
+            0.0
+          ],
+          "scaling": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      },
+      {
+        "type": "ENEMY",
+        "name": "enemy.005",
+        "transform": {
+          "translation": [
+            -35.622562408447266,
+            1193.3289794921875,
+            13.311847686767578
+          ],
+          "rotation": [
+            0.0,
+            -0.0,
+            0.0
+          ],
+          "scaling": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      },
+      {
+        "type": "ENEMY",
+        "name": "enemy.007",
+        "transform": {
+          "translation": [
+            25.481788635253906,
+            1501.5704345703125,
+            28.750450134277344
+          ],
+          "rotation": [
+            0.0,
+            -0.0,
+            0.0
+          ],
+          "scaling": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      },
+      {
+        "type": "ENEMY",
+        "name": "enemy",
+        "transform": {
+          "translation": [
+            -8.314556121826172,
+            1585.3544921875,
+            90.72297668457031
+          ],
+          "rotation": [
+            0.0,
+            -0.0,
+            0.0
+          ],
+          "scaling": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      },
+      {
+        "type": "ENEMY",
+        "name": "enemy.006",
+        "transform": {
+          "translation": [
+            -8.314556121826172,
+            1989.7271728515625,
+            55.021785736083984
+          ],
+          "rotation": [
+            0.0,
+            -0.0,
+            0.0
+          ],
+          "scaling": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      },
+      {
+        "type": "ENEMY",
+        "name": "enemy.008",
+        "transform": {
+          "translation": [
+            31.07993507385254,
+            2053.056884765625,
+            28.750450134277344
+          ],
+          "rotation": [
+            0.0,
+            -0.0,
+            0.0
+          ],
+          "scaling": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      },
+      {
+        "type": "ENEMY",
+        "name": "enemy.009",
+        "transform": {
+          "translation": [
+            -24.299997329711914,
+            2285.027587890625,
+            28.750450134277344
+          ],
+          "rotation": [
+            0.0,
+            -0.0,
+            0.0
+          ],
+          "scaling": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      },
+      {
+        "type": "ENEMY",
+        "name": "enemy.010",
+        "transform": {
+          "translation": [
+            24.50401496887207,
+            2576.80908203125,
+            66.98429870605469
+          ],
+          "rotation": [
+            0.0,
+            -0.0,
+            0.0
+          ],
+          "scaling": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      },
+      {
+        "type": "ENEMY",
+        "name": "enemy.011",
+        "transform": {
+          "translation": [
+            -31.49598503112793,
+            2576.80908203125,
+            29.245304107666016
+          ],
+          "rotation": [
+            0.0,
+            -0.0,
+            0.0
+          ],
+          "scaling": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      },
+      {
+        "type": "ENEMY",
+        "name": "enemy.012",
+        "transform": {
+          "translation": [
+            -39.508323669433594,
+            2865.403564453125,
+            29.245304107666016
+          ],
+          "rotation": [
+            0.0,
+            -0.0,
+            0.0
+          ],
+          "scaling": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      },
+      {
+        "type": "ENEMY",
+        "name": "enemy.013",
+        "transform": {
+          "translation": [
+            12.686763763427734,
+            2924.89990234375,
+            65.86061096191406
+          ],
+          "rotation": [
+            0.0,
+            -0.0,
+            0.0
+          ],
+          "scaling": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      },
+      {
+        "type": "ENEMY",
+        "name": "enemy.014",
+        "transform": {
+          "translation": [
+            12.686763763427734,
+            3267.72412109375,
+            29.66480255126953
+          ],
+          "rotation": [
+            0.0,
+            -0.0,
+            0.0
+          ],
+          "scaling": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      },
+      {
+        "type": "ENEMY",
+        "name": "enemy.015",
+        "transform": {
+          "translation": [
+            -50.10038375854492,
+            3511.227783203125,
+            17.25578498840332
+          ],
+          "rotation": [
+            0.0,
+            -0.0,
+            0.0
+          ],
+          "scaling": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      },
+        {
             "type": "CAMERA",
             "name": "Camera",
             "transform": {
@@ -42,7 +381,20 @@
                     14.702035903930664
                 ]
             },
-            "file_name": "cube"
+            "file_name": "cube",
+            "collider": {
+                "type": "BOX",
+                "center": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "size": [
+                    2.0,
+                    2.0,
+                    2.0
+                ]
+            }
         },
         {
             "type": "MESH",
@@ -64,7 +416,20 @@
                     65.80438995361328
                 ]
             },
-            "file_name": "cube"
+            "file_name": "cube",
+            "collider": {
+                "type": "BOX",
+                "center": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "size": [
+                    2.0,
+                    2.0,
+                    2.0
+                ]
+            }
         },
         {
             "type": "MESH",
@@ -86,7 +451,20 @@
                     10.298327445983887
                 ]
             },
-            "file_name": "cube"
+            "file_name": "cube",
+            "collider": {
+                "type": "BOX",
+                "center": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "size": [
+                    2.0,
+                    2.0,
+                    2.0
+                ]
+            }
         },
         {
             "type": "MESH",
@@ -108,7 +486,20 @@
                     65.80438995361328
                 ]
             },
-            "file_name": "cube"
+            "file_name": "cube",
+            "collider": {
+                "type": "BOX",
+                "center": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "size": [
+                    2.0,
+                    2.0,
+                    2.0
+                ]
+            }
         },
         {
             "type": "MESH",
@@ -130,7 +521,20 @@
                     48.6796760559082
                 ]
             },
-            "file_name": "cube"
+            "file_name": "cube",
+            "collider": {
+                "type": "BOX",
+                "center": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "size": [
+                    2.0,
+                    2.0,
+                    2.0
+                ]
+            }
         },
         {
             "type": "MESH",
@@ -152,7 +556,20 @@
                     19.928632736206055
                 ]
             },
-            "file_name": "cube"
+            "file_name": "cube",
+            "collider": {
+                "type": "BOX",
+                "center": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "size": [
+                    2.0,
+                    2.0,
+                    2.0
+                ]
+            }
         },
         {
             "type": "MESH",
@@ -196,7 +613,20 @@
                     65.80438995361328
                 ]
             },
-            "file_name": "cube"
+            "file_name": "cube",
+            "collider": {
+                "type": "BOX",
+                "center": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "size": [
+                    2.0,
+                    2.0,
+                    2.0
+                ]
+            }
         },
         {
             "type": "MESH",
@@ -218,7 +648,20 @@
                     10.298327445983887
                 ]
             },
-            "file_name": "cube"
+            "file_name": "cube",
+            "collider": {
+                "type": "BOX",
+                "center": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "size": [
+                    2.0,
+                    2.0,
+                    2.0
+                ]
+            }
         },
         {
             "type": "MESH",
@@ -240,7 +683,20 @@
                     65.80438995361328
                 ]
             },
-            "file_name": "cube"
+            "file_name": "cube",
+            "collider": {
+                "type": "BOX",
+                "center": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "size": [
+                    2.0,
+                    2.0,
+                    2.0
+                ]
+            }
         },
         {
             "type": "MESH",
@@ -262,7 +718,20 @@
                     65.80438995361328
                 ]
             },
-            "file_name": "cube"
+            "file_name": "cube",
+            "collider": {
+                "type": "BOX",
+                "center": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "size": [
+                    2.0,
+                    2.0,
+                    2.0
+                ]
+            }
         },
         {
             "type": "MESH",
@@ -284,7 +753,20 @@
                     10.298327445983887
                 ]
             },
-            "file_name": "cube"
+            "file_name": "cube",
+            "collider": {
+                "type": "BOX",
+                "center": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "size": [
+                    2.0,
+                    2.0,
+                    2.0
+                ]
+            }
         },
         {
             "type": "MESH",
@@ -306,7 +788,20 @@
                     65.80438995361328
                 ]
             },
-            "file_name": "cube"
+            "file_name": "cube",
+            "collider": {
+                "type": "BOX",
+                "center": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "size": [
+                    2.0,
+                    2.0,
+                    2.0
+                ]
+            }
         },
         {
             "type": "MESH",
@@ -328,7 +823,20 @@
                     65.80438995361328
                 ]
             },
-            "file_name": "cube"
+            "file_name": "cube",
+            "collider": {
+                "type": "BOX",
+                "center": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "size": [
+                    2.0,
+                    2.0,
+                    2.0
+                ]
+            }
         },
         {
             "type": "MESH",
@@ -350,7 +858,20 @@
                     10.298327445983887
                 ]
             },
-            "file_name": "cube"
+            "file_name": "cube",
+            "collider": {
+                "type": "BOX",
+                "center": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "size": [
+                    2.0,
+                    2.0,
+                    2.0
+                ]
+            }
         },
         {
             "type": "MESH",
@@ -372,7 +893,20 @@
                     65.80438995361328
                 ]
             },
-            "file_name": "cube"
+            "file_name": "cube",
+            "collider": {
+                "type": "BOX",
+                "center": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "size": [
+                    2.0,
+                    2.0,
+                    2.0
+                ]
+            }
         },
         {
             "type": "MESH",
@@ -394,7 +928,20 @@
                     65.80438995361328
                 ]
             },
-            "file_name": "cube"
+            "file_name": "cube",
+            "collider": {
+                "type": "BOX",
+                "center": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "size": [
+                    2.0,
+                    2.0,
+                    2.0
+                ]
+            }
         },
         {
             "type": "MESH",
@@ -416,7 +963,20 @@
                     10.298327445983887
                 ]
             },
-            "file_name": "cube"
+            "file_name": "cube",
+            "collider": {
+                "type": "BOX",
+                "center": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "size": [
+                    2.0,
+                    2.0,
+                    2.0
+                ]
+            }
         },
         {
             "type": "MESH",
@@ -438,7 +998,20 @@
                     65.80438995361328
                 ]
             },
-            "file_name": "cube"
+            "file_name": "cube",
+            "collider": {
+                "type": "BOX",
+                "center": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "size": [
+                    2.0,
+                    2.0,
+                    2.0
+                ]
+            }
         },
         {
             "type": "MESH",
@@ -460,7 +1033,20 @@
                     19.928632736206055
                 ]
             },
-            "file_name": "cube"
+            "file_name": "cube",
+            "collider": {
+                "type": "BOX",
+                "center": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "size": [
+                    2.0,
+                    2.0,
+                    2.0
+                ]
+            }
         },
         {
             "type": "MESH",
@@ -482,7 +1068,20 @@
                     48.6796760559082
                 ]
             },
-            "file_name": "cube"
+            "file_name": "cube",
+            "collider": {
+                "type": "BOX",
+                "center": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "size": [
+                    2.0,
+                    2.0,
+                    2.0
+                ]
+            }
         },
         {
             "type": "MESH",
@@ -504,7 +1103,20 @@
                     65.80438995361328
                 ]
             },
-            "file_name": "cube"
+            "file_name": "cube",
+            "collider": {
+                "type": "BOX",
+                "center": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "size": [
+                    2.0,
+                    2.0,
+                    2.0
+                ]
+            }
         },
         {
             "type": "MESH",
@@ -526,7 +1138,20 @@
                     10.298327445983887
                 ]
             },
-            "file_name": "cube"
+            "file_name": "cube",
+            "collider": {
+                "type": "BOX",
+                "center": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "size": [
+                    2.0,
+                    2.0,
+                    2.0
+                ]
+            }
         },
         {
             "type": "MESH",
@@ -548,7 +1173,20 @@
                     65.80438995361328
                 ]
             },
-            "file_name": "cube"
+            "file_name": "cube",
+            "collider": {
+                "type": "BOX",
+                "center": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "size": [
+                    2.0,
+                    2.0,
+                    2.0
+                ]
+            }
         },
         {
             "type": "MESH",
@@ -570,7 +1208,20 @@
                     14.702035903930664
                 ]
             },
-            "file_name": "cube"
+            "file_name": "cube",
+            "collider": {
+                "type": "BOX",
+                "center": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "size": [
+                    2.0,
+                    2.0,
+                    2.0
+                ]
+            }
         }
     ]
 }

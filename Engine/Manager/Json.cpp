@@ -63,6 +63,12 @@ LevelData* Json::LoadJson(const std::string& fileName)
 				objectData.filename = object["file_name"];
 			}
 
+			if (object.contains("colliderSize")) {
+				objectData.colliderSize.x = object["colliderSize"][0].get<float>();
+				objectData.colliderSize.y = object["colliderSize"][2].get<float>();
+				objectData.colliderSize.z = object["colliderSize"][1].get<float>();
+			}
+
 			// トランスフォームのパラメータ読み込み
 			nlohmann::json& transform = object["transform"];
 			// Translation
@@ -139,12 +145,16 @@ void Json::Adoption(LevelData* levelData, bool light)
 	// レベルデータからオブジェクトを生成、配置
 	for (auto& objectData : levelData->objects) {
 		// モデルを指定して3Dオブジェクトを生成
-		std::unique_ptr<Model> newObject = std::make_unique<Model>();
+		std::unique_ptr<Object> newObject = std::make_unique<Object>();
 		newObject->Initialize(objectData.filename + ".obj", { { 1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} });
 		newObject->SetPosition(objectData.translation);
 		newObject->SetRotation(objectData.rotation);
 		newObject->SetScale(objectData.scaling);
 		newObject->SetLight(light);
+		//// コライダーの初期化（スケールを反映）
+		//std::unique_ptr<Collider> collider = std::make_unique<Collider>();
+		//collider->SetHalfSize(objectData.scaling / 2.0f); // 例: スケールを反映した半径を設定
+		//newObject->SetCollider(std::move(collider));
 		objects_.push_back(std::move(newObject));
 	}
 }
@@ -158,7 +168,6 @@ void Json::EnemyAdoption(LevelData* levelData, Player* player, GameScene* gamesc
 		newObject->Initialize({ 0.0f,0.0f,0.0f });
 		newObject->SetPosition(EnemyData.translation);
 		newObject->SetRotation(EnemyData.rotation);
-		newObject->SetScale(EnemyData.scaling);
 		// 敵キャラに自キャラのアドレスを渡す
 		newObject->SetPlayer(player);
 		// 敵キャラにゲームシーンを渡す
@@ -172,22 +181,29 @@ void Json::Update()
 {
 	//camera_.Update();
 
-	for (auto& object : objects_) {
+	for (std::unique_ptr<Object>& object : objects_) {
 		object->Update();
 	}
+}
 
-	/*for (auto& enemy : enemys_) {
+void Json::EnemyUpdate(Player* player, GameScene* gamescene)
+{
+	for (std::unique_ptr<Enemy>& enemy : enemys_) {
+		// 敵キャラに自キャラのアドレスを渡す
+		enemy->SetPlayer(player);
+		// 敵キャラにゲームシーンを渡す
+		enemy->SetGameScene(gamescene);
 		enemy->Update();
-	}*/
+	}
 }
 
 void Json::Draw(Camera& camera, uint32_t index)
 {
-	for (auto& object : objects_) {
+	for (std::unique_ptr<Object>& object : objects_) {
 		object->Draw(&camera, index);
 	}
 
-	for (auto& enemy : enemys_) {
+	for (std::unique_ptr<Enemy>& enemy : enemys_) {
 		enemy->Draw(&camera);
 	}
 }

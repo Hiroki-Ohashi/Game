@@ -37,6 +37,10 @@ void GameScene::Initialize() {
 	go_->Initialize("board.obj", transform_);
 	go_->SetLight(false);
 
+	// UI
+	ui_ = std::make_unique<Sprite>();
+	ui_->Initialize(Vector2{ 0.0f, 280.0f }, Vector2{ 150.0, 150.0f }, 1.0f);
+
 	// skybox
 	skydome_ = std::make_unique<Skydome>();
 	skydome_->Initialize();
@@ -47,35 +51,47 @@ void GameScene::Initialize() {
 	ready = textureManager_->Load("resources/ready.png");
 	go = textureManager_->Load("resources/go.png");
 
-	LoadEnemyPopData();
+	hp5 = textureManager_->Load("resources/hp5.png");
+	hp4 = textureManager_->Load("resources/hp4.png");
+	hp3 = textureManager_->Load("resources/hp3.png");
+	hp2 = textureManager_->Load("resources/hp2.png");
+	hp1 = textureManager_->Load("resources/hp1.png");
+	hp0 = textureManager_->Load("resources/hp0.png");
 
-	for (std::unique_ptr<Enemy>& enemy : enemys_) {
-		enemy->SetIsDead(false);
-	}
-  
+	// Json
     json_ = std::make_unique<Json>();
 	levelData_ = json_->LoadJson("level");
 	json_->Adoption(levelData_, true);
+	json_->EnemyAdoption(levelData_, player_.get(), this);
+
+	// stage
+	stage_ = std::make_unique<Stage>();
+	stage_->Initialize();
+
+	for (std::unique_ptr<Enemy>& enemy : json_->GetEnemys()) {
+		enemy->SetIsDead(false);
+	}
 
 	isVignette_ = true;
 	isGameClear_ = false;
 	isApploach_ = true;
 	isGameOver_ = false;
 
-	camera_.cameraTransform.translate = { player_->GetPos().x, player_->GetPos().y + 3.0f,  player_->GetPos().z - 20.0f };
+	camera_.cameraTransform.translate = { player_->GetPos().x, player_->GetPos().y + 1.5f,  player_->GetPos().z - 20.0f };
 	blurStrength_ = 0.3f;
 	noiseStrength = 0.0f;
 }
 
 void GameScene::Update(){
 
-	UpdateEnemyPopCommands();
-
 	camera_.Update();
 
 	postProcess_->NoiseUpdate(0.1f);
 
 	json_->Update();
+	json_->EnemyUpdate(player_.get(), this);
+
+	stage_->Update();
 
 	if (isVignette_) {
 		postProcess_->VignetteFadeOut(0.1f, 0.1f, 16.0f, 0.0f);
@@ -91,7 +107,7 @@ void GameScene::Update(){
 		}
 	}
 
-	if (player_->GetPos().z >= 1600.0f) {
+	if (player_->GetPos().z >= 3900.0f) {
 
 		boss_->Update();
 
@@ -111,14 +127,6 @@ void GameScene::Update(){
 			bossBullets_.end()
 		);
 	}
-  
-	for (std::unique_ptr<Enemy>& enemy : enemys_) {
-		// 敵キャラに自キャラのアドレスを渡す
-		enemy->SetPlayer(player_.get());
-		// 敵キャラにゲームシーンを渡す
-		enemy->SetGameScene(this);
-		enemy->Update();
-	}
 
 	// 弾更新
 	for (std::unique_ptr<EnemyBullet>& bullet : enemyBullets_) {
@@ -137,7 +145,14 @@ void GameScene::Update(){
 		enemyBullets_.end()
 	);
 
-	CheckAllCollisions();
+	if (player_->GetIsHit()) {
+		shakeTimer = 30;
+		isShake = true;
+
+		// 自キャラの衝突時コールバックを呼び出す
+		noiseStrength += 0.5f;
+		postProcess_->SetNoiseStrength(noiseStrength);
+	}
 
 	if (isShake) {
 		shakeTimer -= 1;
@@ -180,7 +195,7 @@ void GameScene::Update(){
 			}
 		}
 		else if (isApploach_ == false) {
-			camera_.cameraTransform.translate = { player_->GetPos().x + randX, player_->GetPos().y + 3.0f + randY,  player_->GetPos().z - 20.0f };
+			camera_.cameraTransform.translate = { player_->GetPos().x + randX, player_->GetPos().y + 1.5f + randY,  player_->GetPos().z - 20.0f };
 
 			blurStrength_ -= 0.002f;
 			if (blurStrength_ <= 0.0f) {
@@ -220,6 +235,8 @@ void GameScene::Update(){
 	}
 
 	postProcess_->SetNoiseStrength(noiseStrength);
+
+	CheckAllCollisions();
 }
 
 void GameScene::Draw()
@@ -227,21 +244,18 @@ void GameScene::Draw()
 
 	skydome_->Draw(&camera_);
 
+	stage_->Draw(&camera_);
+
 	json_->Draw(camera_, uv);
 
 	player_->BulletDraw(&camera_);
-
-	// 敵キャラの描画
-	for (std::unique_ptr<Enemy>& enemy : enemys_) {
-		enemy->Draw(&camera_);
-	}
 
 	// 弾描画
 	for (std::unique_ptr<EnemyBullet>& bullet : enemyBullets_) {
 		bullet->Draw(&camera_, bossBulletTex);
 	}
 
-	if (player_->GetPos().z >= 1600.0f) {
+	if (player_->GetPos().z >= 3900.0f) {
 
 		boss_->Draw(&camera_);
 
@@ -256,6 +270,25 @@ void GameScene::Draw()
 	}
 	else {
 		go_->Draw(&camera_, go);
+
+		if (player_->GetHP() == 5) {
+			ui_->Draw(hp5);
+		}
+		else if (player_->GetHP() == 4) {
+			ui_->Draw(hp4);
+		}
+		else if (player_->GetHP() == 3) {
+			ui_->Draw(hp3);
+		}
+		else if (player_->GetHP() == 2) {
+			ui_->Draw(hp2);
+		}
+		else if (player_->GetHP() == 1) {
+			ui_->Draw(hp1);
+		}
+		else if (player_->GetHP() == 0) {
+			ui_->Draw(hp0);
+		}
 	}
 
 	player_->Draw(&camera_);
@@ -272,8 +305,6 @@ void GameScene::Release() {
 
 void GameScene::CheckAllCollisions()
 {
-	// 判定衝突AとBの座標
-	Vector3 posA, posB;
 
 	// 自弾リストの取得
 	std::vector<std::unique_ptr<PlayerBullet>>& playerBullets = player_->GetBullets();
@@ -281,321 +312,69 @@ void GameScene::CheckAllCollisions()
 	std::vector<std::unique_ptr<EnemyBullet>>& enemyBullets = enemyBullets_;
 	std::vector<std::unique_ptr<BossBullet>>& bossBullets = bossBullets_;
 
-#pragma region 自キャラと敵弾の当たり判定
-	// 自キャラの座標
-	posA = player_->GetPos();
-
-	// 自キャラと敵弾すべての当たり判定
-	for (std::unique_ptr<EnemyBullet>& bullet : enemyBullets) {
-
-		if (bullet->IsDead()) {
-			continue; // 既に削除された弾はスキップ
-		}
-
-		// 敵弾の座標
-		posB = bullet->GetPos();
-
-		float p2eBX = (posB.x - posA.x) * (posB.x - posA.x);
-		float p2eBY = (posB.y - posA.y) * (posB.y - posA.y);
-		float p2eBZ = (posB.z - posA.z) * (posB.z - posA.z);
-
-		float pRadius = 1.0f;
-		float eBRadius = 1.0f;
-
-		float L = (pRadius + eBRadius) * (pRadius + eBRadius);
-
-		if (p2eBX + p2eBY + p2eBZ <= L) {
-
-			shakeTimer = 40;
-			isShake = true;
-
-			// 自キャラの衝突時コールバックを呼び出す
-			player_->OnCollision();
-			noiseStrength += 1.0f;
-			postProcess_->SetNoiseStrength(noiseStrength);
-			// 敵弾の衝突時コールバックを呼び出す
-			bullet->OnCollision();
-		}
+	// コライダー
+	std::list<Collider*> colliders_;
+	// 登録
+	// player
+	colliders_.push_back(std::move(player_.get()));
+	// boss
+	colliders_.push_back(std::move(boss_.get()));
+	// enemy
+	for (std::unique_ptr<Enemy>& enemy : json_->GetEnemys()) {
+		colliders_.push_back(std::move(enemy.get()));
 	}
-
-#pragma endregion
-
-#pragma region 自弾と敵キャラの当たり判定
-	// 敵キャラと自弾すべての当たり判定
+	// playerBullet
 	for (std::unique_ptr<PlayerBullet>& bullet : playerBullets) {
-
-		if (bullet->IsDead()) {
-			continue; // 既に削除された弾はスキップ
-		}
-
-		for (std::unique_ptr<Enemy>& enemy : enemys_) {
-
-			if (enemy->IsDead()) {
-				continue; // 既に削除された敵はスキップ
-			}
-
-			// 敵キャラの座標
-			posA = enemy->GetPos();
-
-			// 自弾の座標
-			posB = bullet->GetPos();
-
-			float e2pBX = (posB.x - posA.x) * (posB.x - posA.x);
-			float e2pBY = (posB.y - posA.y) * (posB.y - posA.y);
-			float e2pBZ = (posB.z - posA.z) * (posB.z - posA.z);
-
-			float eRadius = 2.0f;
-			float pBRadius = 2.0f;
-
-			float L = (eRadius + pBRadius);
-
-			if (e2pBX + e2pBY + e2pBZ <= L) {
-				// 敵キャラの衝突時コールバックを呼び出す
-				enemy->OnCollision();
-				// 自弾の衝突時コールバックを呼び出す
-				bullet->OnCollision();
-			}
-		}
+		colliders_.push_back(std::move(bullet.get()));
 	}
-#pragma endregion
-
-#pragma region 自弾と敵弾の当たり判定
-	// 敵弾と自弾すべての当たり判定
-	for (std::unique_ptr<PlayerBullet>& playerBullet : playerBullets) {
-
-		if (playerBullet->IsDead()) {
-			continue; // 既に削除された弾はスキップ
-		}
-
-		for (std::unique_ptr<EnemyBullet>& enemyBullet : enemyBullets) {
-
-			if (enemyBullet->IsDead()) {
-				continue; // 既に削除された弾はスキップ
-			}
-
-			// 敵弾の座標
-			posA = playerBullet->GetPos();
-			// 自弾の座標
-			posB = enemyBullet->GetPos();
-
-			float pB2eBX = (posB.x - posA.x) * (posB.x - posA.x);
-			float pB2eBY = (posB.y - posA.y) * (posB.y - posA.y);
-			float pB2eBZ = (posB.z - posA.z) * (posB.z - posA.z);
-
-			float pBRadius = 1.0f;
-			float eBRadius = 1.0f;
-
-			float L = (pBRadius + eBRadius) * (pBRadius + eBRadius);
-
-			if (pB2eBX + pB2eBY + pB2eBZ <= L) {
-				// 自弾の衝突時コールバックを呼び出す
-				playerBullet->OnCollision();
-				// 敵弾の衝突時コールバックを呼び出す
-				enemyBullet->OnCollision();
-			}
-		}
+	// enemyBullet
+	for (std::unique_ptr<EnemyBullet>& bullet : enemyBullets) {
+		colliders_.push_back(std::move(bullet.get()));
 	}
-#pragma endregion
-
-#pragma region 自弾とボスの当たり判定
-	// 自キャラの座標
-	posA = boss_->GetPos();
-
-	// 自キャラと敵弾すべての当たり判定
-	for (std::unique_ptr<PlayerBullet>& playerBullet : playerBullets) {
-
-		if (playerBullet->IsDead()) {
-			continue; // 既に削除された弾はスキップ
-		}
-
-		// 敵弾の座標
-		posB = playerBullet->GetPos();
-
-		float p2eBX = (posB.x - posA.x) * (posB.x - posA.x);
-		float p2eBY = (posB.y - posA.y) * (posB.y - posA.y);
-		float p2eBZ = (posB.z - posA.z) * (posB.z - posA.z);
-		float pRadius = 30.0f;
-		float eBRadius = 5.0f;
-
-		float L = (pRadius + eBRadius) * (pRadius + eBRadius);
-
-		if (p2eBX + p2eBY + p2eBZ <= L) {
-			// 自キャラの衝突時コールバックを呼び出す
-			if (player_->GetPos().z >= 1600.0f) {
-				boss_->OnCollision();
-			}
-			// 敵弾の衝突時コールバックを呼び出す
-			playerBullet->OnCollision();
-		}
-	}
-#pragma endregion
-
-#pragma region 自キャラとボス弾の当たり判定
-	// 自キャラの座標
-	posA = player_->GetPos();
-
-	// 自キャラと敵弾すべての当たり判定
+	// bossBullet
 	for (std::unique_ptr<BossBullet>& bullet : bossBullets) {
+		colliders_.push_back(std::move(bullet.get()));
+	}
+	// Object
+	for (std::unique_ptr<Object>& objects : json_->GetObjects()) {
+		colliders_.push_back(std::move(objects.get()));
+	}
 
-		if (bullet->IsDead()) {
-			continue; // 既に削除された弾はスキップ
+
+	std::list<Collider*>::iterator itrA = colliders_.begin();
+
+	for (; itrA != colliders_.end(); ++itrA) {
+
+		Collider* colliderA = *itrA;
+
+		std::list<Collider*>::iterator itrB = itrA;
+		itrB++;
+		for (; itrB != colliders_.end(); ++itrB) {
+			Collider* colliderB = *itrB;
+			//当たり判定処理
+			CheckCollisionPair(colliderA, colliderB);
 		}
+	}
 
-		// 敵弾の座標
-		posB = bullet->GetPos();
+	for (std::unique_ptr<Object>& objects : json_->GetObjects()) {
+		// AABBの最小/最大座標を取得
+		Vector3 AMin = player_->GetAABBMin();
+		Vector3 AMax = player_->GetAABBMax();
+		Vector3 BMin = objects->GetAABBMin();
+		Vector3 BMax = objects->GetAABBMax();
 
-		float p2eBX = (posB.x - posA.x) * (posB.x - posA.x);
-		float p2eBY = (posB.y - posA.y) * (posB.y - posA.y);
-		float p2eBZ = (posB.z - posA.z) * (posB.z - posA.z);
+		// AABBの重なりを判定
+		bool isColliding =
+			(AMax.x >= BMin.x && AMin.x <= BMax.x) &&
+			(AMax.y >= BMin.y && AMin.y <= BMax.y) &&
+			(AMax.z >= BMin.z && AMin.z <= BMax.z);
 
-		float pRadius = 1.0f;
-		float eBRadius = 1.0f;
-
-		float L = (pRadius + eBRadius) * (pRadius + eBRadius);
-
-		if (p2eBX + p2eBY + p2eBZ <= L) {
-
-			shakeTimer = 40;
-			isShake = true;
-
-			// 自キャラの衝突時コールバックを呼び出す
+		if (isColliding) {
 			player_->OnCollision();
-			// 敵弾の衝突時コールバックを呼び出す
-			bullet->OnCollision();
+			objects->OnCollision();
 		}
+		//CheckAABBCollisionPair(player_.get(), objects.get());
 	}
-
-#pragma endregion
-
-#pragma region 自弾とボス弾の当たり判定
-	// 敵弾と自弾すべての当たり判定
-	for (std::unique_ptr<PlayerBullet>& playerBullet : playerBullets) {
-
-		if (playerBullet->IsDead()) {
-			continue; // 既に削除された弾はスキップ
-		}
-
-		for (std::unique_ptr<BossBullet>& bossBullet : bossBullets) {
-
-			if (bossBullet->IsDead()) {
-				continue; // 既に削除された弾はスキップ
-			}
-
-			// 敵弾の座標
-			posA = playerBullet->GetPos();
-			// 自弾の座標
-			posB = bossBullet->GetPos();
-
-			float pB2eBX = (posB.x - posA.x) * (posB.x - posA.x);
-			float pB2eBY = (posB.y - posA.y) * (posB.y - posA.y);
-			float pB2eBZ = (posB.z - posA.z) * (posB.z - posA.z);
-
-			float pBRadius = 1.0f;
-			float eBRadius = 1.0f;
-
-			float L = (pBRadius + eBRadius) * (pBRadius + eBRadius);
-
-			if (pB2eBX + pB2eBY + pB2eBZ <= L) {
-				// 自弾の衝突時コールバックを呼び出す
-				playerBullet->OnCollision();
-				// 敵弾の衝突時コールバックを呼び出す
-				bossBullet->OnCollision();
-			}
-		}
-	}
-#pragma endregion
-
-}
-
-void GameScene::LoadEnemyPopData()
-{
-	// ファイルを開く
-	std::ifstream file;
-	file.open("Resources/enemyPop.csv");
-	assert(file.is_open());
-
-	// ファイルも内容を文字列ストリームにコピー
-	enemyPopCommands << file.rdbuf();
-
-	// ファイルを閉じる
-	file.close();
-}
-
-void GameScene::UpdateEnemyPopCommands()
-{
-	// 待機処理
-	if (isWait_) {
-		waitTimer_--;
-		if (waitTimer_ <= 0) {
-			// 待機完了
-			isWait_ = false;
-		}
-		return;
-	}
-
-	// 1行分の文字列を入れる変数
-	std::string line;
-
-	// コマンド実行ループ
-	while (getline(enemyPopCommands, line)) {
-		// 1行分の文字列をストリームに変換して解析しやすくなる
-		std::istringstream line_stream(line);
-
-		std::string word;
-		// ,区切りで行の先頭文字列を取得
-		getline(line_stream, word, ',');
-
-		// "//"から始まる行はコメント
-		if (word.find("//") == 0) {
-			// コメント行を飛ばす
-			continue;
-		}
-
-		// POPコマンド
-		if (word.find("POP") == 0) {
-			// X座標
-			getline(line_stream, word, ',');
-			float x = (float)std::atof(word.c_str());
-
-			// Y座標
-			getline(line_stream, word, ',');
-			float y = (float)std::atof(word.c_str());
-
-			// Z座標
-			getline(line_stream, word, ',');
-			float z = (float)std::atof(word.c_str());
-
-			// 敵を発生させる
-			EnemySpown(Vector3(x, y, z));
-		}
-		// WAITコマンド
-		else if (word.find("WAIT") == 0) {
-			getline(line_stream, word, ',');
-
-			// 待ち時間
-			int32_t waitTime = atoi(word.c_str());
-
-			// 待機開始
-			isWait_ = true;
-			waitTimer_ = waitTime;
-
-			// コマンドループを抜ける
-			break;
-		}
-	}
-}
-
-void GameScene::EnemySpown(Vector3 pos)
-{
-	// 敵キャラの生成
-	std::unique_ptr<Enemy> enemy_ = std::make_unique<Enemy>();
-	// 敵キャラの初期化
-	enemy_->Initialize(pos);
-	// 敵キャラに自キャラのアドレスを渡す
-	enemy_->SetPlayer(player_.get());
-	// 敵キャラにゲームシーンを渡す
-	enemy_->SetGameScene(this);
-	AddEnemy(std::move(enemy_));
 }
 
 void GameScene::AddEnemyBullet(std::unique_ptr<EnemyBullet> enemyBullet)
@@ -610,8 +389,57 @@ void GameScene::AddBossBullet(std::unique_ptr<BossBullet> bossBullet)
 	bossBullets_.push_back(std::move(bossBullet));
 }
 
-void GameScene::AddEnemy(std::unique_ptr<Enemy> enemy)
+void GameScene::CheckCollisionPair(Collider* colliderA, Collider* colliderB)
 {
-	// リストに登録する
-	enemys_.push_back(std::move(enemy));
+	//フィルタリング
+	if ((colliderA->GetCollosionAttribute() & colliderB->GetCollisionMask()) == 0 ||
+		(colliderA->GetCollisionMask() & colliderB->GetCollosionAttribute()) == 0) {
+		return;
+	}
+
+	//当たり判定の計算開始
+	Vector3 Apos = colliderA->GetWorldPosition();
+	Vector3 Bpos = colliderB->GetWorldPosition();
+
+	float ARadious = colliderA->GetRadius();
+	float BRadious = colliderB->GetRadius();
+
+	// 2点間の距離の平方
+	float distanceSquared = (Bpos.x - Apos.x) * (Bpos.x - Apos.x) +
+		(Bpos.y - Apos.y) * (Bpos.y - Apos.y) +
+		(Bpos.z - Apos.z) * (Bpos.z - Apos.z);
+
+	// 判定距離の平方
+	float collisionDistanceSquared = (ARadious + BRadious) * (ARadious + BRadious);
+
+	if (distanceSquared <= collisionDistanceSquared) {
+		colliderA->OnCollision();
+		colliderB->OnCollision();
+	}
+}
+
+void GameScene::CheckAABBCollisionPair(Collider* colliderA, Collider* colliderB)
+{
+	// フィルタリング（同じ属性かつマスクが一致しない場合は判定をスキップ）
+	if ((colliderA->GetCollosionAttribute() & colliderB->GetCollisionMask()) == 0 ||
+		(colliderA->GetCollisionMask() & colliderB->GetCollosionAttribute()) == 0) {
+		return;
+	}
+
+	// AABBの最小/最大座標を取得
+	Vector3 AMin = colliderA->GetAABBMin();
+	Vector3 AMax = colliderA->GetAABBMax();
+	Vector3 BMin = colliderB->GetAABBMin();
+	Vector3 BMax = colliderB->GetAABBMax();
+
+	// AABBの重なりを判定
+	bool isColliding =
+		(AMax.x >= BMin.x && AMin.x <= BMax.x) &&
+		(AMax.y >= BMin.y && AMin.y <= BMax.y) &&
+		(AMax.z >= BMin.z && AMin.z <= BMax.z);
+
+	if (isColliding) {
+		colliderA->OnCollision();
+		colliderB->OnCollision();
+	}
 }

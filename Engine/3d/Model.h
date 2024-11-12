@@ -38,9 +38,12 @@ public:
 
 	// Getter
 	ModelData GetModelData() { return modelData; }
+	Vector3 GetScale() { return worldTransform_.scale; }
+	Vector3 GetPosition() { return worldTransform_.translate; }
 
 	// Setter
 	void SetWorldTransform(WorldTransform worldtransform) { worldTransform_ = worldtransform; }
+	void SetUVTransform(EulerTransform uvtransform) { uvTransform = uvtransform; }
 	void SetPosition(Vector3 pos) { worldTransform_.translate = pos; }
 	void SetRotation(Vector3 rot) { worldTransform_.rotate = rot; }
 	void SetScale(Vector3 scale) { worldTransform_.scale = scale; }

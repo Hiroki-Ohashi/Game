@@ -11,6 +11,7 @@ private:
 	TextureManager* textureManager_ = TextureManager::GetInstance();
 	WorldTransform worldtransform_;
 	EulerTransform transform_;
+	EulerTransform uvTransform_;
 
 	std::unique_ptr<Model> model_;
 private:

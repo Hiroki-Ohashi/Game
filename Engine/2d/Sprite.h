@@ -40,6 +40,10 @@ public:
 
 	// Setter
 	void SetAnchorPoint(const Vector2 anchorPoint_) { this->anchorPoint = anchorPoint_; }
+	void SetPosition(Vector2 pos_) { 
+		transformSprite.translate.x = pos_.x; 
+		transformSprite.translate.y = pos_.y;
+	}
 	void SetSize(Vector2 size) { textureSize = size; }
 	void SetTextureLeftTop(const Vector2 textureLeftTop_) { this->textureLeftTop = textureLeftTop_; }
 	void SetAlpha(float alpha) { materialDataSprite->color.w = alpha; }

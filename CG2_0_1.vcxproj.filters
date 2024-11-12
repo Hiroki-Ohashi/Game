@@ -175,6 +175,7 @@
       <Filter>ソースファイル\Project\GameScene</Filter>
     </ClCompile>
     <ClCompile Include="Project\GameScene\OverScene.cpp" />
+    <ClCompile Include="Project\GameObject\Stage\Object.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="externals\imgui\imconfig.h">
@@ -307,6 +308,8 @@
       <Filter>ヘッダーファイル\Project\GameScene</Filter>
     </ClInclude>
     <ClInclude Include="Project\GameScene\OverScene.h" />
+    <ClInclude Include="Project\utillity\Collider.h" />
+    <ClInclude Include="Project\GameObject\Stage\Object.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\Shaders\Fullscreen.hlsli">
