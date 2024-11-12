@@ -27,18 +27,18 @@ public:
 	// AABBの最小座標を取得
 	Vector3 GetAABBMin() const {
 		return {
-			worldtransform_.translate.x - (worldtransform_.scale.x / 2.0f),
-			worldtransform_.translate.y - (worldtransform_.scale.y / 2.0f),
-			worldtransform_.translate.z - (worldtransform_.scale.z / 2.0f)
+			worldtransform_.translate.x - (worldtransform_.scale.x / 1.0f),
+			worldtransform_.translate.y - (worldtransform_.scale.y / 1.0f),
+			worldtransform_.translate.z - (worldtransform_.scale.z / 1.0f)
 		};
 	}
 
 	// AABBの最大座標を取得
 	Vector3 GetAABBMax() const {
 		return {
-			worldtransform_.translate.x + (worldtransform_.scale.x / 2.0f),
-			worldtransform_.translate.y + (worldtransform_.scale.y / 2.0f),
-			worldtransform_.translate.z + (worldtransform_.scale.z / 2.0f)
+			worldtransform_.translate.x + (worldtransform_.scale.x / 1.0f),
+			worldtransform_.translate.y + (worldtransform_.scale.y / 1.0f),
+			worldtransform_.translate.z + (worldtransform_.scale.z / 1.0f)
 		};
 	}
 
@@ -47,7 +47,11 @@ public:
 	void SetUVTransform(EulerTransform uvtransform) { uvTransform_ = uvtransform; }
 	void SetPosition(Vector3 pos) { worldtransform_.translate = pos; }
 	void SetRotation(Vector3 rot) { worldtransform_.rotate = rot; }
-	void SetScale(Vector3 scale) { worldtransform_.scale = scale; }
+	void SetScale(Vector3 scale) { 
+		worldtransform_.scale = scale;
+		model_->SetWorldTransform(worldtransform_);
+		worldtransform_.UpdateMatrix();
+	}
 	void SetLight(bool isLight) { model_->SetLight(isLight); }
 private:
 	WorldTransform worldtransform_;

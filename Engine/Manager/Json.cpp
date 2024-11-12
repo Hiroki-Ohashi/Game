@@ -151,10 +151,6 @@ void Json::Adoption(LevelData* levelData, bool light)
 		newObject->SetRotation(objectData.rotation);
 		newObject->SetScale(objectData.scaling);
 		newObject->SetLight(light);
-		//// コライダーの初期化（スケールを反映）
-		//std::unique_ptr<Collider> collider = std::make_unique<Collider>();
-		//collider->SetHalfSize(objectData.scaling / 2.0f); // 例: スケールを反映した半径を設定
-		//newObject->SetCollider(std::move(collider));
 		objects_.push_back(std::move(newObject));
 	}
 }

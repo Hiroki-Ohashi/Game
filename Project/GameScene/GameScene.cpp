@@ -373,7 +373,6 @@ void GameScene::CheckAllCollisions()
 			player_->OnCollision();
 			objects->OnCollision();
 		}
-		//CheckAABBCollisionPair(player_.get(), objects.get());
 	}
 }
 
