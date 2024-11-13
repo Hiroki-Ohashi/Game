@@ -318,9 +318,11 @@ void GameScene::CheckAllCollisions()
 	// player
 	colliders_.push_back(std::move(player_.get()));
 	// boss
+	boss_->SetRadius(15.0f);
 	colliders_.push_back(std::move(boss_.get()));
 	// enemy
 	for (std::unique_ptr<Enemy>& enemy : json_->GetEnemys()) {
+		enemy->SetRadius(1.1f);
 		colliders_.push_back(std::move(enemy.get()));
 	}
 	// playerBullet
@@ -390,28 +392,17 @@ void GameScene::AddBossBullet(std::unique_ptr<BossBullet> bossBullet)
 
 void GameScene::CheckCollisionPair(Collider* colliderA, Collider* colliderB)
 {
-	//フィルタリング
-	if ((colliderA->GetCollosionAttribute() & colliderB->GetCollisionMask()) == 0 ||
-		(colliderA->GetCollisionMask() & colliderB->GetCollosionAttribute()) == 0) {
-		return;
-	}
-
 	//当たり判定の計算開始
 	Vector3 Apos = colliderA->GetWorldPosition();
 	Vector3 Bpos = colliderB->GetWorldPosition();
-
+	
 	float ARadious = colliderA->GetRadius();
 	float BRadious = colliderB->GetRadius();
 
-	// 2点間の距離の平方
-	float distanceSquared = (Bpos.x - Apos.x) * (Bpos.x - Apos.x) +
-		(Bpos.y - Apos.y) * (Bpos.y - Apos.y) +
-		(Bpos.z - Apos.z) * (Bpos.z - Apos.z);
+	float a2bX = (Bpos.x - Apos.x) * (Bpos.x - Apos.x); float a2bY = (Bpos.y - Apos.y) * (Bpos.y - Apos.y);
+	float a2bZ = (Bpos.z - Apos.z) * (Bpos.z - Apos.z); float L = (ARadious + BRadious) * (ARadious + BRadious);
 
-	// 判定距離の平方
-	float collisionDistanceSquared = (ARadious + BRadious) * (ARadious + BRadious);
-
-	if (distanceSquared <= collisionDistanceSquared) {
+	if (a2bX + a2bY + a2bZ <= L) {
 		colliderA->OnCollision();
 		colliderB->OnCollision();
 	}
