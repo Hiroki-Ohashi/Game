@@ -19,12 +19,12 @@ void Object::Update()
 	model_->SetWorldTransform(worldtransform_);
 	worldtransform_.UpdateMatrix();
 
-	if (ImGui::TreeNode("Object")) {
+	/*if (ImGui::TreeNode("Object")) {
 		ImGui::DragFloat3("Scale ", &worldtransform_.scale.x, 0.01f);
 		ImGui::DragFloat3("Rotate.y ", &worldtransform_.rotate.x, 0.01f);
 		ImGui::DragFloat3("Transform", &worldtransform_.translate.x, 0.01f);
 		ImGui::TreePop();
-	}
+	}*/
 }
 
 void Object::Draw(Camera* camera, uint32_t index)

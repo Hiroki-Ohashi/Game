@@ -25,6 +25,7 @@
 #include <Stage/Stage.h>
 #include <Enemy/Enemy.h>
 #include <Enemy/Boss.h>
+using namespace Engine;
 
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")

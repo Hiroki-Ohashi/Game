@@ -7,7 +7,7 @@ void Enemy::Initialize(Vector3 pos)
 	transform_ = { {0.5f,0.5f,0.5f},{0.0f,0.0f,0.0f},{pos.x,pos.y,pos.z} };
 
 	model_ = std::make_unique<Model>();
-	model_->Initialize("doron.obj", transform_);
+	model_->Initialize("cube.obj", transform_);
 
 	worldtransform_.scale = transform_.scale;
 	worldtransform_.rotate = transform_.rotate;
@@ -30,17 +30,35 @@ void Enemy::Update()
 	if (attackTimer <= 0) {
 
 		if (isDead_ == false) {
+			rensya--;
+
 			// 攻撃処理
-			if (worldtransform_.translate.z - player_->GetPos().z <= 600.0f) {
-				Attack();
+			if (rensya < 0) {
+				if (worldtransform_.translate.z - player_->GetPos().z <= 600.0f) {
+					Attack();
+					rensyanum += 1;
+				}
+
+				if (rensyanum < 3) {
+					rensya = 10;
+				}
 			}
 		}
 
+		/*rensya--;
+		if (rensya < 0) {
+			rensyanum += 1;
+			rensya = 10;
+		}*/
+
 		// 発射タイマーを初期化
-		attackTimer = kFireInterval;
+		if (rensyanum >= 3) {
+			attackTimer = kFireInterval;
+			rensyanum = 0;
+		}
 	}
 
-	if (worldtransform_.translate.z - player_->GetPos().z <= 600.0f) {
+	/*if (worldtransform_.translate.z - player_->GetPos().z <= 600.0f) {
 		if (worldtransform_.translate.y < posParam.y) {
 			speedY += 0.005f;
 		}
@@ -49,7 +67,7 @@ void Enemy::Update()
 		}
 
 		worldtransform_.translate.y += speedY;
-	}
+	}*/
 
 	model_->SetWorldTransform(worldtransform_);
 
@@ -71,12 +89,14 @@ void Enemy::Update()
 	worldtransform_.rotate.x = std::atan2(-velocity_.y, velocityXZ);
 	worldtransform_.UpdateMatrix();
 
-	/*if (ImGui::TreeNode("Enemy")) {
+	if (ImGui::TreeNode("Enemy")) {
 		ImGui::DragFloat3("Rotate.y ", &worldtransform_.rotate.x, 0.01f);
 		ImGui::DragFloat3("Transform", &worldtransform_.translate.x, 0.01f);
 		ImGui::Checkbox("isDead", &isDead_);
+		ImGui::DragInt("rensyanum : &d", &rensyanum);
+		ImGui::DragInt("rensya : &d", &rensya);
 		ImGui::TreePop();
-	}*/
+	}
 }
 
 void Enemy::Draw(Camera* camera)

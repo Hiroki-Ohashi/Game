@@ -1,7 +1,7 @@
 #pragma once
 #include <WorldTransform.h>
 #include <Model.h>
-
+using namespace Engine;
 class Stage {
 public:
 	void Initialize();

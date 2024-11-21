@@ -7,6 +7,8 @@
 #include <Skydome.h>
 #include <Json.h>
 
+using namespace Engine;
+
 /// <summary>
 /// OverScene.h
 /// クリアシーンのヘッダーファイル

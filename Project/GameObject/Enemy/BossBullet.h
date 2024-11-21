@@ -2,7 +2,7 @@
 #include <WorldTransform.h>
 #include <Model.h>
 #include "Collider.h"
-
+using namespace Engine;
 
 class Player;
 

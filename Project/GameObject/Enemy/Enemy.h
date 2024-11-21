@@ -5,6 +5,7 @@
 #include <Model.h>
 #include "EnemyBullet.h"
 #include "Collider.h"
+using namespace Engine;
 
 class Player;
 class GameScene;
@@ -61,8 +62,10 @@ private:
 	uint32_t enemyTex;
 	// 発射タイマー
 	int32_t attackTimer = 10;
-	static const int kFireInterval = 180;
+	static const int kFireInterval = 120;
 	bool isDead_;
+	int rensya = 10;
+	int rensyanum = 0;
 
 	// 初期位置
 	Vector3 posParam;

@@ -5,6 +5,7 @@
 #include "PlayerBullet.h"
 #include <Sprite.h>
 #include "Collider.h"
+using namespace Engine;
 
 /// <summary>
 /// Player.h

@@ -36,9 +36,4 @@ private:
 	static LRESULT WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 	static inline HWND hwnd = nullptr;
 	static inline ID3D12Debug1* debugController = nullptr;
-
-	WinApp() = default;
-	~WinApp() = default;
-	WinApp(const WinApp&) = delete;
-	const WinApp& operator=(const WinApp&) = delete;
 };

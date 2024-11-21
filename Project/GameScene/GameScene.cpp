@@ -1,6 +1,8 @@
 #include "GameScene.h"
 #include <time.h>
 
+using namespace Engine;
+
 /// <summary>
 /// GameScene.cpp
 /// ゲームシーンのソースファイル
@@ -198,8 +200,8 @@ void GameScene::Update(){
 			camera_.cameraTransform.translate = { player_->GetPos().x + randX, player_->GetPos().y + 1.5f + randY,  player_->GetPos().z - 20.0f };
 
 			blurStrength_ -= 0.002f;
-			if (blurStrength_ <= 0.0f) {
-				blurStrength_ = 0.0f;
+			if (blurStrength_ <= 0.05f) {
+				blurStrength_ = 0.05f;
 			}
 
 			postProcess_->SetBlurStrength(blurStrength_);

@@ -1,7 +1,7 @@
 #pragma once
 #include <Camera.h>
 #include <Model.h>
-
+using namespace Engine;
 /// <summary>
 /// Skydome.h
 /// Skydome生成のヘッダーファイル

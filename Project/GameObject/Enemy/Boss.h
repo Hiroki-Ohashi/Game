@@ -5,6 +5,7 @@
 #include <Model.h>
 #include "BossBullet.h"
 #include "Collider.h"
+using namespace Engine;
 
 /// <summary>
 /// Boss.h

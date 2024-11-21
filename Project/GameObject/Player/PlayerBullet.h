@@ -2,6 +2,7 @@
 #include <Camera.h>
 #include <Model.h>
 #include "Collider.h"
+using namespace Engine;
 
 /// <summary>
 /// PlayerBullet.h

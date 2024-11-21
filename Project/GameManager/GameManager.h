@@ -13,6 +13,8 @@
 #include "imgui.h"
 #include "Light.h"
 
+using namespace Engine;
+
 /// <summary>
 /// GameManager.h
 /// Sceneのマネージャーのヘッダーファイル

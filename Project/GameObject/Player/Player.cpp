@@ -11,7 +11,7 @@ Player::~Player() {
 
 void Player::Initialize()
 {
-	transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,25.0f,-200.0f} };
+	transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,25.0f,0.0f} };
 	reticleTransform_ = { {0.5f,0.5f,0.5f},{0.0f,0.0f,0.0f},{transform_.translate.x,transform_.translate.y,transform_.translate.z + 25.0f} };
 
 	model_ = std::make_unique<Model>();
@@ -62,7 +62,7 @@ void Player::Update()
 	// キャラクターの移動速さ
 	const float kCharacterSpeed = 0.5f;
 	// 回転速さ[ラジアン/frame]
-	float kRotSpeed = 0.01f;
+	float kRotSpeed = 0.05f;
 
 	// 押した方向で移動ベクトルを変更(左右)
 	if (input_->PushKey(DIK_A)) {
@@ -162,7 +162,7 @@ void Player::Update()
 
 	if (ImGui::TreeNode("Player")) {
 		ImGui::DragFloat3("Rotate.y ", &worldtransform_.rotate.x, 0.01f);
-		ImGui::DragFloat3("Transform", &worldtransform_.translate.x, 0.01f);
+		ImGui::DragFloat3("Transform", &worldtransform_.translate.x, 0.1f);
 		ImGui::Text("PreyerState = %d", hitTimer_);
 		ImGui::TreePop();
 	}
