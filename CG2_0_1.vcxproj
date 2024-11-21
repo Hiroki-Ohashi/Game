@@ -108,6 +108,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Engine\Manager\Json.cpp" />
+    <ClCompile Include="Project\GameObject\Stage\Object.cpp" />
     <ClCompile Include="Project\GameScene\OverScene.cpp" />
     <ClCompile Include="Project\GameObject\Enemy\BossBullet.cpp" />
     <ClCompile Include="Project\GameObject\Enemy\Boss.cpp" />
@@ -151,6 +152,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Project\GameObject\Stage\Stage.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Project\GameObject\Stage\Object.h" />
+    <ClInclude Include="Project\utillity\Collider.h" />
     <ClInclude Include="Engine\Manager\Json.h" />
     <ClInclude Include="externals\json\json.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>

@@ -7,10 +7,11 @@
 
 void PlayerBullet::Initialize(Vector3 pos, Vector3 velocity)
 {
-	transform = { {0.05f,0.05f,0.05f},{0.0f,0.0f,0.0f},{pos.x,pos.y,pos.z - 5.0f} };
+	transform = { {0.5f,0.5f,0.5f},{0.0f,0.0f,0.0f},{pos.x,pos.y,pos.z - 4.0f} };
 
 	model_ = std::make_unique<Model>();
 	model_->Initialize("misairu.obj", transform);
+	model_->SetLight(false);
 
 	worldtransform_.scale = transform.scale;
 	worldtransform_.rotate = transform.rotate;
@@ -24,6 +25,8 @@ void PlayerBullet::Initialize(Vector3 pos, Vector3 velocity)
 
 	float velocityXZ = sqrt((velo.x * velo.x) + (velo.z * velo.z));
 	worldtransform_.rotate.x = std::atan2(-velo.y, velocityXZ);
+
+	isDead_ = false;
 }
 
 void PlayerBullet::Update()
@@ -45,4 +48,21 @@ void PlayerBullet::Draw(Camera* camera, uint32_t index)
 	if (isDead_ == false) {
 		model_->Draw(camera, index);
 	}
+}
+
+void PlayerBullet::OnCollision()
+{
+	isDead_ = true;
+}
+
+Vector3 PlayerBullet::GetWorldPosition() const
+{
+	// ワールド座標を入れる変数
+	Vector3 worldPos;
+	// ワールド行列の平行移動成分を取得（ワールド座標）
+	worldPos.x = worldtransform_.matWorld.m[3][0];
+	worldPos.y = worldtransform_.matWorld.m[3][1];
+	worldPos.z = worldtransform_.matWorld.m[3][2];
+
+	return worldPos;
 }

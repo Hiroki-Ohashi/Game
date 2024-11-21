@@ -26,6 +26,8 @@ void EnemyBullet::Initialize(Vector3 pos, Vector3 velocity)
 	float velocityXZ = sqrt((velocity_.x * velocity_.x) + (velocity_.z * velocity_.z));
 	worldtransform_.rotate.x = std::atan2(-velocity_.y, velocityXZ);
 	worldtransform_.UpdateMatrix();
+
+	isDead_ = false;
 }
 
 void EnemyBullet::Update()
@@ -41,15 +43,15 @@ void EnemyBullet::Update()
 	// 引数で受け取った速度をメンバ変数に代入
 	velocity_ = Slerp(toPlayer, transform.translate, t);
 
-	velocity_.x *= 0.5f;
-	velocity_.y *= 0.5f;
-	velocity_.z *= 0.5f;
+	velocity_.x *= 2.5f;
+	velocity_.y *= 2.5f;
+	velocity_.z *= 2.5f;
 
-	// Y軸周り角度（Θy）
-	worldtransform_.rotate.y = std::atan2(velocity_.x, velocity_.z);
+	//// Y軸周り角度（Θy）
+	//worldtransform_.rotate.y = std::atan2(velocity_.x, velocity_.z);
 
-	float velocityXZ = sqrt((velocity_.x * velocity_.x) + (velocity_.z * velocity_.z));
-	worldtransform_.rotate.x = std::atan2(-velocity_.y, velocityXZ);
+	//float velocityXZ = sqrt((velocity_.x * velocity_.x) + (velocity_.z * velocity_.z));
+	//worldtransform_.rotate.x = std::atan2(-velocity_.y, velocityXZ);
 
 	// 座標を移動させる(1フレーム分の移動量を足しこむ)
 	worldtransform_.translate.x += velocity_.x;
@@ -63,9 +65,35 @@ void EnemyBullet::Update()
 	if (--deathTimer_ <= 0) {
 		isDead_ = true;
 	}
+
+	/*if (ImGui::TreeNode("EnemyBullet")) {
+		ImGui::DragFloat3("Rotate.y ", &worldtransform_.rotate.x, 0.01f);
+		ImGui::DragFloat3("Transform", &worldtransform_.translate.x, 0.01f);
+		ImGui::Checkbox("isDead", &isDead_);
+		ImGui::TreePop();
+	}*/
 }
 
 void EnemyBullet::Draw(Camera* camera, uint32_t index)
 {
-	model_->Draw(camera, index);
+	if (isDead_ == false) {
+		model_->Draw(camera, index);
+	}
+}
+
+void EnemyBullet::OnCollision()
+{
+	isDead_ = true;
+}
+
+Vector3 EnemyBullet::GetWorldPosition() const
+{
+	// ワールド座標を入れる変数
+	Vector3 worldPos;
+	// ワールド行列の平行移動成分を取得（ワールド座標）
+	worldPos.x = worldtransform_.matWorld.m[3][0];
+	worldPos.y = worldtransform_.matWorld.m[3][1];
+	worldPos.z = worldtransform_.matWorld.m[3][2];
+
+	return worldPos;
 }

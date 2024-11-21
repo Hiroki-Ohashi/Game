@@ -6,6 +6,7 @@
 #include <PostProcess.h>
 #include <Skydome.h>
 #include <Json.h>
+using namespace Engine;
 
 /// <summary>
 /// ClearScene.h

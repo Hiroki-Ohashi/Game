@@ -11,14 +11,15 @@ Player::~Player() {
 
 void Player::Initialize()
 {
-	transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,25.0f,-200.0f} };
-	reticleTransform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{transform_.translate.x,transform_.translate.y,transform_.translate.z + 40.0f} };
+	transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,25.0f,0.0f} };
+	reticleTransform_ = { {0.5f,0.5f,0.5f},{0.0f,0.0f,0.0f},{transform_.translate.x,transform_.translate.y,transform_.translate.z + 25.0f} };
 
 	model_ = std::make_unique<Model>();
 	model_->Initialize("player.obj", transform_);
 
 	reticleModel_ = std::make_unique<Model>();
 	reticleModel_->Initialize("board.obj", reticleTransform_);
+	reticleModel_->SetLight(false);
 
 	worldtransform_.Initialize();
 	worldtransform_.scale = transform_.scale;
@@ -38,6 +39,7 @@ void Player::Initialize()
 	hit = textureManager_->Load("resources/red.png");
 
 	isHit_ = false;
+	HP = 5;
 }
 
 void Player::Update()
@@ -60,7 +62,7 @@ void Player::Update()
 	// キャラクターの移動速さ
 	const float kCharacterSpeed = 0.5f;
 	// 回転速さ[ラジアン/frame]
-	float kRotSpeed = 0.01f;
+	float kRotSpeed = 0.05f;
 
 	// 押した方向で移動ベクトルを変更(左右)
 	if (input_->PushKey(DIK_A)) {
@@ -122,15 +124,25 @@ void Player::Update()
 	worldtransform_.rotate.x = std::atan2(-velocity_.y, velocityXZ);
 
 	// 座標移動(ベクトルの加算)
-	worldtransform_.translate.x += velocity.x * 1.5f;
-	worldtransform_.translate.y += velocity.y * 1.5f;
-	worldtransform_.translate.z += velocity.z * 1.5f;
+	worldtransform_.translate.x += velocity.x * 1.52f;
+	worldtransform_.translate.y += velocity.y * 1.52f;
+	worldtransform_.translate.z += velocity.z * 1.52f;
 	worldtransform_.UpdateMatrix();
 
 	reticleWorldtransform_.translate.z += 1.5f;
 
 	model_->SetWorldTransform(worldtransform_);
 	reticleModel_->SetWorldTransform(reticleWorldtransform_);
+
+	// 移動限界座標
+	const float kMoveLimitX = 80.9f;
+	const float kMoveLimitY = 100.0f;
+
+	// 範囲超えない処理
+	reticleWorldtransform_.translate.x = max(reticleWorldtransform_.translate.x, -kMoveLimitX);
+	reticleWorldtransform_.translate.x = std::min(reticleWorldtransform_.translate.x, +kMoveLimitX);
+	reticleWorldtransform_.translate.y = max(reticleWorldtransform_.translate.y, -7.0f);
+	reticleWorldtransform_.translate.y = std::min(reticleWorldtransform_.translate.y, +kMoveLimitY);
 
 	// 攻撃処理
 	Attack();
@@ -150,7 +162,7 @@ void Player::Update()
 
 	if (ImGui::TreeNode("Player")) {
 		ImGui::DragFloat3("Rotate.y ", &worldtransform_.rotate.x, 0.01f);
-		ImGui::DragFloat3("Transform", &worldtransform_.translate.x, 0.01f);
+		ImGui::DragFloat3("Transform", &worldtransform_.translate.x, 0.1f);
 		ImGui::Text("PreyerState = %d", hitTimer_);
 		ImGui::TreePop();
 	}
@@ -158,6 +170,7 @@ void Player::Update()
 
 void Player::Draw(Camera* camera_)
 {
+
 	if (isHit_) {
 		model_->Draw(camera_, hit);
 	}
@@ -170,11 +183,28 @@ void Player::Draw(Camera* camera_)
 
 void Player::BulletDraw(Camera* camera_)
 {
-
 	// 弾描画
 	for (std::unique_ptr<PlayerBullet> &bullet : bullets_) {
 		bullet->Draw(camera_, bulletTex);
 	}
+}
+
+void Player::OnCollision()
+{
+	isHit_ = true;
+	HP -= 1;
+}
+
+Vector3 Player::GetWorldPosition() const
+{
+	// ワールド座標を入れる変数
+	Vector3 worldPos;
+	// ワールド行列の平行移動成分を取得（ワールド座標）
+	worldPos.x = worldtransform_.matWorld.m[3][0];
+	worldPos.y = worldtransform_.matWorld.m[3][1];
+	worldPos.z = worldtransform_.matWorld.m[3][2];
+
+	return worldPos;
 }
 
 Vector3 Player::Get3DWorldPosition()

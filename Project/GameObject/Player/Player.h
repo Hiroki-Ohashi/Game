@@ -3,6 +3,9 @@
 #include <Model.h>
 #include <Input.h>
 #include "PlayerBullet.h"
+#include <Sprite.h>
+#include "Collider.h"
+using namespace Engine;
 
 /// <summary>
 /// Player.h
@@ -10,7 +13,7 @@
 /// </summary>
 
 // Playerクラス
-class Player {
+class Player : public Collider {
 public:
 	// デストラクタ
 	~Player();
@@ -24,10 +27,8 @@ public:
 	void BulletDraw(Camera* camera_);
 
 	// 当たり判定処理
-	void OnCollision() { 
-		isHit_ = true; 
-		HP -= 1;
-	}
+	void OnCollision() override;
+	Vector3 GetWorldPosition() const override;
 
 	// Getter
 	Vector3 GetPos() { return worldtransform_.translate; }
@@ -35,6 +36,32 @@ public:
 	Vector3 Get3DWorldPosition();
 	Vector3 GetVelocity() { return velocity_; }
 	int32_t GetHP() { return HP; }
+	bool GetIsHit() { return isHit_; }
+	Vector3 GetHalfSize() const {
+		return {
+			worldtransform_.scale.x / 2.0f,
+			worldtransform_.scale.y / 2.0f,
+			worldtransform_.scale.z / 2.0f
+		};
+	}
+
+	// AABBの最小座標を取得
+	Vector3 GetAABBMin() const {
+		return {
+			worldtransform_.translate.x - (worldtransform_.scale.x / 1.0f),
+			worldtransform_.translate.y - (worldtransform_.scale.y / 1.0f),
+			worldtransform_.translate.z - (worldtransform_.scale.z / 1.0f)
+		};
+	}
+
+	// AABBの最大座標を取得
+	Vector3 GetAABBMax() const {
+		return {
+			worldtransform_.translate.x + (worldtransform_.scale.x / 1.0f),
+			worldtransform_.translate.y + (worldtransform_.scale.y / 1.0f),
+			worldtransform_.translate.z + (worldtransform_.scale.z / 1.0f)
+		};
+	}
 
 	// 弾リストを取得
 	 std::vector<std::unique_ptr<PlayerBullet>>& GetBullets() { return bullets_; }

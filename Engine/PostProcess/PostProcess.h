@@ -29,83 +29,86 @@ struct NoiseParams {
 	int sampleCount;
 };
 
-// postProcessクラス
-class PostProcess {
-public:
-	// 初期化処理
-	void Initialize(Type type);
-	// 更新処理
-	void NoiseUpdate(float time_);
-	void VignetteFadeIn(float light_, float shape_);
-	void VignetteFadeOut(float light_, float shape_, float lightEnd, float shapeEnd);
-	// 描画処理
-	void Draw();
-	void NoiseDraw();
+namespace Engine
+{
+	// postProcessクラス
+	class PostProcess {
+	public:
+		// 初期化処理
+		void Initialize(Type type);
+		// 更新処理
+		void NoiseUpdate(float time_);
+		void VignetteFadeIn(float light_, float shape_);
+		void VignetteFadeOut(float light_, float shape_, float lightEnd, float shapeEnd);
+		// 描画処理
+		void Draw();
+		void NoiseDraw();
 
-public:
+	public:
 
-	// vignetteのGetterとSetter
-	float GetVignetteLight() { return noiseData_->vignetteLight; }
-	void SetVignetteLight(float light_) { noiseData_->vignetteLight = light_; }
+		// vignetteのGetterとSetter
+		float GetVignetteLight() { return noiseData_->vignetteLight; }
+		void SetVignetteLight(float light_) { noiseData_->vignetteLight = light_; }
 
-	float GetVignetteShape() { return noiseData_->vignetteShape; }
-	void SetVignetteShape(float shape_) { noiseData_->vignetteShape = shape_; }
+		float GetVignetteShape() { return noiseData_->vignetteShape; }
+		void SetVignetteShape(float shape_) { noiseData_->vignetteShape = shape_; }
 
-	void SetVignette(float light_, float shape_){ 
-		noiseData_->vignetteLight = light_;
-		noiseData_->vignetteShape = shape_;
-	}
+		void SetVignette(float light_, float shape_) {
+			noiseData_->vignetteLight = light_;
+			noiseData_->vignetteShape = shape_;
+		}
 
-	// blurのGetterとSetter
-	float GetBlurStrength() { return noiseData_->blurStrength; }
-	void SetBlurStrength(float blurStrength_) { noiseData_->blurStrength = blurStrength_; }
+		// blurのGetterとSetter
+		float GetBlurStrength() { return noiseData_->blurStrength; }
+		void SetBlurStrength(float blurStrength_) { noiseData_->blurStrength = blurStrength_; }
 
-	int GetSampleCount() { return noiseData_->sampleCount; }
-	void SetSampleCount(int sampleCount_) { noiseData_->sampleCount = sampleCount_; }
+		int GetSampleCount() { return noiseData_->sampleCount; }
+		void SetSampleCount(int sampleCount_) { noiseData_->sampleCount = sampleCount_; }
 
-	void SetBlur(float blurStrength_, int sampleCount_) {
-		noiseData_->blurStrength = blurStrength_;
-		noiseData_->sampleCount = sampleCount_;
-	}
+		void SetBlur(float blurStrength_, int sampleCount_) {
+			noiseData_->blurStrength = blurStrength_;
+			noiseData_->sampleCount = sampleCount_;
+		}
 
-	// noiseのGetterとSetter
-	float GetLineStrength() { return noiseData_->lineStrength; }
-	void SetLineStrength(float lineStrength_) { noiseData_->lineStrength = lineStrength_; }
+		// noiseのGetterとSetter
+		float GetLineStrength() { return noiseData_->lineStrength; }
+		void SetLineStrength(float lineStrength_) { noiseData_->lineStrength = lineStrength_; }
 
-	float GetNoiseStrength() { return noiseData_->noiseStrength; }
-	void SetNoiseStrength(float noiseStrength_) { noiseData_->noiseStrength = noiseStrength_; }
+		float GetNoiseStrength() { return noiseData_->noiseStrength; }
+		void SetNoiseStrength(float noiseStrength_) { noiseData_->noiseStrength = noiseStrength_; }
 
-	void SetNoise(float lineStrength_, float noiseStrength_) {
-		noiseData_->lineStrength = lineStrength_;
-		noiseData_->noiseStrength = noiseStrength_;
-	}
+		void SetNoise(float lineStrength_, float noiseStrength_) {
+			noiseData_->lineStrength = lineStrength_;
+			noiseData_->noiseStrength = noiseStrength_;
+		}
 
-private:
-	// PSO生成
-	void CreatePSO();
-	void CreateGrayPSO();
-	void CreateVignettePSO();
-	void CreateBoxPSO();
-	void CreateGaussianPSO();
-	void CreateHSVPSO();
-	void CreateNoisePSO();
-	void CreateRadialPSO();
+	private:
+		// PSO生成
+		void CreatePSO();
+		void CreateGrayPSO();
+		void CreateVignettePSO();
+		void CreateBoxPSO();
+		void CreateGaussianPSO();
+		void CreateHSVPSO();
+		void CreateNoisePSO();
+		void CreateRadialPSO();
 
-	// リソース作成
-	Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(Microsoft::WRL::ComPtr<ID3D12Device> device, size_t sizeInbytes);
+		// リソース作成
+		Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(Microsoft::WRL::ComPtr<ID3D12Device> device, size_t sizeInbytes);
 
-private:
-	// シングルトン呼び出し
-	DirectXCommon* dir_ = DirectXCommon::GetInsTance();
+	private:
+		// シングルトン呼び出し
+		DirectXCommon* dir_ = DirectXCommon::GetInsTance();
 
-	// PSO
-	Microsoft::WRL::ComPtr<ID3DBlob> signatureBlob = nullptr;
-	Microsoft::WRL::ComPtr<ID3DBlob> errorBlob = nullptr;
+		// PSO
+		Microsoft::WRL::ComPtr<ID3DBlob> signatureBlob = nullptr;
+		Microsoft::WRL::ComPtr<ID3DBlob> errorBlob = nullptr;
 
-	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;
-	Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineState_ = nullptr;
+		Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature_ = nullptr;
+		Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineState_ = nullptr;
 
-	// noise
-	NoiseParams* noiseData_ = nullptr;
-	Microsoft::WRL::ComPtr<ID3D12Resource> noise_;
-};
+		// noise
+		NoiseParams* noiseData_ = nullptr;
+		Microsoft::WRL::ComPtr<ID3D12Resource> noise_;
+	};
+}

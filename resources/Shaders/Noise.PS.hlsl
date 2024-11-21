@@ -61,7 +61,7 @@ PixelShaderOutput main(VertexShaderOutput input)
 
     // ラジアルブラー処理：中心に向かってサンプリング
     float4 resultColor = color; // 初期の色（最初のサンプル）
-    float totalWeight = 1.0;
+    float totalWeight = 0.1;
 
     for (int i = 1; i <= gParams.sampleCount; ++i)
     {

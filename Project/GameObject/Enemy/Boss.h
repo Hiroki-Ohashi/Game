@@ -4,6 +4,8 @@
 #include <WorldTransform.h>
 #include <Model.h>
 #include "BossBullet.h"
+#include "Collider.h"
+using namespace Engine;
 
 /// <summary>
 /// Boss.h
@@ -14,7 +16,7 @@ class Player;
 class GameScene;
 
 // Bossクラス
-class Boss {
+class Boss : public Collider {
 public:
 	// 初期化処理
 	void Initialize(Vector3 pos);
@@ -29,7 +31,8 @@ public:
 	void Attack();
 
 	// 当たり判定処理
-	void OnCollision();
+	void OnCollision() override;
+	Vector3 GetWorldPosition() const override;
 
 	// 死亡判定
 	bool IsDead() const { return isDead_; }

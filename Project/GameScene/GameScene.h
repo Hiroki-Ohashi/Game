@@ -25,6 +25,7 @@
 #include <Stage/Stage.h>
 #include <Enemy/Enemy.h>
 #include <Enemy/Boss.h>
+using namespace Engine;
 
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -56,23 +57,9 @@ public:
 	// 当たり判定
 	void CheckAllCollisions();
 
-	/// <summary>
-	/// 敵発生データの読み込み
-	/// </summary>
-	void LoadEnemyPopData();
-
-	/// <summary>
-	/// 敵発生コマンドの更新
-	/// </summary>
-	void UpdateEnemyPopCommands();
-
-	// 敵生成
-	void EnemySpown(Vector3 pos);
-
 	// リスト登録
 	void AddEnemyBullet(std::unique_ptr<EnemyBullet> enemyBullet);
 	void AddBossBullet(std::unique_ptr<BossBullet> bossBullet);
-	void AddEnemy(std::unique_ptr<Enemy> enemy);
 
 private:
 	// カメラ
@@ -86,7 +73,6 @@ private:
 	std::unique_ptr<Player> player_;
 
 	// 敵
-	std::vector<std::unique_ptr<Enemy>> enemys_;
 	std::unique_ptr<Boss> boss_;
 	// 敵弾
 	std::vector<std::unique_ptr<EnemyBullet>> enemyBullets_;
@@ -99,9 +85,19 @@ private:
 	// json
 	std::unique_ptr<Json> json_ = nullptr;
 	LevelData* levelData_ = nullptr;
+
+	// UI
+	std::unique_ptr<Sprite> ui_ = nullptr;
+
+	// Stage
+	std::unique_ptr<Stage> stage_ = nullptr;
   
 	// 天球
 	std::unique_ptr<Skydome> skydome_;
+
+	// 当たり判定
+	void CheckCollisionPair(Collider* colliderA, Collider* colliderB);
+	void CheckAABBCollisionPair(Collider* colliderA, Collider* colliderB);
 private:
 	// テクスチャ
 	uint32_t enemyBulletTex;
@@ -110,9 +106,16 @@ private:
 	uint32_t ready;
 	uint32_t go;
 
+	uint32_t hp5;
+	uint32_t hp4;
+	uint32_t hp3;
+	uint32_t hp2;
+	uint32_t hp1;
+	uint32_t hp0;
+
 	// bossParam
 	Vector3 pos_ = { 0.0f, 25.0f, 500.0f };
-	Vector3 pos2_ = { 0.0f, 100.0f, 750.0f };
+	Vector3 pos2_ = { 0.0f, 100.0f, 4100.0f };
 
 	// シェイク
 	int randX = 0;

@@ -2,8 +2,10 @@
 #include <Windows.h>
 #include <cstdint>
 #include <d3d12.h>
+#include <WinApp.h>
+#include "DirectXCommon.h"
 
-class WinApp;
+using namespace Engine;
 
 // <summary>
 /// ImGuiManager.h

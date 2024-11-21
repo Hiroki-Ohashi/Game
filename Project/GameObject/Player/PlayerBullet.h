@@ -1,6 +1,8 @@
 #pragma once
 #include <Camera.h>
 #include <Model.h>
+#include "Collider.h"
+using namespace Engine;
 
 /// <summary>
 /// PlayerBullet.h
@@ -8,7 +10,7 @@
 /// </summary>
 
 // PlayerBulletクラス
-class PlayerBullet {
+class PlayerBullet : public Collider {
 public:
 	// 初期化処理
 	void Initialize(Vector3 pos, Vector3 velocity);
@@ -18,7 +20,8 @@ public:
 	void Draw(Camera* camera, uint32_t index);
 
 	// 当たり判定処理
-	void OnCollision() { isDead_ = true; }
+	void OnCollision() override;
+	Vector3 GetWorldPosition() const override;
 
 	// 脂肪判定
 	bool IsDead() const { return isDead_; }
