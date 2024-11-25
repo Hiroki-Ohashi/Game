@@ -76,7 +76,7 @@ void GameScene::Initialize() {
 
 	isVignette_ = true;
 	isGameClear_ = false;
-	isApploach_ = true;
+	isApploach_ = false;
 	isGameOver_ = false;
 
 	camera_.cameraTransform.translate = { player_->GetPos().x, player_->GetPos().y + 1.5f,  player_->GetPos().z - 20.0f };

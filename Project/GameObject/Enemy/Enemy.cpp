@@ -9,6 +9,9 @@ void Enemy::Initialize(Vector3 pos)
 	model_ = std::make_unique<Model>();
 	model_->Initialize("cube.obj", transform_);
 
+	particle_ = std::make_unique<Particles>();
+	particle_->Initialize("plane.obj", {0.0f, 0.0f, 0.0f}, 30);
+
 	worldtransform_.scale = transform_.scale;
 	worldtransform_.rotate = transform_.rotate;
 	worldtransform_.translate = transform_.translate;
@@ -103,6 +106,9 @@ void Enemy::Draw(Camera* camera)
 {
 	if (isDead_ == false) {
 		model_->Draw(camera, enemyTex);
+	}
+	else {
+		particle_->Draw(camera, enemyTex);
 	}
 }
 

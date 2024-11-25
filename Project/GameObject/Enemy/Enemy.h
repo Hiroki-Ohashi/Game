@@ -5,6 +5,7 @@
 #include <Model.h>
 #include "EnemyBullet.h"
 #include "Collider.h"
+#include "Particle.h"
 using namespace Engine;
 
 class Player;
@@ -53,6 +54,8 @@ private:
 	WorldTransform worldtransform_;
 	EulerTransform transform_;
 	std::unique_ptr<Model> model_;
+
+	std::unique_ptr<Engine::Particles> particle_ = nullptr;
 
 	// 呼び出し
 	Player* player_ = nullptr;

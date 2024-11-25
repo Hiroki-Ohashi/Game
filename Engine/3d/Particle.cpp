@@ -14,7 +14,7 @@ namespace Engine
 	void Particles::Initialize(const std::string& filename, Vector3 pos, uint32_t index) {
 
 		// モデル読み込み
-		modelData = texture_->LoadModelFile("resources", filename);
+		modelData = texture_->LoadObjFile("resources", filename);
 		DirectX::ScratchImage mipImages2 = texture_->LoadTexture(modelData.material.textureFilePath);
 
 		// 頂点の座標
@@ -92,10 +92,13 @@ namespace Engine
 			++numInstance;
 		}
 
-		Matrix4x4 uvtransformMatrix = MakeScaleMatrix(uvTransform.scale);
+		/*Matrix4x4 uvtransformMatrix = MakeScaleMatrix(uvTransform.scale);
 		uvtransformMatrix = Multiply(uvtransformMatrix, MakeRotateZMatrix(uvTransform.rotate.z));
 		uvtransformMatrix = Multiply(uvtransformMatrix, MakeTranslateMatrix(uvTransform.translate));
-		materialData->uvTransform = uvtransformMatrix;
+		materialData->uvTransform = uvtransformMatrix;*/
+
+		ID3D12DescriptorHeap* descriptorHeaps[] = { DirectXCommon::GetInsTance()->GetSrvDescriptorHeap2().Get()}; // Use your actual descriptor heap
+		DirectXCommon::GetInsTance()->GetCommandList()->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
 
 		// DirectXCommon::GetInsTance()を設定。PSOに設定しているけど別途設定が必要
 		DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootSignature(rootSignature.Get());
