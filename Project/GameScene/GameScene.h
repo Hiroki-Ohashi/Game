@@ -95,6 +95,8 @@ private:
 	// 天球
 	std::unique_ptr<Skydome> skydome_;
 
+	std::unique_ptr<Particles> particle_ = nullptr;
+
 	// 当たり判定
 	void CheckCollisionPair(Collider* colliderA, Collider* colliderB);
 	void CheckAABBCollisionPair(Collider* colliderA, Collider* colliderB);

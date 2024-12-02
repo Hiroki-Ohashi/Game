@@ -112,7 +112,7 @@ namespace Engine
 		HANDLE fenceEvent = 0;
 		std::chrono::steady_clock::time_point reference_;
 
-		const Vector4 kRenderTargetClearValue = { 0.1f, 0.25f, 0.5f, 1.0f }; // いったんわかりやすいように赤
+		const Vector4 kRenderTargetClearValue = { 0.0f, 0.0f, 0.0f, 1.0f }; // いったんわかりやすいように赤
 
 		D3D12_VIEWPORT viewport{};
 		D3D12_RECT scissorRect{};

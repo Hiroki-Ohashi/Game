@@ -55,8 +55,6 @@ private:
 	EulerTransform transform_;
 	std::unique_ptr<Model> model_;
 
-	std::unique_ptr<Engine::Particles> particle_ = nullptr;
-
 	// 呼び出し
 	Player* player_ = nullptr;
 	GameScene* gameScene_ = nullptr;

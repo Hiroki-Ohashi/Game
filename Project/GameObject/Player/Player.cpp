@@ -123,13 +123,13 @@ void Player::Update()
 	float velocityXZ = sqrt((velocity_.x * velocity_.x) + (velocity_.z * velocity_.z));
 	worldtransform_.rotate.x = std::atan2(-velocity_.y, velocityXZ);
 
-	// 座標移動(ベクトルの加算)
-	worldtransform_.translate.x += velocity.x * 1.52f;
-	worldtransform_.translate.y += velocity.y * 1.52f;
-	worldtransform_.translate.z += velocity.z * 1.52f;
-	worldtransform_.UpdateMatrix();
+	//// 座標移動(ベクトルの加算)
+	//worldtransform_.translate.x += velocity.x * 1.52f;
+	//worldtransform_.translate.y += velocity.y * 1.52f;
+	//worldtransform_.translate.z += velocity.z * 1.52f;
+	//worldtransform_.UpdateMatrix();
 
-	reticleWorldtransform_.translate.z += 1.5f;
+	//reticleWorldtransform_.translate.z += 1.5f;
 
 	model_->SetWorldTransform(worldtransform_);
 	reticleModel_->SetWorldTransform(reticleWorldtransform_);

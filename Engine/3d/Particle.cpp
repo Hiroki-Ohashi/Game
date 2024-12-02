@@ -14,7 +14,13 @@ namespace Engine
 	void Particles::Initialize(const std::string& filename, Vector3 pos, uint32_t index) {
 
 		// モデル読み込み
-		modelData = texture_->LoadObjFile("resources", filename);
+		const std::wstring filePathW = Convert::ConvertString(filename);;
+		if (filePathW.ends_with(L".obj")) {
+			modelData = texture_->LoadObjFile("resources", filename);
+		}
+		else {
+			modelData = texture_->LoadModelFile("resources", filename);
+		}
 		DirectX::ScratchImage mipImages2 = texture_->LoadTexture(modelData.material.textureFilePath);
 
 		// 頂点の座標
@@ -43,8 +49,8 @@ namespace Engine
 		instancingSrvDesc.Buffer.StructureByteStride = sizeof(ParticleForGpu);
 
 		// SRVを作成するDescriptorHeapの場所を決める
-		instancingSrvHandleCPU_ = texture_->GetCPUDescriptorHandle(DirectXCommon::GetInsTance()->GetSrvDescriptorHeap(), descriptorSizeSRV, index);
-		instancingSrvHandleGPU_ = texture_->GetGPUDescriptorHandle(DirectXCommon::GetInsTance()->GetSrvDescriptorHeap(), descriptorSizeSRV, index);
+		instancingSrvHandleCPU_ = texture_->GetCPUDescriptorHandle(DirectXCommon::GetInsTance()->GetSrvDescriptorHeap2(), descriptorSizeSRV, index);
+		instancingSrvHandleGPU_ = texture_->GetGPUDescriptorHandle(DirectXCommon::GetInsTance()->GetSrvDescriptorHeap2(), descriptorSizeSRV, index);
 		// SRVの生成
 		DirectXCommon::GetInsTance()->GetDevice()->CreateShaderResourceView(instancingResource.Get(), &instancingSrvDesc, instancingSrvHandleCPU_);
 
@@ -85,17 +91,17 @@ namespace Engine
 			particles[index].transform.translate.z += particles[index].velocity.z * kDeltaTime;
 			particles[index].currentTime += kDeltaTime;
 			instancingData_[index].World = worldMatrix;
-			instancingData_[index].WVP = worldViewMatrix;
+			instancingData_[index].WVP = Multiply(worldMatrix, Multiply(camera_->viewMatrix, camera_->projectionMatrix));
 			instancingData_[index].color = particles[index].color;
-			float alpha = 1.0f - (particles[index].currentTime / particles[index].lifeTime);
-			instancingData_[numInstance].color.w = alpha;
+			/*float alpha = 1.0f - (particles[index].currentTime / particles[index].lifeTime);
+			instancingData_[numInstance].color.w = alpha;*/
 			++numInstance;
 		}
 
-		/*Matrix4x4 uvtransformMatrix = MakeScaleMatrix(uvTransform.scale);
+		Matrix4x4 uvtransformMatrix = MakeScaleMatrix(uvTransform.scale);
 		uvtransformMatrix = Multiply(uvtransformMatrix, MakeRotateZMatrix(uvTransform.rotate.z));
 		uvtransformMatrix = Multiply(uvtransformMatrix, MakeTranslateMatrix(uvTransform.translate));
-		materialData->uvTransform = uvtransformMatrix;*/
+		materialData->uvTransform = uvtransformMatrix;
 
 		ID3D12DescriptorHeap* descriptorHeaps[] = { DirectXCommon::GetInsTance()->GetSrvDescriptorHeap2().Get()}; // Use your actual descriptor heap
 		DirectXCommon::GetInsTance()->GetCommandList()->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
@@ -266,16 +272,15 @@ namespace Engine
 		inputLayoutDesc.NumElements = _countof(inputElementDescs);
 
 		// BlendStateの設定
-		D3D12_BLEND_DESC blendDesc{};
-		// すべての色要素を書き込む
-		blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+		D3D12_BLEND_DESC blendDesc = {};
 		blendDesc.RenderTarget[0].BlendEnable = TRUE;
 		blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
-		blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
 		blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+		blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
 		blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
-		blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
 		blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
+		blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
+		blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
 
 		// RasiterzerStateの設定
 		D3D12_RASTERIZER_DESC rasterizerDesc{};
@@ -296,7 +301,7 @@ namespace Engine
 		// Depthの機能を有効化する
 		depthStencilDesc.DepthEnable = true;
 		// 書き込む
-		depthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
+		depthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;;
 		// 比較関数はLessEqual。つまり、近ければ描画される
 		depthStencilDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
 
@@ -370,7 +375,7 @@ namespace Engine
 		particle.transform.rotate = { 0,0,0 };
 		particle.transform.translate = { distribution(randomEngine), distribution(randomEngine), distribution(randomEngine) };
 		particle.velocity = { distribution(randomEngine), distribution(randomEngine), distribution(randomEngine) };
-		particle.color = { distColor(randomEngine), distColor(randomEngine), distColor(randomEngine), 0.0f };
+		particle.color = { distColor(randomEngine), distColor(randomEngine), distColor(randomEngine), 1.0f };
 		particle.lifeTime = distTime(randomEngine);
 		particle.currentTime = 0;
 		return particle;

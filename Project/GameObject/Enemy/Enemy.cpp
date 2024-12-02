@@ -9,9 +9,6 @@ void Enemy::Initialize(Vector3 pos)
 	model_ = std::make_unique<Model>();
 	model_->Initialize("cube.obj", transform_);
 
-	particle_ = std::make_unique<Particles>();
-	particle_->Initialize("plane.obj", {0.0f, 0.0f, 0.0f}, 30);
-
 	worldtransform_.scale = transform_.scale;
 	worldtransform_.rotate = transform_.rotate;
 	worldtransform_.translate = transform_.translate;
@@ -38,7 +35,7 @@ void Enemy::Update()
 			// 攻撃処理
 			if (rensya < 0) {
 				if (worldtransform_.translate.z - player_->GetPos().z <= 600.0f) {
-					Attack();
+					//Attack();
 					rensyanum += 1;
 				}
 
@@ -100,6 +97,10 @@ void Enemy::Update()
 		ImGui::DragInt("rensya : &d", &rensya);
 		ImGui::TreePop();
 	}
+
+	if (isDead_) {
+		worldtransform_.rotate.y += 1.0f;
+	}
 }
 
 void Enemy::Draw(Camera* camera)
@@ -108,7 +109,7 @@ void Enemy::Draw(Camera* camera)
 		model_->Draw(camera, enemyTex);
 	}
 	else {
-		particle_->Draw(camera, enemyTex);
+		
 	}
 }
 

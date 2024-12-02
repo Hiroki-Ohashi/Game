@@ -47,6 +47,9 @@ void GameScene::Initialize() {
 	skydome_ = std::make_unique<Skydome>();
 	skydome_->Initialize();
 
+	particle_ = std::make_unique<Particles>();
+	particle_->Initialize("plane.obj", { 0.0f, 0.0f, 50.0f }, 60);
+
 	enemyBulletTex = textureManager_->Load("resources/black.png");
 	bossBulletTex = textureManager_->Load("resources/red.png");
 	uv = textureManager_->Load("resources/map.png");
@@ -79,7 +82,7 @@ void GameScene::Initialize() {
 	isApploach_ = false;
 	isGameOver_ = false;
 
-	camera_.cameraTransform.translate = { player_->GetPos().x, player_->GetPos().y + 1.5f,  player_->GetPos().z - 20.0f };
+	//camera_.cameraTransform.translate = { player_->GetPos().x, player_->GetPos().y + 1.5f,  player_->GetPos().z - 20.0f };
 	blurStrength_ = 0.3f;
 	noiseStrength = 0.0f;
 }
@@ -197,11 +200,11 @@ void GameScene::Update(){
 			}
 		}
 		else if (isApploach_ == false) {
-			camera_.cameraTransform.translate = { player_->GetPos().x + randX, player_->GetPos().y + 1.5f + randY,  player_->GetPos().z - 20.0f };
+			//camera_.cameraTransform.translate = { player_->GetPos().x + randX, player_->GetPos().y + 1.5f + randY,  player_->GetPos().z - 20.0f };
 
 			blurStrength_ -= 0.002f;
-			if (blurStrength_ <= 0.05f) {
-				blurStrength_ = 0.05f;
+			if (blurStrength_ <= 0.0f) {
+				blurStrength_ = 0.0f;
 			}
 
 			postProcess_->SetBlurStrength(blurStrength_);
@@ -210,6 +213,12 @@ void GameScene::Update(){
 
 	if (boss_->IsDead() == true) {
 		isGameClear_ = true;
+	}
+
+	for (std::unique_ptr<Enemy>& enemy : json_->GetEnemys()) {
+		if (enemy->IsDead() == true) {
+			//isGameClear_ = true;
+		}
 	}
 
 	if (player_->GetHP() <= 0) {
@@ -294,6 +303,12 @@ void GameScene::Draw()
 	}
 
 	player_->Draw(&camera_);
+
+	for (std::unique_ptr<Enemy>& enemy : json_->GetEnemys()) {
+		if (enemy->IsDead()) {
+			particle_->Draw(&camera_, bossBulletTex);
+		}
+	}
 }
 
 
@@ -324,7 +339,7 @@ void GameScene::CheckAllCollisions()
 	colliders_.push_back(std::move(boss_.get()));
 	// enemy
 	for (std::unique_ptr<Enemy>& enemy : json_->GetEnemys()) {
-		enemy->SetRadius(1.1f);
+		enemy->SetRadius(1.0f);
 		colliders_.push_back(std::move(enemy.get()));
 	}
 	// playerBullet
