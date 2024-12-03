@@ -14,8 +14,8 @@ void GameScene::Initialize(){
 
 	transform = { { 1.0f,1.0f,1.0f},{0.0f,3.0f,0.0f},{0.0f,-1.0f,3.0f} };
 
-	model_ = std::make_unique<AnimationModel>();
-	model_->Initialize("walk.gltf", transform, &camera_, 0);
+	model_ = std::make_unique<Model>();
+	model_->Initialize("cube.obj", transform);
 
 	skyBox_ = std::make_unique<SkyBox>();
 	skyBox_->Initialize();
@@ -24,7 +24,7 @@ void GameScene::Initialize(){
 	levelData_ = json_->LoadJson("level");
 	json_->Adoption(levelData_);
 
-	uv = textureManager_->Load("resources/white.png");
+	uv = textureManager_->Load("resources/tikyuu.png");
 	skyTex = textureManager_->Load("resources/rostock_laage_airport_4k.dds");
 }
 
@@ -66,15 +66,15 @@ void GameScene::Update(){
 		postProcess_->Initialize(GAUSSIAN);
 	}
 
-	model_->Update(1.0f);
+	//model_->Update(1.0f);
 }
 
 void GameScene::Draw(){
 	//json_->Draw(camera_, uv);
 
-	skyBox_->Draw(&camera_, skyTex);
+	//skyBox_->Draw(&camera_, skyTex);
 
-	model_->Draw(&camera_, uv, skyTex);
+	model_->Draw(&camera_, uv);
 }
 
 

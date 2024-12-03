@@ -52,7 +52,7 @@ private:
 	std::unique_ptr<Json> json_ = nullptr;
 	LevelData* levelData_ = nullptr;
   
-	std::unique_ptr<AnimationModel> model_;
+	std::unique_ptr<Model> model_;
 
 	std::unique_ptr<SkyBox> skyBox_;
 
