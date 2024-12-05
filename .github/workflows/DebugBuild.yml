@@ -25,5 +25,5 @@ jobs:
           msbuild-architecture: x64
 
       - name: Build
-        run: |
-          msbuild ${{ env.SOLUTION_FILE_PATH }} /p:Platform=x64 /p:Configuration=${{ env.CONFIGURATION }}
+        run: msbuild ${{ github.workspace }}/CG2_0_1.sln /p:Platform=x64 /p:Configuration=${{ env.CONFIGURATION }} /verbosity:detailed |
+          msbuild ${{ env.SOLUTION_FILE_PATH }} /p:Platform=x64 /p:Configuration=${{ env.CONFIGURATION }
