@@ -138,13 +138,15 @@ private:
 	// スタート演出
 	bool isApploach_;
 	int time_ = 0;
-	int kMaxTime = 180;
+	const int kMaxTime = 180;
+	const int timerSpeed = 1;
 
 	float blurStrength_ = 0.3f;
 	const float kDefaultBlurStrength_ = 0.0f;
 	float minusBlurStrength_ = 0.002f;
 
 	float noiseStrength;
+	const float kdamageNoise = 0.5f;
 	const float kMaxNoiseStrength = 100.0f;
 	const float plusNoiseStrength = 1.0f;
 

@@ -66,6 +66,12 @@ namespace Engine
 		Convert::Log("Complete create D3D12Device!!!\n");
 
 #ifdef _DEBUG
+
+		Microsoft::WRL::ComPtr<ID3D12Debug> debugController;
+		if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)))) {
+			debugController->EnableDebugLayer();
+		}
+
 		ID3D12InfoQueue* infoQueue = nullptr;
 		if (SUCCEEDED(device_->QueryInterface(IID_PPV_ARGS(&infoQueue)))) {
 			// やばいエラー時に止まる
@@ -73,7 +79,7 @@ namespace Engine
 			// エラー時に止まる
 			infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, true);
 			// 警告時に止まる
-			//infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, true);
+			infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, true);
 
 			// 抑制するメッセージのID
 			D3D12_MESSAGE_ID denyIds[] = {
@@ -352,21 +358,26 @@ namespace Engine
 
 #ifdef _DEBUG
 		WinApp::GetInsTance()->GetDebugController()->Release();
+		//Microsoft::WRL::ComPtr<ID3D12DebugDevice> debugDevice;
+		//if (SUCCEEDED(device_->QueryInterface(IID_PPV_ARGS(&debugDevice)))) {
+		//	// 未解放オブジェクトを報告
+		//	debugDevice->ReportLiveObjects(D3D12_RLDO_DETAIL | D3D12_RLDO_IGNORE_INTERNAL);
+		//}
 #endif
 		CloseWindow(WinApp::GetInsTance()->GetHwnd());
 
-		//struct D3DResourceLeakCheker {
-		//	~D3DResourceLeakCheker() {
-		//		// リソースリークチェック
-		//		Microsoft::WRL::ComPtr< IDXGIDebug1> debug;
-		//		if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug)))) {
-		//			debug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL);
-		//			debug->ReportLiveObjects(DXGI_DEBUG_APP, DXGI_DEBUG_RLO_ALL);
-		//			debug->ReportLiveObjects(DXGI_DEBUG_D3D12, DXGI_DEBUG_RLO_ALL);
-		//			debug->Release();
-		//		}
-		//	}
-		//};
+		struct D3DResourceLeakCheker {
+			~D3DResourceLeakCheker() {
+				// リソースリークチェック
+				Microsoft::WRL::ComPtr<IDXGIDebug1> debug;
+				if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug)))) {
+					debug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL);
+					debug->ReportLiveObjects(DXGI_DEBUG_APP, DXGI_DEBUG_RLO_ALL);
+					debug->ReportLiveObjects(DXGI_DEBUG_D3D12, DXGI_DEBUG_RLO_ALL);
+					debug->Release();
+				}
+			}
+		};
 	}
 
 	// DescriptorHeap関数
