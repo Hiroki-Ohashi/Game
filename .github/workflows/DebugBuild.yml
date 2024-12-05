@@ -7,7 +7,7 @@ on:
 
 env:
   # リポジトリのルートディレクトリを起点としたソリューションファイルのパス
-  SOLUTION_FILE_PATH: C:/Users/Ohashi/source/repos/CG2/CG2_0_1/CG2_0_1.sln
+  SOLUTION_FILE_PATH: CG2_0_1/CG2_0_1.sln
   # Visual Studio の構成
   CONFIGURATION: Debug
 
