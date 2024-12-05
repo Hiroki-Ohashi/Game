@@ -76,26 +76,26 @@ void TitleScene::Update()
 		sceneNo = STAGE;
 	}
 
-	if (camera_.cameraTransform.rotate.x < 0.40f) {
-		cameraSpeedX += 0.000005f;
+	if (camera_.cameraTransform.rotate.x < kCameraMax.x) {
+		cameraSpeedX += cameraMoveSpeed;
 	}
-	else if (camera_.cameraTransform.rotate.x >= 0.40f) {
-		cameraSpeedX -= 0.000005f;
+	else if (camera_.cameraTransform.rotate.x >= kCameraMax.x) {
+		cameraSpeedX -= cameraMoveSpeed;
 	}
 
-	if (camera_.cameraTransform.rotate.y < 0.0f) {
-		cameraSpeedY += 0.000005f;
+	if (camera_.cameraTransform.rotate.y < kCameraMax.y) {
+		cameraSpeedY += cameraMoveSpeed;
 	}
-	else if (camera_.cameraTransform.rotate.y >= 0.0f) {
-		cameraSpeedY -= 0.000005f;
+	else if (camera_.cameraTransform.rotate.y >= kCameraMax.y) {
+		cameraSpeedY -= cameraMoveSpeed;
 	}
 
 	camera_.cameraTransform.rotate.x += cameraSpeedX;
 	camera_.cameraTransform.rotate.y += cameraSpeedY;
 
-	timer += 1;
+	timer += timerSpeed;
 
-	if (timer == 30) {
+	if (timer == kMaxTimer) {
 		timer = 0;
 		if (blinking) {
 			blinking = false;

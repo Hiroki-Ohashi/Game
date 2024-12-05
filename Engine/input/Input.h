@@ -15,45 +15,47 @@
 /// Input.h
 /// 入力処理のヘッダーファイル
 /// </summary>
+namespace Engine
+{
+	// inputクラス
+	class Input {
+	public:
+		// 入力sトラクタ
+		struct ButtonState {
+			bool isPressed;
+			bool wasPressed;
 
-// inputクラス
-class Input {
-public:
-	// 入力sトラクタ
-	struct ButtonState {
-		bool isPressed;
-		bool wasPressed;
+			ButtonState() : isPressed(false), wasPressed(false) {}
+		};
 
-		ButtonState() : isPressed(false), wasPressed(false) {}
+		// シングルトン
+		static Input* GetInsTance();
+
+		// 初期化
+		void Initialize();
+		// 読み込み
+		void Update();
+
+		// キーの押下をチェック
+		bool PushKey(BYTE keyNumber);
+		// キーのトリガーをチェック
+		bool TriggerKey(BYTE keyNumber);
+
+		bool GetJoystickState(XINPUT_STATE& out) const;
+
+		bool PressedButton(XINPUT_STATE& out, WORD button);
+
+		void UpdateButtonState(ButtonState& state, bool isPressed);
+
+	private:
+		Microsoft::WRL::ComPtr<IDirectInput8> directInput = nullptr;
+		Microsoft::WRL::ComPtr<IDirectInputDevice8> keyboad = nullptr;
+
+		Input::ButtonState state_;
+
+		// 全キーの入力情報を取得する
+		BYTE key[256] = {};
+		// 前回の全キーの入力情報を取得する
+		BYTE keyPre[256] = {};
 	};
-
-	// シングルトン
-	static Input* GetInsTance();
-
-	// 初期化
-	void Initialize();
-	// 読み込み
-	void Update();
-
-	// キーの押下をチェック
-	bool PushKey(BYTE keyNumber);
-	// キーのトリガーをチェック
-	bool TriggerKey(BYTE keyNumber);
-
-	bool GetJoystickState(XINPUT_STATE& out) const;
-
-	bool PressedButton(XINPUT_STATE& out, WORD button);
-
-	void UpdateButtonState(ButtonState& state, bool isPressed);
-
-private:
-	Microsoft::WRL::ComPtr<IDirectInput8> directInput = nullptr;
-	Microsoft::WRL::ComPtr<IDirectInputDevice8> keyboad = nullptr;
-
-	Input::ButtonState state_;
-
-	// 全キーの入力情報を取得する
-	BYTE key[256] = {};
-	// 前回の全キーの入力情報を取得する
-	BYTE keyPre[256] = {};
-};
+}

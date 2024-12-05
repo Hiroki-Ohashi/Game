@@ -263,15 +263,15 @@ namespace Engine
 		commandList_->OMSetRenderTargets(1, &rtvHandles[backBufferIndex], false, &dsvHandle);
 
 		// 指定した色で画面全体をクリアする
-		float clearColor[] = { 0.1f, 0.25f, 0.5f, 1.0f };
+		float clearColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 		commandList_->ClearRenderTargetView(rtvHandles[backBufferIndex], clearColor, 0, nullptr);
-
-		commandList_->RSSetViewports(1, &viewport);
-		commandList_->RSSetScissorRects(1, &scissorRect);
 
 		// 描画用のDescriptorHeapの設定
 		ID3D12DescriptorHeap* descriptorHeaps[] = { srvDescriptorHeap_.Get() };
 		commandList_->SetDescriptorHeaps(1, descriptorHeaps);
+
+		commandList_->RSSetViewports(1, &viewport);
+		commandList_->RSSetScissorRects(1, &scissorRect);
 	}
 
 	void DirectXCommon::RemoveBarrier()

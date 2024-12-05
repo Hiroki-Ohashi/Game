@@ -1,5 +1,6 @@
 #pragma once
 #include "Input.h"
+using namespace Engine;
 
 // シーン名
 enum SCENE {

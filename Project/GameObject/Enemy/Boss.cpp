@@ -45,18 +45,20 @@ void Boss::Update()
 		}
 	}
 
+	const Vector2 kMaxPosition = { 30.0f , 55.0f };
+
 	if (isApproach == false) {
 		transform_.translate.x += speedX;
 		transform_.translate.y += speedY;
 
-		if (transform_.translate.x >= 30.0f) {
+		if (transform_.translate.x >= kMaxPosition.x) {
 			speedX *= -1;
 		}
-		else if (transform_.translate.x <= -30.0f) {
+		else if (transform_.translate.x <= -kMaxPosition.x) {
 			speedX *= -1;
 		}
 
-		if (transform_.translate.y >= 55.0f) {
+		if (transform_.translate.y >= kMaxPosition.y) {
 			speedY *= -1;
 		}
 		else if (transform_.translate.y <= 0.0f) {
@@ -82,8 +84,8 @@ void Boss::Update()
 	}
 
 	if (isHit_) {
-		hitTimer_ += 1;
-		if (hitTimer_ >= 5) {
+		hitTimer_ += timerSpeed;
+		if (hitTimer_ >= kMaxTimer) {
 			isHit_ = false;
 			hitTimer_ = 0;
 		}
@@ -143,7 +145,7 @@ void Boss::Attack()
 
 void Boss::OnCollision()
 {
-	hp_ -= 1;
+	hp_ -= damage_;
 	isHit_ = true;
 }
 

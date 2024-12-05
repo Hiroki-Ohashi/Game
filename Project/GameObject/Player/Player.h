@@ -105,4 +105,5 @@ private:
 
 	// HP
 	int32_t HP = 5;
+	const uint32_t damage_ = 1;
 };

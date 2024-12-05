@@ -73,6 +73,8 @@ private:
 	// cameraSpeed
 	float cameraSpeedX = 0.0001f;
 	float cameraSpeedY = 0.0002f;
+	float cameraMoveSpeed = 0.000005f;
+	const Vector2 kCameraMax = { 0.40f , 0.0f };
 
 	// テクスチャ
 	uint32_t title;
@@ -81,6 +83,8 @@ private:
 
 	// タイマー
 	uint32_t timer;
+	const uint32_t timerSpeed = 1;
+	const uint32_t kMaxTimer = 30;
 	bool blinking;
 
 	// ビネット
