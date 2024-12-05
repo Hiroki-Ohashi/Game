@@ -61,6 +61,7 @@ private:
 	uint32_t hp_;
 	uint32_t enemyTex;
 	uint32_t hit;
+	const uint32_t damage_ = 1;
 
 	// 移動速度
 	float speedX = 0.5f;
@@ -77,5 +78,7 @@ private:
 
 	// ヒットタイマー
 	int32_t hitTimer_;
+	const uint32_t timerSpeed = 1;
+	const uint32_t kMaxTimer = 5;
 	bool isHit_;
 };

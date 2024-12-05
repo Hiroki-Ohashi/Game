@@ -84,17 +84,17 @@ namespace Engine
 				continue;
 			}
 
-			Matrix4x4 worldMatrix = MakeAffineMatrix(particles[index].transform.scale, particles[index].transform.rotate, particles[index].transform.translate);
+			Matrix4x4 worldMatrix = MakeAffineMatrix(particles[index_].transform.scale, particles[index_].transform.rotate, particles[index_].transform.translate);
 			Matrix4x4 worldViewMatrix = Multiply(worldMatrix, Multiply(worldMatrix, Multiply(camera_->viewMatrix, camera_->projectionMatrix)));
-			particles[index].transform.translate.x += particles[index].velocity.x * kDeltaTime;
-			particles[index].transform.translate.y += particles[index].velocity.y * kDeltaTime;
-			particles[index].transform.translate.z += particles[index].velocity.z * kDeltaTime;
-			particles[index].currentTime += kDeltaTime;
-			instancingData_[index].World = worldMatrix;
-			instancingData_[index].WVP = Multiply(worldMatrix, Multiply(camera_->viewMatrix, camera_->projectionMatrix));
-			instancingData_[index].color = particles[index].color;
-			/*float alpha = 1.0f - (particles[index].currentTime / particles[index].lifeTime);
-			instancingData_[numInstance].color.w = alpha;*/
+			particles[index_].transform.translate.x += particles[index_].velocity.x * kDeltaTime;
+			particles[index_].transform.translate.y += particles[index_].velocity.y * kDeltaTime;
+			particles[index_].transform.translate.z += particles[index_].velocity.z * kDeltaTime;
+			particles[index_].currentTime += kDeltaTime;
+			instancingData_[index_].World = worldMatrix;
+			instancingData_[index_].WVP = Multiply(worldMatrix, Multiply(camera_->viewMatrix, camera_->projectionMatrix));
+			instancingData_[index_].color = particles[index_].color;
+			float alpha = 1.0f - (particles[index_].currentTime / particles[index_].lifeTime);
+			instancingData_[numInstance].color.w = alpha;
 			++numInstance;
 		}
 
@@ -103,7 +103,7 @@ namespace Engine
 		uvtransformMatrix = Multiply(uvtransformMatrix, MakeTranslateMatrix(uvTransform.translate));
 		materialData->uvTransform = uvtransformMatrix;
 
-		ID3D12DescriptorHeap* descriptorHeaps[] = { DirectXCommon::GetInsTance()->GetSrvDescriptorHeap2().Get()}; // Use your actual descriptor heap
+		ID3D12DescriptorHeap* descriptorHeaps[] = { DirectXCommon::GetInsTance()->GetSrvDescriptorHeap2().Get()};
 		DirectXCommon::GetInsTance()->GetCommandList()->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
 
 		// DirectXCommon::GetInsTance()を設定。PSOに設定しているけど別途設定が必要
@@ -123,6 +123,12 @@ namespace Engine
 		DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootDescriptorTable(2, texture_->GetTextureSRVHandleGPU(index));
 
 		DirectXCommon::GetInsTance()->GetCommandList()->DrawInstanced(UINT(modelData.vertices.size()), numInstance, 0, 0);
+
+
+		if (ImGui::TreeNode("Particle")) {
+			ImGui::Text("draw");
+			ImGui::TreePop();
+		}
 	}
 
 	void Particles::Release() {

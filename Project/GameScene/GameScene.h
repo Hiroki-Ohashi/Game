@@ -138,10 +138,24 @@ private:
 	// スタート演出
 	bool isApploach_;
 	int time_ = 0;
+	int kMaxTime = 180;
+
 	float blurStrength_ = 0.3f;
+	const float kDefaultBlurStrength_ = 0.0f;
+	float minusBlurStrength_ = 0.002f;
+
 	float noiseStrength;
+	const float kMaxNoiseStrength = 100.0f;
+	const float plusNoiseStrength = 1.0f;
+
 	EulerTransform transform_;
 
 	// 敵発生コマンド
 	std::stringstream enemyPopCommands;
+
+	// ゴールライン
+	float goalline = 3900.0f;
+
+	// カメラoffset
+	Vector3 cameraOffset = { 0.0f, 1.5f, 20.0f };
 };

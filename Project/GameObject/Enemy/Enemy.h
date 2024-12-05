@@ -67,6 +67,8 @@ private:
 	bool isDead_;
 	int rensya = 10;
 	int rensyanum = 0;
+	const int rensyaNumSpeed = 1;
+	const int kMaxRensyaNum = 3;
 
 	// 初期位置
 	Vector3 posParam;

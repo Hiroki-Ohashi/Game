@@ -11,7 +11,7 @@ Player::~Player() {
 
 void Player::Initialize()
 {
-	transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,25.0f,0.0f} };
+	transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,25.0f,-200.0f} };
 	reticleTransform_ = { {0.5f,0.5f,0.5f},{0.0f,0.0f,0.0f},{transform_.translate.x,transform_.translate.y,transform_.translate.z + 25.0f} };
 
 	model_ = std::make_unique<Model>();
@@ -192,7 +192,7 @@ void Player::BulletDraw(Camera* camera_)
 void Player::OnCollision()
 {
 	isHit_ = true;
-	HP -= 1;
+	HP -= damage_;
 }
 
 Vector3 Player::GetWorldPosition() const

@@ -48,7 +48,7 @@ void GameScene::Initialize() {
 	skydome_->Initialize();
 
 	particle_ = std::make_unique<Particles>();
-	particle_->Initialize("plane.obj", { 0.0f, 0.0f, 50.0f }, 60);
+	particle_->Initialize("board.obj", { 0.0f, 25.0f, 50.0f }, 60);
 
 	enemyBulletTex = textureManager_->Load("resources/black.png");
 	bossBulletTex = textureManager_->Load("resources/red.png");
@@ -79,10 +79,10 @@ void GameScene::Initialize() {
 
 	isVignette_ = true;
 	isGameClear_ = false;
-	isApploach_ = false;
+	isApploach_ = true;
 	isGameOver_ = false;
 
-	//camera_.cameraTransform.translate = { player_->GetPos().x, player_->GetPos().y + 1.5f,  player_->GetPos().z - 20.0f };
+	camera_.cameraTransform.translate = { player_->GetPos().x, player_->GetPos().y + cameraOffset.y,  player_->GetPos().z - cameraOffset.z };
 	blurStrength_ = 0.3f;
 	noiseStrength = 0.0f;
 }
@@ -112,7 +112,7 @@ void GameScene::Update(){
 		}
 	}
 
-	if (player_->GetPos().z >= 3900.0f) {
+	if (player_->GetPos().z >= goalline) {
 
 		boss_->Update();
 
@@ -177,7 +177,8 @@ void GameScene::Update(){
 
 	if (isVignette_ == false) {
 		if (isApploach_) {
-			camera_.cameraTransform.rotate.y += 0.035f;
+			float kRotateCameraSpeed = 0.035f;
+			camera_.cameraTransform.rotate.y += kRotateCameraSpeed;
 
 			EulerTransform origin = { {0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f},{player_->GetPos().x,player_->GetPos().y,player_->GetPos().z} };
 			// 追従対象からカメラまでのオフセット
@@ -193,18 +194,18 @@ void GameScene::Update(){
 
 			time_ += 1;
 
-			if (time_ >= 180) {
+			if (time_ >= kMaxTime) {
 				time_ = 0;
 				isApploach_ = false;
 				postProcess_->SetBlurStrength(blurStrength_);
 			}
 		}
 		else if (isApploach_ == false) {
-			//camera_.cameraTransform.translate = { player_->GetPos().x + randX, player_->GetPos().y + 1.5f + randY,  player_->GetPos().z - 20.0f };
+			camera_.cameraTransform.translate = { player_->GetPos().x + randX, player_->GetPos().y + cameraOffset.y + randY,  player_->GetPos().z - cameraOffset.z };
 
-			blurStrength_ -= 0.002f;
-			if (blurStrength_ <= 0.0f) {
-				blurStrength_ = 0.0f;
+			blurStrength_ -= minusBlurStrength_;
+			if (blurStrength_ <= kDefaultBlurStrength_) {
+				blurStrength_ = kDefaultBlurStrength_;
 			}
 
 			postProcess_->SetBlurStrength(blurStrength_);
@@ -226,21 +227,21 @@ void GameScene::Update(){
 	}
 
 	if (isGameOver_) {
-		if (noiseStrength <= 100.0f) {
-			noiseStrength += 1.0f;
+		if (noiseStrength <= kMaxNoiseStrength) {
+			noiseStrength += plusNoiseStrength;
 		}
 
-		if (postProcess_->GetNoiseStrength() >= 100.0f) {
+		if (postProcess_->GetNoiseStrength() >= kMaxNoiseStrength) {
 			sceneNo = OVER;
 		}
 	}
 
 	if (isGameClear_) {
-		if (noiseStrength <= 100.0f) {
-			noiseStrength += 1.0f;
+		if (noiseStrength <= kMaxNoiseStrength) {
+			noiseStrength += plusNoiseStrength;
 		}
 		
-		if(postProcess_->GetNoiseStrength() >= 100.0f){
+		if(postProcess_->GetNoiseStrength() >= kMaxNoiseStrength){
 			sceneNo = CLEAR;
 		}
 	}
@@ -266,7 +267,7 @@ void GameScene::Draw()
 		bullet->Draw(&camera_, bossBulletTex);
 	}
 
-	if (player_->GetPos().z >= 3900.0f) {
+	if (player_->GetPos().z >= goalline) {
 
 		boss_->Draw(&camera_);
 

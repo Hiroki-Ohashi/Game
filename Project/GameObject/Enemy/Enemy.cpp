@@ -24,6 +24,7 @@ void Enemy::Initialize(Vector3 pos)
 void Enemy::Update()
 {
 	worldtransform_.UpdateMatrix();
+	float kMaxAttack = 600.0f;
 
 	attackTimer--;
 
@@ -34,40 +35,39 @@ void Enemy::Update()
 
 			// 攻撃処理
 			if (rensya < 0) {
-				if (worldtransform_.translate.z - player_->GetPos().z <= 600.0f) {
+
+				if (worldtransform_.translate.z - player_->GetPos().z <= kMaxAttack) {
 					//Attack();
-					rensyanum += 1;
+					rensyanum += rensyaNumSpeed;
 				}
 
-				if (rensyanum < 3) {
+				if (rensyanum < kMaxRensyaNum) {
 					rensya = 10;
 				}
 			}
 		}
 
-		/*rensya--;
-		if (rensya < 0) {
-			rensyanum += 1;
-			rensya = 10;
-		}*/
-
 		// 発射タイマーを初期化
-		if (rensyanum >= 3) {
+		if (rensyanum >= kMaxRensyaNum) {
 			attackTimer = kFireInterval;
 			rensyanum = 0;
 		}
 	}
 
-	/*if (worldtransform_.translate.z - player_->GetPos().z <= 600.0f) {
+	// 近づいたら動き出す
+	if (worldtransform_.translate.z - player_->GetPos().z <= kMaxAttack) {
+
+		const float kMoveSpeed = 0.005f;
+
 		if (worldtransform_.translate.y < posParam.y) {
-			speedY += 0.005f;
+			speedY += kMoveSpeed;
 		}
 		else if (worldtransform_.translate.y >= posParam.y) {
-			speedY -= 0.005f;
+			speedY -= kMoveSpeed;
 		}
 
 		worldtransform_.translate.y += speedY;
-	}*/
+	}
 
 	model_->SetWorldTransform(worldtransform_);
 
@@ -96,10 +96,6 @@ void Enemy::Update()
 		ImGui::DragInt("rensyanum : &d", &rensyanum);
 		ImGui::DragInt("rensya : &d", &rensya);
 		ImGui::TreePop();
-	}
-
-	if (isDead_) {
-		worldtransform_.rotate.y += 1.0f;
 	}
 }
 
