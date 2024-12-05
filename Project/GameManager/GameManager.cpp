@@ -91,6 +91,6 @@ void GameManager::Run()
 
 	CoUninitialize();
 
-	//mesh->Release();
+	mesh->Release();
 	directX->Release();
 }

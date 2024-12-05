@@ -155,7 +155,7 @@ void GameScene::Update(){
 		isShake = true;
 
 		// 自キャラの衝突時コールバックを呼び出す
-		noiseStrength += 0.5f;
+		noiseStrength += kdamageNoise;
 		postProcess_->SetNoiseStrength(noiseStrength);
 	}
 
@@ -192,7 +192,7 @@ void GameScene::Update(){
 			camera_.cameraTransform.translate.y = origin.translate.y + offset.y;
 			camera_.cameraTransform.translate.z = origin.translate.z + offset.z;
 
-			time_ += 1;
+			time_ += timerSpeed;
 
 			if (time_ >= kMaxTime) {
 				time_ = 0;
