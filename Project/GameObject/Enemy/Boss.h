@@ -78,7 +78,7 @@ private:
 
 	// ヒットタイマー
 	int32_t hitTimer_;
-	const uint32_t timerSpeed = 1;
-	const uint32_t kMaxTimer = 5;
+	const int32_t timerSpeed = 1;
+	const int32_t kMaxTimer = 5;
 	bool isHit_;
 };

@@ -12,7 +12,6 @@ GameManager::GameManager()
 
 GameManager::~GameManager()
 {
-	delete mesh;
 }
 
 GameManager* GameManager::GetInsTance()
@@ -31,7 +30,7 @@ void GameManager::Run()
 	directX = DirectXCommon::GetInsTance();
 	directX->Initialize();
 
-	mesh = new Mesh;
+	mesh = Mesh::GetInsTance();
 	mesh->Initialize();
 
 	input = Input::GetInsTance();
@@ -92,6 +91,6 @@ void GameManager::Run()
 
 	CoUninitialize();
 
-	mesh->Release();
+	//mesh->Release();
 	directX->Release();
 }
