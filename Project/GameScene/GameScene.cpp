@@ -24,12 +24,6 @@ void GameScene::Initialize() {
 	player_ = std::make_unique<Player>();
 	player_->Initialize();
 
-	// boss
-	boss_ = std::make_unique<Boss>();
-	boss_->Initialize(pos2_);
-	boss_->SetPlayer(player_.get());
-	boss_->SetGameScene(this);
-
 	// ready
 	ready_ = std::make_unique<Sprite>();
 	ready_->Initialize(Vector2{ 200.0f, 25.0f }, Vector2{ 450.0, 150.0f }, 1.0f);
@@ -68,6 +62,7 @@ void GameScene::Initialize() {
 	levelData_ = json_->LoadJson("level");
 	json_->Adoption(levelData_, true);
 	json_->EnemyAdoption(levelData_, player_.get(), this);
+	json_->FixedEnemyAdoption(levelData_, player_.get(), this);
 
 	// stage
 	stage_ = std::make_unique<Stage>();
@@ -95,6 +90,7 @@ void GameScene::Update(){
 
 	json_->Update();
 	json_->EnemyUpdate(player_.get(), this);
+	json_->FixedEnemyUpdate(player_.get(), this);
 
 	stage_->Update();
 
@@ -110,27 +106,6 @@ void GameScene::Update(){
 		if (isApploach_ == false) {
 			player_->Update();
 		}
-	}
-
-	if (player_->GetPos().z >= goalline) {
-
-		boss_->Update();
-
-		// ボス弾更新
-		for (std::unique_ptr<BossBullet>& bullet : bossBullets_) {
-			bullet->Update();
-		}
-
-		bossBullets_.erase(
-			std::remove_if(
-				bossBullets_.begin(),
-				bossBullets_.end(),
-				[](const std::unique_ptr<BossBullet>& bullet) {
-					return bullet->IsDead();
-				}
-			),
-			bossBullets_.end()
-		);
 	}
 
 	// 弾更新
@@ -182,7 +157,7 @@ void GameScene::Update(){
 
 			EulerTransform origin = { {0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f},{player_->GetPos().x,player_->GetPos().y,player_->GetPos().z} };
 			// 追従対象からカメラまでのオフセット
-			Vector3 offset = { 0.0f, 3.0f, -20.0f };
+			Vector3 offset = { 0.0f, 1.5f, -20.0f };
 			// カメラの角度から回転行列を計算する
 			Matrix4x4 worldTransform = MakeRotateYMatrix(camera_.cameraTransform.rotate.y);
 			// オフセットをカメラの回転に合わせて回転させる
@@ -212,14 +187,27 @@ void GameScene::Update(){
 		}
 	}
 
-	if (boss_->IsDead() == true) {
-		isGameClear_ = true;
-	}
+	if (player_->GetPos().z >= goalline) {
+		camera_.cameraTransform.translate = { player_->GetPos().x, player_->GetPos().y + cameraOffset.y,  goalline - cameraOffset.z };
 
-	for (std::unique_ptr<Enemy>& enemy : json_->GetEnemys()) {
-		if (enemy->IsDead() == true) {
-			//isGameClear_ = true;
-		}
+		Vector3 end = player_->GetPos();
+		Vector3 start = camera_.cameraTransform.translate;
+
+		Vector3 diff;
+		diff.x = end.x - start.x;
+		diff.y = end.y - start.y;
+		diff.z = end.z - start.z;
+
+		diff = Normalize(diff);
+
+		Vector3 velocity_(diff.x, diff.y, diff.z);
+
+		// Y軸周り角度（Θy）
+		camera_.cameraTransform.rotate.y = std::atan2(velocity_.x, velocity_.z);
+		float velocityXZ = sqrt((velocity_.x * velocity_.x) + (velocity_.z * velocity_.z));
+		camera_.cameraTransform.rotate.x = std::atan2(-velocity_.y, velocityXZ);
+
+		isGameClear_ = true;
 	}
 
 	if (player_->GetHP() <= 0) {
@@ -267,16 +255,6 @@ void GameScene::Draw()
 		bullet->Draw(&camera_, bossBulletTex);
 	}
 
-	if (player_->GetPos().z >= goalline) {
-
-		boss_->Draw(&camera_);
-
-		// ボス弾描画
-		for (std::unique_ptr<BossBullet>& bullet : bossBullets_) {
-			bullet->Draw(&camera_, bossBulletTex);
-		}
-	}
-
 	if (isApploach_) {
 		ready_->Draw(ready);
 	}
@@ -304,12 +282,6 @@ void GameScene::Draw()
 	}
 
 	player_->Draw(&camera_);
-
-	for (std::unique_ptr<Enemy>& enemy : json_->GetEnemys()) {
-		if (enemy->IsDead()) {
-			particle_->Draw(&camera_, bossBulletTex);
-		}
-	}
 }
 
 
@@ -332,29 +304,39 @@ void GameScene::CheckAllCollisions()
 
 	// コライダー
 	std::list<Collider*> colliders_;
+
 	// 登録
 	// player
 	colliders_.push_back(std::move(player_.get()));
-	// boss
-	boss_->SetRadius(15.0f);
-	colliders_.push_back(std::move(boss_.get()));
+
 	// enemy
 	for (std::unique_ptr<Enemy>& enemy : json_->GetEnemys()) {
-		enemy->SetRadius(1.0f);
+		//enemy->SetRadius(2.0f);
 		colliders_.push_back(std::move(enemy.get()));
 	}
+
+	// fixedEnemy
+	for (std::unique_ptr<Enemy>& enemy : json_->GetFixedEnemys()) {
+		//enemy->SetRadius(2.0f);
+		colliders_.push_back(std::move(enemy.get()));
+	}
+
 	// playerBullet
 	for (std::unique_ptr<PlayerBullet>& bullet : playerBullets) {
+		bullet->SetRadius(2.0f);
 		colliders_.push_back(std::move(bullet.get()));
 	}
+
 	// enemyBullet
 	for (std::unique_ptr<EnemyBullet>& bullet : enemyBullets) {
 		colliders_.push_back(std::move(bullet.get()));
 	}
+
 	// bossBullet
 	for (std::unique_ptr<BossBullet>& bullet : bossBullets) {
 		colliders_.push_back(std::move(bullet.get()));
 	}
+
 	// Object
 	for (std::unique_ptr<Object>& objects : json_->GetObjects()) {
 		colliders_.push_back(std::move(objects.get()));
@@ -373,6 +355,48 @@ void GameScene::CheckAllCollisions()
 			Collider* colliderB = *itrB;
 			//当たり判定処理
 			CheckCollisionPair(colliderA, colliderB);
+		}
+	}
+
+	for (std::unique_ptr<Object>& objects : json_->GetObjects()) {
+		for (std::unique_ptr<PlayerBullet>& bullet : playerBullets) {
+			// AABBの最小/最大座標を取得
+			Vector3 AMin = bullet->GetAABBMin();
+			Vector3 AMax = bullet->GetAABBMax();
+			Vector3 BMin = objects->GetAABBMin();
+			Vector3 BMax = objects->GetAABBMax();
+
+			// AABBの重なりを判定
+			bool isColliding =
+				(AMax.x >= BMin.x && AMin.x <= BMax.x) &&
+				(AMax.y >= BMin.y && AMin.y <= BMax.y) &&
+				(AMax.z >= BMin.z && AMin.z <= BMax.z);
+
+			if (isColliding) {
+				bullet->OnCollision();
+				objects->OnCollision();
+			}
+		}
+	}
+
+	for (std::unique_ptr<Object>& objects : json_->GetObjects()) {
+		for (std::unique_ptr<EnemyBullet>& bullet : enemyBullets) {
+			// AABBの最小/最大座標を取得
+			Vector3 AMin = bullet->GetAABBMin();
+			Vector3 AMax = bullet->GetAABBMax();
+			Vector3 BMin = objects->GetAABBMin();
+			Vector3 BMax = objects->GetAABBMax();
+
+			// AABBの重なりを判定
+			bool isColliding =
+				(AMax.x >= BMin.x && AMin.x <= BMax.x) &&
+				(AMax.y >= BMin.y && AMin.y <= BMax.y) &&
+				(AMax.z >= BMin.z && AMin.z <= BMax.z);
+
+			if (isColliding) {
+				bullet->OnCollision();
+				objects->OnCollision();
+			}
 		}
 	}
 

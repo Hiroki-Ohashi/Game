@@ -156,7 +156,7 @@ private:
 	std::stringstream enemyPopCommands;
 
 	// ゴールライン
-	float goalline = 3900.0f;
+	float goalline = 3800.0f;
 
 	// カメラoffset
 	Vector3 cameraOffset = { 0.0f, 1.5f, 20.0f };
