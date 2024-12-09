@@ -69,23 +69,9 @@ struct VertexData {
 	Vector3 normal;
 };
 
-// ObjectData
-//struct ObjectData {
-//	Vector3 translation;
-//	Vector3 rotation;
-//	Vector3 scaling;
-//};
-
-// EnemyData
-struct EnemyData {
-	Vector3 translation;
-	Vector3 rotation;
-	Vector3 scaling;
-};
-
 // LevelData
 struct LevelData{
-
+	// オブジェクト
 	struct ObjectData {
 		std::string filename;
 		Vector3 translation;
@@ -95,7 +81,16 @@ struct LevelData{
 		Vector3 colliderSize;
 	};
 
+	// 敵
 	struct EnemyData {
+		std::string filename;
+		Vector3 translation;
+		Vector3 rotation;
+		Vector3 scaling;
+	};
+
+	// 固定の敵
+	struct FixedData {
 		std::string filename;
 		Vector3 translation;
 		Vector3 rotation;
@@ -104,6 +99,7 @@ struct LevelData{
 
 	std::vector<ObjectData> objects;
 	std::vector<EnemyData> enemys;
+	std::vector<FixedData> fixedEnemys;
 };
 
 // Material

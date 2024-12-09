@@ -28,6 +28,24 @@ public:
 
 	// Getter
 	Vector3 GetPos() { return worldtransform_.translate; }
+
+	// AABBの最小座標を取得
+	Vector3 GetAABBMin() const {
+		return {
+			worldtransform_.translate.x - (worldtransform_.scale.x / 1.0f),
+			worldtransform_.translate.y - (worldtransform_.scale.y / 1.0f),
+			worldtransform_.translate.z - (worldtransform_.scale.z / 1.0f)
+		};
+	}
+
+	// AABBの最大座標を取得
+	Vector3 GetAABBMax() const {
+		return {
+			worldtransform_.translate.x + (worldtransform_.scale.x / 1.0f),
+			worldtransform_.translate.y + (worldtransform_.scale.y / 1.0f),
+			worldtransform_.translate.z + (worldtransform_.scale.z / 1.0f)
+		};
+	}
 private:
 	// 弾
 	std::unique_ptr<Model> model_;

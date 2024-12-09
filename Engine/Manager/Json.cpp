@@ -135,6 +135,38 @@ LevelData* Json::LoadJson(const std::string& fileName)
 		// TODO: オブジェクト走査を再帰関数にまとめ、再帰呼出で枝を走査する
 		if (object.contains("children")) {
 		}
+
+		// FixedEnemy
+		if (type.compare("FIXED") == 0) {
+			// 要素追加
+			levelData->fixedEnemys.emplace_back(LevelData::FixedData{});
+			// 今追加した要素の参照を得る
+			LevelData::FixedData& FixedEnemyData = levelData->fixedEnemys.back();
+
+			if (object.contains("file_name")) {
+				// ファイル名
+				FixedEnemyData.filename = object["file_name"];
+			}
+
+			// トランスフォームのパラメータ読み込み
+			nlohmann::json& transform = object["transform"];
+			// Translation
+			FixedEnemyData.translation.x = transform["translation"][0].get<float>();
+			FixedEnemyData.translation.y = transform["translation"][2].get<float>();
+			FixedEnemyData.translation.z = transform["translation"][1].get<float>();
+			// Rotation
+			FixedEnemyData.rotation.x = transform["rotation"][0].get<float>();
+			FixedEnemyData.rotation.y = (transform["rotation"][2].get<float>() - std::numbers::pi_v<float>);
+			FixedEnemyData.rotation.z = transform["rotation"][1].get<float>();
+			// Scaling
+			FixedEnemyData.scaling.x = transform["scaling"][0].get<float>();
+			FixedEnemyData.scaling.y = transform["scaling"][2].get<float>();
+			FixedEnemyData.scaling.z = transform["scaling"][1].get<float>();
+		}
+
+		// TODO: オブジェクト走査を再帰関数にまとめ、再帰呼出で枝を走査する
+		if (object.contains("children")) {
+		}
 	}
 
 	return levelData;
@@ -161,15 +193,34 @@ void Json::EnemyAdoption(LevelData* levelData, Player* player, GameScene* gamesc
 	for (auto& EnemyData : levelData->enemys) {
 		// モデルを指定してEnemyを生成
 		std::unique_ptr<Enemy> newObject = std::make_unique<Enemy>();
-		newObject->Initialize({ 0.0f,0.0f,0.0f });
+		newObject->Initialize({ 0.0f,0.0f,0.0f }, FRY);
 		newObject->SetPosition(EnemyData.translation);
 		newObject->SetRotation(EnemyData.rotation);
+		newObject->SetScale(Vector3{ 1.0f, 1.0f, 1.0f });
 		// 敵キャラに自キャラのアドレスを渡す
 		newObject->SetPlayer(player);
 		// 敵キャラにゲームシーンを渡す
 		newObject->SetGameScene(gamescene);
 		newObject->SetIsDead(false);
 		enemys_.push_back(std::move(newObject));
+	}
+}
+
+void Json::FixedEnemyAdoption(LevelData* levelData, Player* player, GameScene* gamescene)
+{
+	// レベルデータからオブジェクトを生成、配置
+	for (auto& FixedEnemyData : levelData->fixedEnemys) {
+		// モデルを指定してEnemyを生成
+		std::unique_ptr<Enemy> newObject = std::make_unique<Enemy>();
+		newObject->Initialize({ 0.0f,0.0f,0.0f }, FIXEDENEMY);
+		newObject->SetPosition(FixedEnemyData.translation);
+		newObject->SetRotation(FixedEnemyData.rotation);
+		// 敵キャラに自キャラのアドレスを渡す
+		newObject->SetPlayer(player);
+		// 敵キャラにゲームシーンを渡す
+		newObject->SetGameScene(gamescene);
+		newObject->SetIsDead(false);
+		fixedEnemys_.push_back(std::move(newObject));
 	}
 }
 
@@ -189,7 +240,18 @@ void Json::EnemyUpdate(Player* player, GameScene* gamescene)
 		enemy->SetPlayer(player);
 		// 敵キャラにゲームシーンを渡す
 		enemy->SetGameScene(gamescene);
-		enemy->Update();
+		enemy->Update(FRY);
+	}
+}
+
+void Json::FixedEnemyUpdate(Player* player, GameScene* gamescene)
+{
+	for (std::unique_ptr<Enemy>& fixedEnemy : fixedEnemys_) {
+		// 敵キャラに自キャラのアドレスを渡す
+		fixedEnemy->SetPlayer(player);
+		// 敵キャラにゲームシーンを渡す
+		fixedEnemy->SetGameScene(gamescene);
+		fixedEnemy->Update(FIXEDENEMY);
 	}
 }
 
@@ -201,5 +263,9 @@ void Json::Draw(Camera& camera, uint32_t index)
 
 	for (std::unique_ptr<Enemy>& enemy : enemys_) {
 		enemy->Draw(&camera);
+	}
+
+	for (std::unique_ptr<Enemy>& fixedEnemy : fixedEnemys_) {
+		fixedEnemy->Draw(&camera);
 	}
 }

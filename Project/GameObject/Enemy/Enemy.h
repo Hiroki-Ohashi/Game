@@ -16,20 +16,28 @@ class GameScene;
 /// 敵生成のヘッダーファイル
 /// </summary>
 
+enum EnemyType{
+	FRY,
+	FIXEDENEMY
+};
+
 // Enemyクラス
 class Enemy : public Collider {
 public:
 	// 初期化処理
-	void Initialize(Vector3 pos);
+	void Initialize(Vector3 pos, EnemyType type);
 	// 更新処理
-	void Update();
+	void Update(EnemyType type);
+	void FixedUpdate();
+	void FryUpdate();
 	// 描画処理
 	void Draw(Camera* camera);
 	// 攻撃処理
 	void Attack();
 	// 当たり判定処理
 	void OnCollision() override;
-	Vector3 GetWorldPosition() const override;
+	// 死亡アニメーション
+	void DeadAnimation();
 
 	// 死亡判定
 	void SetIsDead(bool isDead) { isDead_ = isDead; }
@@ -37,6 +45,7 @@ public:
 
 	// Getter
 	Vector3 GetPos() { return worldtransform_.translate; }
+	Vector3 GetWorldPosition() const override;
 
 	// Setter
 	void SetPosition(Vector3 pos) { 
@@ -64,7 +73,7 @@ private:
 	// 発射タイマー
 	int32_t attackTimer = 10;
 	static const int kFireInterval = 120;
-	bool isDead_;
+	
 	int rensya = 10;
 	int rensyanum = 0;
 	const int rensyaNumSpeed = 1;
@@ -74,4 +83,9 @@ private:
 	Vector3 posParam;
 
 	float speedY = 0.3f;
+	float kRotSpeed = 1.0f;
+	float kScaleSpeed = 0.05f;
+
+	bool isDead_;
+	bool isDeadAnimation_;
 };

@@ -26,15 +26,18 @@ public:
 	void Adoption(LevelData* levelData, bool light);
 	// 敵
 	void EnemyAdoption(LevelData* levelData, Player* player, GameScene* gamescene);
+	void FixedEnemyAdoption(LevelData* levelData, Player* player, GameScene* gamescene);
 	// 更新処理
 	void Update();
 	void EnemyUpdate(Player* player, GameScene* gamescene);
+	void FixedEnemyUpdate(Player* player, GameScene* gamescene);
 	// 描画処理
 	void Draw(Camera& camera, uint32_t index);
 
 	// Getter
 	const Camera &GetCamera() { return camera_; }
 	std::vector<std::unique_ptr<Enemy>>& GetEnemys() { return enemys_; }
+	std::vector<std::unique_ptr<Enemy>>& GetFixedEnemys() { return fixedEnemys_; }
 	std::vector<std::unique_ptr<Object>>& GetObjects() { return objects_; }
 
 private:
@@ -42,6 +45,7 @@ private:
 	std::vector<std::unique_ptr<Object>> objects_;
 	// enemy
 	std::vector<std::unique_ptr<Enemy>> enemys_;
+	std::vector<std::unique_ptr<Enemy>> fixedEnemys_;
 	Camera camera_;
 
 	// 呼び出し

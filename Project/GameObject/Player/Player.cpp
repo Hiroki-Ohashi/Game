@@ -11,7 +11,7 @@ Player::~Player() {
 
 void Player::Initialize()
 {
-	transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,25.0f,-200.0f} };
+	transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,25.0f,-250.0f} };
 	reticleTransform_ = { {0.5f,0.5f,0.5f},{0.0f,0.0f,0.0f},{transform_.translate.x,transform_.translate.y,transform_.translate.z + 25.0f} };
 
 	model_ = std::make_unique<Model>();
@@ -124,12 +124,12 @@ void Player::Update()
 	worldtransform_.rotate.x = std::atan2(-velocity_.y, velocityXZ);
 
 	//// 座標移動(ベクトルの加算)
-	//worldtransform_.translate.x += velocity.x * 1.52f;
-	//worldtransform_.translate.y += velocity.y * 1.52f;
-	//worldtransform_.translate.z += velocity.z * 1.52f;
-	//worldtransform_.UpdateMatrix();
+	worldtransform_.translate.x += velocity.x * 1.52f;
+	worldtransform_.translate.y += velocity.y * 1.52f;
+	worldtransform_.translate.z += velocity.z * 1.52f;
+	worldtransform_.UpdateMatrix();
 
-	//reticleWorldtransform_.translate.z += 1.5f;
+	reticleWorldtransform_.translate.z += 1.5f;
 
 	model_->SetWorldTransform(worldtransform_);
 	reticleModel_->SetWorldTransform(reticleWorldtransform_);

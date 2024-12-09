@@ -98,10 +98,10 @@ namespace Engine
 			++numInstance;
 		}
 
-		Matrix4x4 uvtransformMatrix = MakeScaleMatrix(uvTransform.scale);
+		/*Matrix4x4 uvtransformMatrix = MakeScaleMatrix(uvTransform.scale);
 		uvtransformMatrix = Multiply(uvtransformMatrix, MakeRotateZMatrix(uvTransform.rotate.z));
 		uvtransformMatrix = Multiply(uvtransformMatrix, MakeTranslateMatrix(uvTransform.translate));
-		materialData->uvTransform = uvtransformMatrix;
+		materialData->uvTransform = uvtransformMatrix;*/
 
 		ID3D12DescriptorHeap* descriptorHeaps[] = { DirectXCommon::GetInsTance()->GetSrvDescriptorHeap2().Get()};
 		DirectXCommon::GetInsTance()->GetCommandList()->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
