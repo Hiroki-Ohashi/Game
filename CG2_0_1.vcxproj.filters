@@ -46,8 +46,12 @@
     <FxCompile Include="resources\Shaders\Vignette.PS.hlsl">
       <Filter>シェーダーファイル</Filter>
     </FxCompile>
-    <FxCompile Include="resources\Shaders\Noise.PS.hlsl" />
-    <FxCompile Include="resources\Shaders\RadialBlur.PS.hlsl" />
+    <FxCompile Include="resources\Shaders\Noise.PS.hlsl">
+      <Filter>シェーダーファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\Shaders\RadialBlur.PS.hlsl">
+      <Filter>シェーダーファイル</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -174,8 +178,12 @@
     <ClCompile Include="Project\GameScene\ClearScene.cpp">
       <Filter>ソースファイル\Project\GameScene</Filter>
     </ClCompile>
-    <ClCompile Include="Project\GameScene\OverScene.cpp" />
-    <ClCompile Include="Project\GameObject\Stage\Object.cpp" />
+    <ClCompile Include="Project\GameScene\OverScene.cpp">
+      <Filter>ソースファイル\Project\GameScene</Filter>
+    </ClCompile>
+    <ClCompile Include="Project\GameObject\Stage\Object.cpp">
+      <Filter>ソースファイル\Project\GameObject\Stage</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="externals\imgui\imconfig.h">
@@ -307,9 +315,15 @@
     <ClInclude Include="Project\GameScene\ClearScene.h">
       <Filter>ヘッダーファイル\Project\GameScene</Filter>
     </ClInclude>
-    <ClInclude Include="Project\GameScene\OverScene.h" />
-    <ClInclude Include="Project\utillity\Collider.h" />
-    <ClInclude Include="Project\GameObject\Stage\Object.h" />
+    <ClInclude Include="Project\GameScene\OverScene.h">
+      <Filter>ヘッダーファイル\Project\GameScene</Filter>
+    </ClInclude>
+    <ClInclude Include="Project\GameObject\Stage\Object.h">
+      <Filter>ヘッダーファイル\Project\GameScene</Filter>
+    </ClInclude>
+    <ClInclude Include="Project\utillity\Collider.h">
+      <Filter>ヘッダーファイル\Project\utillity</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\Shaders\Fullscreen.hlsli">

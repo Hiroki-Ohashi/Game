@@ -88,6 +88,7 @@ void GameScene::Update(){
 
 	postProcess_->NoiseUpdate(0.1f);
 
+	// json更新処理
 	json_->Update();
 	json_->EnemyUpdate(player_.get(), this);
 	json_->FixedEnemyUpdate(player_.get(), this);
@@ -134,6 +135,7 @@ void GameScene::Update(){
 		postProcess_->SetNoiseStrength(noiseStrength);
 	}
 
+	// 画面の揺れ
 	if (isShake) {
 		shakeTimer -= 1;
 		if (shakeTimer >= 10) {
@@ -150,6 +152,7 @@ void GameScene::Update(){
 		randY = 0;
 	}
 
+	// スタート演出
 	if (isVignette_ == false) {
 		if (isApploach_) {
 			float kRotateCameraSpeed = 0.035f;
@@ -178,6 +181,7 @@ void GameScene::Update(){
 		else if (isApploach_ == false) {
 			camera_.cameraTransform.translate = { player_->GetPos().x + randX, player_->GetPos().y + cameraOffset.y + randY,  player_->GetPos().z - cameraOffset.z };
 
+			// ブラー
 			blurStrength_ -= minusBlurStrength_;
 			if (blurStrength_ <= kDefaultBlurStrength_) {
 				blurStrength_ = kDefaultBlurStrength_;
@@ -187,9 +191,11 @@ void GameScene::Update(){
 		}
 	}
 
+	// クリア条件
 	if (player_->GetPos().z >= goalline) {
 		camera_.cameraTransform.translate = { player_->GetPos().x, player_->GetPos().y + cameraOffset.y,  goalline - cameraOffset.z };
 
+		// カメラをプレイヤーに向ける
 		Vector3 end = player_->GetPos();
 		Vector3 start = camera_.cameraTransform.translate;
 
@@ -210,6 +216,17 @@ void GameScene::Update(){
 		isGameClear_ = true;
 	}
 
+	if (isGameClear_) {
+		if (noiseStrength <= kMaxNoiseStrength) {
+			noiseStrength += plusNoiseStrength;
+		}
+
+		if (postProcess_->GetNoiseStrength() >= kMaxNoiseStrength) {
+			sceneNo = CLEAR;
+		}
+	}
+
+	// ゲームオーバー条件
 	if (player_->GetHP() <= 0) {
 		isGameOver_ = true;
 	}
@@ -221,16 +238,6 @@ void GameScene::Update(){
 
 		if (postProcess_->GetNoiseStrength() >= kMaxNoiseStrength) {
 			sceneNo = OVER;
-		}
-	}
-
-	if (isGameClear_) {
-		if (noiseStrength <= kMaxNoiseStrength) {
-			noiseStrength += plusNoiseStrength;
-		}
-		
-		if(postProcess_->GetNoiseStrength() >= kMaxNoiseStrength){
-			sceneNo = CLEAR;
 		}
 	}
 
