@@ -62,7 +62,7 @@ void Player::Update()
 	// キャラクターの移動速さ
 	const float kCharacterSpeed = 0.5f;
 	// 回転速さ[ラジアン/frame]
-	float kRotSpeed = 0.05f;
+	float kRotSpeed = 0.1f;
 
 	// 押した方向で移動ベクトルを変更(左右)
 	if (input_->PushKey(DIK_A)) {
@@ -92,6 +92,8 @@ void Player::Update()
 	if (Input::GetInsTance()->GetJoystickState(joyState)) {
 		reticleWorldtransform_.translate.x += (float)joyState.Gamepad.sThumbLX / SHRT_MAX * kCharacterSpeed;
 		reticleWorldtransform_.translate.y += (float)joyState.Gamepad.sThumbLY / SHRT_MAX * kCharacterSpeed;
+
+		worldtransform_.rotate.z -= (float)joyState.Gamepad.sThumbLX / SHRT_MAX * kRotSpeed;
 	}
 
 	reticleWorldtransform_.UpdateMatrix();
@@ -143,6 +145,9 @@ void Player::Update()
 	reticleWorldtransform_.translate.x = std::min(reticleWorldtransform_.translate.x, +kMoveLimitX);
 	reticleWorldtransform_.translate.y = max(reticleWorldtransform_.translate.y, -7.0f);
 	reticleWorldtransform_.translate.y = std::min(reticleWorldtransform_.translate.y, +kMoveLimitY);
+
+	worldtransform_.rotate.z = max(worldtransform_.rotate.z, -1.0f);
+	worldtransform_.rotate.z = std::min(worldtransform_.rotate.z, +1.0f);
 
 	// 攻撃処理
 	Attack();
