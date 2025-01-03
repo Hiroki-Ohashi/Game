@@ -66,23 +66,23 @@ void Player::Update()
 
 	// 押した方向で移動ベクトルを変更(左右)
 	if (input_->PushKey(DIK_A)) {
-		move.x -= kCharacterSpeed;
-		worldtransform_.rotate.y -= kRotSpeed;
+		reticleWorldtransform_.translate.x -= kCharacterSpeed;
+		//worldtransform_.rotate.y -= kRotSpeed;
 	}
 	
 	if (input_->PushKey(DIK_D)) {
-		move.x += kCharacterSpeed;
-		worldtransform_.rotate.y += kRotSpeed;
+		reticleWorldtransform_.translate.x += kCharacterSpeed;
+		//worldtransform_.rotate.y += kRotSpeed;
 	}
 
 	// 押した方向で移動ベクトルを変更(上下)
 	if (input_->PushKey(DIK_W)) {
-		move.y -= kCharacterSpeed;
-		worldtransform_.rotate.x -= kRotSpeed;
+		reticleWorldtransform_.translate.y += kCharacterSpeed;
+		//worldtransform_.rotate.x -= kRotSpeed;
 	}
 	else if (input_->PushKey(DIK_S)) {
-		move.y += kCharacterSpeed;
-		worldtransform_.rotate.x += kRotSpeed;
+		reticleWorldtransform_.translate.y -= kCharacterSpeed;
+		//worldtransform_.rotate.x += kRotSpeed;
 	}
 
 	// ゲームパッドの状態を得る変数(XINPUT)
@@ -228,7 +228,7 @@ void Player::Attack()
 	if (input_->TriggerKey(DIK_SPACE)) {
 
 		// 弾の速度
-		const float kBulletSpeed = 5.0f;
+		const float kBulletSpeed = 10.0f;
 		Vector3 velocity(0, 0, kBulletSpeed);
 
 		// 速度ベクトルを自機の向きに併せて回転させる
