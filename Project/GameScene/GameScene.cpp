@@ -50,15 +50,16 @@ void GameScene::Initialize() {
 	particle_ = std::make_unique<Particles>();
 	particle_->Initialize("board.obj", { 0.0f, 25.0f, 50.0f }, 60);
 
+	go = textureManager_->Load("resources/go.png");
+	ready = textureManager_->Load("resources/ready.png");
+	uv = textureManager_->Load("resources/map.png");
 	enemyBulletTex = textureManager_->Load("resources/black.png");
 	bossBulletTex = textureManager_->Load("resources/red.png");
-	uv = textureManager_->Load("resources/map.png");
-	ready = textureManager_->Load("resources/ready.png");
-	go = textureManager_->Load("resources/go.png");
 
 	// ready
 	ready_ = std::make_unique<Sprite>();
-	ready_->Initialize(Vector2{ 0.0f, 0.0f }, Vector2{ 1.0f, 1.0f }, ready);
+	ready_->Initialize(Vector2{ 340.0f, 0.0f }, Vector2{ 600.0f, 300.0f }, ready);
+	ready_->SetSize({ 600.0f, 300.0f });
 
 	// Json
     json_ = std::make_unique<Json>();

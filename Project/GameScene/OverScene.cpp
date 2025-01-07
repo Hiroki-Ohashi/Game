@@ -40,23 +40,28 @@ void OverScene::Initialize()
 	sareta = textureManager_->Load("resources/sareta.png");
 
 	gekitui_ = std::make_unique<Sprite>();
-	gekitui_->Initialize(Vector2{ 180.0f, 30.0f }, Vector2{ 257.0f, 137.0f }, gekitui);
+	gekitui_->Initialize(Vector2{ 330.0f, 30.0f }, Vector2{ 331.0f, 190.0f }, gekitui);
+	gekitui_->SetSize({ 331.0f, 190.0f });
 
 	sareta_ = std::make_unique<Sprite>();
-	sareta_->Initialize(Vector2{ 320.0f, 80.0f }, Vector2{ 221.0f, 37.0f }, sareta);
+	sareta_->Initialize(Vector2{ 685.0f, 121.0f }, Vector2{ 1.0f, 1.0f }, sareta);
+	sareta_->SetSize({ 320.0f, 100.0f });
 
 	sentaku = textureManager_->Load("resources/sentaku.png");
 	retry = textureManager_->Load("resources/retry.png");
 	title = textureManager_->Load("resources/backTitle.png");
 
 	sentaku_ = std::make_unique<Sprite>();
-	sentaku_->Initialize(Vector2{ 500.0f, 100.0f }, Vector2{ 127.0f, 107.0f }, sentaku);
+	sentaku_->Initialize(Vector2{ 1050.0f, 560.0f }, Vector2{ 127.0f, 107.0f }, sentaku);
+	sentaku_->SetSize({ 127.0f, 107.0f });
 
 	retry_ = std::make_unique<Sprite>();
-	retry_->Initialize(Vector2{ 500.0f, 100.0f }, Vector2{ 127.0f, 107.0f }, retry);
+	retry_->Initialize(Vector2{ 1050.0f, 560.0f }, Vector2{ 127.0f, 107.0f }, retry);
+	retry_->SetSize({ 127.0f, 107.0f });
 
 	title_ = std::make_unique<Sprite>();
-	title_->Initialize(Vector2{ 500.0f, 100.0f }, Vector2{ 127.0f, 107.0f }, title);
+	title_->Initialize(Vector2{ 1050.0f, 560.0f }, Vector2{ 127.0f, 107.0f }, title);
+	title_->SetSize({ 127.0f, 107.0f });
 
 	player = textureManager_->Load("resources/white.png");
 	yuka = textureManager_->Load("resources/map.png");

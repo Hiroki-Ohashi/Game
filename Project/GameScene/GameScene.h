@@ -150,4 +150,8 @@ private:
 
 	// カメラoffset
 	Vector3 cameraOffset = { 0.0f, 1.5f, 20.0f };
+
+	// デバッグ用
+	Vector2 pos = {};
+	Vector2 scale = {};
 };

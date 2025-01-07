@@ -29,13 +29,14 @@ void ClearScene::Initialize()
 	clearLog = textureManager_->Load("resources/clearLog.png");
 
 	clear_ = std::make_unique<Sprite>();
-	clear_->Initialize(Vector2{ 150.0f, 300.0f }, Vector2{ 1.0f, 1.0f }, clear);
+	clear_->Initialize(Vector2{ 315.0f, 566.0f }, Vector2{ 1.0f, 1.0f }, clear);
 
 	log_ = std::make_unique<Sprite>();
-	log_->Initialize(Vector2{ 492.0f, 308.0f }, Vector2{ 1.0f, 1.0f }, log);
+	log_->Initialize(Vector2{ 987.0f, 582.0f }, Vector2{ 14.0f, 42.0f }, log);
+	log_->SetSize({ 14.0f, 32.0f });
 
 	clearLog_ = std::make_unique<Sprite>();
-	clearLog_->Initialize(Vector2{ 200.0f, 25.0f }, Vector2{ 1.0f, 1.0f }, clearLog);
+	clearLog_->Initialize(Vector2{ 415.0f, 70.0f }, Vector2{ 1.0f, 1.0f }, clearLog);
 
 	json_ = std::make_unique<Json>();
 	levelData_ = json_->LoadJson("clear");

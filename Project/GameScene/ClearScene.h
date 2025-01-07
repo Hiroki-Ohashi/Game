@@ -64,4 +64,8 @@ private:
 	// ビネット
 	bool isVignette_;
 	float noiseStrength = 0.0f;
+
+	// デバッグ用
+	Vector2 pos = {};
+	Vector2 scale = {};
 };

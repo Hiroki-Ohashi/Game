@@ -48,7 +48,10 @@ namespace Engine
 			transformSprite.translate.x = pos_.x;
 			transformSprite.translate.y = pos_.y;
 		}
-		void SetSize(Vector2 size) { textureSize = size; }
+		void SetSize(Vector2 size) { 
+			transformSprite.scale.x = size.x;
+			transformSprite.scale.y = size.y;
+		}
 		void SetTextureLeftTop(const Vector2 textureLeftTop_) { this->textureLeftTop = textureLeftTop_; }
 		void SetAlpha(float alpha) { materialDataSprite->color.w = alpha; }
 		float GetAlpha() { return materialDataSprite->color.w; }

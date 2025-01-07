@@ -85,4 +85,8 @@ private:
 
 	// ビネット
 	bool isVignette_;
+
+	// デバッグ用
+	Vector2 pos = {};
+	Vector2 scale = {};
 };

@@ -34,7 +34,8 @@ void TitleScene::Initialize()
 	title_->Initialize(Vector2{ 60.0f, 60.0f }, Vector2{ 90.0f, 80.0f }, title);
 
 	startLog_ = std::make_unique<Sprite>();
-	startLog_->Initialize(Vector2{ 0.0f, 0.0f }, Vector2{ 100.0f, 100.0f }, start);
+	startLog_->Initialize(Vector2{ 490.0f, 290.0f }, Vector2{ 14.0f, 42.0f }, start);
+	startLog_->SetSize({ 14.0f, 42.0f });
 
 	json_ = std::make_unique<Json>();
 	levelData_ = json_->LoadJson("title");
@@ -104,12 +105,6 @@ void TitleScene::Update()
 		else {
 			blinking = true;
 		}
-	}
-
-	if (ImGui::TreeNode("Sprite")) {
-		ImGui::DragFloat2("Transform", &startLog_->GetPos().x, 0.1f, -1000.0f, 1000.0f);
-		ImGui::DragFloat2("Scale", &transformSprite.scale.x, 0.1f, -1000.0f, 1000.0f);
-		ImGui::TreePop();
 	}
 }
 
