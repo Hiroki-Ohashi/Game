@@ -8,7 +8,7 @@ void Enemy::Initialize(Vector3 pos, EnemyType type)
 
 	model_ = std::make_unique<Model>();
 	if (type == FRY) {
-		model_->Initialize("doron.obj", transform_);
+		model_->Initialize("cube.obj", transform_);
 	}
 	else if (type == FIXEDENEMY) {
 		model_->Initialize("fixed.obj", transform_);
@@ -21,6 +21,7 @@ void Enemy::Initialize(Vector3 pos, EnemyType type)
 	worldtransform_.UpdateMatrix();
 
 	isDead_ = false;
+	isLockOn_ = false;
 
 	enemyTex = textureManager_->Load("resources/white.png");
 
@@ -35,12 +36,21 @@ void Enemy::Update(EnemyType type)
 	else if (type == FIXEDENEMY) {
 		FixedUpdate();
 	}
+
+	if (ImGui::TreeNode("enemy")) {
+		ImGui::Text("isLockOn %d", isLockOn_);
+		ImGui::TreePop();
+	}
 }
 
 void Enemy::FixedUpdate()
 {
 	worldtransform_.UpdateMatrix();
 	float kMaxAttack = 600.0f;
+
+	if (worldtransform_.translate.z - player_->GetPos().z <= kMaxAttack) {
+		isLockOn_ = true;
+	}
 
 	attackTimer--;
 
@@ -119,6 +129,7 @@ void Enemy::FryUpdate()
 	if (worldtransform_.translate.z - player_->GetPos().z <= kMaxAttack) {
 
 		const float kMoveSpeed = 0.005f;
+		isLockOn_ = true;
 
 		if (worldtransform_.translate.y < posParam.y) {
 			speedY += kMoveSpeed;
@@ -190,6 +201,7 @@ void Enemy::Attack()
 void Enemy::OnCollision()
 {
 	isDeadAnimation_ = true;
+	isLockOn_ = false;
 }
 
 void Enemy::DeadAnimation()

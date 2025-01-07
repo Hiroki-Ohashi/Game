@@ -25,15 +25,16 @@ void TitleScene::Initialize()
 	skydome_ = std::make_unique<Skydome>();
 	skydome_->Initialize();
 
-	title_ = std::make_unique<Sprite>();
-	title_->Initialize(Vector2{ 40.0f, 25.0f }, Vector2{ 350.0f, 300.0f }, 1.0f);
-
-	startLog_ = std::make_unique<Sprite>();
-	startLog_->Initialize(Vector2{ 192.0f, 110.0f }, Vector2{ 15.0f, 35.0f }, 1.0f);
-
-	title = textureManager_->Load("resources/title.png");
 	start = textureManager_->Load("resources/log.png");
 	white = textureManager_->Load("resources/white.png");
+
+	title = textureManager_->Load("resources/title.png");
+
+	title_ = std::make_unique<Sprite>();
+	title_->Initialize(Vector2{ 60.0f, 60.0f }, Vector2{ 90.0f, 80.0f }, title);
+
+	startLog_ = std::make_unique<Sprite>();
+	startLog_->Initialize(Vector2{ 0.0f, 0.0f }, Vector2{ 100.0f, 100.0f }, start);
 
 	json_ = std::make_unique<Json>();
 	levelData_ = json_->LoadJson("title");
@@ -105,8 +106,9 @@ void TitleScene::Update()
 		}
 	}
 
-	if (ImGui::TreeNode("Vignette")) {
-		ImGui::Text("%f", postProcess_->GetVignetteShape());
+	if (ImGui::TreeNode("Sprite")) {
+		ImGui::DragFloat2("Transform", &startLog_->GetPos().x, 0.1f, -1000.0f, 1000.0f);
+		ImGui::DragFloat2("Scale", &transformSprite.scale.x, 0.1f, -1000.0f, 1000.0f);
 		ImGui::TreePop();
 	}
 }
@@ -115,10 +117,10 @@ void TitleScene::Draw()
 {
 	skydome_->Draw(&camera_);
 
-	title_->Draw(title);
+	title_->Draw();
 
 	if (blinking) {
-		startLog_->Draw(start);
+		startLog_->Draw();
 	}
 
 	json_->Draw(camera_, white);

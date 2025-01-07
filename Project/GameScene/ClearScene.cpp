@@ -23,19 +23,19 @@ void ClearScene::Initialize()
 	skydome_ = std::make_unique<Skydome>();
 	skydome_->Initialize();
 
-	clear_ = std::make_unique<Sprite>();
-	clear_->Initialize(Vector2{ 150.0f, 300.0f }, Vector2{ 700.0, 70.0f }, 1.0f);
-
-	log_ = std::make_unique<Sprite>();
-	log_->Initialize(Vector2{ 492.0f, 308.0f }, Vector2{ 15.0f, 35.0f }, 1.0f);
-
-	clearLog_ = std::make_unique<Sprite>();
-	clearLog_->Initialize(Vector2{ 200.0f, 25.0f }, Vector2{ 450.0, 150.0f }, 1.0f);
-
-	clear = textureManager_->Load("resources/clear.png");
-	clearLog = textureManager_->Load("resources/clearLog.png");
 	log = textureManager_->Load("resources/log.png");
 	player = textureManager_->Load("resources/white.png");
+	clear = textureManager_->Load("resources/clear.png");
+	clearLog = textureManager_->Load("resources/clearLog.png");
+
+	clear_ = std::make_unique<Sprite>();
+	clear_->Initialize(Vector2{ 150.0f, 300.0f }, Vector2{ 1.0f, 1.0f }, clear);
+
+	log_ = std::make_unique<Sprite>();
+	log_->Initialize(Vector2{ 492.0f, 308.0f }, Vector2{ 1.0f, 1.0f }, log);
+
+	clearLog_ = std::make_unique<Sprite>();
+	clearLog_->Initialize(Vector2{ 200.0f, 25.0f }, Vector2{ 1.0f, 1.0f }, clearLog);
 
 	json_ = std::make_unique<Json>();
 	levelData_ = json_->LoadJson("clear");
@@ -109,11 +109,11 @@ void ClearScene::Update()
 
 void ClearScene::Draw()
 {
-	clear_->Draw(clear);
-	clearLog_->Draw(clearLog);
+	clear_->Draw();
+	clearLog_->Draw();
 
 	if (blinking) {
-		log_->Draw(log);
+		log_->Draw();
 	}
 
 	skydome_->Draw(&camera_);

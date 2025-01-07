@@ -22,16 +22,6 @@ void OverScene::Initialize()
 	postProcess_->SetVignette(16.0f, 1.0f);
 	postProcess_->SetNoise(0.2f, noiseStrength);
 
-
-	gekitui_ = std::make_unique<Sprite>();
-	gekitui_->Initialize(Vector2{ 180.0f, 30.0f }, Vector2{ 257.0f, 137.0f }, 1.0f);
-
-	sareta_ = std::make_unique<Sprite>();
-	sareta_->Initialize(Vector2{ 320.0f, 80.0f }, Vector2{ 221.0f, 37.0f }, 1.0f);
-
-	sentaku_ = std::make_unique<Sprite>();
-	sentaku_->Initialize(Vector2{ 500.0f, 100.0f }, Vector2{ 127.0f, 107.0f }, 1.0f);
-
 	json_ = std::make_unique<Json>();
 	levelData_ = json_->LoadJson("over");
 	json_->Adoption(levelData_, true);
@@ -49,9 +39,24 @@ void OverScene::Initialize()
 	gekitui = textureManager_->Load("resources/gekitui.png");
 	sareta = textureManager_->Load("resources/sareta.png");
 
+	gekitui_ = std::make_unique<Sprite>();
+	gekitui_->Initialize(Vector2{ 180.0f, 30.0f }, Vector2{ 257.0f, 137.0f }, gekitui);
+
+	sareta_ = std::make_unique<Sprite>();
+	sareta_->Initialize(Vector2{ 320.0f, 80.0f }, Vector2{ 221.0f, 37.0f }, sareta);
+
 	sentaku = textureManager_->Load("resources/sentaku.png");
 	retry = textureManager_->Load("resources/retry.png");
 	title = textureManager_->Load("resources/backTitle.png");
+
+	sentaku_ = std::make_unique<Sprite>();
+	sentaku_->Initialize(Vector2{ 500.0f, 100.0f }, Vector2{ 127.0f, 107.0f }, sentaku);
+
+	retry_ = std::make_unique<Sprite>();
+	retry_->Initialize(Vector2{ 500.0f, 100.0f }, Vector2{ 127.0f, 107.0f }, retry);
+
+	title_ = std::make_unique<Sprite>();
+	title_->Initialize(Vector2{ 500.0f, 100.0f }, Vector2{ 127.0f, 107.0f }, title);
 
 	player = textureManager_->Load("resources/white.png");
 	yuka = textureManager_->Load("resources/map.png");
@@ -166,17 +171,17 @@ void OverScene::Update()
 
 void OverScene::Draw()
 {
-	gekitui_->Draw(gekitui);
-	sareta_->Draw(sareta);
+	gekitui_->Draw();
+	sareta_->Draw();
 
-	sentaku_->Draw(sentaku);
+	sentaku_->Draw();
 
 	if (blinking) {
 		if (scenePrev == 0) {
-			sentaku_->Draw(retry);
+			retry_->Draw();
 		}
 		else {
-			sentaku_->Draw(title);
+			title_->Draw();
 		}
 	}
 

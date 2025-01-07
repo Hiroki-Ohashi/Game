@@ -46,6 +46,7 @@ public:
 	// Getter
 	Vector3 GetPos() { return worldtransform_.translate; }
 	Vector3 GetWorldPosition() const override;
+	bool GetIsLockOn() const { return isLockOn_; }
 
 	// Setter
 	void SetPosition(Vector3 pos) { 
@@ -88,4 +89,6 @@ private:
 
 	bool isDead_;
 	bool isDeadAnimation_;
+
+	bool isLockOn_;
 };

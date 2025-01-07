@@ -16,6 +16,9 @@
 #include "MathFunction.h"
 #include "DirectXCommon.h"
 #include "d3dx12.h"
+#include <unordered_map>
+#include <mutex>
+
 namespace Engine
 {
 	// TextureManagerクラス
@@ -83,5 +86,15 @@ namespace Engine
 		uint32_t animationIndex_;
 
 		Animation animation[kMaxAnimation];
+
+		// キャッシュ用データ構造
+		std::unordered_map<std::string, ModelData> modelCache;
+		std::mutex cacheMutex; // スレッドセーフ性を確保するためのミューテックス
+
+		// テクスチャキャッシュ：キーはファイルパス、値はリソース情報
+		std::unordered_map<std::string, Microsoft::WRL::ComPtr<ID3D12Resource>> textureCache;
+		std::unordered_map<std::string, D3D12_SHADER_RESOURCE_VIEW_DESC> srvCache;
+
+		std::mutex TextureCacheMutex; // キャッシュ用ミューテックス
 	};
 }

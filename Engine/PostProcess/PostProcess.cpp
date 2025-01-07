@@ -58,6 +58,7 @@ namespace Engine
 
 		if (time_ >= 10.0f) {
 			time_ = 1.0f;
+			noiseData_->noiseStrength = 1.0f;
 		}
 	}
 

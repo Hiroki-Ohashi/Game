@@ -53,7 +53,7 @@ private:
 	WorldTransform worldtransform_;
 private:
 	// デスタイマー
-	static const int32_t kLifeTime = 60 * 5;
+	static const int32_t kLifeTime = 60 * 2;
 	int32_t deathTimer_ = kLifeTime;
 	bool isDead_ = false;
 

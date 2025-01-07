@@ -43,7 +43,6 @@ namespace Engine
 		const aiScene* scene = importer.ReadFile(filePath.c_str(), aiProcess_FlipWindingOrder | aiProcess_FlipUVs);
 		assert(scene->HasMeshes()); // メッシュがないのは対応しない
 
-
 		for (uint32_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
 			aiMesh* mesh = scene->mMeshes[meshIndex];
 			assert(mesh->HasNormals()); // 法線がないMeshは今回非対応
@@ -133,6 +132,17 @@ namespace Engine
 
 	ModelData TextureManager::LoadObjFile(const std::string& directoryPath, const std::string& filename)
 	{
+		// キャッシュ確認
+		{
+			std::lock_guard<std::mutex> lock(cacheMutex);
+			auto it = modelCache.find(directoryPath + "/" + filename);
+			if (it != modelCache.end()) {
+				return it->second; // キャッシュに存在すればそれを返す
+			}
+		}
+
+		// キャッシュに存在しない場合は新たにロード
+
 		// 必要な変数の宣言
 		ModelData modelData; // 構築するModelData
 		std::vector<Vector4> positions; // 位置
@@ -202,6 +212,12 @@ namespace Engine
 				modelData.material = LoadMaterialTemplateFile(directoryPath, materialFilename);
 			}
 
+		}
+
+		// キャッシュに保存
+		{
+			std::lock_guard<std::mutex> lock(cacheMutex);
+			modelCache[directoryPath + "/" + filename] = modelData;
 		}
 		return modelData;
 	}
@@ -280,6 +296,27 @@ namespace Engine
 
 	void TextureManager::SetTexture(const std::string& filePath, uint32_t index)
 	{
+		// キャッシュを確認
+		{
+			std::lock_guard<std::mutex> lock(TextureCacheMutex);
+			auto it = textureCache.find(filePath);
+			if (it != textureCache.end()) {
+				// キャッシュに存在する場合
+				textureResource[index] = it->second;
+				textureSrvHandleCPU[index] = GetCPUDescriptorHandle(dir_->GetSrvDescriptorHeap2(), descriptorSizeSRV, index);
+				textureSrvHandleGPU[index] = GetGPUDescriptorHandle(dir_->GetSrvDescriptorHeap2(), descriptorSizeSRV, index);
+
+				// SRVをキャッシュから取得して設定
+				dir_->GetDevice()->CreateShaderResourceView(
+					textureResource[index].Get(),
+					&srvCache[filePath],
+					textureSrvHandleCPU[index]
+				);
+				return;
+			}
+		}
+
+		// キャッシュに存在しない場合は新たにロード
 		// Textureを読んで転送する
 		DirectX::ScratchImage mipImages = LoadTexture(filePath);
 		const DirectX::TexMetadata& metadata = mipImages.GetMetadata();
@@ -311,6 +348,13 @@ namespace Engine
 
 		// SRVの生成
 		dir_->GetDevice()->CreateShaderResourceView(textureResource[index].Get(), &srvDesc, textureSrvHandleCPU[index]);
+
+		// キャッシュに保存
+		{
+			std::lock_guard<std::mutex> lock(TextureCacheMutex);
+			textureCache[filePath] = textureResource[index];
+			srvCache[filePath] = srvDesc;
+		}
 	}
 
 	Microsoft::WRL::ComPtr<ID3D12Resource> TextureManager::CreateTextureResource(Microsoft::WRL::ComPtr<ID3D12Device> device, const DirectX::TexMetadata& metadata)

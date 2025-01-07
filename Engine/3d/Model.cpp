@@ -40,8 +40,6 @@ namespace Engine
 		worldTransform_.UpdateMatrix();
 
 		uvTransform = { {1.0f, 1.0f, 1.0f},{0.0f, 0.0f, 0.0f},{0.0f, 0.0f, 0.0f}, };
-
-
 	}
 
 	void Model::Update() {
@@ -72,7 +70,8 @@ namespace Engine
 		uvtransformMatrix = Multiply(uvtransformMatrix, MakeTranslateMatrix(uvTransform.translate));
 		materialData->uvTransform = uvtransformMatrix;
 
-
+		DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootSignature(rootSignature.Get());
+		DirectXCommon::GetInsTance()->GetCommandList()->SetPipelineState(graphicsPipelineState.Get());
 		// コマンドを積む
 		DirectXCommon::GetInsTance()->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView); // VBVを設定
 		// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
@@ -125,6 +124,8 @@ namespace Engine
 		vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
 		// 頂点データをリソースにコピー
 		std::memcpy(vertexData, modelData.vertices.data(), sizeof(VertexData) * modelData.vertices.size());
+		// 書き込みが終了した後にアンマップ
+		vertexResource->Unmap(0, nullptr);
 	}
 
 	void Model::CreateMaterialResource() {
@@ -142,6 +143,9 @@ namespace Engine
 		materialData->enableLighting = true;
 
 		materialData->shininess = 70.0f;
+
+		// 書き込みが終了した後にアンマップ
+		materialResource->Unmap(0, nullptr);
 	}
 
 	void Model::CreateWVPResource() {
@@ -153,6 +157,9 @@ namespace Engine
 
 		// 単位行列を書き込んでおく
 		wvpData->WVP = MakeIndentity4x4();
+
+		// 書き込みが終了した後にアンマップ
+		wvpResource->Unmap(0, nullptr);
 	}
 
 

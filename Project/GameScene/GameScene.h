@@ -86,9 +86,6 @@ private:
 	std::unique_ptr<Json> json_ = nullptr;
 	LevelData* levelData_ = nullptr;
 
-	// UI
-	std::unique_ptr<Sprite> ui_ = nullptr;
-
 	// Stage
 	std::unique_ptr<Stage> stage_ = nullptr;
   
@@ -107,13 +104,6 @@ private:
 	uint32_t uv;
 	uint32_t ready;
 	uint32_t go;
-
-	uint32_t hp5;
-	uint32_t hp4;
-	uint32_t hp3;
-	uint32_t hp2;
-	uint32_t hp1;
-	uint32_t hp0;
 
 	// bossParam
 	Vector3 pos_ = { 0.0f, 25.0f, 500.0f };

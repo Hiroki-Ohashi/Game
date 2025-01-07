@@ -23,19 +23,25 @@ void GameScene::Initialize() {
 	// player
 	player_ = std::make_unique<Player>();
 	player_->Initialize();
+	// enemy
+	//// 両方のリストを統合
+	//std::vector<std::unique_ptr<Enemy>> combinedEnemys = std::move(json_->GetEnemys());
+	//std::vector<std::unique_ptr<Enemy>> fixedEnemys = std::move(json_->GetFixedEnemys());
 
-	// ready
-	ready_ = std::make_unique<Sprite>();
-	ready_->Initialize(Vector2{ 200.0f, 25.0f }, Vector2{ 450.0, 150.0f }, 1.0f);
+	//// fixedEnemys を combinedEnemys に結合
+	//combinedEnemys.insert(
+	//	combinedEnemys.end(),
+	//	std::make_move_iterator(fixedEnemys.begin()),
+	//	std::make_move_iterator(fixedEnemys.end())
+	//);
+
+	//// まとめてセット
+	//player_->SetEnemy(combinedEnemys);
 
 	transform_ = { {10.0f,10.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,30.0f,-100.0f} };
 	go_ = std::make_unique<Model>();
 	go_->Initialize("board.obj", transform_);
 	go_->SetLight(false);
-
-	// UI
-	ui_ = std::make_unique<Sprite>();
-	ui_->Initialize(Vector2{ 0.0f, 280.0f }, Vector2{ 150.0, 150.0f }, 1.0f);
 
 	// skybox
 	skydome_ = std::make_unique<Skydome>();
@@ -50,12 +56,9 @@ void GameScene::Initialize() {
 	ready = textureManager_->Load("resources/ready.png");
 	go = textureManager_->Load("resources/go.png");
 
-	hp5 = textureManager_->Load("resources/hp5.png");
-	hp4 = textureManager_->Load("resources/hp4.png");
-	hp3 = textureManager_->Load("resources/hp3.png");
-	hp2 = textureManager_->Load("resources/hp2.png");
-	hp1 = textureManager_->Load("resources/hp1.png");
-	hp0 = textureManager_->Load("resources/hp0.png");
+	// ready
+	ready_ = std::make_unique<Sprite>();
+	ready_->Initialize(Vector2{ 0.0f, 0.0f }, Vector2{ 1.0f, 1.0f }, ready);
 
 	// Json
     json_ = std::make_unique<Json>();
@@ -105,7 +108,7 @@ void GameScene::Update(){
 
 	if (isVignette_ == false) {
 		if (isApploach_ == false) {
-			player_->Update();
+			player_->Update(&camera_);
 		}
 	}
 
@@ -217,11 +220,10 @@ void GameScene::Update(){
 	}
 
 	if (isGameClear_) {
-		if (noiseStrength <= kMaxNoiseStrength) {
-			noiseStrength += plusNoiseStrength;
-		}
+		postProcess_->VignetteFadeIn(0.1f, 0.1f);
 
-		if (postProcess_->GetNoiseStrength() >= kMaxNoiseStrength) {
+		if (postProcess_->GetVignetteLight() <= 0.0f) {
+			isGameClear_ = false;
 			sceneNo = CLEAR;
 		}
 	}
@@ -263,29 +265,10 @@ void GameScene::Draw()
 	}
 
 	if (isApploach_) {
-		ready_->Draw(ready);
+		ready_->Draw();
 	}
 	else {
 		go_->Draw(&camera_, go);
-
-		if (player_->GetHP() == 5) {
-			ui_->Draw(hp5);
-		}
-		else if (player_->GetHP() == 4) {
-			ui_->Draw(hp4);
-		}
-		else if (player_->GetHP() == 3) {
-			ui_->Draw(hp3);
-		}
-		else if (player_->GetHP() == 2) {
-			ui_->Draw(hp2);
-		}
-		else if (player_->GetHP() == 1) {
-			ui_->Draw(hp1);
-		}
-		else if (player_->GetHP() == 0) {
-			ui_->Draw(hp0);
-		}
 	}
 
 	player_->Draw(&camera_);

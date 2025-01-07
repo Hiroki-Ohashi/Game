@@ -40,6 +40,8 @@ private:
 	std::unique_ptr<Sprite> gekitui_ = nullptr;
 	std::unique_ptr<Sprite> sareta_ = nullptr;
 	std::unique_ptr<Sprite> sentaku_ = nullptr;
+	std::unique_ptr<Sprite> retry_ = nullptr;
+	std::unique_ptr<Sprite> title_ = nullptr;
 
 	// json
 	std::unique_ptr<Json> json_ = nullptr;

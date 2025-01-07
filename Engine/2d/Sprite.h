@@ -11,6 +11,7 @@
 #include "DirectXCommon.h"
 #include "TextureManager.h"
 #include "Mesh.h"
+#include "Camera.h"
 
 /// <summary>
 /// Sprite.h
@@ -26,18 +27,19 @@ namespace Engine
 		~Sprite();
 
 		// 初期化処理
-		void Initialize(Vector2 pos, Vector2 scale, float index);
+		void Initialize(Vector2 pos, Vector2 scale, uint32_t index);
 		// 更新処理
 		void Update();
 		// 描画処理
-		void Draw(uint32_t index);
+		void Draw();
 		// 解放処理
 		void Release();
 
 		// Getter
 		Material* GetMaterialDataSprite() { return materialDataSprite; }
 		const Vector2& GetAnchorPoint() const { return anchorPoint; }
-		Vector2 GetTextureSize() { return textureSize; }
+		Vector2 GetSize() { return { transformSprite.scale.x,  transformSprite.scale.y }; }
+		Vector2 GetPos() { return { transformSprite.translate.x,  transformSprite.translate.y }; }
 		Vector2 GetTextureLeftTop() { return textureLeftTop; }
 
 		// Setter
@@ -60,7 +62,7 @@ namespace Engine
 
 	private:
 		// vertex生成
-		void CreateVertexResourceSprite(Vector2 pos, Vector2 scale);
+		void CreateVertexResourceSprite();
 		// material作成
 		void CreateMaterialResourceSprite();
 		// wvp作成

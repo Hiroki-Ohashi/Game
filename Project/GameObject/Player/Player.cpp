@@ -35,14 +35,36 @@ void Player::Initialize()
 
 	playerTex = textureManager_->Load("resources/white.png");
 	reticleTex = textureManager_->Load("resources/reticle.png");
-	bulletTex = textureManager_->Load("resources/white.png");
 	hit = textureManager_->Load("resources/red.png");
+
+	reticleSprite_ = std::make_unique<Sprite>();
+	reticleSprite_->Initialize({ 100.0f,200.0f }, { 100.0f,100.0f }, reticleTex);
+
+	hp5 = textureManager_->Load("resources/hp5.png");
+	hp4 = textureManager_->Load("resources/hp4.png");
+	hp3 = textureManager_->Load("resources/hp3.png");
+	hp2 = textureManager_->Load("resources/hp2.png");
+	hp1 = textureManager_->Load("resources/hp1.png");
+	hp0 = textureManager_->Load("resources/hp0.png");
+
+	hp0_ = std::make_unique<Sprite>();
+	hp0_->Initialize({ 0.0f,0.0f }, { 1.0f,1.0f }, hp0);
+	hp1_ = std::make_unique<Sprite>();
+	hp1_->Initialize({ 0.0f,0.0f }, { 1.0f,1.0f }, hp1);
+	hp2_ = std::make_unique<Sprite>();
+	hp2_->Initialize({ 0.0f,0.0f }, { 1.0f,1.0f }, hp2);
+	hp3_ = std::make_unique<Sprite>();
+	hp3_->Initialize({ 0.0f,0.0f }, { 1.0f,1.0f }, hp3);
+	hp4_ = std::make_unique<Sprite>();
+	hp4_->Initialize({ 0.0f,0.0f }, { 1.0f,1.0f }, hp4);
+	hp5_ = std::make_unique<Sprite>();
+	hp5_->Initialize({ 0.0f,0.0f }, { 1.0f,1.0f }, hp5);
 
 	isHit_ = false;
 	HP = 5;
 }
 
-void Player::Update()
+void Player::Update(Camera* camera_)
 {
 	// デスフラグの立った弾を排除
 	bullets_.erase(
@@ -60,9 +82,9 @@ void Player::Update()
 	Vector3 move = { 0, 0, 0 };
 	Vector3 rot = { 0, 0, 0 };
 	// キャラクターの移動速さ
-	const float kCharacterSpeed = 0.5f;
+	const float kCharacterSpeed = 1.0f;
 	// 回転速さ[ラジアン/frame]
-	float kRotSpeed = 0.1f;
+	//float kRotSpeed = 0.1f;
 
 	// 押した方向で移動ベクトルを変更(左右)
 	if (input_->PushKey(DIK_A)) {
@@ -93,11 +115,57 @@ void Player::Update()
 		reticleWorldtransform_.translate.x += (float)joyState.Gamepad.sThumbLX / SHRT_MAX * kCharacterSpeed;
 		reticleWorldtransform_.translate.y += (float)joyState.Gamepad.sThumbLY / SHRT_MAX * kCharacterSpeed;
 
-		worldtransform_.rotate.z -= (float)joyState.Gamepad.sThumbLX / SHRT_MAX * kRotSpeed;
+		//worldtransform_.rotate.z -= (float)joyState.Gamepad.sThumbLX / SHRT_MAX * kRotSpeed;
 	}
 
 	reticleWorldtransform_.UpdateMatrix();
 
+	//// ゲームパッドの状態を得る変数(XINPUT)
+	//XINPUT_STATE joyState;
+
+	//Matrix4x4 matViewport = MakeViewportMatrix(0, 0, (float)WinApp::GetKClientWidth(), (float)WinApp::GetKClientHeight(), 0, 1);
+
+	//// スプライトの現在座標を取得
+	//Vector2 spritePosition = reticleSprite_->GetPosition();
+
+	//// ゲームパッド状態取得
+	//if (Input::GetInsTance()->GetJoystickState(joyState)) {
+	//	spritePosition.x += (float)joyState.Gamepad.sThumbLX / SHRT_MAX * kCharacterSpeed;
+	//	spritePosition.y -= (float)joyState.Gamepad.sThumbLY / SHRT_MAX * kCharacterSpeed;
+
+	//	worldtransform_.rotate.z -= (float)joyState.Gamepad.sThumbLX / SHRT_MAX * kRotSpeed;
+
+	//	reticleSprite_->SetPosition(spritePosition);
+	//}
+
+	//// ビュープロジェクションビューポート合成行列
+	//Matrix4x4 matVPV = Multiply(Multiply(matViewport, camera_->projectionMatrix), camera_->viewMatrix);
+
+	//// 合成行列の逆行列を計算する
+	//Matrix4x4 matInverseVPV = Inverse(matVPV);
+
+	//// スクリーン座標
+	//Vector3 posNear = Vector3(static_cast<float>(spritePosition.x), (float)spritePosition.y, 0);
+	//Vector3 posFar = Vector3(static_cast<float>(spritePosition.x), float(spritePosition.y), 1);
+	//// スクリーン座標系からワールド座標系へ
+	//posNear = Transform(posNear, matInverseVPV);
+	//posFar = Transform(posFar, matInverseVPV);
+
+	//// スティックレイの方向
+	//Vector3 spriteDierection;
+	//spriteDierection.x = posFar.x - posNear.x;
+	//spriteDierection.y = posFar.y - posNear.y;
+	//spriteDierection.z = posFar.z - posNear.z;
+	//spriteDierection = Normalize(spriteDierection);
+	//// カメラから照準オブジェクトの距離
+	//const float kDistanceTextObject = 50.0f;
+	//reticleWorldtransform_.translate.y = spriteDierection.y * kDistanceTextObject;
+	//reticleWorldtransform_.translate.z = spriteDierection.z * kDistanceTextObject;
+	//reticleWorldtransform_.translate.x = spriteDierection.x * kDistanceTextObject;
+
+	//reticleWorldtransform_.UpdateMatrix();
+
+	// プレイヤーの向きをレティクルに向ける
 	Vector3 end = reticleWorldtransform_.translate;
 	Vector3 start = worldtransform_.translate;
 
@@ -149,7 +217,31 @@ void Player::Update()
 	worldtransform_.rotate.z = max(worldtransform_.rotate.z, -1.0f);
 	worldtransform_.rotate.z = std::min(worldtransform_.rotate.z, +1.0f);
 
-	// 攻撃処理
+	// 3Dレティクルのワールド座標から2Dレティクルのスクリーン座標を計算
+	{
+		Vector3 positionReticle = Get3DWorldPosition();
+
+		// ビューポート行列
+		Matrix4x4 matViewport = MakeViewportMatrix(0, 0, (float)WinApp::GetKClientWidth(), (float)WinApp::GetKClientHeight(), 0, 1);
+
+		// ビュー行列とプロジェクション行列、ビューポート行列を合成する
+		Matrix4x4 matVPV = Multiply(Multiply(camera_->viewMatrix, camera_->projectionMatrix), matViewport);
+
+		// ワールド→スクリーン座標変換
+		positionReticle = Transform(positionReticle, matVPV);
+
+		// スプライトのレティクルに座標設定
+		reticleSprite_->SetPosition(Vector2(positionReticle.x, positionReticle.y));
+	}
+
+	//// 攻撃処理
+	//for (std::unique_ptr<Enemy>& enemy : GetEnemys()) {
+	//	if (enemy->GetIsLockOn()) {
+	//		LockOn(enemy); // ロックオン処理
+	//		break;
+	//	}
+	//}
+
 	Attack();
 
 	// 弾更新
@@ -184,13 +276,34 @@ void Player::Draw(Camera* camera_)
 	}
 
 	reticleModel_->Draw(camera_, reticleTex);
+
+	//reticleSprite_->Draw();
+
+	if (GetHP() == 5) {
+		hp5_->Draw();
+	}
+	else if (GetHP() == 4) {
+		hp4_->Draw();
+	}
+	else if (GetHP() == 3) {
+		hp3_->Draw();
+	}
+	else if (GetHP() == 2) {
+		hp2_->Draw();
+	}
+	else if (GetHP() == 1) {
+		hp1_->Draw();
+	}
+	else if (GetHP() == 0) {
+		hp0_->Draw();
+	}
 }
 
 void Player::BulletDraw(Camera* camera_)
 {
 	// 弾描画
 	for (std::unique_ptr<PlayerBullet> &bullet : bullets_) {
-		bullet->Draw(camera_, bulletTex);
+		bullet->Draw(camera_, playerTex);
 	}
 }
 
@@ -269,6 +382,40 @@ void Player::Attack()
 			velocity.x = Normalize(velocity).x * kBulletSpeed;
 			velocity.y = Normalize(velocity).y * kBulletSpeed;
 			velocity.z = Normalize(velocity).z * kBulletSpeed;
+
+			// 弾を生成し、初期化
+			std::unique_ptr<PlayerBullet> newBullet = std::make_unique<PlayerBullet>();
+			newBullet->Initialize(worldtransform_.translate, velocity);
+
+			// 弾を登録
+			bullets_.push_back(std::move(newBullet));
+		}
+	}
+}
+
+void Player::LockOn(std::unique_ptr<Enemy>& enemy)
+{
+	XINPUT_STATE joyState{};
+	if (Input::GetInsTance()->GetJoystickState(joyState)) {
+		// Aボタンが押された場合のみ処理を実行
+		if (Input::GetInsTance()->PressedButton(joyState, XINPUT_GAMEPAD_A)) {
+			// ターゲットの位置
+			Vector3 end = enemy->GetPos();
+			// プレイヤーの位置
+			Vector3 start = worldtransform_.translate;
+
+			// ターゲットまでのベクトルを計算
+			Vector3 diff;
+			diff.x = end.x - start.x;
+			diff.y = end.y - start.y;
+			diff.z = end.z - start.z;
+
+			// 正規化して方向ベクトルにする
+			diff = Normalize(diff);
+
+			// 弾の速度を設定
+			const float kBulletSpeed = 10.0f;
+			Vector3 velocity(diff.x * kBulletSpeed, diff.y * kBulletSpeed, diff.z * kBulletSpeed);
 
 			// 弾を生成し、初期化
 			std::unique_ptr<PlayerBullet> newBullet = std::make_unique<PlayerBullet>();

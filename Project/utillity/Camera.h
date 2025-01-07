@@ -28,4 +28,8 @@ struct Camera {
 	Matrix4x4 projectionMatrix;
 	Matrix4x4 worldViewProjectionMatrix;
 	Matrix4x4* transformationMatrixData;
+
+	Matrix4x4 sMatView = {};
+	Matrix4x4 sMatProjection = {};
+
 };
