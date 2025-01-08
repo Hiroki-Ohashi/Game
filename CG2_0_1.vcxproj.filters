@@ -123,12 +123,6 @@
     <ClCompile Include="externals\imgui\imgui_widgets.cpp">
       <Filter>externals\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="Project\GameObject\Enemy\Boss.cpp">
-      <Filter>ソースファイル\Project\GameObject\Enemy</Filter>
-    </ClCompile>
-    <ClCompile Include="Project\GameObject\Enemy\BossBullet.cpp">
-      <Filter>ソースファイル\Project\GameObject\Enemy</Filter>
-    </ClCompile>
     <ClCompile Include="Project\GameObject\Enemy\Enemy.cpp">
       <Filter>ソースファイル\Project\GameObject\Enemy</Filter>
     </ClCompile>
@@ -186,6 +180,7 @@
     <ClCompile Include="Project\GameObject\Stage\Object.cpp">
       <Filter>ソースファイル\Project\GameObject\Stage</Filter>
     </ClCompile>
+    <ClCompile Include="Project\GameObject\Enemy\EnemyBulletPool.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="externals\imgui\imconfig.h">
@@ -266,12 +261,6 @@
     <ClInclude Include="Project\GameManager\IScene.h">
       <Filter>ヘッダーファイル\Project\GameManager</Filter>
     </ClInclude>
-    <ClInclude Include="Project\GameObject\Enemy\Boss.h">
-      <Filter>ヘッダーファイル\Project\GameObject\Enemy</Filter>
-    </ClInclude>
-    <ClInclude Include="Project\GameObject\Enemy\BossBullet.h">
-      <Filter>ヘッダーファイル\Project\GameObject\Enemy</Filter>
-    </ClInclude>
     <ClInclude Include="Project\GameObject\Enemy\Enemy.h">
       <Filter>ヘッダーファイル\Project\GameObject\Enemy</Filter>
     </ClInclude>
@@ -326,6 +315,7 @@
     <ClInclude Include="Project\utillity\Collider.h">
       <Filter>ヘッダーファイル\Project\utillity</Filter>
     </ClInclude>
+    <ClInclude Include="Project\GameObject\Enemy\EnemyBulletPool.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\Shaders\Fullscreen.hlsli">

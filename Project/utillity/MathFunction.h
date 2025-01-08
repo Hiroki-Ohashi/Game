@@ -168,6 +168,13 @@ struct ModelData {
 	Node rootNode;
 };
 
+// InstanceData
+struct InstanceData {
+	Matrix4x4 WVP;
+	Matrix4x4 World;
+	Vector4 color;
+};
+
 // Particle
 struct Particle {
 	EulerTransform transform;

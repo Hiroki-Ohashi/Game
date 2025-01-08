@@ -22,7 +22,7 @@ namespace Engine
 			modelData = texture_->LoadModelFile("resources", filename);
 		}
 
-		DirectX::ScratchImage mipImages2 = texture_->LoadTexture(modelData.material.textureFilePath);
+		//DirectX::ScratchImage mipImages2 = texture_->LoadTexture(modelData.material.textureFilePath);
 
 		Model::CreatePso();
 		Model::CreateVertexResource();
@@ -73,7 +73,7 @@ namespace Engine
 		DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootSignature(rootSignature.Get());
 		DirectXCommon::GetInsTance()->GetCommandList()->SetPipelineState(graphicsPipelineState.Get());
 		// コマンドを積む
-		DirectXCommon::GetInsTance()->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView); // VBVを設定
+		DirectXCommon::GetInsTance()->GetCommandList()->IASetVertexBuffers(0, 1, &modelData.vertexBufferView); // VBVを設定
 		// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
 		DirectXCommon::GetInsTance()->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		// マテリアルCBufferの場所を設定
@@ -108,24 +108,24 @@ namespace Engine
 
 	void Model::CreateVertexResource() {
 		// 頂点用のリソースを作る。
-		vertexResource = CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(VertexData) * modelData.vertices.size());
+		modelData.vertexResource = CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(VertexData) * modelData.vertices.size());
 
 		// リソースの先頭のアドレスから使う
-		vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();
+		modelData.vertexBufferView.BufferLocation = modelData.vertexResource->GetGPUVirtualAddress();
 		// 使用するリソースのサイズは頂点3つ分のサイズ
-		vertexBufferView.SizeInBytes = UINT(sizeof(VertexData) * modelData.vertices.size());
+		modelData.vertexBufferView.SizeInBytes = UINT(sizeof(VertexData) * modelData.vertices.size());
 		// 1頂点あたりのサイズ
-		vertexBufferView.StrideInBytes = sizeof(VertexData);
+		modelData.vertexBufferView.StrideInBytes = sizeof(VertexData);
 
 		// 頂点リソースにデータを書き込む
 		vertexData = nullptr;
 
 		// 書き込むためのアドレスを取得
-		vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
+		modelData.vertexResource->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
 		// 頂点データをリソースにコピー
 		std::memcpy(vertexData, modelData.vertices.data(), sizeof(VertexData) * modelData.vertices.size());
 		// 書き込みが終了した後にアンマップ
-		vertexResource->Unmap(0, nullptr);
+		modelData.vertexResource->Unmap(0, nullptr);
 	}
 
 	void Model::CreateMaterialResource() {
@@ -283,7 +283,7 @@ namespace Engine
 		// RasterizerState
 		D3D12_RASTERIZER_DESC rasterizerDesc{};
 		// 裏面(時計回り)を表示しない
-		rasterizerDesc.CullMode = D3D12_CULL_MODE_NONE;
+		rasterizerDesc.CullMode = D3D12_CULL_MODE_BACK;
 		// 三角形の中を塗りつぶす
 		rasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
 

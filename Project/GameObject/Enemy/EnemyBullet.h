@@ -16,6 +16,7 @@ class EnemyBullet : public Collider {
 public:
 	// 初期化処理
 	void Initialize(Vector3 pos, Vector3 velocity);
+	void Reset(Vector3 pos, Vector3 velocity);
 	// 更新処理
 	void Update();
 	// 描画処理
@@ -25,6 +26,7 @@ public:
 	Vector3 GetWorldPosition() const override;
 	// 死亡判定
 	bool IsDead() const { return isDead_; }
+	bool IsActive() const { return !isDead_; }
 
 	// Getter
 	Vector3 GetPos() { return worldtransform_.translate; }

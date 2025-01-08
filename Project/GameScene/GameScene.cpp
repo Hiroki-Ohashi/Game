@@ -270,6 +270,8 @@ void GameScene::Draw()
 	}
 	else {
 		go_->Draw(&camera_, go);
+
+		player_->DrawUI();
 	}
 
 	player_->Draw(&camera_);
@@ -291,7 +293,6 @@ void GameScene::CheckAllCollisions()
 	std::vector<std::unique_ptr<PlayerBullet>>& playerBullets = player_->GetBullets();
 	// 敵弾リストの取得
 	std::vector<std::unique_ptr<EnemyBullet>>& enemyBullets = enemyBullets_;
-	std::vector<std::unique_ptr<BossBullet>>& bossBullets = bossBullets_;
 
 	// コライダー
 	std::list<Collider*> colliders_;
@@ -320,11 +321,6 @@ void GameScene::CheckAllCollisions()
 
 	// enemyBullet
 	for (std::unique_ptr<EnemyBullet>& bullet : enemyBullets) {
-		colliders_.push_back(std::move(bullet.get()));
-	}
-
-	// bossBullet
-	for (std::unique_ptr<BossBullet>& bullet : bossBullets) {
 		colliders_.push_back(std::move(bullet.get()));
 	}
 
@@ -415,12 +411,6 @@ void GameScene::AddEnemyBullet(std::unique_ptr<EnemyBullet> enemyBullet)
 {
 	// リストに登録する
 	enemyBullets_.push_back(std::move(enemyBullet));
-}
-
-void GameScene::AddBossBullet(std::unique_ptr<BossBullet> bossBullet)
-{
-	// リストに登録する
-	bossBullets_.push_back(std::move(bossBullet));
 }
 
 void GameScene::CheckCollisionPair(Collider* colliderA, Collider* colliderB)

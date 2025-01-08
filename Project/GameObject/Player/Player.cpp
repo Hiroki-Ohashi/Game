@@ -85,7 +85,7 @@ void Player::Update(Camera* camera_)
 	// キャラクターの移動速さ
 	const float kCharacterSpeed = 1.0f;
 	// 回転速さ[ラジアン/frame]
-	//float kRotSpeed = 0.1f;
+	float kRotSpeed = 0.1f;
 
 	// 押した方向で移動ベクトルを変更(左右)
 	if (input_->PushKey(DIK_A)) {
@@ -116,7 +116,7 @@ void Player::Update(Camera* camera_)
 		reticleWorldtransform_.translate.x += (float)joyState.Gamepad.sThumbLX / SHRT_MAX * kCharacterSpeed;
 		reticleWorldtransform_.translate.y += (float)joyState.Gamepad.sThumbLY / SHRT_MAX * kCharacterSpeed;
 
-		//worldtransform_.rotate.z -= (float)joyState.Gamepad.sThumbLX / SHRT_MAX * kRotSpeed;
+		worldtransform_.rotate.z -= (float)joyState.Gamepad.sThumbLX / SHRT_MAX * kRotSpeed;
 	}
 
 	reticleWorldtransform_.UpdateMatrix();
@@ -277,7 +277,10 @@ void Player::Draw(Camera* camera_)
 	}
 
 	//reticleModel_->Draw(camera_, reticleTex);
+}
 
+void Player::DrawUI()
+{
 	reticleSprite_->Draw();
 
 	if (GetHP() == 5) {

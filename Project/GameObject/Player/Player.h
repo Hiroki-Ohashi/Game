@@ -25,6 +25,7 @@ public:
 	void Update(Camera* camera_);
 	// 描画処理
 	void Draw(Camera* camera_);
+	void DrawUI();
 	void BulletDraw(Camera* camera_);
 
 	// 当たり判定処理

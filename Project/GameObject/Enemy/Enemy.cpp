@@ -8,7 +8,7 @@ void Enemy::Initialize(Vector3 pos, EnemyType type)
 
 	model_ = std::make_unique<Model>();
 	if (type == FRY) {
-		model_->Initialize("cube.obj", transform_);
+		model_->Initialize("doron.obj", transform_);
 	}
 	else if (type == FIXEDENEMY) {
 		model_->Initialize("fixed.obj", transform_);
@@ -24,8 +24,12 @@ void Enemy::Initialize(Vector3 pos, EnemyType type)
 	isLockOn_ = false;
 
 	enemyTex = textureManager_->Load("resources/white.png");
-
+	enemyBulletTex = textureManager_->Load("resources/red.png");
+	
 	attackTimer = 10;
+
+	// 弾プールを初期化
+	//bulletPool_.Initialize(200);
 }
 
 void Enemy::Update(EnemyType type)
@@ -36,6 +40,9 @@ void Enemy::Update(EnemyType type)
 	else if (type == FIXEDENEMY) {
 		FixedUpdate();
 	}
+
+	// 弾の更新
+	//bulletPool_.Update();
 
 	if (ImGui::TreeNode("enemy")) {
 		ImGui::Text("isLockOn %d", isLockOn_);
@@ -171,6 +178,9 @@ void Enemy::Draw(Camera* camera)
 	if (isDead_ == false) {
 		model_->Draw(camera, enemyTex);
 	}
+
+	// 弾の描画
+	bulletPool_.Draw(camera, 0);
 }
 
 void Enemy::Attack()
@@ -178,7 +188,7 @@ void Enemy::Attack()
 	if (player_ == nullptr || gameScene_ == nullptr) return;
 
 	Vector3 end = player_->GetPos();
-	Vector3 start = worldtransform_.translate;
+	Vector3 start = GetPos();
 
 	Vector3 diff;
 	diff.x = end.x - start.x;
@@ -196,6 +206,13 @@ void Enemy::Attack()
 	newBullet->Initialize(worldtransform_.translate, velocity_);
 	// 弾を登録
 	gameScene_->AddEnemyBullet(std::move(newBullet));
+
+	//// プールから弾を取得
+	//EnemyBullet* bullet = bulletPool_.GetBullet();
+	//if (bullet) {
+	//	bullet->Reset(worldtransform_.translate, velocity_);
+	//	bullet->SetPlayer(player_);
+	//}
 }
 
 void Enemy::OnCollision()

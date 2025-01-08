@@ -24,7 +24,6 @@
 #include <Skydome.h>
 #include <Stage/Stage.h>
 #include <Enemy/Enemy.h>
-#include <Enemy/Boss.h>
 using namespace Engine;
 
 #pragma comment(lib, "d3d12.lib")
@@ -59,7 +58,6 @@ public:
 
 	// リスト登録
 	void AddEnemyBullet(std::unique_ptr<EnemyBullet> enemyBullet);
-	void AddBossBullet(std::unique_ptr<BossBullet> bossBullet);
 
 private:
 	// カメラ
@@ -71,12 +69,8 @@ private:
 
 	// プレイヤー
 	std::unique_ptr<Player> player_;
-
-	// 敵
-	std::unique_ptr<Boss> boss_;
 	// 敵弾
 	std::vector<std::unique_ptr<EnemyBullet>> enemyBullets_;
-	std::vector<std::unique_ptr<BossBullet>> bossBullets_;
 
 	// スタート演出Model
 	std::unique_ptr<Sprite> ready_ = nullptr;

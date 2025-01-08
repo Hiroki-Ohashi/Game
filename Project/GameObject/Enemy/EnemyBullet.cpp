@@ -30,6 +30,12 @@ void EnemyBullet::Initialize(Vector3 pos, Vector3 velocity)
 	isDead_ = false;
 }
 
+void EnemyBullet::Reset(Vector3 pos, Vector3 velocity)
+{
+	Initialize(pos, velocity); // 弾を再初期化
+	isDead_ = false;
+}
+
 void EnemyBullet::Update()
 {
 	// 敵弾から自キャラへのベクトル計算

@@ -108,11 +108,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Project\GameObject\Enemy\EnemyBulletPool.cpp" />
     <ClCompile Include="Engine\Manager\Json.cpp" />
     <ClCompile Include="Project\GameObject\Stage\Object.cpp" />
     <ClCompile Include="Project\GameScene\OverScene.cpp" />
-    <ClCompile Include="Project\GameObject\Enemy\BossBullet.cpp" />
-    <ClCompile Include="Project\GameObject\Enemy\Boss.cpp" />
     <ClCompile Include="Project\GameObject\Enemy\EnemyBullet.cpp" />
     <ClCompile Include="Project\GameObject\Enemy\Enemy.cpp" />
     <ClCompile Include="Project\GameScene\ClearScene.cpp" />
@@ -153,6 +152,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Project\GameObject\Stage\Stage.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Project\GameObject\Enemy\EnemyBulletPool.h" />
     <ClInclude Include="Project\GameObject\Stage\Object.h" />
     <ClInclude Include="Project\utillity\Collider.h" />
     <ClInclude Include="Engine\Manager\Json.h" />
@@ -161,8 +161,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Project\GameScene\OverScene.h" />
-    <ClInclude Include="Project\GameObject\Enemy\BossBullet.h" />
-    <ClInclude Include="Project\GameObject\Enemy\Boss.h" />
     <ClInclude Include="Project\GameObject\Enemy\EnemyBullet.h" />
     <ClInclude Include="Project\GameObject\Enemy\Enemy.h" />
     <ClInclude Include="Project\GameScene\ClearScene.h" />

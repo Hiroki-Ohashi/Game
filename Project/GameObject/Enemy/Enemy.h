@@ -6,6 +6,7 @@
 #include "EnemyBullet.h"
 #include "Collider.h"
 #include "Particle.h"
+#include "EnemyBulletPool.h"
 using namespace Engine;
 
 class Player;
@@ -42,6 +43,7 @@ public:
 	// 死亡判定
 	void SetIsDead(bool isDead) { isDead_ = isDead; }
 	bool IsDead(){ return isDead_; }
+	bool IsActive() const { return !isDead_;}
 
 	// Getter
 	Vector3 GetPos() { return worldtransform_.translate; }
@@ -68,9 +70,12 @@ private:
 	// 呼び出し
 	Player* player_ = nullptr;
 	GameScene* gameScene_ = nullptr;
+	EnemyBulletPool bulletPool_;
+
 private:
 	// テクスチャ
 	uint32_t enemyTex;
+	uint32_t enemyBulletTex;
 	// 発射タイマー
 	int32_t attackTimer = 10;
 	static const int kFireInterval = 120;
