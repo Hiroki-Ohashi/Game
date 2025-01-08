@@ -20,25 +20,39 @@ void Enemy::Initialize(Vector3 pos, EnemyType type)
 	model_->SetWorldTransform(worldtransform_);
 	worldtransform_.UpdateMatrix();
 
+	lockOnTex = textureManager_->Load("resources/reticle.png");
+
+	enemySprite_ = std::make_unique<Sprite>();
+	enemySprite_->Initialize({ 590.0f,310.0f }, { 50.0f,50.0f }, lockOnTex);
+	enemySprite_->SetSize({ 50.0f,50.0f });
+	enemySprite_->SetRotation({ 0.0f, 0.0f, -0.8f });
+
 	isDead_ = false;
 	isLockOn_ = false;
+	isPossibillityLock = false;
 
 	enemyTex = textureManager_->Load("resources/white.png");
 	enemyBulletTex = textureManager_->Load("resources/red.png");
 	
 	attackTimer = 10;
 
+	// 衝突属性を設定
+	SetCollosionAttribute(kcollisionAttributeEnemy);
+	// 衝突対象を自分の属性以外に設定
+	SetCollisionMask(kcollisionAttributePlayer);
+
 	// 弾プールを初期化
 	//bulletPool_.Initialize(200);
 }
 
-void Enemy::Update(EnemyType type)
+void Enemy::Update(EnemyType type, Camera* camera_)
 {
+
 	if (type == FRY) {
-		FryUpdate();
+		FryUpdate(camera_);
 	}
 	else if (type == FIXEDENEMY) {
-		FixedUpdate();
+		FixedUpdate(camera_);
 	}
 
 	// 弾の更新
@@ -50,14 +64,9 @@ void Enemy::Update(EnemyType type)
 	}
 }
 
-void Enemy::FixedUpdate()
+void Enemy::FixedUpdate(Camera* camera_)
 {
 	worldtransform_.UpdateMatrix();
-	float kMaxAttack = 600.0f;
-
-	if (worldtransform_.translate.z - player_->GetPos().z <= kMaxAttack) {
-		isLockOn_ = true;
-	}
 
 	attackTimer--;
 
@@ -110,12 +119,28 @@ void Enemy::FixedUpdate()
 	float velocityXZ = sqrt((velocity_.x * velocity_.x) + (velocity_.z * velocity_.z));
 	worldtransform_.rotate.x = std::atan2(-velocity_.y, velocityXZ);
 	worldtransform_.UpdateMatrix();
+
+	// 3Dレティクルのワールド座標から2Dレティクルのスクリーン座標を計算
+	{
+		positionReticle = GetPos();
+
+		// ビューポート行列
+		Matrix4x4 matViewport = MakeViewportMatrix(0, 0, (float)WinApp::GetKClientWidth(), (float)WinApp::GetKClientHeight(), 0, 1);
+
+		// ビュー行列とプロジェクション行列、ビューポート行列を合成する
+		Matrix4x4 matVPV = Multiply(Multiply(camera_->viewMatrix, camera_->projectionMatrix), matViewport);
+
+		// ワールド→スクリーン座標変換
+		positionReticle = Transform(positionReticle, matVPV);
+
+		// スプライトのレティクルに座標設定
+		enemySprite_->SetPosition(Vector2(positionReticle.x - 35.0f, positionReticle.y + 0.0f));
+	}
 }
 
-void Enemy::FryUpdate()
+void Enemy::FryUpdate(Camera* camera_)
 {
 	worldtransform_.UpdateMatrix();
-	float kMaxAttack = 600.0f;
 
 	attackTimer--;
 
@@ -136,7 +161,6 @@ void Enemy::FryUpdate()
 	if (worldtransform_.translate.z - player_->GetPos().z <= kMaxAttack) {
 
 		const float kMoveSpeed = 0.005f;
-		isLockOn_ = true;
 
 		if (worldtransform_.translate.y < posParam.y) {
 			speedY += kMoveSpeed;
@@ -171,6 +195,23 @@ void Enemy::FryUpdate()
 	float velocityXZ = sqrt((velocity_.x * velocity_.x) + (velocity_.z * velocity_.z));
 	worldtransform_.rotate.x = std::atan2(-velocity_.y, velocityXZ);
 	worldtransform_.UpdateMatrix();
+
+	// 3Dレティクルのワールド座標から2Dレティクルのスクリーン座標を計算
+	{
+		positionReticle = GetPos();
+
+		// ビューポート行列
+		Matrix4x4 matViewport = MakeViewportMatrix(0, 0, (float)WinApp::GetKClientWidth(), (float)WinApp::GetKClientHeight(), 0, 1);
+
+		// ビュー行列とプロジェクション行列、ビューポート行列を合成する
+		Matrix4x4 matVPV = Multiply(Multiply(camera_->viewMatrix, camera_->projectionMatrix), matViewport);
+
+		// ワールド→スクリーン座標変換
+		positionReticle = Transform(positionReticle, matVPV);
+
+		// スプライトのレティクルに座標設定
+		enemySprite_->SetPosition(Vector2(positionReticle.x - 35.0f, positionReticle.y));
+	}
 }
 
 void Enemy::Draw(Camera* camera)
@@ -180,7 +221,18 @@ void Enemy::Draw(Camera* camera)
 	}
 
 	// 弾の描画
-	bulletPool_.Draw(camera, 0);
+	//bulletPool_.Draw(camera, 0);
+}
+
+void Enemy::DrawUI()
+{
+	if (worldtransform_.translate.z - player_->GetPos().z <= kMaxAttack &&
+		worldtransform_.translate.z > player_->GetPos().z)
+	{
+		if (isDead_ == false) {
+			enemySprite_->Draw();
+		}
+	}
 }
 
 void Enemy::Attack()
@@ -219,6 +271,7 @@ void Enemy::OnCollision()
 {
 	isDeadAnimation_ = true;
 	isLockOn_ = false;
+	isPossibillityLock = false;
 }
 
 void Enemy::DeadAnimation()

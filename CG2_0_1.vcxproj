@@ -108,6 +108,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="LockOn.cpp" />
     <ClCompile Include="Project\GameObject\Enemy\EnemyBulletPool.cpp" />
     <ClCompile Include="Engine\Manager\Json.cpp" />
     <ClCompile Include="Project\GameObject\Stage\Object.cpp" />
@@ -152,6 +153,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Project\GameObject\Stage\Stage.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Project\utillity\CollisionConfig.h" />
+    <ClInclude Include="LockOn.h" />
     <ClInclude Include="Project\GameObject\Enemy\EnemyBulletPool.h" />
     <ClInclude Include="Project\GameObject\Stage\Object.h" />
     <ClInclude Include="Project\utillity\Collider.h" />

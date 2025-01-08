@@ -63,6 +63,11 @@ void Player::Initialize()
 
 	isHit_ = false;
 	HP = 5;
+
+	// 衝突属性を設定
+	SetCollosionAttribute(kcollisionAttributePlayer);
+	// 衝突対象を自分の属性以外に設定
+	SetCollisionMask(kcollisionAttributeEnemy);
 }
 
 void Player::Update(Camera* camera_)
@@ -85,7 +90,7 @@ void Player::Update(Camera* camera_)
 	// キャラクターの移動速さ
 	const float kCharacterSpeed = 1.0f;
 	// 回転速さ[ラジアン/frame]
-	float kRotSpeed = 0.1f;
+	//float kRotSpeed = 0.1f;
 
 	// 押した方向で移動ベクトルを変更(左右)
 	if (input_->PushKey(DIK_A)) {
@@ -116,55 +121,10 @@ void Player::Update(Camera* camera_)
 		reticleWorldtransform_.translate.x += (float)joyState.Gamepad.sThumbLX / SHRT_MAX * kCharacterSpeed;
 		reticleWorldtransform_.translate.y += (float)joyState.Gamepad.sThumbLY / SHRT_MAX * kCharacterSpeed;
 
-		worldtransform_.rotate.z -= (float)joyState.Gamepad.sThumbLX / SHRT_MAX * kRotSpeed;
+		//worldtransform_.rotate.z -= (float)joyState.Gamepad.sThumbLX / SHRT_MAX * kRotSpeed;
 	}
 
 	reticleWorldtransform_.UpdateMatrix();
-
-	//// ゲームパッドの状態を得る変数(XINPUT)
-	//XINPUT_STATE joyState;
-
-	//Matrix4x4 matViewport = MakeViewportMatrix(0.0f, 0.0f, (float)WinApp::GetKClientWidth(), (float)WinApp::GetKClientHeight(), 0.0f, 1.0f);
-
-	//// スプライトの現在座標を取得
-	//Vector2 spritePosition = { reticleSprite_->GetPos().x, reticleSprite_->GetPos().y};
-
-	//// ゲームパッド状態取得
-	//if (Input::GetInsTance()->GetJoystickState(joyState)) {
-	//	spritePosition.x += (float)joyState.Gamepad.sThumbLX / SHRT_MAX * kCharacterSpeed;
-	//	spritePosition.y -= (float)joyState.Gamepad.sThumbLY / SHRT_MAX * kCharacterSpeed;
-
-	//	//worldtransform_.rotate.z -= (float)joyState.Gamepad.sThumbLX / SHRT_MAX * kRotSpeed;
-
-	//	reticleSprite_->SetPosition(spritePosition);
-	//}
-
-	//// ビュープロジェクションビューポート合成行列
-	//Matrix4x4 matVPV = Multiply(Multiply(camera_->viewMatrix, camera_->projectionMatrix), matViewport);
-
-	//// 合成行列の逆行列を計算する
-	//Matrix4x4 matInverseVPV = Inverse(matVPV);
-
-	//// スクリーン座標
-	//Vector3 posNear = Vector3(static_cast<float>(spritePosition.x), (float)spritePosition.y, 0);
-	//Vector3 posFar = Vector3(static_cast<float>(spritePosition.x), float(spritePosition.y), 1);
-	//// スクリーン座標系からワールド座標系へ
-	//posNear = Transform(posNear, matInverseVPV);
-	//posFar = Transform(posFar, matInverseVPV);
-
-	//// スティックレイの方向
-	//Vector3 spriteDierection;
-	//spriteDierection.x = posFar.x - posNear.x;
-	//spriteDierection.y = posFar.y - posNear.y;
-	//spriteDierection.z = posFar.z - posNear.z;
-	//spriteDierection = Normalize(spriteDierection);
-	//// カメラから照準オブジェクトの距離
-	//const float kDistanceTextObject = 100.0f;
-	//reticleWorldtransform_.translate.y = spriteDierection.y * kDistanceTextObject;
-	//reticleWorldtransform_.translate.z = spriteDierection.z * kDistanceTextObject;
-	//reticleWorldtransform_.translate.x = spriteDierection.x * kDistanceTextObject;
-
-	//reticleWorldtransform_.UpdateMatrix();
 
 	// プレイヤーの向きをレティクルに向ける
 	Vector3 end = reticleWorldtransform_.translate;
@@ -194,7 +154,7 @@ void Player::Update(Camera* camera_)
 	float velocityXZ = sqrt((velocity_.x * velocity_.x) + (velocity_.z * velocity_.z));
 	worldtransform_.rotate.x = std::atan2(-velocity_.y, velocityXZ);
 
-	//// 座標移動(ベクトルの加算)
+	// 座標移動(ベクトルの加算)
 	worldtransform_.translate.x += velocity.x * 1.52f;
 	worldtransform_.translate.y += velocity.y * 1.52f;
 	worldtransform_.translate.z += velocity.z * 1.52f;
@@ -220,7 +180,7 @@ void Player::Update(Camera* camera_)
 
 	// 3Dレティクルのワールド座標から2Dレティクルのスクリーン座標を計算
 	{
-		Vector3 positionReticle = Get3DWorldPosition();
+		positionReticle = Get3DWorldPosition();
 
 		// ビューポート行列
 		Matrix4x4 matViewport = MakeViewportMatrix(0, 0, (float)WinApp::GetKClientWidth(), (float)WinApp::GetKClientHeight(), 0, 1);
@@ -232,18 +192,8 @@ void Player::Update(Camera* camera_)
 		positionReticle = Transform(positionReticle, matVPV);
 
 		// スプライトのレティクルに座標設定
-		reticleSprite_->SetPosition(Vector2(positionReticle.x - 50, positionReticle.y - 50));
+		reticleSprite_->SetPosition(Vector2(positionReticle.x - 50.0f, positionReticle.y - 50.0f));
 	}
-
-	//// 攻撃処理
-	//for (std::unique_ptr<Enemy>& enemy : GetEnemys()) {
-	//	if (enemy->GetIsLockOn()) {
-	//		LockOn(enemy); // ロックオン処理
-	//		break;
-	//	}
-	//}
-
-	Attack();
 
 	// 弾更新
 	for (std::unique_ptr<PlayerBullet>& bullet : bullets_) {
@@ -396,36 +346,47 @@ void Player::Attack()
 	}
 }
 
-void Player::LockOn(std::unique_ptr<Enemy>& enemy)
+void Player::LockOn(bool isLockOn, Vector3 EnemyPos)
 {
 	XINPUT_STATE joyState{};
-	if (Input::GetInsTance()->GetJoystickState(joyState)) {
-		// Aボタンが押された場合のみ処理を実行
-		if (Input::GetInsTance()->PressedButton(joyState, XINPUT_GAMEPAD_A)) {
-			// ターゲットの位置
-			Vector3 end = enemy->GetPos();
-			// プレイヤーの位置
-			Vector3 start = worldtransform_.translate;
 
-			// ターゲットまでのベクトルを計算
-			Vector3 diff;
-			diff.x = end.x - start.x;
-			diff.y = end.y - start.y;
-			diff.z = end.z - start.z;
+	if (isLockOn) {
+		if (Input::GetInsTance()->GetJoystickState(joyState)) {
+			// Aボタンが押された場合のみ処理を実行
+			if (Input::GetInsTance()->PressedButton(joyState, XINPUT_GAMEPAD_A)) {
+				// ターゲットの位置
+				Vector3 end = EnemyPos;
+				// プレイヤーの位置
+				Vector3 start = worldtransform_.translate;
 
-			// 正規化して方向ベクトルにする
-			diff = Normalize(diff);
+				// 敵弾から自キャラへのベクトル計算
+				Vector3 toEnemy = { end.x - start.x, end.y - start.y, end.z - start.z };
 
-			// 弾の速度を設定
-			const float kBulletSpeed = 10.0f;
-			Vector3 velocity(diff.x * kBulletSpeed, diff.y * kBulletSpeed, diff.z * kBulletSpeed);
+				// ベクトルを正規化（単位ベクトル化）
+				Vector3 direction = Normalize(toEnemy);
 
-			// 弾を生成し、初期化
-			std::unique_ptr<PlayerBullet> newBullet = std::make_unique<PlayerBullet>();
-			newBullet->Initialize(worldtransform_.translate, velocity);
+				// 弾の進行方向をターゲット方向に強く補正
+				float homingFactor = 2.0f;  // ホーミングの強さ
+				direction.x += direction.x * homingFactor;
+				direction.y += direction.y * homingFactor;
+				direction.z += direction.z * homingFactor;
 
-			// 弾を登録
-			bullets_.push_back(std::move(newBullet));
+				// 弾の速度を設定
+				const float kBulletSpeed = 10.0f;
+				Vector3 velocity(direction.x * kBulletSpeed, direction.y * kBulletSpeed, direction.z * kBulletSpeed);
+
+				// 回転を計算
+				worldtransform_.rotate.y = std::atan2(velocity.x, velocity.z);
+				float velocityXZ = sqrt((velocity.x * velocity.x) + (velocity.z * velocity.z));
+				worldtransform_.rotate.x = std::atan2(-velocity.y, velocityXZ);
+
+				// 弾を生成し、初期化
+				std::unique_ptr<PlayerBullet> newBullet = std::make_unique<PlayerBullet>();
+				newBullet->Initialize(worldtransform_.translate, velocity);
+
+				// 弾を登録
+				bullets_.push_back(std::move(newBullet));
+			}
 		}
 	}
 }

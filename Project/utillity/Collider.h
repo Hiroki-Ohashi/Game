@@ -24,7 +24,7 @@ private:
 	// 自機
 	uint32_t collisionAttribute_ = 0xffffffff;
 	// 相手
-	uint32_t CollisionMask_ = 0xffffffff;
+	uint32_t CollisionMask_ = 0x11111111;
 	// 衝突半径
 	float radius_ = 1.0f;
 	// コライダーの中心位置（ワールド座標）

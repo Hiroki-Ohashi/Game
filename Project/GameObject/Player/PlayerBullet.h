@@ -2,6 +2,8 @@
 #include <Camera.h>
 #include <Model.h>
 #include "Collider.h"
+#include "CollisionConfig.h"
+
 using namespace Engine;
 
 /// <summary>

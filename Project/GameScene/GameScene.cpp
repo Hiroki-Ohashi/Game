@@ -13,6 +13,7 @@ GameScene::~GameScene(){
 
 void GameScene::Initialize() {
 	camera_.Initialize();
+	textureManager_->Initialize();
 
 	postProcess_ = std::make_unique<PostProcess>();
 	postProcess_->Initialize(NOISE);
@@ -23,20 +24,6 @@ void GameScene::Initialize() {
 	// player
 	player_ = std::make_unique<Player>();
 	player_->Initialize();
-	// enemy
-	//// 両方のリストを統合
-	//std::vector<std::unique_ptr<Enemy>> combinedEnemys = std::move(json_->GetEnemys());
-	//std::vector<std::unique_ptr<Enemy>> fixedEnemys = std::move(json_->GetFixedEnemys());
-
-	//// fixedEnemys を combinedEnemys に結合
-	//combinedEnemys.insert(
-	//	combinedEnemys.end(),
-	//	std::make_move_iterator(fixedEnemys.begin()),
-	//	std::make_move_iterator(fixedEnemys.end())
-	//);
-
-	//// まとめてセット
-	//player_->SetEnemy(combinedEnemys);
 
 	transform_ = { {10.0f,10.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,30.0f,-100.0f} };
 	go_ = std::make_unique<Model>();
@@ -68,13 +55,13 @@ void GameScene::Initialize() {
 	json_->EnemyAdoption(levelData_, player_.get(), this);
 	json_->FixedEnemyAdoption(levelData_, player_.get(), this);
 
-	// stage
-	stage_ = std::make_unique<Stage>();
-	stage_->Initialize();
-
 	for (std::unique_ptr<Enemy>& enemy : json_->GetEnemys()) {
 		enemy->SetIsDead(false);
 	}
+
+	// stage
+	stage_ = std::make_unique<Stage>();
+	stage_->Initialize();
 
 	isVignette_ = true;
 	isGameClear_ = false;
@@ -94,8 +81,8 @@ void GameScene::Update(){
 
 	// json更新処理
 	json_->Update();
-	json_->EnemyUpdate(player_.get(), this);
-	json_->FixedEnemyUpdate(player_.get(), this);
+	json_->EnemyUpdate(camera_, player_.get(), this);
+	json_->FixedEnemyUpdate(camera_, player_.get(), this);
 
 	stage_->Update();
 
@@ -110,6 +97,20 @@ void GameScene::Update(){
 	if (isVignette_ == false) {
 		if (isApploach_ == false) {
 			player_->Update(&camera_);
+		}
+	}
+
+	// EnemyLockOn
+	for (std::unique_ptr<Enemy>& enemy : json_->GetEnemys()) {
+		if (player_->Get3DWorldPosition().z < enemy->GetPos().z) {
+			player_->LockOn(enemy->GetIsLockOn(), enemy->GetPos());
+		}
+	}
+
+	// fixedEnemyLockOn
+	for (std::unique_ptr<Enemy>& enemy : json_->GetFixedEnemys()) {
+		if (player_->Get3DWorldPosition().z < enemy->GetPos().z) {
+			player_->LockOn(enemy->GetIsLockOn(), enemy->GetPos());
 		}
 	}
 
@@ -240,6 +241,7 @@ void GameScene::Update(){
 		}
 
 		if (postProcess_->GetNoiseStrength() >= kMaxNoiseStrength) {
+			isGameOver_ = false;
 			sceneNo = OVER;
 		}
 	}
@@ -271,7 +273,9 @@ void GameScene::Draw()
 	else {
 		go_->Draw(&camera_, go);
 
-		player_->DrawUI();
+		if (isGameClear_ == false) {
+			player_->DrawUI();
+		}
 	}
 
 	player_->Draw(&camera_);
@@ -405,6 +409,89 @@ void GameScene::CheckAllCollisions()
 			objects->OnCollision();
 		}
 	}
+
+	for (std::unique_ptr<Enemy>& enemy : json_->GetEnemys()) {
+
+		// プレイヤーの照準（レティクル）の矩形情報
+		float reticleX = player_->GetReticlePos().x;
+		float reticleY = player_->GetReticlePos().y;
+		float reticleHalfWidth = 50.0f;
+		float reticleHalfHeight = 50.0f;
+
+		float reticleLeft = reticleX - reticleHalfWidth;
+		float reticleRight = reticleX + reticleHalfWidth;
+		float reticleTop = reticleY - reticleHalfHeight;
+		float reticleBottom = reticleY + reticleHalfHeight;
+
+		// 敵の矩形情報
+		float enemyX = enemy->GetScreenPos().x;
+		float enemyY = enemy->GetScreenPos().y;
+		float enemyHalfWidth = 25.0f;
+		float enemyHalfHeight = 25.0f;
+
+		float enemyLeft = enemyX - enemyHalfWidth;
+		float enemyRight = enemyX + enemyHalfWidth;
+		float enemyTop = enemyY - enemyHalfHeight;
+		float enemyBottom = enemyY + enemyHalfHeight;
+
+		// 矩形同士の当たり判定（AABB）
+		if (reticleLeft < enemyRight &&
+			reticleRight > enemyLeft &&
+			reticleTop < enemyBottom &&
+			reticleBottom > enemyTop) {
+			// ロックオン状態にする
+			if (!enemy->GetIsLockOn()) {
+				enemy->SetisLockOn(true);
+			}
+		}
+		else {
+			// ロックオン解除
+			if (enemy->GetIsLockOn()) { // 状態が変わる場合のみ更新
+				enemy->SetisLockOn(false);
+			}
+		}
+	}
+
+	for (std::unique_ptr<Enemy>& enemy : json_->GetFixedEnemys()) {
+		// プレイヤーの照準（レティクル）の矩形情報
+		float reticleX = player_->GetReticlePos().x;
+		float reticleY = player_->GetReticlePos().y;
+		float reticleHalfWidth = 50.0f;
+		float reticleHalfHeight = 50.0f;
+
+		float reticleLeft = reticleX - reticleHalfWidth;
+		float reticleRight = reticleX + reticleHalfWidth;
+		float reticleTop = reticleY - reticleHalfHeight;
+		float reticleBottom = reticleY + reticleHalfHeight;
+
+		// 敵の矩形情報
+		float enemyX = enemy->GetScreenPos().x;
+		float enemyY = enemy->GetScreenPos().y;
+		float enemyHalfWidth = 25.0f;
+		float enemyHalfHeight = 25.0f;
+
+		float enemyLeft = enemyX - enemyHalfWidth;
+		float enemyRight = enemyX + enemyHalfWidth;
+		float enemyTop = enemyY - enemyHalfHeight;
+		float enemyBottom = enemyY + enemyHalfHeight;
+
+		// 矩形同士の当たり判定（AABB）
+		if (reticleLeft < enemyRight &&
+			reticleRight > enemyLeft &&
+			reticleTop < enemyBottom &&
+			reticleBottom > enemyTop) {
+			// ロックオン状態にする
+			if (!enemy->GetIsLockOn()) {
+				enemy->SetisLockOn(true);
+			}
+		}
+		else {
+			// ロックオン解除
+			if (enemy->GetIsLockOn()) { // 状態が変わる場合のみ更新
+				enemy->SetisLockOn(false);
+			}
+		}
+	}
 }
 
 void GameScene::AddEnemyBullet(std::unique_ptr<EnemyBullet> enemyBullet)
@@ -415,6 +502,12 @@ void GameScene::AddEnemyBullet(std::unique_ptr<EnemyBullet> enemyBullet)
 
 void GameScene::CheckCollisionPair(Collider* colliderA, Collider* colliderB)
 {
+	// 衝突フィルタリング
+	if (colliderA->GetCollosionAttribute() != colliderB->GetCollisionMask() &&
+		colliderB->GetCollosionAttribute() != colliderA->GetCollisionMask()) {
+		return;
+	}
+
 	//当たり判定の計算開始
 	Vector3 Apos = colliderA->GetWorldPosition();
 	Vector3 Bpos = colliderB->GetWorldPosition();

@@ -5,7 +5,7 @@
 #include "PlayerBullet.h"
 #include <Sprite.h>
 #include "Collider.h"
-#include <Enemy/Enemy.h>
+#include "CollisionConfig.h"
 using namespace Engine;
 
 /// <summary>
@@ -23,6 +23,7 @@ public:
 	void Initialize();
 	// 更新処理
 	void Update(Camera* camera_);
+	void LockOn(bool isLockOn, Vector3 EnemyPos);
 	// 描画処理
 	void Draw(Camera* camera_);
 	void DrawUI();
@@ -34,13 +35,12 @@ public:
 
 	// Getter
 	Vector3 GetPos() { return worldtransform_.translate; }
-	Vector3 GetReticlePos() { return reticleWorldtransform_.translate; }
+	Vector3 GetReticlePos() { return positionReticle; }
 	Vector3 Get3DWorldPosition();
 	Vector3 GetVelocity() { return velocity_; }
 	int32_t GetHP() { return HP; }
 	bool GetIsHit() { return isHit_; }
-	// Getter: enemys_ を参照で返す
-	std::vector<std::unique_ptr<Enemy>>& GetEnemys() { return enemys_; }
+	
 	Vector3 GetHalfSize() const {
 		return {
 			worldtransform_.scale.x / 2.0f,
@@ -67,29 +67,17 @@ public:
 		};
 	}
 
-	void SetEnemy(std::vector<std::unique_ptr<Enemy>>& enemys)
-	{
-		enemys_.insert(
-			enemys_.end(),
-			std::make_move_iterator(enemys.begin()),
-			std::make_move_iterator(enemys.end())
-		);
-		enemys.clear(); // 元のリストを空にする（不要なら削除）
-	}
-
+	
 	// 弾リストを取得
 	 std::vector<std::unique_ptr<PlayerBullet>>& GetBullets() { return bullets_; }
 private:
 	// 攻撃処理
 	void Attack();
-	void LockOn(std::unique_ptr<Enemy>& enemy);
 private:
 	// シングルトン呼び出し
 	TextureManager* textureManager_ = TextureManager::GetInstance();
 	Input* input_ = Input::GetInsTance();
 
-	// 呼び出し
-	std::vector<std::unique_ptr<Enemy>> enemys_;
 
 	// プレイヤー
 	WorldTransform worldtransform_;
@@ -101,6 +89,7 @@ private:
 	std::unique_ptr<Sprite> reticleSprite_;
 	WorldTransform reticleWorldtransform_;
 	EulerTransform reticleTransform_;
+	Vector3 positionReticle;
 
 	// UI
 	std::unique_ptr<Sprite> hp0_;

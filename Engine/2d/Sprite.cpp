@@ -69,6 +69,7 @@ namespace Engine {
 		if (ImGui::TreeNode("Sprite")) {
 			ImGui::DragFloat2("Transform", &transformSprite.translate.x, 0.1f, -1000.0f, 1000.0f);
 			ImGui::DragFloat2("Scale", &transformSprite.scale.x, 0.1f, -1000.0f, 1000.0f);
+			ImGui::DragFloat3("Rotate", &transformSprite.rotate.x, 0.1f, -1000.0f, 1000.0f);
 
 			/*ImGui::DragFloat2("UVTransform", &uvTransformSprite.translate.x, 0.01f, -10.0f, 10.0f);
 			ImGui::DragFloat2("UVScale", &uvTransformSprite.scale.x, 0.01f, -10.0f, 10.0f);
