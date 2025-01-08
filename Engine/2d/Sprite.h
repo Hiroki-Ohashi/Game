@@ -11,6 +11,7 @@
 #include "DirectXCommon.h"
 #include "TextureManager.h"
 #include "Mesh.h"
+#include "Camera.h"
 
 /// <summary>
 /// Sprite.h
@@ -26,18 +27,19 @@ namespace Engine
 		~Sprite();
 
 		// 初期化処理
-		void Initialize(Vector2 pos, Vector2 scale, float index);
+		void Initialize(Vector2 pos, Vector2 scale, uint32_t index);
 		// 更新処理
 		void Update();
 		// 描画処理
-		void Draw(uint32_t index);
+		void Draw();
 		// 解放処理
 		void Release();
 
 		// Getter
 		Material* GetMaterialDataSprite() { return materialDataSprite; }
 		const Vector2& GetAnchorPoint() const { return anchorPoint; }
-		Vector2 GetTextureSize() { return textureSize; }
+		Vector2 GetSize() { return { transformSprite.scale.x,  transformSprite.scale.y }; }
+		Vector2 GetPos() { return { transformSprite.translate.x,  transformSprite.translate.y }; }
 		Vector2 GetTextureLeftTop() { return textureLeftTop; }
 
 		// Setter
@@ -46,7 +48,15 @@ namespace Engine
 			transformSprite.translate.x = pos_.x;
 			transformSprite.translate.y = pos_.y;
 		}
-		void SetSize(Vector2 size) { textureSize = size; }
+		void SetSize(Vector2 size) { 
+			transformSprite.scale.x = size.x;
+			transformSprite.scale.y = size.y;
+		}
+		void SetRotation(Vector3 rotate_) {
+			transformSprite.rotate.x = rotate_.x;
+			transformSprite.rotate.y = rotate_.y;
+			transformSprite.rotate.z = rotate_.z;
+		}
 		void SetTextureLeftTop(const Vector2 textureLeftTop_) { this->textureLeftTop = textureLeftTop_; }
 		void SetAlpha(float alpha) { materialDataSprite->color.w = alpha; }
 		float GetAlpha() { return materialDataSprite->color.w; }
@@ -60,7 +70,7 @@ namespace Engine
 
 	private:
 		// vertex生成
-		void CreateVertexResourceSprite(Vector2 pos, Vector2 scale);
+		void CreateVertexResourceSprite();
 		// material作成
 		void CreateMaterialResourceSprite();
 		// wvp作成

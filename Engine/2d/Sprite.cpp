@@ -11,29 +11,32 @@ namespace Engine {
 	{
 	}
 
-	void Sprite::Initialize(Vector2 pos, Vector2 scale, float index) {
-
-		Sprite::CreateVertexResourceSprite(pos, scale);
-		Sprite::CreateMaterialResourceSprite();
-		Sprite::CreateTransformationMatrixResourceSprite();
-
+	void Sprite::Initialize(Vector2 pos, Vector2 scale, uint32_t index) {
 		transformSprite = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 		uvTransformSprite = { {1.0f, 1.0f, 1.0f},{0.0f, 0.0f, 0.0f},{0.0f, 0.0f, 0.0f}, };
-
-		// SpriteはLightingしないのでfalseを設定
-		materialDataSprite->enableLighting = false;
 
 		transformSprite.translate.x = pos.x;
 		transformSprite.translate.y = pos.y;
 
-		// 白を設定
-		materialDataSprite->color = { 1.0f, 1.0f, 1.0f, index };
+		transformSprite.scale.x = scale.x;
+		transformSprite.scale.y = scale.y;
+
+		textureIndex = index;
+
+		AdjustTextureSize();
+
+		CreatePso();
+
+		CreateVertexResourceSprite();
+		CreateMaterialResourceSprite();
+		CreateTransformationMatrixResourceSprite();
 	}
 
 	void Sprite::Update() {
 	}
 
-	void Sprite::Draw(uint32_t index) {
+	void Sprite::Draw() {
+
 		transformationMatrixDataSprite->World = MakeAffineMatrix(transformSprite.scale, transformSprite.rotate, transformSprite.translate);
 		Matrix4x4 viewMatrixSprite = MakeIndentity4x4();
 		Matrix4x4 projectionMatrixSprite = MakeOrthographicMatrix(0.0f, 0.0f, float(WinApp::GetInsTance()->GetKClientWidth()), float(WinApp::GetInsTance()->GetKClientHeight()), 0.0f, 100.0f);
@@ -46,8 +49,8 @@ namespace Engine {
 		materialDataSprite->uvTransform = uvtransformMatrix;
 
 		// DirectXCommon::GetInsTance()を設定。PSOに設定しているけど別途設定が必要
-		/*DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootSignature(rootSignature.Get());
-		DirectXCommon::GetInsTance()->GetCommandList()->SetPipelineState(graphicsPipelineState.Get());*/
+		DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootSignature(rootSignature.Get());
+		DirectXCommon::GetInsTance()->GetCommandList()->SetPipelineState(graphicsPipelineState.Get());
 		// コマンドを積む
 		dir_->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferViewSprite); // VBVを設定
 		// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
@@ -59,12 +62,14 @@ namespace Engine {
 		// TransformationMatrixCBufferの場所を設定
 		dir_->GetCommandList()->SetGraphicsRootConstantBufferView(1, transformationMatrixResourceSprite->GetGPUVirtualAddress());
 		// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-		dir_->GetCommandList()->SetGraphicsRootDescriptorTable(2, texture_->GetTextureSRVHandleGPU(index));
+		dir_->GetCommandList()->SetGraphicsRootDescriptorTable(2, texture_->GetTextureSRVHandleGPU(textureIndex));
 		// 描画(DrawCall/ドローコール)
 		dir_->GetCommandList()->DrawIndexedInstanced(6, 1, 0, 0, 0);
 
 		if (ImGui::TreeNode("Sprite")) {
 			ImGui::DragFloat2("Transform", &transformSprite.translate.x, 0.1f, -1000.0f, 1000.0f);
+			ImGui::DragFloat2("Scale", &transformSprite.scale.x, 0.1f, -1000.0f, 1000.0f);
+			ImGui::DragFloat3("Rotate", &transformSprite.rotate.x, 0.1f, -1000.0f, 1000.0f);
 
 			/*ImGui::DragFloat2("UVTransform", &uvTransformSprite.translate.x, 0.01f, -10.0f, 10.0f);
 			ImGui::DragFloat2("UVScale", &uvTransformSprite.scale.x, 0.01f, -10.0f, 10.0f);
@@ -76,7 +81,7 @@ namespace Engine {
 	void Sprite::Release() {
 	}
 
-	void Sprite::CreateVertexResourceSprite(Vector2 pos, Vector2 scale) {
+	void Sprite::CreateVertexResourceSprite() {
 		// Sprite用の頂点リソースを作る
 		vertexResourceSprite = CreateBufferResource(dir_->GetDevice(), sizeof(VertexData) * 4);
 
@@ -90,21 +95,24 @@ namespace Engine {
 		vertexResourceSprite->Map(0, nullptr, reinterpret_cast<void**>(&vertexDataSprite));
 
 		// 三角形
-		vertexDataSprite[0].position = { pos.x, pos.y + scale.y, 0.0f, 1.0f }; // 左下
+		vertexDataSprite[0].position = { 0.0f, 1.0f, 0.0f, 1.0f }; // 左下
 		vertexDataSprite[0].texcoord = { 0.0f, 1.0f };
 		vertexDataSprite[0].normal = { 0.0f, 0.0f, -1.0f };
 
-		vertexDataSprite[1].position = { pos.x, pos.y, 0.0f, 1.0f }; // 左上
+		vertexDataSprite[1].position = { 0.0f, 0.0f, 0.0f, 1.0f }; // 左上
 		vertexDataSprite[1].texcoord = { 0.0f, 0.0f };
 		vertexDataSprite[1].normal = { 0.0f, 0.0f, -1.0f };
 
-		vertexDataSprite[2].position = { pos.x + scale.x, pos.y + scale.y, 0.0f, 1.0f }; // 右下
+		vertexDataSprite[2].position = { 1.0f, 1.0f, 0.0f, 1.0f }; // 右下
 		vertexDataSprite[2].texcoord = { 1.0f, 1.0f };
 		vertexDataSprite[2].normal = { 0.0f, 0.0f, -1.0f };
 
-		vertexDataSprite[3].position = { pos.x + scale.x, pos.y, 0.0f, 1.0f }; // 右上
+		vertexDataSprite[3].position = { 1.0f, 0.0f, 0.0f, 1.0f }; // 右上
 		vertexDataSprite[3].texcoord = { 1.0f, 0.0f };
 		vertexDataSprite[3].normal = { 0.0f, 0.0f, -1.0f };
+
+		// 書き込みが終了した後にアンマップ
+		vertexResourceSprite->Unmap(0, nullptr);
 
 		// index
 		indexResourceSprite = CreateBufferResource(dir_->GetDevice(), sizeof(uint32_t) * 6);
@@ -125,6 +133,9 @@ namespace Engine {
 		indexDataSprite[3] = 1;
 		indexDataSprite[4] = 3;
 		indexDataSprite[5] = 2;
+
+		// 書き込み終了後にアンマップ
+		indexResourceSprite->Unmap(0, nullptr);
 	}
 
 	void Sprite::CreateMaterialResourceSprite() {
@@ -136,6 +147,15 @@ namespace Engine {
 		materialResourceSprite->Map(0, nullptr, reinterpret_cast<void**>(&materialDataSprite));
 
 		materialDataSprite->uvTransform = MakeIndentity4x4();
+
+		// SpriteはLightingしないのでfalseを設定
+		materialDataSprite->enableLighting = false;
+
+		// 白を設定
+		materialDataSprite->color = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+		// 書き込み終了後にアンマップ
+		materialResourceSprite->Unmap(0, nullptr);
 	}
 
 
@@ -148,6 +168,9 @@ namespace Engine {
 
 		// 単位行列を書き込んでおく
 		transformationMatrixDataSprite->WVP = MakeIndentity4x4();
+
+		// 書き込み終了後にアンマップ
+		transformationMatrixResourceSprite->Unmap(0, nullptr);
 	}
 
 	void Sprite::CreatePso()
@@ -169,28 +192,27 @@ namespace Engine {
 		D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature{};
 		descriptionRootSignature.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
-		// particle用
-		D3D12_DESCRIPTOR_RANGE descriptorRangeForInstancing[1] = {};
-		descriptorRangeForInstancing[0].BaseShaderRegister = 0;
-		descriptorRangeForInstancing[0].NumDescriptors = 1;
-		descriptorRangeForInstancing[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-		descriptorRangeForInstancing[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+		// DescriptorRange
+		D3D12_DESCRIPTOR_RANGE descriptorRange[1] = {};
+		descriptorRange[0].BaseShaderRegister = 0;//0から始まる
+		descriptorRange[0].NumDescriptors = 1;//数は1つ
+		descriptorRange[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;//SRVを使う
+		descriptorRange[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;//Offsetを自動計算
 
 		// RootParameter作成。複数設定できるので配列。今回は結果1つだけなので長さ1の配列
 		D3D12_ROOT_PARAMETER rootParameters[4] = {};
-		rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
-		rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
-		rootParameters[0].Descriptor.ShaderRegister = 0;
+		rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; // CBVを使う
+		rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
+		rootParameters[0].Descriptor.ShaderRegister = 0; // レジスタ番号0とバインド
 
-		rootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-		rootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
-		rootParameters[1].DescriptorTable.pDescriptorRanges = descriptorRangeForInstancing;
-		rootParameters[1].DescriptorTable.NumDescriptorRanges = _countof(descriptorRangeForInstancing);
+		rootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; // CBVを使う
+		rootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX; // VertexShaderで使う
+		rootParameters[1].Descriptor.ShaderRegister = 0;; // レジスタ番号0とバインド
 
 		rootParameters[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; // Descriptortableを使う
 		rootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
-		rootParameters[2].DescriptorTable.pDescriptorRanges = descriptorRangeForInstancing; // Tableの中身の配列を指定
-		rootParameters[2].DescriptorTable.NumDescriptorRanges = _countof(descriptorRangeForInstancing); // Tableで利用する数
+		rootParameters[2].DescriptorTable.pDescriptorRanges = descriptorRange; // Tableの中身の配列を指定
+		rootParameters[2].DescriptorTable.NumDescriptorRanges = _countof(descriptorRange); // Tableで利用する数
 
 		rootParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; // CBVを使う
 		rootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
@@ -251,13 +273,6 @@ namespace Engine {
 		D3D12_BLEND_DESC blendDesc{};
 		// すべての色要素を書き込む
 		blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
-		blendDesc.RenderTarget[0].BlendEnable = TRUE;
-		blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
-		blendDesc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
-		blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
-		blendDesc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
-		blendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
-		blendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
 
 		// RasiterzerStateの設定
 		D3D12_RASTERIZER_DESC rasterizerDesc{};
@@ -267,10 +282,10 @@ namespace Engine {
 		rasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
 
 		// Shaderをコンパイルする
-		IDxcBlob* vertexShaderBlob = Convert::CompileShader(L"resources/Shaders/Object3d.VS.hlsl", L"vs_6_0", dxcUtils, dxcCompiler, includeHandler);
+		IDxcBlob* vertexShaderBlob = Convert::CompileShader(L"resources/Shaders/Sprite2d.VS.hlsl", L"vs_6_0", dxcUtils, dxcCompiler, includeHandler);
 		assert(vertexShaderBlob != nullptr);
 
-		IDxcBlob* pixelShaderBlob = Convert::CompileShader(L"resources/Shaders/Object3d.PS.hlsl", L"ps_6_0", dxcUtils, dxcCompiler, includeHandler);
+		IDxcBlob* pixelShaderBlob = Convert::CompileShader(L"resources/Shaders/Sprite2d.PS.hlsl", L"ps_6_0", dxcUtils, dxcCompiler, includeHandler);
 		assert(pixelShaderBlob != nullptr);
 
 		// DepthStencilStateの設定
@@ -278,7 +293,7 @@ namespace Engine {
 		// Depthの機能を有効化する
 		depthStencilDesc.DepthEnable = true;
 		// 書き込む
-		depthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
+		depthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
 		// 比較関数はLessEqual。つまり、近ければ描画される
 		depthStencilDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
 
@@ -362,8 +377,8 @@ namespace Engine {
 		assert(textureBuffer);
 
 		D3D12_RESOURCE_DESC resDesc = textureBuffer->GetDesc();
-		textureSize.x = static_cast<float>(resDesc.Width);
-		textureSize.y = static_cast<float>(resDesc.Height);
+		transformSprite.scale.x = static_cast<float>(resDesc.Width);
+		transformSprite.scale.y = static_cast<float>(resDesc.Height);
 	}
 
 }

@@ -13,6 +13,7 @@ GameScene::~GameScene(){
 
 void GameScene::Initialize() {
 	camera_.Initialize();
+	textureManager_->Initialize();
 
 	postProcess_ = std::make_unique<PostProcess>();
 	postProcess_->Initialize(NOISE);
@@ -24,18 +25,10 @@ void GameScene::Initialize() {
 	player_ = std::make_unique<Player>();
 	player_->Initialize();
 
-	// ready
-	ready_ = std::make_unique<Sprite>();
-	ready_->Initialize(Vector2{ 200.0f, 25.0f }, Vector2{ 450.0, 150.0f }, 1.0f);
-
 	transform_ = { {10.0f,10.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,30.0f,-100.0f} };
 	go_ = std::make_unique<Model>();
 	go_->Initialize("board.obj", transform_);
 	go_->SetLight(false);
-
-	// UI
-	ui_ = std::make_unique<Sprite>();
-	ui_->Initialize(Vector2{ 0.0f, 280.0f }, Vector2{ 150.0, 150.0f }, 1.0f);
 
 	// skybox
 	skydome_ = std::make_unique<Skydome>();
@@ -44,18 +37,16 @@ void GameScene::Initialize() {
 	particle_ = std::make_unique<Particles>();
 	particle_->Initialize("board.obj", { 0.0f, 25.0f, 50.0f }, 60);
 
+	go = textureManager_->Load("resources/go.png");
+	ready = textureManager_->Load("resources/ready.png");
+	uv = textureManager_->Load("resources/map.png");
 	enemyBulletTex = textureManager_->Load("resources/black.png");
 	bossBulletTex = textureManager_->Load("resources/red.png");
-	uv = textureManager_->Load("resources/map.png");
-	ready = textureManager_->Load("resources/ready.png");
-	go = textureManager_->Load("resources/go.png");
 
-	hp5 = textureManager_->Load("resources/hp5.png");
-	hp4 = textureManager_->Load("resources/hp4.png");
-	hp3 = textureManager_->Load("resources/hp3.png");
-	hp2 = textureManager_->Load("resources/hp2.png");
-	hp1 = textureManager_->Load("resources/hp1.png");
-	hp0 = textureManager_->Load("resources/hp0.png");
+	// ready
+	ready_ = std::make_unique<Sprite>();
+	ready_->Initialize(Vector2{ 340.0f, 0.0f }, Vector2{ 600.0f, 300.0f }, ready);
+	ready_->SetSize({ 600.0f, 300.0f });
 
 	// Json
     json_ = std::make_unique<Json>();
@@ -64,13 +55,13 @@ void GameScene::Initialize() {
 	json_->EnemyAdoption(levelData_, player_.get(), this);
 	json_->FixedEnemyAdoption(levelData_, player_.get(), this);
 
-	// stage
-	stage_ = std::make_unique<Stage>();
-	stage_->Initialize();
-
 	for (std::unique_ptr<Enemy>& enemy : json_->GetEnemys()) {
 		enemy->SetIsDead(false);
 	}
+
+	// stage
+	stage_ = std::make_unique<Stage>();
+	stage_->Initialize();
 
 	isVignette_ = true;
 	isGameClear_ = false;
@@ -90,8 +81,8 @@ void GameScene::Update(){
 
 	// json更新処理
 	json_->Update();
-	json_->EnemyUpdate(player_.get(), this);
-	json_->FixedEnemyUpdate(player_.get(), this);
+	json_->EnemyUpdate(camera_, player_.get(), this);
+	json_->FixedEnemyUpdate(camera_, player_.get(), this);
 
 	stage_->Update();
 
@@ -105,7 +96,21 @@ void GameScene::Update(){
 
 	if (isVignette_ == false) {
 		if (isApploach_ == false) {
-			player_->Update();
+			player_->Update(&camera_);
+		}
+	}
+
+	// EnemyLockOn
+	for (std::unique_ptr<Enemy>& enemy : json_->GetEnemys()) {
+		if (player_->Get3DWorldPosition().z < enemy->GetPos().z) {
+			player_->LockOn(enemy->GetIsLockOn(), enemy->GetPos());
+		}
+	}
+
+	// fixedEnemyLockOn
+	for (std::unique_ptr<Enemy>& enemy : json_->GetFixedEnemys()) {
+		if (player_->Get3DWorldPosition().z < enemy->GetPos().z) {
+			player_->LockOn(enemy->GetIsLockOn(), enemy->GetPos());
 		}
 	}
 
@@ -217,11 +222,10 @@ void GameScene::Update(){
 	}
 
 	if (isGameClear_) {
-		if (noiseStrength <= kMaxNoiseStrength) {
-			noiseStrength += plusNoiseStrength;
-		}
+		postProcess_->VignetteFadeIn(0.1f, 0.1f);
 
-		if (postProcess_->GetNoiseStrength() >= kMaxNoiseStrength) {
+		if (postProcess_->GetVignetteLight() <= 0.0f) {
+			isGameClear_ = false;
 			sceneNo = CLEAR;
 		}
 	}
@@ -237,6 +241,7 @@ void GameScene::Update(){
 		}
 
 		if (postProcess_->GetNoiseStrength() >= kMaxNoiseStrength) {
+			isGameOver_ = false;
 			sceneNo = OVER;
 		}
 	}
@@ -263,28 +268,13 @@ void GameScene::Draw()
 	}
 
 	if (isApploach_) {
-		ready_->Draw(ready);
+		ready_->Draw();
 	}
 	else {
 		go_->Draw(&camera_, go);
 
-		if (player_->GetHP() == 5) {
-			ui_->Draw(hp5);
-		}
-		else if (player_->GetHP() == 4) {
-			ui_->Draw(hp4);
-		}
-		else if (player_->GetHP() == 3) {
-			ui_->Draw(hp3);
-		}
-		else if (player_->GetHP() == 2) {
-			ui_->Draw(hp2);
-		}
-		else if (player_->GetHP() == 1) {
-			ui_->Draw(hp1);
-		}
-		else if (player_->GetHP() == 0) {
-			ui_->Draw(hp0);
+		if (isGameClear_ == false) {
+			player_->DrawUI();
 		}
 	}
 
@@ -307,7 +297,6 @@ void GameScene::CheckAllCollisions()
 	std::vector<std::unique_ptr<PlayerBullet>>& playerBullets = player_->GetBullets();
 	// 敵弾リストの取得
 	std::vector<std::unique_ptr<EnemyBullet>>& enemyBullets = enemyBullets_;
-	std::vector<std::unique_ptr<BossBullet>>& bossBullets = bossBullets_;
 
 	// コライダー
 	std::list<Collider*> colliders_;
@@ -336,11 +325,6 @@ void GameScene::CheckAllCollisions()
 
 	// enemyBullet
 	for (std::unique_ptr<EnemyBullet>& bullet : enemyBullets) {
-		colliders_.push_back(std::move(bullet.get()));
-	}
-
-	// bossBullet
-	for (std::unique_ptr<BossBullet>& bullet : bossBullets) {
 		colliders_.push_back(std::move(bullet.get()));
 	}
 
@@ -425,6 +409,89 @@ void GameScene::CheckAllCollisions()
 			objects->OnCollision();
 		}
 	}
+
+	for (std::unique_ptr<Enemy>& enemy : json_->GetEnemys()) {
+
+		// プレイヤーの照準（レティクル）の矩形情報
+		float reticleX = player_->GetReticlePos().x;
+		float reticleY = player_->GetReticlePos().y;
+		float reticleHalfWidth = 50.0f;
+		float reticleHalfHeight = 50.0f;
+
+		float reticleLeft = reticleX - reticleHalfWidth;
+		float reticleRight = reticleX + reticleHalfWidth;
+		float reticleTop = reticleY - reticleHalfHeight;
+		float reticleBottom = reticleY + reticleHalfHeight;
+
+		// 敵の矩形情報
+		float enemyX = enemy->GetScreenPos().x;
+		float enemyY = enemy->GetScreenPos().y;
+		float enemyHalfWidth = 25.0f;
+		float enemyHalfHeight = 25.0f;
+
+		float enemyLeft = enemyX - enemyHalfWidth;
+		float enemyRight = enemyX + enemyHalfWidth;
+		float enemyTop = enemyY - enemyHalfHeight;
+		float enemyBottom = enemyY + enemyHalfHeight;
+
+		// 矩形同士の当たり判定（AABB）
+		if (reticleLeft < enemyRight &&
+			reticleRight > enemyLeft &&
+			reticleTop < enemyBottom &&
+			reticleBottom > enemyTop) {
+			// ロックオン状態にする
+			if (!enemy->GetIsLockOn()) {
+				enemy->SetisLockOn(true);
+			}
+		}
+		else {
+			// ロックオン解除
+			if (enemy->GetIsLockOn()) { // 状態が変わる場合のみ更新
+				enemy->SetisLockOn(false);
+			}
+		}
+	}
+
+	for (std::unique_ptr<Enemy>& enemy : json_->GetFixedEnemys()) {
+		// プレイヤーの照準（レティクル）の矩形情報
+		float reticleX = player_->GetReticlePos().x;
+		float reticleY = player_->GetReticlePos().y;
+		float reticleHalfWidth = 50.0f;
+		float reticleHalfHeight = 50.0f;
+
+		float reticleLeft = reticleX - reticleHalfWidth;
+		float reticleRight = reticleX + reticleHalfWidth;
+		float reticleTop = reticleY - reticleHalfHeight;
+		float reticleBottom = reticleY + reticleHalfHeight;
+
+		// 敵の矩形情報
+		float enemyX = enemy->GetScreenPos().x;
+		float enemyY = enemy->GetScreenPos().y;
+		float enemyHalfWidth = 25.0f;
+		float enemyHalfHeight = 25.0f;
+
+		float enemyLeft = enemyX - enemyHalfWidth;
+		float enemyRight = enemyX + enemyHalfWidth;
+		float enemyTop = enemyY - enemyHalfHeight;
+		float enemyBottom = enemyY + enemyHalfHeight;
+
+		// 矩形同士の当たり判定（AABB）
+		if (reticleLeft < enemyRight &&
+			reticleRight > enemyLeft &&
+			reticleTop < enemyBottom &&
+			reticleBottom > enemyTop) {
+			// ロックオン状態にする
+			if (!enemy->GetIsLockOn()) {
+				enemy->SetisLockOn(true);
+			}
+		}
+		else {
+			// ロックオン解除
+			if (enemy->GetIsLockOn()) { // 状態が変わる場合のみ更新
+				enemy->SetisLockOn(false);
+			}
+		}
+	}
 }
 
 void GameScene::AddEnemyBullet(std::unique_ptr<EnemyBullet> enemyBullet)
@@ -433,14 +500,14 @@ void GameScene::AddEnemyBullet(std::unique_ptr<EnemyBullet> enemyBullet)
 	enemyBullets_.push_back(std::move(enemyBullet));
 }
 
-void GameScene::AddBossBullet(std::unique_ptr<BossBullet> bossBullet)
-{
-	// リストに登録する
-	bossBullets_.push_back(std::move(bossBullet));
-}
-
 void GameScene::CheckCollisionPair(Collider* colliderA, Collider* colliderB)
 {
+	// 衝突フィルタリング
+	if (colliderA->GetCollosionAttribute() != colliderB->GetCollisionMask() &&
+		colliderB->GetCollosionAttribute() != colliderA->GetCollisionMask()) {
+		return;
+	}
+
 	//当たり判定の計算開始
 	Vector3 Apos = colliderA->GetWorldPosition();
 	Vector3 Bpos = colliderB->GetWorldPosition();

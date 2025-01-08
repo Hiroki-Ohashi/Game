@@ -153,10 +153,26 @@ struct JointWeightData {
 // ModelData
 struct ModelData {
 	std::map<std::string, JointWeightData> skinClusterData;
+
 	std::vector<VertexData> vertices;
 	std::vector<uint32_t> indices;
+
+	// BufferView
+	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
+	D3D12_INDEX_BUFFER_VIEW indexBufferView{};
+
+	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource;
+	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource;
+
 	MaterialData material;
 	Node rootNode;
+};
+
+// InstanceData
+struct InstanceData {
+	Matrix4x4 WVP;
+	Matrix4x4 World;
+	Vector4 color;
 };
 
 // Particle
@@ -288,7 +304,9 @@ Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Ve
 // 透視投影行列
 Matrix4x4 MakePerspectiveMatrix(float fovY, float aspectRatio, float nearClip, float farClip);
 //正射影行列
-Matrix4x4 MakeOrthographicMatrix(float left, float right, float top, float bottom, float nearClip, float farClip);
+Matrix4x4 MakeOrthographicMatrix(float left, float top, float right, float bottom, float nearClip, float farClip);
+// ビューポート変換行列
+Matrix4x4 MakeViewportMatrix(float left, float top, float width, float height, float minDepth, float maxDepth);
 // 逆行列
 Matrix4x4 Inverse(const Matrix4x4& m);
 // 正規化

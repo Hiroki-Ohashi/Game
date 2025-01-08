@@ -24,7 +24,6 @@
 #include <Skydome.h>
 #include <Stage/Stage.h>
 #include <Enemy/Enemy.h>
-#include <Enemy/Boss.h>
 using namespace Engine;
 
 #pragma comment(lib, "d3d12.lib")
@@ -59,7 +58,6 @@ public:
 
 	// リスト登録
 	void AddEnemyBullet(std::unique_ptr<EnemyBullet> enemyBullet);
-	void AddBossBullet(std::unique_ptr<BossBullet> bossBullet);
 
 private:
 	// カメラ
@@ -71,12 +69,8 @@ private:
 
 	// プレイヤー
 	std::unique_ptr<Player> player_;
-
-	// 敵
-	std::unique_ptr<Boss> boss_;
 	// 敵弾
 	std::vector<std::unique_ptr<EnemyBullet>> enemyBullets_;
-	std::vector<std::unique_ptr<BossBullet>> bossBullets_;
 
 	// スタート演出Model
 	std::unique_ptr<Sprite> ready_ = nullptr;
@@ -85,9 +79,6 @@ private:
 	// json
 	std::unique_ptr<Json> json_ = nullptr;
 	LevelData* levelData_ = nullptr;
-
-	// UI
-	std::unique_ptr<Sprite> ui_ = nullptr;
 
 	// Stage
 	std::unique_ptr<Stage> stage_ = nullptr;
@@ -107,13 +98,6 @@ private:
 	uint32_t uv;
 	uint32_t ready;
 	uint32_t go;
-
-	uint32_t hp5;
-	uint32_t hp4;
-	uint32_t hp3;
-	uint32_t hp2;
-	uint32_t hp1;
-	uint32_t hp0;
 
 	// bossParam
 	Vector3 pos_ = { 0.0f, 25.0f, 500.0f };
@@ -160,4 +144,8 @@ private:
 
 	// カメラoffset
 	Vector3 cameraOffset = { 0.0f, 1.5f, 20.0f };
+
+	// デバッグ用
+	Vector2 pos = {};
+	Vector2 scale = {};
 };

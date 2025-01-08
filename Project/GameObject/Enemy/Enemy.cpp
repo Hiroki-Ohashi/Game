@@ -20,27 +20,53 @@ void Enemy::Initialize(Vector3 pos, EnemyType type)
 	model_->SetWorldTransform(worldtransform_);
 	worldtransform_.UpdateMatrix();
 
+	lockOnTex = textureManager_->Load("resources/reticle.png");
+
+	enemySprite_ = std::make_unique<Sprite>();
+	enemySprite_->Initialize({ 590.0f,310.0f }, { 50.0f,50.0f }, lockOnTex);
+	enemySprite_->SetSize({ 50.0f,50.0f });
+	enemySprite_->SetRotation({ 0.0f, 0.0f, -0.8f });
+
 	isDead_ = false;
+	isLockOn_ = false;
+	isPossibillityLock = false;
 
 	enemyTex = textureManager_->Load("resources/white.png");
-
+	enemyBulletTex = textureManager_->Load("resources/red.png");
+	
 	attackTimer = 10;
+
+	// 衝突属性を設定
+	SetCollosionAttribute(kcollisionAttributeEnemy);
+	// 衝突対象を自分の属性以外に設定
+	SetCollisionMask(kcollisionAttributePlayer);
+
+	// 弾プールを初期化
+	//bulletPool_.Initialize(200);
 }
 
-void Enemy::Update(EnemyType type)
+void Enemy::Update(EnemyType type, Camera* camera_)
 {
+
 	if (type == FRY) {
-		FryUpdate();
+		FryUpdate(camera_);
 	}
 	else if (type == FIXEDENEMY) {
-		FixedUpdate();
+		FixedUpdate(camera_);
+	}
+
+	// 弾の更新
+	//bulletPool_.Update();
+
+	if (ImGui::TreeNode("enemy")) {
+		ImGui::Text("isLockOn %d", isLockOn_);
+		ImGui::TreePop();
 	}
 }
 
-void Enemy::FixedUpdate()
+void Enemy::FixedUpdate(Camera* camera_)
 {
 	worldtransform_.UpdateMatrix();
-	float kMaxAttack = 600.0f;
 
 	attackTimer--;
 
@@ -93,12 +119,28 @@ void Enemy::FixedUpdate()
 	float velocityXZ = sqrt((velocity_.x * velocity_.x) + (velocity_.z * velocity_.z));
 	worldtransform_.rotate.x = std::atan2(-velocity_.y, velocityXZ);
 	worldtransform_.UpdateMatrix();
+
+	// 3Dレティクルのワールド座標から2Dレティクルのスクリーン座標を計算
+	{
+		positionReticle = GetPos();
+
+		// ビューポート行列
+		Matrix4x4 matViewport = MakeViewportMatrix(0, 0, (float)WinApp::GetKClientWidth(), (float)WinApp::GetKClientHeight(), 0, 1);
+
+		// ビュー行列とプロジェクション行列、ビューポート行列を合成する
+		Matrix4x4 matVPV = Multiply(Multiply(camera_->viewMatrix, camera_->projectionMatrix), matViewport);
+
+		// ワールド→スクリーン座標変換
+		positionReticle = Transform(positionReticle, matVPV);
+
+		// スプライトのレティクルに座標設定
+		enemySprite_->SetPosition(Vector2(positionReticle.x - 35.0f, positionReticle.y + 0.0f));
+	}
 }
 
-void Enemy::FryUpdate()
+void Enemy::FryUpdate(Camera* camera_)
 {
 	worldtransform_.UpdateMatrix();
-	float kMaxAttack = 600.0f;
 
 	attackTimer--;
 
@@ -153,12 +195,43 @@ void Enemy::FryUpdate()
 	float velocityXZ = sqrt((velocity_.x * velocity_.x) + (velocity_.z * velocity_.z));
 	worldtransform_.rotate.x = std::atan2(-velocity_.y, velocityXZ);
 	worldtransform_.UpdateMatrix();
+
+	// 3Dレティクルのワールド座標から2Dレティクルのスクリーン座標を計算
+	{
+		positionReticle = GetPos();
+
+		// ビューポート行列
+		Matrix4x4 matViewport = MakeViewportMatrix(0, 0, (float)WinApp::GetKClientWidth(), (float)WinApp::GetKClientHeight(), 0, 1);
+
+		// ビュー行列とプロジェクション行列、ビューポート行列を合成する
+		Matrix4x4 matVPV = Multiply(Multiply(camera_->viewMatrix, camera_->projectionMatrix), matViewport);
+
+		// ワールド→スクリーン座標変換
+		positionReticle = Transform(positionReticle, matVPV);
+
+		// スプライトのレティクルに座標設定
+		enemySprite_->SetPosition(Vector2(positionReticle.x - 35.0f, positionReticle.y));
+	}
 }
 
 void Enemy::Draw(Camera* camera)
 {
 	if (isDead_ == false) {
 		model_->Draw(camera, enemyTex);
+	}
+
+	// 弾の描画
+	//bulletPool_.Draw(camera, 0);
+}
+
+void Enemy::DrawUI()
+{
+	if (worldtransform_.translate.z - player_->GetPos().z <= kMaxAttack &&
+		worldtransform_.translate.z > player_->GetPos().z)
+	{
+		if (isDead_ == false) {
+			enemySprite_->Draw();
+		}
 	}
 }
 
@@ -167,7 +240,7 @@ void Enemy::Attack()
 	if (player_ == nullptr || gameScene_ == nullptr) return;
 
 	Vector3 end = player_->GetPos();
-	Vector3 start = worldtransform_.translate;
+	Vector3 start = GetPos();
 
 	Vector3 diff;
 	diff.x = end.x - start.x;
@@ -185,11 +258,20 @@ void Enemy::Attack()
 	newBullet->Initialize(worldtransform_.translate, velocity_);
 	// 弾を登録
 	gameScene_->AddEnemyBullet(std::move(newBullet));
+
+	//// プールから弾を取得
+	//EnemyBullet* bullet = bulletPool_.GetBullet();
+	//if (bullet) {
+	//	bullet->Reset(worldtransform_.translate, velocity_);
+	//	bullet->SetPlayer(player_);
+	//}
 }
 
 void Enemy::OnCollision()
 {
 	isDeadAnimation_ = true;
+	isLockOn_ = false;
+	isPossibillityLock = false;
 }
 
 void Enemy::DeadAnimation()

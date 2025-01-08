@@ -214,11 +214,12 @@ Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rotate, const Ve
 	Matrix4x4 MakeAffineMatrix;
 
 
-	MakeRotateXMatrix(rotate.x);
-	MakeRotateYMatrix(rotate.y);
-	MakeRotateZMatrix(rotate.z);
+	Matrix4x4 rotateX = MakeRotateXMatrix(rotate.x);
+	Matrix4x4 rotateY = MakeRotateYMatrix(rotate.y);
+	Matrix4x4 rotateZ = MakeRotateZMatrix(rotate.z);
 
-	Matrix4x4 XYZ = Multiply(MakeRotateXMatrix(rotate.x), Multiply(MakeRotateYMatrix(rotate.y), MakeRotateZMatrix(rotate.z)));
+	// 回転行列をXYZ順に合成
+	Matrix4x4 XYZ = Multiply(rotateX, Multiply(rotateY, rotateZ));
 
 	MakeAffineMatrix.m[0][0] = XYZ.m[0][0] * scale.x;
 	MakeAffineMatrix.m[0][1] = XYZ.m[0][1] * scale.x;
@@ -367,12 +368,45 @@ Matrix4x4 MakeOrthographicMatrix(float left, float top, float right, float botto
 	return result;
 }
 
+Matrix4x4 MakeViewportMatrix(
+	float left, float top, float width, float height, float minDepth, float maxDepth) {
+	Matrix4x4 mvm;
+	mvm.m[0][0] = width / 2;
+	mvm.m[0][1] = 0;
+	mvm.m[0][2] = 0;
+	mvm.m[0][3] = 0;
+
+	mvm.m[1][0] = 0;
+	mvm.m[1][1] = -(height / 2);
+	mvm.m[1][2] = 0;
+	mvm.m[1][3] = 0;
+
+	mvm.m[2][0] = 0;
+	mvm.m[2][1] = 0;
+	mvm.m[2][2] = maxDepth - minDepth;
+	mvm.m[2][3] = 0;
+
+	mvm.m[3][0] = left + (width / 2);
+	mvm.m[3][1] = top + (height / 2);
+	mvm.m[3][2] = minDepth;
+	mvm.m[3][3] = 1;
+	return mvm;
+};
+
 Vector3 Normalize(const Vector3& v) {
 	Vector3 result;
 	float norm = sqrtf(v.x * v.x + v.y * v.y + v.z * v.z);
-	result.x = v.x / norm;
-	result.y = v.y / norm;
-	result.z = v.z / norm;
+	if (norm == 0.0f) {
+		// ゼロベクトルの場合、正規化結果もゼロベクトルを返す
+		result.x = 0.0f;
+		result.y = 0.0f;
+		result.z = 0.0f;
+	}
+	else {
+		result.x = v.x / norm;
+		result.y = v.y / norm;
+		result.z = v.z / norm;
+	}
 	return result;
 }
 

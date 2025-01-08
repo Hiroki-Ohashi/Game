@@ -27,6 +27,11 @@ void PlayerBullet::Initialize(Vector3 pos, Vector3 velocity)
 	worldtransform_.rotate.x = std::atan2(-velo.y, velocityXZ);
 
 	isDead_ = false;
+
+	// 衝突属性を設定
+	SetCollosionAttribute(kcollisionAttributePlayer);
+	// 衝突対象を自分の属性以外に設定
+	SetCollisionMask(kcollisionAttributeEnemy);
 }
 
 void PlayerBullet::Update()

@@ -28,6 +28,17 @@ void EnemyBullet::Initialize(Vector3 pos, Vector3 velocity)
 	worldtransform_.UpdateMatrix();
 
 	isDead_ = false;
+
+	// 衝突属性を設定
+	SetCollosionAttribute(kcollisionAttributeEnemy);
+	// 衝突対象を自分の属性以外に設定
+	SetCollisionMask(0xffffffff);
+}
+
+void EnemyBullet::Reset(Vector3 pos, Vector3 velocity)
+{
+	Initialize(pos, velocity); // 弾を再初期化
+	isDead_ = false;
 }
 
 void EnemyBullet::Update()

@@ -79,16 +79,16 @@ namespace Engine
 		ModelData modelData;
 		uint32_t* mappedIndex;
 
-		// BufferView
-		D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
-		D3D12_INDEX_BUFFER_VIEW indexBufferView{};
+		//// BufferView
+		//D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
+		//D3D12_INDEX_BUFFER_VIEW indexBufferView{};
 
 		// Resource
-		Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource;
+		//Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource;
 		Microsoft::WRL::ComPtr<ID3D12Resource> materialResource;
 		Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource;
 		Microsoft::WRL::ComPtr<ID3D12Resource> cameraResource;
-		Microsoft::WRL::ComPtr<ID3D12Resource> indexResource;
+		//Microsoft::WRL::ComPtr<ID3D12Resource> indexResource;
 
 		// Data
 		VertexData* vertexData;
