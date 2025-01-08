@@ -36,6 +36,9 @@ void OverScene::Initialize()
 	yuka_->Initialize("cube.obj", transform_);
 	yuka_->SetLight(false);
 
+	player = textureManager_->Load("resources/white.png");
+	yuka = textureManager_->Load("resources/map.png");
+
 	gekitui = textureManager_->Load("resources/gekitui.png");
 	sareta = textureManager_->Load("resources/sareta.png");
 
@@ -62,9 +65,6 @@ void OverScene::Initialize()
 	title_ = std::make_unique<Sprite>();
 	title_->Initialize(Vector2{ 1050.0f, 560.0f }, Vector2{ 127.0f, 107.0f }, title);
 	title_->SetSize({ 127.0f, 107.0f });
-
-	player = textureManager_->Load("resources/white.png");
-	yuka = textureManager_->Load("resources/map.png");
 
 	scenePrev = 0;
 	noiseStrength = 100.0f;
@@ -176,6 +176,11 @@ void OverScene::Update()
 
 void OverScene::Draw()
 {
+	json_->Draw(camera_, player);
+	jsonObject_->Draw(camera_, player);
+
+	yuka_->Draw(&camera_, yuka);
+
 	gekitui_->Draw();
 	sareta_->Draw();
 
@@ -189,11 +194,6 @@ void OverScene::Draw()
 			title_->Draw();
 		}
 	}
-
-	json_->Draw(camera_, player);
-	jsonObject_->Draw(camera_, player);
-
-	yuka_->Draw(&camera_, yuka);
 }
 
 void OverScene::PostDraw()

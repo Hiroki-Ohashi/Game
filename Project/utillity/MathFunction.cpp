@@ -396,9 +396,17 @@ Matrix4x4 MakeViewportMatrix(
 Vector3 Normalize(const Vector3& v) {
 	Vector3 result;
 	float norm = sqrtf(v.x * v.x + v.y * v.y + v.z * v.z);
-	result.x = v.x / norm;
-	result.y = v.y / norm;
-	result.z = v.z / norm;
+	if (norm == 0.0f) {
+		// ゼロベクトルの場合、正規化結果もゼロベクトルを返す
+		result.x = 0.0f;
+		result.y = 0.0f;
+		result.z = 0.0f;
+	}
+	else {
+		result.x = v.x / norm;
+		result.y = v.y / norm;
+		result.z = v.z / norm;
+	}
 	return result;
 }
 

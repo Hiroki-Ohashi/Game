@@ -38,7 +38,8 @@ void Player::Initialize()
 	hit = textureManager_->Load("resources/red.png");
 
 	reticleSprite_ = std::make_unique<Sprite>();
-	reticleSprite_->Initialize({ 100.0f,200.0f }, { 100.0f,100.0f }, reticleTex);
+	reticleSprite_->Initialize({ 590.0f,310.0f }, { 100.0f,100.0f }, reticleTex);
+	reticleSprite_->SetSize({ 100.0f,100.0f });
 
 	hp5 = textureManager_->Load("resources/hp5.png");
 	hp4 = textureManager_->Load("resources/hp4.png");
@@ -123,23 +124,23 @@ void Player::Update(Camera* camera_)
 	//// ゲームパッドの状態を得る変数(XINPUT)
 	//XINPUT_STATE joyState;
 
-	//Matrix4x4 matViewport = MakeViewportMatrix(0, 0, (float)WinApp::GetKClientWidth(), (float)WinApp::GetKClientHeight(), 0, 1);
+	//Matrix4x4 matViewport = MakeViewportMatrix(0.0f, 0.0f, (float)WinApp::GetKClientWidth(), (float)WinApp::GetKClientHeight(), 0.0f, 1.0f);
 
 	//// スプライトの現在座標を取得
-	//Vector2 spritePosition = reticleSprite_->GetPosition();
+	//Vector2 spritePosition = { reticleSprite_->GetPos().x, reticleSprite_->GetPos().y};
 
 	//// ゲームパッド状態取得
 	//if (Input::GetInsTance()->GetJoystickState(joyState)) {
 	//	spritePosition.x += (float)joyState.Gamepad.sThumbLX / SHRT_MAX * kCharacterSpeed;
 	//	spritePosition.y -= (float)joyState.Gamepad.sThumbLY / SHRT_MAX * kCharacterSpeed;
 
-	//	worldtransform_.rotate.z -= (float)joyState.Gamepad.sThumbLX / SHRT_MAX * kRotSpeed;
+	//	//worldtransform_.rotate.z -= (float)joyState.Gamepad.sThumbLX / SHRT_MAX * kRotSpeed;
 
 	//	reticleSprite_->SetPosition(spritePosition);
 	//}
 
 	//// ビュープロジェクションビューポート合成行列
-	//Matrix4x4 matVPV = Multiply(Multiply(matViewport, camera_->projectionMatrix), camera_->viewMatrix);
+	//Matrix4x4 matVPV = Multiply(Multiply(camera_->viewMatrix, camera_->projectionMatrix), matViewport);
 
 	//// 合成行列の逆行列を計算する
 	//Matrix4x4 matInverseVPV = Inverse(matVPV);
@@ -158,7 +159,7 @@ void Player::Update(Camera* camera_)
 	//spriteDierection.z = posFar.z - posNear.z;
 	//spriteDierection = Normalize(spriteDierection);
 	//// カメラから照準オブジェクトの距離
-	//const float kDistanceTextObject = 50.0f;
+	//const float kDistanceTextObject = 100.0f;
 	//reticleWorldtransform_.translate.y = spriteDierection.y * kDistanceTextObject;
 	//reticleWorldtransform_.translate.z = spriteDierection.z * kDistanceTextObject;
 	//reticleWorldtransform_.translate.x = spriteDierection.x * kDistanceTextObject;
@@ -231,7 +232,7 @@ void Player::Update(Camera* camera_)
 		positionReticle = Transform(positionReticle, matVPV);
 
 		// スプライトのレティクルに座標設定
-		reticleSprite_->SetPosition(Vector2(positionReticle.x, positionReticle.y));
+		reticleSprite_->SetPosition(Vector2(positionReticle.x - 50, positionReticle.y - 50));
 	}
 
 	//// 攻撃処理
@@ -275,9 +276,9 @@ void Player::Draw(Camera* camera_)
 		model_->Draw(camera_, playerTex);
 	}
 
-	reticleModel_->Draw(camera_, reticleTex);
+	//reticleModel_->Draw(camera_, reticleTex);
 
-	//reticleSprite_->Draw();
+	reticleSprite_->Draw();
 
 	if (GetHP() == 5) {
 		hp5_->Draw();
@@ -369,19 +370,18 @@ void Player::Attack()
 		if (Input::GetInsTance()->PressedButton(joyState, XINPUT_GAMEPAD_A)) {
 			// 弾の速度
 			const float kBulletSpeed = 10.0f;
-			Vector3 velocity(0, 0, kBulletSpeed);
 
-			// 速度ベクトルを自機の向きに併せて回転させる
-			velocity = TransformNormal(velocity, worldtransform_.matWorld);
+			// 自機から照準オブジェクトへのベクトルを計算
+			Vector3 targetDirection;
+			targetDirection.x = reticleWorldtransform_.translate.x - worldtransform_.translate.x;
+			targetDirection.y = reticleWorldtransform_.translate.y - worldtransform_.translate.y;
+			targetDirection.z = reticleWorldtransform_.translate.z - worldtransform_.translate.z;
 
-			// 自機から照準オブジェクトへのベクトル
-			velocity.x = Get3DWorldPosition().x - GetPos().x;
-			velocity.y = Get3DWorldPosition().y - GetPos().y;
-			velocity.z = Get3DWorldPosition().z - GetPos().z;
-
-			velocity.x = Normalize(velocity).x * kBulletSpeed;
-			velocity.y = Normalize(velocity).y * kBulletSpeed;
-			velocity.z = Normalize(velocity).z * kBulletSpeed;
+			// 正規化して速度を設定
+			Vector3 velocity;
+			velocity.x = Normalize(targetDirection).x * kBulletSpeed;
+			velocity.y = Normalize(targetDirection).y * kBulletSpeed;
+			velocity.z = Normalize(targetDirection).z * kBulletSpeed;
 
 			// 弾を生成し、初期化
 			std::unique_ptr<PlayerBullet> newBullet = std::make_unique<PlayerBullet>();

@@ -153,8 +153,17 @@ struct JointWeightData {
 // ModelData
 struct ModelData {
 	std::map<std::string, JointWeightData> skinClusterData;
+
 	std::vector<VertexData> vertices;
 	std::vector<uint32_t> indices;
+
+	// BufferView
+	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
+	D3D12_INDEX_BUFFER_VIEW indexBufferView{};
+
+	Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource;
+	Microsoft::WRL::ComPtr<ID3D12Resource> indexResource;
+
 	MaterialData material;
 	Node rootNode;
 };

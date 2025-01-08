@@ -45,7 +45,7 @@ void GameManager::Run()
 	sceneArr_[CLEAR] = std::make_unique<ClearScene>();
 	sceneArr_[OVER] = std::make_unique<OverScene>();
 
-	currentSceneNo_ = OVER;
+	currentSceneNo_ = TITLE;
 
 	MSG msg{};
 

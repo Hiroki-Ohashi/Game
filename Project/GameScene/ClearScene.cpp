@@ -110,6 +110,8 @@ void ClearScene::Update()
 
 void ClearScene::Draw()
 {
+	json_->Draw(camera_, player);
+
 	clear_->Draw();
 	clearLog_->Draw();
 
@@ -118,8 +120,6 @@ void ClearScene::Draw()
 	}
 
 	skydome_->Draw(&camera_);
-
-	json_->Draw(camera_, player);
 }
 
 void ClearScene::PostDraw()

@@ -112,13 +112,13 @@ void TitleScene::Draw()
 {
 	skydome_->Draw(&camera_);
 
+	json_->Draw(camera_, white);
+
 	title_->Draw();
 
 	if (blinking) {
 		startLog_->Draw();
 	}
-
-	json_->Draw(camera_, white);
 }
 
 void TitleScene::PostDraw()
