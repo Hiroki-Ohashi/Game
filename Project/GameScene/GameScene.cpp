@@ -15,6 +15,7 @@ void GameScene::Initialize() {
 	camera_.Initialize();
 	textureManager_->Initialize();
 
+	// PostEffect
 	postProcess_ = std::make_unique<PostProcess>();
 	postProcess_->Initialize(NOISE);
 	postProcess_->SetVignette(0.0f, 16.0f);
@@ -25,28 +26,27 @@ void GameScene::Initialize() {
 	player_ = std::make_unique<Player>();
 	player_->Initialize();
 
-	transform_ = { {10.0f,10.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,30.0f,-100.0f} };
-	go_ = std::make_unique<Model>();
-	go_->Initialize("board.obj", transform_);
-	go_->SetLight(false);
-
 	// skybox
 	skydome_ = std::make_unique<Skydome>();
 	skydome_->Initialize();
 
-	particle_ = std::make_unique<Particles>();
-	particle_->Initialize("board.obj", { 0.0f, 25.0f, 50.0f }, 60);
-
+	// Texture
 	go = textureManager_->Load("resources/go.png");
 	ready = textureManager_->Load("resources/ready.png");
 	uv = textureManager_->Load("resources/map.png");
 	enemyBulletTex = textureManager_->Load("resources/black.png");
 	bossBulletTex = textureManager_->Load("resources/red.png");
 
-	// ready
+	// UI(ready)
 	ready_ = std::make_unique<Sprite>();
 	ready_->Initialize(Vector2{ 340.0f, 0.0f }, Vector2{ 600.0f, 300.0f }, ready);
 	ready_->SetSize({ 600.0f, 300.0f });
+
+	// UI(go)
+	transform_ = { {10.0f,10.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,30.0f,-100.0f} };
+	go_ = std::make_unique<Model>();
+	go_->Initialize("board.obj", transform_);
+	go_->SetLight(false);
 
 	// Json
     json_ = std::make_unique<Json>();
@@ -63,12 +63,16 @@ void GameScene::Initialize() {
 	stage_ = std::make_unique<Stage>();
 	stage_->Initialize();
 
+	// boolInit
 	isVignette_ = true;
 	isGameClear_ = false;
 	isApploach_ = true;
 	isGameOver_ = false;
 
+	// cameraInit
 	camera_.cameraTransform.translate = { player_->GetPos().x, player_->GetPos().y + cameraOffset.y,  player_->GetPos().z - cameraOffset.z };
+
+	// EffectInit
 	blurStrength_ = 0.3f;
 	noiseStrength = 0.0f;
 }
@@ -84,42 +88,28 @@ void GameScene::Update(){
 	json_->EnemyUpdate(camera_, player_.get(), this);
 	json_->FixedEnemyUpdate(camera_, player_.get(), this);
 
-	stage_->Update();
-
+	// ゲームスタート
+	// 画面が切り替わったらvignetteをフェードアウトして明るくする
 	if (isVignette_) {
 		postProcess_->VignetteFadeOut(0.1f, 0.1f, 16.0f, 0.0f);
 	}
-
 	if (postProcess_->GetVignetteShape() <= 0.0f) {
 		isVignette_ = false;
 	}
-
-	if (isVignette_ == false) {
-		if (isApploach_ == false) {
-			player_->Update(&camera_);
-		}
+	// スタート演出が終わったらプレイヤー更新処理
+	if (isApploach_ == false) {
+		player_->Update(&camera_);
 	}
 
-	// EnemyLockOn
-	for (std::unique_ptr<Enemy>& enemy : json_->GetEnemys()) {
-		if (player_->Get3DWorldPosition().z < enemy->GetPos().z) {
-			player_->LockOn(enemy->GetIsLockOn(), enemy->GetPos());
-		}
-	}
+	// Lockon
+	LockOnEnemy();
 
-	// fixedEnemyLockOn
-	for (std::unique_ptr<Enemy>& enemy : json_->GetFixedEnemys()) {
-		if (player_->Get3DWorldPosition().z < enemy->GetPos().z) {
-			player_->LockOn(enemy->GetIsLockOn(), enemy->GetPos());
-		}
-	}
-
-	// 弾更新
+	// 敵弾更新
 	for (std::unique_ptr<EnemyBullet>& bullet : enemyBullets_) {
 		bullet->Update();
 	}
 
-	// デスフラグの立った弾を排除
+	// デスフラグの立った敵弾を排除
 	enemyBullets_.erase(
 		std::remove_if(
 			enemyBullets_.begin(),
@@ -131,163 +121,59 @@ void GameScene::Update(){
 		enemyBullets_.end()
 	);
 
-	if (player_->GetIsHit()) {
-		shakeTimer = 30;
-		isShake = true;
+	// カメラシェイク
+	ShakeCamera();
 
-		// 自キャラの衝突時コールバックを呼び出す
-		noiseStrength += kdamageNoise;
-		postProcess_->SetNoiseStrength(noiseStrength);
-	}
+	// ゲームスタート演出
+	Start();
 
-	// 画面の揺れ
-	if (isShake) {
-		shakeTimer -= 1;
-		if (shakeTimer >= 10) {
-			randX = rand() % 2 - 1;
-			randY = rand() % 2 - 1;
-		}
-		if (shakeTimer <= 0) {
-			isShake = false;
-		}
-	}
-	else 
-	{
-		randX = 0;
-		randY = 0;
-	}
+	// ゲームクリア演出
+	Clear();
 
-	// スタート演出
-	if (isVignette_ == false) {
-		if (isApploach_) {
-			float kRotateCameraSpeed = 0.035f;
-			camera_.cameraTransform.rotate.y += kRotateCameraSpeed;
+	// ゲームオーバー演出
+	Over();
 
-			EulerTransform origin = { {0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f},{player_->GetPos().x,player_->GetPos().y,player_->GetPos().z} };
-			// 追従対象からカメラまでのオフセット
-			Vector3 offset = { 0.0f, 1.5f, -20.0f };
-			// カメラの角度から回転行列を計算する
-			Matrix4x4 worldTransform = MakeRotateYMatrix(camera_.cameraTransform.rotate.y);
-			// オフセットをカメラの回転に合わせて回転させる
-			offset = TransformNormal(offset, worldTransform);
-			// 座標をコピーしてオフセット分ずらす
-			camera_.cameraTransform.translate.x = origin.translate.x + offset.x;
-			camera_.cameraTransform.translate.y = origin.translate.y + offset.y;
-			camera_.cameraTransform.translate.z = origin.translate.z + offset.z;
-
-			time_ += timerSpeed;
-
-			if (time_ >= kMaxTime) {
-				time_ = 0;
-				isApploach_ = false;
-				postProcess_->SetBlurStrength(blurStrength_);
-			}
-		}
-		else if (isApploach_ == false) {
-			camera_.cameraTransform.translate = { player_->GetPos().x + randX, player_->GetPos().y + cameraOffset.y + randY,  player_->GetPos().z - cameraOffset.z };
-
-			// ブラー
-			blurStrength_ -= minusBlurStrength_;
-			if (blurStrength_ <= kDefaultBlurStrength_) {
-				blurStrength_ = kDefaultBlurStrength_;
-			}
-
-			postProcess_->SetBlurStrength(blurStrength_);
-		}
-	}
-
-	// クリア条件
-	if (player_->GetPos().z >= goalline) {
-		camera_.cameraTransform.translate = { player_->GetPos().x, player_->GetPos().y + cameraOffset.y,  goalline - cameraOffset.z };
-
-		// カメラをプレイヤーに向ける
-		Vector3 end = player_->GetPos();
-		Vector3 start = camera_.cameraTransform.translate;
-
-		Vector3 diff;
-		diff.x = end.x - start.x;
-		diff.y = end.y - start.y;
-		diff.z = end.z - start.z;
-
-		diff = Normalize(diff);
-
-		Vector3 velocity_(diff.x, diff.y, diff.z);
-
-		// Y軸周り角度（Θy）
-		camera_.cameraTransform.rotate.y = std::atan2(velocity_.x, velocity_.z);
-		float velocityXZ = sqrt((velocity_.x * velocity_.x) + (velocity_.z * velocity_.z));
-		camera_.cameraTransform.rotate.x = std::atan2(-velocity_.y, velocityXZ);
-
-		isGameClear_ = true;
-	}
-
-	if (isGameClear_) {
-		postProcess_->VignetteFadeIn(0.1f, 0.1f);
-
-		if (postProcess_->GetVignetteLight() <= 0.0f) {
-			isGameClear_ = false;
-			sceneNo = CLEAR;
-		}
-	}
-
-	// ゲームオーバー条件
-	if (player_->GetHP() <= 0) {
-		isGameOver_ = true;
-	}
-
-	if (isGameOver_) {
-		if (noiseStrength <= kMaxNoiseStrength) {
-			noiseStrength += plusNoiseStrength;
-		}
-
-		if (postProcess_->GetNoiseStrength() >= kMaxNoiseStrength) {
-			isGameOver_ = false;
-			sceneNo = OVER;
-		}
-	}
-
-	postProcess_->SetNoiseStrength(noiseStrength);
-
+	// 当たり判定
 	CheckAllCollisions();
 }
 
 void GameScene::Draw()
 {
-
+	// 天球描画
 	skydome_->Draw(&camera_);
-
+	// 床描画
 	stage_->Draw(&camera_);
-
+	// 敵、ステージ描画
 	json_->Draw(camera_, uv);
-
+	// プレイヤーの弾描画
 	player_->BulletDraw(&camera_);
 
-	// 弾描画
+	// 敵弾描画
 	for (std::unique_ptr<EnemyBullet>& bullet : enemyBullets_) {
 		bullet->Draw(&camera_, bossBulletTex);
 	}
 
+	// プレイヤー描画
+	player_->Draw(&camera_);
+
 	if (isApploach_) {
+		// readyUI描画
 		ready_->Draw();
 	}
 	else {
+		// goUI描画
 		go_->Draw(&camera_, go);
 
 		if (isGameClear_ == false) {
+			// プレイヤーUI描画
 			player_->DrawUI();
 		}
 	}
-
-	player_->Draw(&camera_);
 }
-
 
 void GameScene::PostDraw()
 {
 	postProcess_->NoiseDraw();
-}
-
-void GameScene::Release() {
 }
 
 void GameScene::CheckAllCollisions()
@@ -307,13 +193,13 @@ void GameScene::CheckAllCollisions()
 
 	// enemy
 	for (std::unique_ptr<Enemy>& enemy : json_->GetEnemys()) {
-		//enemy->SetRadius(2.0f);
+		enemy->SetRadius(2.0f);
 		colliders_.push_back(std::move(enemy.get()));
 	}
 
 	// fixedEnemy
 	for (std::unique_ptr<Enemy>& enemy : json_->GetFixedEnemys()) {
-		//enemy->SetRadius(2.0f);
+		enemy->SetRadius(2.0f);
 		colliders_.push_back(std::move(enemy.get()));
 	}
 
@@ -498,6 +384,182 @@ void GameScene::AddEnemyBullet(std::unique_ptr<EnemyBullet> enemyBullet)
 {
 	// リストに登録する
 	enemyBullets_.push_back(std::move(enemyBullet));
+}
+
+void GameScene::startShake(int duration, float amplitude)
+{
+	isShake = true;
+	shakeTimer = duration;
+	shakeAmplitude = amplitude;
+}
+
+void GameScene::ShakeCamera()
+{
+	// 当たったらシェイク
+	if (player_->GetIsHit()) {
+		shakeTimer = 30;
+		startShake(40, 2.0f);
+
+		// 自キャラの衝突時コールバックを呼び出す
+		noiseStrength += kdamageNoise;
+		postProcess_->SetNoiseStrength(noiseStrength);
+	}
+
+	/// 更新処理
+	if (isShake) {
+		// ランダムな振れ幅を計算
+		randX = ((rand() % 200) / 100.0f - 1.0f) * shakeAmplitude;
+		randY = ((rand() % 200) / 100.0f - 1.0f) * shakeAmplitude;
+
+		// 振幅を減衰
+		shakeAmplitude *= shakeDecay;
+
+		// タイマーの減少
+		shakeTimer -= 1;
+
+		if (shakeTimer <= 0 || shakeAmplitude < 0.1f) {
+			isShake = false;
+			randX = 0;
+			randY = 0;
+		}
+	}
+	else {
+		randX = 0;
+		randY = 0;
+	}
+
+	// カメラ位置
+	camera_.cameraTransform.translate = { player_->GetPos().x + randX, player_->GetPos().y + cameraOffset.y + randY,  player_->GetPos().z - cameraOffset.z };
+}
+
+void GameScene::LockOnEnemy()
+{
+	// fryEnemyLockOn
+	for (std::unique_ptr<Enemy>& enemy : json_->GetEnemys()) {
+		if (player_->Get3DWorldPosition().z < enemy->GetPos().z &&
+			enemy->GetPos().z - player_->GetPos().z <= 600.0f) {
+			player_->LockOn(enemy->GetIsLockOn(), enemy->GetPos());
+		}
+		else {
+			//player_->Attack();
+		}
+	}
+
+	// fixedEnemyLockOn
+	for (std::unique_ptr<Enemy>& enemy : json_->GetFixedEnemys()) {
+		if (player_->Get3DWorldPosition().z < enemy->GetPos().z &&
+			enemy->GetPos().z - player_->GetPos().z <= 600.0f) {
+			player_->LockOn(enemy->GetIsLockOn(), enemy->GetPos());
+		}
+		else {
+			//player_->Attack();
+		}
+	}
+}
+
+void GameScene::Start()
+{
+
+	// 画面が明るくなったらスタート演出
+	if (isVignette_ == false) {
+		if (isApploach_) {
+			float kRotateCameraSpeed = 0.035f;
+			camera_.cameraTransform.rotate.y += kRotateCameraSpeed;
+
+			EulerTransform origin = { {0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f},{player_->GetPos().x,player_->GetPos().y,player_->GetPos().z} };
+			// 追従対象からカメラまでのオフセット
+			Vector3 offset = { 0.0f, 1.5f, -20.0f };
+			// カメラの角度から回転行列を計算する
+			Matrix4x4 worldTransform = MakeRotateYMatrix(camera_.cameraTransform.rotate.y);
+			// オフセットをカメラの回転に合わせて回転させる
+			offset = TransformNormal(offset, worldTransform);
+			// 座標をコピーしてオフセット分ずらす
+			camera_.cameraTransform.translate.x = origin.translate.x + offset.x;
+			camera_.cameraTransform.translate.y = origin.translate.y + offset.y;
+			camera_.cameraTransform.translate.z = origin.translate.z + offset.z;
+
+			time_ += timerSpeed;
+
+			if (time_ >= kMaxTime) {
+				time_ = 0;
+				isApploach_ = false;
+				postProcess_->SetBlurStrength(blurStrength_);
+			}
+		}
+		// 演出が終わったらブラーをかけてプレイヤー発射
+		else if (isApploach_ == false) {
+
+			// カメラ位置
+			camera_.cameraTransform.translate = { player_->GetPos().x + randX, player_->GetPos().y + cameraOffset.y + randY,  player_->GetPos().z - cameraOffset.z };
+
+			// ブラー
+			blurStrength_ -= minusBlurStrength_;
+			if (blurStrength_ <= kDefaultBlurStrength_) {
+				blurStrength_ = kDefaultBlurStrength_;
+			}
+
+			postProcess_->SetBlurStrength(blurStrength_);
+		}
+	}
+}
+
+void GameScene::Clear()
+{
+	// クリア条件
+	if (player_->GetPos().z >= goalline) {
+		camera_.cameraTransform.translate = { player_->GetPos().x, player_->GetPos().y + cameraOffset.y,  goalline - cameraOffset.z };
+
+		// カメラをプレイヤーに向ける
+		Vector3 end = player_->GetPos();
+		Vector3 start = camera_.cameraTransform.translate;
+
+		Vector3 diff;
+		diff.x = end.x - start.x;
+		diff.y = end.y - start.y;
+		diff.z = end.z - start.z;
+
+		diff = Normalize(diff);
+
+		Vector3 velocity_(diff.x, diff.y, diff.z);
+
+		// Y軸周り角度（Θy）
+		camera_.cameraTransform.rotate.y = std::atan2(velocity_.x, velocity_.z);
+		float velocityXZ = sqrt((velocity_.x * velocity_.x) + (velocity_.z * velocity_.z));
+		camera_.cameraTransform.rotate.x = std::atan2(-velocity_.y, velocityXZ);
+
+		isGameClear_ = true;
+	}
+
+	if (isGameClear_) {
+		postProcess_->VignetteFadeIn(0.1f, 0.1f);
+
+		if (postProcess_->GetVignetteLight() <= 0.0f) {
+			isGameClear_ = false;
+			sceneNo = CLEAR;
+		}
+	}
+}
+
+void GameScene::Over()
+{
+	// ゲームオーバー条件
+	if (player_->GetHP() <= 0) {
+		isGameOver_ = true;
+	}
+
+	if (isGameOver_) {
+		if (noiseStrength <= kMaxNoiseStrength) {
+			noiseStrength += plusNoiseStrength;
+		}
+
+		if (postProcess_->GetNoiseStrength() >= kMaxNoiseStrength) {
+			isGameOver_ = false;
+			sceneNo = OVER;
+		}
+	}
+
+	// ダメージを受けた時のノイズ設定
+	postProcess_->SetNoiseStrength(noiseStrength);
 }
 
 void GameScene::CheckCollisionPair(Collider* colliderA, Collider* colliderB)

@@ -23,6 +23,8 @@ public:
 	void Initialize();
 	// 更新処理
 	void Update(Camera* camera_);
+	// 攻撃処理
+	void Attack();
 	void LockOn(bool isLockOn, Vector3 EnemyPos);
 	// 描画処理
 	void Draw(Camera* camera_);
@@ -52,18 +54,18 @@ public:
 	// AABBの最小座標を取得
 	Vector3 GetAABBMin() const {
 		return {
-			worldtransform_.translate.x - (worldtransform_.scale.x / 1.0f),
-			worldtransform_.translate.y - (worldtransform_.scale.y / 1.0f),
-			worldtransform_.translate.z - (worldtransform_.scale.z / 1.0f)
+			worldtransform_.translate.x - worldtransform_.scale.x,
+			worldtransform_.translate.y - worldtransform_.scale.y,
+			worldtransform_.translate.z - worldtransform_.scale.z
 		};
 	}
 
 	// AABBの最大座標を取得
 	Vector3 GetAABBMax() const {
 		return {
-			worldtransform_.translate.x + (worldtransform_.scale.x / 1.0f),
-			worldtransform_.translate.y + (worldtransform_.scale.y / 1.0f),
-			worldtransform_.translate.z + (worldtransform_.scale.z / 1.0f)
+			worldtransform_.translate.x + worldtransform_.scale.x,
+			worldtransform_.translate.y + worldtransform_.scale.y,
+			worldtransform_.translate.z + worldtransform_.scale.z
 		};
 	}
 
@@ -71,8 +73,6 @@ public:
 	// 弾リストを取得
 	 std::vector<std::unique_ptr<PlayerBullet>>& GetBullets() { return bullets_; }
 private:
-	// 攻撃処理
-	void Attack();
 private:
 	// シングルトン呼び出し
 	TextureManager* textureManager_ = TextureManager::GetInstance();

@@ -90,38 +90,42 @@ void Player::Update(Camera* camera_)
 	// キャラクターの移動速さ
 	const float kCharacterSpeed = 1.0f;
 	// 回転速さ[ラジアン/frame]
-	//float kRotSpeed = 0.1f;
+	float kRotSpeed = 0.1f;
 
-	// 押した方向で移動ベクトルを変更(左右)
-	if (input_->PushKey(DIK_A)) {
-		reticleWorldtransform_.translate.x -= kCharacterSpeed;
-		//worldtransform_.rotate.y -= kRotSpeed;
-	}
-	
-	if (input_->PushKey(DIK_D)) {
-		reticleWorldtransform_.translate.x += kCharacterSpeed;
-		//worldtransform_.rotate.y += kRotSpeed;
-	}
+	if (HP > 0) {
+		// 押した方向で移動ベクトルを変更(左右)
+		if (input_->PushKey(DIK_A)) {
+			reticleWorldtransform_.translate.x -= kCharacterSpeed;
+			//worldtransform_.rotate.y -= kRotSpeed;
+		}
 
-	// 押した方向で移動ベクトルを変更(上下)
-	if (input_->PushKey(DIK_W)) {
-		reticleWorldtransform_.translate.y += kCharacterSpeed;
-		//worldtransform_.rotate.x -= kRotSpeed;
-	}
-	else if (input_->PushKey(DIK_S)) {
-		reticleWorldtransform_.translate.y -= kCharacterSpeed;
-		//worldtransform_.rotate.x += kRotSpeed;
-	}
+		if (input_->PushKey(DIK_D)) {
+			reticleWorldtransform_.translate.x += kCharacterSpeed;
+			//worldtransform_.rotate.y += kRotSpeed;
+		}
 
-	// ゲームパッドの状態を得る変数(XINPUT)
-	XINPUT_STATE joyState;
+		// 押した方向で移動ベクトルを変更(上下)
+		if (input_->PushKey(DIK_W)) {
+			reticleWorldtransform_.translate.y += kCharacterSpeed;
+			//worldtransform_.rotate.x -= kRotSpeed;
+		}
+		else if (input_->PushKey(DIK_S)) {
+			reticleWorldtransform_.translate.y -= kCharacterSpeed;
+			//worldtransform_.rotate.x += kRotSpeed;
+		}
 
-	// ゲームパッド状態取得
-	if (Input::GetInsTance()->GetJoystickState(joyState)) {
-		reticleWorldtransform_.translate.x += (float)joyState.Gamepad.sThumbLX / SHRT_MAX * kCharacterSpeed;
-		reticleWorldtransform_.translate.y += (float)joyState.Gamepad.sThumbLY / SHRT_MAX * kCharacterSpeed;
+		// ゲームパッドの状態を得る変数(XINPUT)
+		XINPUT_STATE joyState;
 
-		//worldtransform_.rotate.z -= (float)joyState.Gamepad.sThumbLX / SHRT_MAX * kRotSpeed;
+		// ゲームパッド状態取得
+		if (Input::GetInsTance()->GetJoystickState(joyState)) {
+			reticleWorldtransform_.translate.x += (float)joyState.Gamepad.sThumbLX / SHRT_MAX * kCharacterSpeed;
+			reticleWorldtransform_.translate.y += (float)joyState.Gamepad.sThumbLY / SHRT_MAX * kCharacterSpeed;
+
+			worldtransform_.rotate.z -= (float)joyState.Gamepad.sThumbLX / SHRT_MAX * kRotSpeed;
+			//worldtransform_.rotate.x += (float)joyState.Gamepad.sThumbLX / SHRT_MAX * kRotSpeed;
+			//worldtransform_.rotate.x -= (float)joyState.Gamepad.sThumbLY / SHRT_MAX * kRotSpeed;
+		}
 	}
 
 	reticleWorldtransform_.UpdateMatrix();
@@ -144,9 +148,9 @@ void Player::Update(Camera* camera_)
 	// 引数で受け取った速度をメンバ変数に代入
 	velocity_ = Slerp(velocity, worldtransform_.translate, t);
 
-	velocity_.x *= 0.1f;
-	velocity_.y *= 0.1f;
-	velocity_.z *= 0.1f;
+	/*velocity_.x *= 1.0f;
+	velocity_.y *= 1.0f;
+	velocity_.z *= 1.0f;*/
 
 	// Y軸周り角度（Θy）
 	worldtransform_.rotate.y = std::atan2(velocity_.x, velocity_.z);
@@ -154,13 +158,15 @@ void Player::Update(Camera* camera_)
 	float velocityXZ = sqrt((velocity_.x * velocity_.x) + (velocity_.z * velocity_.z));
 	worldtransform_.rotate.x = std::atan2(-velocity_.y, velocityXZ);
 
-	// 座標移動(ベクトルの加算)
-	worldtransform_.translate.x += velocity.x * 1.52f;
-	worldtransform_.translate.y += velocity.y * 1.52f;
-	worldtransform_.translate.z += velocity.z * 1.52f;
-	worldtransform_.UpdateMatrix();
+	if (HP > 0) {
+		// 座標移動(ベクトルの加算)
+		worldtransform_.translate.x += velocity.x * 3.0f;
+		worldtransform_.translate.y += velocity.y * 3.0f;
+		worldtransform_.translate.z += velocity.z * 3.0f;
+		worldtransform_.UpdateMatrix();
 
-	reticleWorldtransform_.translate.z += 1.5f;
+		reticleWorldtransform_.translate.z += 3.0f;
+	}
 
 	model_->SetWorldTransform(worldtransform_);
 	reticleModel_->SetWorldTransform(reticleWorldtransform_);
@@ -175,8 +181,10 @@ void Player::Update(Camera* camera_)
 	reticleWorldtransform_.translate.y = max(reticleWorldtransform_.translate.y, -7.0f);
 	reticleWorldtransform_.translate.y = std::min(reticleWorldtransform_.translate.y, +kMoveLimitY);
 
-	worldtransform_.rotate.z = max(worldtransform_.rotate.z, -1.0f);
-	worldtransform_.rotate.z = std::min(worldtransform_.rotate.z, +1.0f);
+	worldtransform_.rotate.z = max(worldtransform_.rotate.z, -1.2f);
+	worldtransform_.rotate.z = std::min(worldtransform_.rotate.z, +1.2f);
+	worldtransform_.rotate.x = max(worldtransform_.rotate.x, -0.2f);
+	worldtransform_.rotate.x = std::min(worldtransform_.rotate.x, +0.2f);
 
 	// 3Dレティクルのワールド座標から2Dレティクルのスクリーン座標を計算
 	{
@@ -231,7 +239,9 @@ void Player::Draw(Camera* camera_)
 
 void Player::DrawUI()
 {
-	reticleSprite_->Draw();
+	if (HP > 0) {
+		reticleSprite_->Draw();
+	}
 
 	if (GetHP() == 5) {
 		hp5_->Draw();
@@ -376,9 +386,9 @@ void Player::LockOn(bool isLockOn, Vector3 EnemyPos)
 				Vector3 velocity(direction.x * kBulletSpeed, direction.y * kBulletSpeed, direction.z * kBulletSpeed);
 
 				// 回転を計算
-				worldtransform_.rotate.y = std::atan2(velocity.x, velocity.z);
+				/*worldtransform_.rotate.y = std::atan2(velocity.x, velocity.z);
 				float velocityXZ = sqrt((velocity.x * velocity.x) + (velocity.z * velocity.z));
-				worldtransform_.rotate.x = std::atan2(-velocity.y, velocityXZ);
+				worldtransform_.rotate.x = std::atan2(-velocity.y, velocityXZ);*/
 
 				// 弾を生成し、初期化
 				std::unique_ptr<PlayerBullet> newBullet = std::make_unique<PlayerBullet>();
