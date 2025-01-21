@@ -46,6 +46,11 @@ public:
 	// 描画処理
 	void Draw() override;
 	void PostDraw() override;
+private:
+	// カメラ
+	void CameraShake();
+	// UI点滅
+	void Blinking();
 
 private:
 	// カメラ
@@ -81,7 +86,7 @@ private:
 	uint32_t start;
 	uint32_t white;
 
-	// タイマー
+	// 点滅タイマー
 	uint32_t timer;
 	const uint32_t timerSpeed = 1;
 	const uint32_t kMaxTimer = 30;

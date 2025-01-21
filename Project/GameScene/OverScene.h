@@ -30,6 +30,12 @@ public:
 
 private:
 	// カメラ
+	void CameraShake();
+	// UI点滅
+	void Blinking();
+
+private:
+	// カメラ
 	Camera camera_;
 	// シングルトン呼び出し
 	TextureManager* textureManager_ = TextureManager::GetInstance();

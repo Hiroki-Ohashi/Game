@@ -29,6 +29,13 @@ public:
 
 private:
 	// カメラ
+	void CameraMove();
+	// UI点滅
+	void Blinking();
+
+
+private:
+	// カメラ
 	Camera camera_;
 	// シングルトン呼び出し
 	TextureManager* textureManager_ = TextureManager::GetInstance();
@@ -59,6 +66,8 @@ private:
 
 	// タイマー
 	uint32_t timer;
+	const uint32_t timerSpeed = 1;
+	const uint32_t kMaxTimer = 30;
 	bool blinking;
 
 	// ビネット
