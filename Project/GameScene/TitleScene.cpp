@@ -25,22 +25,26 @@ void TitleScene::Initialize()
 	skydome_ = std::make_unique<Skydome>();
 	skydome_->Initialize();
 
+	// texture
 	start = textureManager_->Load("resources/log.png");
 	white = textureManager_->Load("resources/white.png");
-
 	title = textureManager_->Load("resources/title.png");
 
+	// UI(title)
 	title_ = std::make_unique<Sprite>();
 	title_->Initialize(Vector2{ 60.0f, 60.0f }, Vector2{ 90.0f, 80.0f }, title);
 
+	// UI(startLog)
 	startLog_ = std::make_unique<Sprite>();
 	startLog_->Initialize(Vector2{ 490.0f, 290.0f }, Vector2{ 14.0f, 42.0f }, start);
 	startLog_->SetSize({ 14.0f, 42.0f });
 
+	// Json
 	json_ = std::make_unique<Json>();
 	levelData_ = json_->LoadJson("title");
 	json_->Adoption(levelData_, true);
 
+	// boolInit
 	blinking = true;
 }
 
@@ -52,12 +56,14 @@ void TitleScene::Update()
 	
 	postProcess_->NoiseUpdate(0.1f);
 
+	// キーボード
 	if (input_->TriggerKey(DIK_A)) {
 		isVignette_ = true;
 	}
 
 	XINPUT_STATE joyState;
 
+	// Aボタンで遷移
 	if (Input::GetInsTance()->GetJoystickState(joyState)) {
 
 		if (Input::GetInsTance()->PressedButton(joyState, XINPUT_GAMEPAD_A)) {
@@ -67,53 +73,35 @@ void TitleScene::Update()
 	}
 
 	if (isVignette_) {
+		// フェードイン
 		postProcess_->VignetteFadeIn(0.1f, 0.1f);
 	}
 	else {
+		//フェードアウト
 		postProcess_->VignetteFadeOut(0.1f, 0.1f, 16.0f, 1.0f);
 	}
 
+	// ゲームシーンへ
 	if (postProcess_->GetVignetteLight() <= 0.0f) {
 		isVignette_ = false;
 		sceneNo = STAGE;
 	}
 
-	if (camera_.cameraTransform.rotate.x < kCameraMax.x) {
-		cameraSpeedX += cameraMoveSpeed;
-	}
-	else if (camera_.cameraTransform.rotate.x >= kCameraMax.x) {
-		cameraSpeedX -= cameraMoveSpeed;
-	}
+	// カメラ揺らす
+	CameraShake();
 
-	if (camera_.cameraTransform.rotate.y < kCameraMax.y) {
-		cameraSpeedY += cameraMoveSpeed;
-	}
-	else if (camera_.cameraTransform.rotate.y >= kCameraMax.y) {
-		cameraSpeedY -= cameraMoveSpeed;
-	}
-
-	camera_.cameraTransform.rotate.x += cameraSpeedX;
-	camera_.cameraTransform.rotate.y += cameraSpeedY;
-
-	timer += timerSpeed;
-
-	if (timer == kMaxTimer) {
-		timer = 0;
-		if (blinking) {
-			blinking = false;
-		}
-		else {
-			blinking = true;
-		}
-	}
+	// UI点滅
+	Blinking();
 }
 
 void TitleScene::Draw()
 {
+	// 天球描画
 	skydome_->Draw(&camera_);
-
+	// Json描画
 	json_->Draw(camera_, white);
 
+	// UI描画
 	title_->Draw();
 
 	if (blinking) {
@@ -124,4 +112,42 @@ void TitleScene::Draw()
 void TitleScene::PostDraw()
 {
 	postProcess_->NoiseDraw();
+}
+
+void TitleScene::CameraShake()
+{
+	// カメラ角度が範囲を超えたら反転
+	// X軸
+	if (camera_.cameraTransform.rotate.x < kCameraMax.x) {
+		cameraSpeedX += cameraMoveSpeed;
+	}
+	else if (camera_.cameraTransform.rotate.x >= kCameraMax.x) {
+		cameraSpeedX -= cameraMoveSpeed;
+	}
+	// Y軸
+	if (camera_.cameraTransform.rotate.y < kCameraMax.y) {
+		cameraSpeedY += cameraMoveSpeed;
+	}
+	else if (camera_.cameraTransform.rotate.y >= kCameraMax.y) {
+		cameraSpeedY -= cameraMoveSpeed;
+	}
+	// カメラスピードを足す
+	camera_.cameraTransform.rotate.x += cameraSpeedX;
+	camera_.cameraTransform.rotate.y += cameraSpeedY;
+}
+
+void TitleScene::Blinking()
+{
+	timer += timerSpeed;
+
+	// タイマーで点滅速度を調整
+	if (timer == kMaxTimer) {
+		timer = 0;
+		if (blinking) {
+			blinking = false;
+		}
+		else {
+			blinking = true;
+		}
+	}
 }
