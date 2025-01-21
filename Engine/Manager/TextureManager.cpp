@@ -22,7 +22,6 @@ namespace Engine
 
 	uint32_t TextureManager::Load(const std::string& filePath)
 	{
-
 		textureIndex_ += 1;
 		SetTexture(filePath, textureIndex_);
 		return textureIndex_;

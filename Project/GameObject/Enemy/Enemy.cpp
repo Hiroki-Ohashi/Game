@@ -20,6 +20,9 @@ void Enemy::Initialize(Vector3 pos, EnemyType type)
 	model_->SetWorldTransform(worldtransform_);
 	worldtransform_.UpdateMatrix();
 
+	/*particle_ = std::make_unique<Particles>();
+	particle_->Initialize("board.obj", pos, 60);*/
+
 	lockOnTex = textureManager_->Load("resources/reticle.png");
 
 	enemySprite_ = std::make_unique<Sprite>();
@@ -55,11 +58,15 @@ void Enemy::Update(EnemyType type, Camera* camera_)
 		FixedUpdate(camera_);
 	}
 
+	//particle_->SetPos(worldtransform_.translate);
+
 	// 弾の更新
 	//bulletPool_.Update();
 
-	if (ImGui::TreeNode("enemy")) {
-		ImGui::Text("isLockOn %d", isLockOn_);
+	if (ImGui::TreeNode("Enemy")) {
+		ImGui::DragFloat3("Rotate.y ", &worldtransform_.rotate.x, 0.01f);
+		ImGui::DragFloat3("Transform", &worldtransform_.translate.x, 0.01f);
+		ImGui::Checkbox("isDead", &isDead_);
 		ImGui::TreePop();
 	}
 }
@@ -218,6 +225,9 @@ void Enemy::Draw(Camera* camera)
 {
 	if (isDead_ == false) {
 		model_->Draw(camera, enemyTex);
+	}
+	else if (isDead_) {
+		//particle_->Draw(camera, enemyBulletTex);
 	}
 
 	// 弾の描画

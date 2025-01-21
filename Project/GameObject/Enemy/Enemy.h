@@ -80,6 +80,7 @@ private:
 	GameScene* gameScene_ = nullptr;
 	EnemyBulletPool bulletPool_;
 	std::unique_ptr<Sprite> enemySprite_;
+	std::unique_ptr<Particles> particle_ = nullptr;
 
 private:
 	// テクスチャ
