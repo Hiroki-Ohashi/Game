@@ -24,7 +24,6 @@ public:
 	// 更新処理
 	void Update(Camera* camera_);
 	// 攻撃処理
-	void Attack();
 	void LockOn(bool isLockOn, Vector3 EnemyPos);
 	// 描画処理
 	void Draw(Camera* camera_);
@@ -43,6 +42,7 @@ public:
 	int32_t GetHP() { return HP; }
 	bool GetIsHit() { return isHit_; }
 	
+	// 半分の大きさ
 	Vector3 GetHalfSize() const {
 		return {
 			worldtransform_.scale.x / 2.0f,
@@ -68,16 +68,21 @@ public:
 			worldtransform_.translate.z + worldtransform_.scale.z
 		};
 	}
-
 	
 	// 弾リストを取得
 	 std::vector<std::unique_ptr<PlayerBullet>>& GetBullets() { return bullets_; }
+
 private:
+	// レティクルの方向にプレイヤーの向きを変える
+	void PlayerRot();
+	// 移動
+	void Move();
+	// レティクルの3D座標を2D変換
+	void Convert2D(Camera* camera_);
 private:
 	// シングルトン呼び出し
 	TextureManager* textureManager_ = TextureManager::GetInstance();
 	Input* input_ = Input::GetInsTance();
-
 
 	// プレイヤー
 	WorldTransform worldtransform_;
