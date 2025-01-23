@@ -14,8 +14,9 @@
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{c26448c8-761f-42be-b3f6-eef22c1fce1a}</ProjectGuid>
-    <RootNamespace>CG201</RootNamespace>
+    <RootNamespace>Gekitui</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>Gekitui</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
