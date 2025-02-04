@@ -79,6 +79,7 @@ private:
 	Player* player_ = nullptr;
 	GameScene* gameScene_ = nullptr;
 	EnemyBulletPool bulletPool_;
+
 	std::unique_ptr<Sprite> enemySprite_;
 	std::unique_ptr<Particles> particle_ = nullptr;
 
@@ -87,6 +88,7 @@ private:
 	uint32_t enemyTex;
 	uint32_t enemyBulletTex;
 	uint32_t lockOnTex;
+	uint32_t lockTex;
 	// 発射タイマー
 	int32_t attackTimer = 10;
 	static const int kFireInterval = 120;

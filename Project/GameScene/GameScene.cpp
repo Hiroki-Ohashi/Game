@@ -36,6 +36,8 @@ void GameScene::Initialize() {
 	uv = textureManager_->Load("resources/map.png");
 	enemyBulletTex = textureManager_->Load("resources/black.png");
 	bossBulletTex = textureManager_->Load("resources/red.png");
+	backTitle = textureManager_->Load("resources/backTitle.png");
+	retry = textureManager_->Load("resources/retry.png");
 
 	// UI(ready)
 	ready_ = std::make_unique<Sprite>();
@@ -47,6 +49,11 @@ void GameScene::Initialize() {
 	go_ = std::make_unique<Model>();
 	go_->Initialize("board.obj", transform_);
 	go_->SetLight(false);
+
+	// 
+	sentaku_ = std::make_unique<Sprite>();
+	sentaku_->Initialize(Vector2{ 1050.0f, 560.0f }, Vector2{ 127.0f, 107.0f }, retry);
+	sentaku_->SetSize({ 127.0f, 107.0f });
 
 	// Json
     json_ = std::make_unique<Json>();
@@ -68,6 +75,7 @@ void GameScene::Initialize() {
 	isGameClear_ = false;
 	isApploach_ = true;
 	isGameOver_ = false;
+	isPose_ = false;
 
 	// cameraInit
 	camera_.cameraTransform.translate = { player_->GetPos().x, player_->GetPos().y + cameraOffset.y,  player_->GetPos().z - cameraOffset.z };
@@ -83,58 +91,123 @@ void GameScene::Update(){
 
 	postProcess_->NoiseUpdate(0.1f);
 
-	// json更新処理
-	json_->Update();
-	json_->EnemyUpdate(camera_, player_.get(), this);
-	json_->FixedEnemyUpdate(camera_, player_.get(), this);
+	// ゲームパッドの状態を得る変数(XINPUT)
+	XINPUT_STATE joyState;
 
-	// ゲームスタート
-	// 画面が切り替わったらvignetteをフェードアウトして明るくする
-	if (isVignette_) {
-		postProcess_->VignetteFadeOut(0.1f, 0.1f, 16.0f, 0.0f);
-	}
-	if (postProcess_->GetVignetteShape() <= 0.0f) {
-		isVignette_ = false;
-	}
-	// スタート演出が終わったらプレイヤー更新処理
-	if (isApploach_ == false) {
-		player_->Update(&camera_);
+	if (Input::GetInsTance()->GetJoystickState(joyState)) {
+		bool currentBackButtonState = (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_BACK);
+
+		// ボタンが前フレームで押されておらず、今フレームで押されたらトグル
+		if (!prevBackButtonState_ && currentBackButtonState) {
+			isPose_ = !isPose_;
+		}
+
+		// 現在のボタン状態を次のフレームに持ち越す
+		prevBackButtonState_ = currentBackButtonState;
 	}
 
-	// Lockon
-	LockOnEnemy();
+	if (isPose_) {
+		postProcess_->SetNoise(0.2f, 1.0f);
 
-	// 敵弾更新
-	for (std::unique_ptr<EnemyBullet>& bullet : enemyBullets_) {
-		bullet->Update();
-	}
-
-	// デスフラグの立った敵弾を排除
-	enemyBullets_.erase(
-		std::remove_if(
-			enemyBullets_.begin(),
-			enemyBullets_.end(),
-			[](const std::unique_ptr<EnemyBullet>& bullet) {
-				return bullet->IsDead();
+		// 十字キーでシーン選択
+		if (Input::GetInsTance()->GetJoystickState(joyState)) {
+			// 長押し防止
+			if (scenePrev == 0) {
+				if (Input::GetInsTance()->PressedButton(joyState, XINPUT_GAMEPAD_DPAD_DOWN)) {
+					scenePrev = 1;
+					sentaku_->SetTexture(backTitle);
+				}
 			}
-		),
-		enemyBullets_.end()
-	);
+			else if (scenePrev == 1) {
+				if (Input::GetInsTance()->PressedButton(joyState, XINPUT_GAMEPAD_DPAD_UP)) {
+					scenePrev = 0;
+					sentaku_->SetTexture(retry);
+				}
+			}
 
-	// カメラシェイク
-	ShakeCamera();
+			// 選んだシーンをAボタンで遷移開始
+			if (scenePrev == 0) {
+				if (Input::GetInsTance()->PressedButton(joyState, XINPUT_GAMEPAD_A)) {
+					isPose_ = false;
+				}
+			}
+			else if (scenePrev == 1) {
+				if (Input::GetInsTance()->PressedButton(joyState, XINPUT_GAMEPAD_A)) {
+					isVignette_ = true;
+				}
+			}
 
-	// ゲームスタート演出
-	Start();
+		}
 
-	// ゲームクリア演出
-	Clear();
+		// 選んだシーンでフェードイン
+		if (scenePrev == 1) {
+			if (isVignette_) {
+				postProcess_->VignetteFadeIn(0.1f, 0.1f);
+			}
 
-	// ゲームオーバー演出
-	Over();
+			if (postProcess_->GetVignetteLight() <= 0.0f) {
+				isVignette_ = false;
+				// タイトルシーンへ
+				sceneNo = TITLE;
+			}
+		}
+	}
+	else {
+		postProcess_->SetLineStrength(0.0f);
 
-	// 当たり判定
-	CheckAllCollisions();
+		// json更新処理
+		json_->Update();
+		json_->EnemyUpdate(camera_, player_.get(), this);
+		json_->FixedEnemyUpdate(camera_, player_.get(), this);
+
+		// ゲームスタート
+		// 画面が切り替わったらvignetteをフェードアウトして明るくする
+		if (isVignette_) {
+			postProcess_->VignetteFadeOut(0.1f, 0.1f, 16.0f, 0.0f);
+		}
+		if (postProcess_->GetVignetteShape() <= 0.0f) {
+			isVignette_ = false;
+		}
+		// スタート演出が終わったらプレイヤー更新処理
+		if (isApploach_ == false) {
+			player_->Update(&camera_);
+		}
+
+		// Lockon
+		LockOnEnemy();
+
+		// 敵弾更新
+		for (std::unique_ptr<EnemyBullet>& bullet : enemyBullets_) {
+			bullet->Update();
+		}
+
+		// デスフラグの立った敵弾を排除
+		enemyBullets_.erase(
+			std::remove_if(
+				enemyBullets_.begin(),
+				enemyBullets_.end(),
+				[](const std::unique_ptr<EnemyBullet>& bullet) {
+					return bullet->IsDead();
+				}
+			),
+			enemyBullets_.end()
+		);
+
+		// カメラシェイク
+		ShakeCamera();
+
+		// ゲームスタート演出
+		Start();
+
+		// ゲームクリア演出
+		Clear();
+
+		// ゲームオーバー演出
+		Over();
+
+		// 当たり判定
+		CheckAllCollisions();
+	}
 }
 
 void GameScene::Draw()
@@ -168,6 +241,10 @@ void GameScene::Draw()
 			// プレイヤーUI描画
 			player_->DrawUI();
 		}
+	}
+
+	if (isPose_) {
+		sentaku_->Draw();
 	}
 }
 

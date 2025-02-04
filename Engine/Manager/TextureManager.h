@@ -73,7 +73,7 @@ namespace Engine
 		uint32_t descriptorSizeDSV;
 		uint32_t descriptorSizeSRV;
 
-		static const int kMaxTexture = 100;
+		static const int kMaxTexture = 1000;
 		int32_t textureIndex_;
 
 		Microsoft::WRL::ComPtr< ID3D12Resource> intermediateResource[kMaxTexture];

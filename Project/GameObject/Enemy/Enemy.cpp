@@ -20,15 +20,16 @@ void Enemy::Initialize(Vector3 pos, EnemyType type)
 	model_->SetWorldTransform(worldtransform_);
 	worldtransform_.UpdateMatrix();
 
-	/*particle_ = std::make_unique<Particles>();
-	particle_->Initialize("board.obj", pos, 60);*/
-
+	lockTex = textureManager_->Load("resources/Lock.png");
 	lockOnTex = textureManager_->Load("resources/reticle.png");
 
 	enemySprite_ = std::make_unique<Sprite>();
 	enemySprite_->Initialize({ 590.0f,310.0f }, { 50.0f,50.0f }, lockOnTex);
 	enemySprite_->SetSize({ 50.0f,50.0f });
 	enemySprite_->SetRotation({ 0.0f, 0.0f, -0.8f });
+
+	/*particle_ = std::make_unique<Particles>();
+	particle_->Initialize("board.obj", pos, 60);*/
 
 	isDead_ = false;
 	isLockOn_ = false;
@@ -143,6 +144,13 @@ void Enemy::FixedUpdate(Camera* camera_)
 		// スプライトのレティクルに座標設定
 		enemySprite_->SetPosition(Vector2(positionReticle.x - 35.0f, positionReticle.y + 0.0f));
 	}
+
+	if (isLockOn_) {
+		enemySprite_->SetTexture(lockTex);
+	}
+	else {
+		enemySprite_->SetTexture(lockOnTex);
+	}
 }
 
 void Enemy::FryUpdate(Camera* camera_)
@@ -218,6 +226,13 @@ void Enemy::FryUpdate(Camera* camera_)
 
 		// スプライトのレティクルに座標設定
 		enemySprite_->SetPosition(Vector2(positionReticle.x - 35.0f, positionReticle.y));
+	}
+
+	if (isLockOn_) {
+		enemySprite_->SetTexture(lockTex);
+	}
+	else {
+		enemySprite_->SetTexture(lockOnTex);
 	}
 }
 

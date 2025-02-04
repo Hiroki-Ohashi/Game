@@ -181,7 +181,7 @@
       <Filter>ソースファイル\Project\GameObject\Stage</Filter>
     </ClCompile>
     <ClCompile Include="Project\GameObject\Enemy\EnemyBulletPool.cpp" />
-    <ClCompile Include="LockOn.cpp" />
+    <ClCompile Include="Project\GameObject\Player\LockOn.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="externals\imgui\imconfig.h">
@@ -317,7 +317,7 @@
       <Filter>ヘッダーファイル\Project\utillity</Filter>
     </ClInclude>
     <ClInclude Include="Project\GameObject\Enemy\EnemyBulletPool.h" />
-    <ClInclude Include="LockOn.h" />
+    <ClInclude Include="Project\GameObject\Player\LockOn.h" />
     <ClInclude Include="Project\utillity\CollisionConfig.h" />
   </ItemGroup>
   <ItemGroup>

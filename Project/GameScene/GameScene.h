@@ -100,6 +100,9 @@ private:
 	// 天球
 	std::unique_ptr<Skydome> skydome_;
 
+	//
+	std::unique_ptr<Sprite> sentaku_ = nullptr;
+
 	// 当たり判定
 	void CheckCollisionPair(Collider* colliderA, Collider* colliderB);
 	void CheckAABBCollisionPair(Collider* colliderA, Collider* colliderB);
@@ -110,6 +113,8 @@ private:
 	uint32_t uv;
 	uint32_t ready;
 	uint32_t go;
+	uint32_t backTitle;
+	uint32_t retry;
 
 	// 待機タイマー
 	int32_t waitTimer_;
@@ -156,4 +161,10 @@ private:
 	Vector2 pos = {};
 	Vector2 scale = {};
 	EulerTransform transform_;
+
+	bool isPose_;
+	bool prevBackButtonState_ = false;
+
+	// scene
+	uint32_t scenePrev;
 };
