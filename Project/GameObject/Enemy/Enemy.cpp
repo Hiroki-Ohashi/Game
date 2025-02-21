@@ -21,7 +21,6 @@ void Enemy::Initialize(Vector3 pos, EnemyType type)
 	worldtransform_.UpdateMatrix();
 
 	lockTex = textureManager_->Load("resources/Lock.png");
-	lockOnTex = textureManager_->Load("resources/reticle.png");
 
 	enemySprite_ = std::make_unique<Sprite>();
 	enemySprite_->Initialize({ 590.0f,310.0f }, { 50.0f,50.0f }, lockOnTex);
@@ -29,15 +28,16 @@ void Enemy::Initialize(Vector3 pos, EnemyType type)
 	enemySprite_->SetRotation({ 0.0f, 0.0f, -0.8f });
 
 	/*particle_ = std::make_unique<Particles>();
-	particle_->Initialize("board.obj", pos, 60);*/
+	particle_->Initialize("board.obj", worldtransform_.translate, 80);*/
 
 	isDead_ = false;
 	isLockOn_ = false;
 	isPossibillityLock = false;
 
+	lockOnTex = textureManager_->Load("resources/reticle.png");
 	enemyTex = textureManager_->Load("resources/white.png");
 	enemyBulletTex = textureManager_->Load("resources/red.png");
-	
+
 	attackTimer = 10;
 
 	// 衝突属性を設定
@@ -87,7 +87,7 @@ void Enemy::FixedUpdate(Camera* camera_)
 			if (rensya < 0) {
 
 				if (worldtransform_.translate.z - player_->GetPos().z <= kMaxAttack) {
-					Attack();
+					//Attack();
 					rensyanum += rensyaNumSpeed;
 				}
 
@@ -163,7 +163,7 @@ void Enemy::FryUpdate(Camera* camera_)
 
 		if (isDead_ == false) {
 			// 攻撃処理
-			if (worldtransform_.translate.z - player_->GetPos().z <= 600.0f) {
+			if (worldtransform_.translate.z - player_->GetPos().z <= 1300.0f) {
 				Attack();
 			}
 		}
@@ -174,6 +174,11 @@ void Enemy::FryUpdate(Camera* camera_)
 
 	// 近づいたら動き出す
 	if (worldtransform_.translate.z - player_->GetPos().z <= kMaxAttack) {
+
+		if (worldtransform_.translate.z <= 29800 &&
+			isDead_ == false) {
+			worldtransform_.translate.z += 30.0f;
+		}
 
 		const float kMoveSpeed = 0.005f;
 
@@ -241,9 +246,6 @@ void Enemy::Draw(Camera* camera)
 	if (isDead_ == false) {
 		model_->Draw(camera, enemyTex);
 	}
-	else if (isDead_) {
-		//particle_->Draw(camera, enemyBulletTex);
-	}
 
 	// 弾の描画
 	//bulletPool_.Draw(camera, 0);
@@ -257,6 +259,13 @@ void Enemy::DrawUI()
 		if (isDead_ == false) {
 			enemySprite_->Draw();
 		}
+	}
+}
+
+void Enemy::DrawParticle(Camera* camera)
+{
+	if (isDead_) {
+		particle_->Draw(camera, enemyBulletTex);
 	}
 }
 
@@ -322,6 +331,10 @@ void Enemy::DeadAnimation()
 
 	model_->SetWorldTransform(worldtransform_);
 	worldtransform_.UpdateMatrix();
+}
+
+void Enemy::ChangeState(BaseEnemyState* newState) { 
+	state = newState; 
 }
 
 Vector3 Enemy::GetWorldPosition() const

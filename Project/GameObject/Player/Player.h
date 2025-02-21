@@ -24,7 +24,8 @@ public:
 	// 更新処理
 	void Update(Camera* camera_);
 	// 攻撃処理
-	void LockOn(bool isLockOn, Vector3 EnemyPos);
+	void LockOn(Vector3 EnemyPos);
+	void Attack();
 	// 描画処理
 	void Draw(Camera* camera_);
 	void DrawUI();
@@ -121,6 +122,7 @@ private:
 
 	// 速度
 	Vector3 velocity_;
+	float playerSpeed = 30.0f;
 
 	// タイマー
 	int32_t hitTimer_;
@@ -133,4 +135,10 @@ private:
 	// HP
 	int32_t HP = 5;
 	const uint32_t damage_ = 1;
+
+	const float kMaxRoll = DirectX::XMConvertToRadians(75.0f); 
+	const float kMaxPitch = DirectX::XMConvertToRadians(45.0f); 
+	const float kYawSpeed = DirectX::XMConvertToRadians(2.5f);
+	const float kRollLerpFactor = 0.2f; 
+	const float kPitchLerpFactor = 0.15f;
 };

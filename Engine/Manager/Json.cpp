@@ -105,7 +105,7 @@ LevelData* Json::LoadJson(const std::string& fileName)
 		}
 
 		// Enemy
-		if (type.compare("ENEMY") == 0) {
+		if (type.compare("EnemySpawn") == 0) {
 			// 要素追加
 			levelData->enemys.emplace_back(LevelData::EnemyData{});
 			// 今追加した要素の参照を得る
@@ -269,5 +269,16 @@ void Json::Draw(Camera& camera, uint32_t index)
 	for (std::unique_ptr<Enemy>& fixedEnemy : fixedEnemys_) {
 		fixedEnemy->Draw(&camera);
 		fixedEnemy->DrawUI();
+	}
+}
+
+void Json::DrawEnemy(Camera& camera)
+{
+	for (std::unique_ptr<Enemy>& enemy : enemys_) {
+		enemy->DrawParticle(&camera);
+	}
+
+	for (std::unique_ptr<Enemy>& fixedEnemy : fixedEnemys_) {
+		fixedEnemy->DrawParticle(&camera);
 	}
 }

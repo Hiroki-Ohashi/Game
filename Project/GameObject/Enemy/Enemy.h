@@ -9,6 +9,7 @@
 #include "EnemyBulletPool.h"
 #include "Sprite.h"
 #include "CollisionConfig.h"
+#include "BaseEnemyState.h"
 
 using namespace Engine;
 
@@ -37,12 +38,15 @@ public:
 	// 描画処理
 	void Draw(Camera* camera);
 	void DrawUI();
+	void DrawParticle(Camera* camera);
 	// 攻撃処理
 	void Attack();
 	// 当たり判定処理
 	void OnCollision() override;
 	// 死亡アニメーション
 	void DeadAnimation();
+
+	void ChangeState(BaseEnemyState* newState);
 
 	// 死亡判定
 	void SetIsDead(bool isDead) { isDead_ = isDead; }
@@ -101,7 +105,7 @@ private:
 	Vector3 positionReticle;
 
 	// 初期位置
-	Vector3 posParam;
+	Vector3 posParam = {0.0f, 80.0f, 0.0f};
 
 	float speedY = 0.3f;
 	float kRotSpeed = 1.0f;
@@ -114,4 +118,7 @@ private:
 
 	bool isLockOn_;
 	bool isPossibillityLock;
+
+	// ステート
+	BaseEnemyState* state;
 };

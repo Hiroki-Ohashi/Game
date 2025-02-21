@@ -57,7 +57,7 @@ void GameScene::Initialize() {
 
 	// Json
     json_ = std::make_unique<Json>();
-	levelData_ = json_->LoadJson("level");
+	levelData_ = json_->LoadJson("stage");
 	json_->Adoption(levelData_, true);
 	json_->EnemyAdoption(levelData_, player_.get(), this);
 	json_->FixedEnemyAdoption(levelData_, player_.get(), this);
@@ -69,6 +69,9 @@ void GameScene::Initialize() {
 	// stage
 	stage_ = std::make_unique<Stage>();
 	stage_->Initialize();
+
+	/*particle_ = std::make_unique<Particles>();
+	particle_->Initialize("board.obj", pos_, 80);*/
 
 	// boolInit
 	isVignette_ = true;
@@ -91,11 +94,13 @@ void GameScene::Update(){
 
 	postProcess_->NoiseUpdate(0.1f);
 
+	stage_->Update();
+
 	// ゲームパッドの状態を得る変数(XINPUT)
 	XINPUT_STATE joyState;
 
 	if (Input::GetInsTance()->GetJoystickState(joyState)) {
-		bool currentBackButtonState = (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_BACK);
+		bool currentBackButtonState = (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_START);
 
 		// ボタンが前フレームで押されておらず、今フレームで押されたらトグル
 		if (!prevBackButtonState_ && currentBackButtonState) {
@@ -243,6 +248,8 @@ void GameScene::Draw()
 		}
 	}
 
+	//json_->DrawEnemy(camera_);
+
 	if (isPose_) {
 		sentaku_->Draw();
 	}
@@ -270,19 +277,19 @@ void GameScene::CheckAllCollisions()
 
 	// enemy
 	for (std::unique_ptr<Enemy>& enemy : json_->GetEnemys()) {
-		enemy->SetRadius(2.0f);
+		enemy->SetRadius(5.0f);
 		colliders_.push_back(std::move(enemy.get()));
 	}
 
 	// fixedEnemy
 	for (std::unique_ptr<Enemy>& enemy : json_->GetFixedEnemys()) {
-		enemy->SetRadius(2.0f);
+		enemy->SetRadius(5.0f);
 		colliders_.push_back(std::move(enemy.get()));
 	}
 
 	// playerBullet
 	for (std::unique_ptr<PlayerBullet>& bullet : playerBullets) {
-		bullet->SetRadius(2.0f);
+		bullet->SetRadius(5.0f);
 		colliders_.push_back(std::move(bullet.get()));
 	}
 
@@ -513,12 +520,11 @@ void GameScene::LockOnEnemy()
 {
 	// fryEnemyLockOn
 	for (std::unique_ptr<Enemy>& enemy : json_->GetEnemys()) {
-		if (player_->Get3DWorldPosition().z < enemy->GetPos().z &&
-			enemy->GetPos().z - player_->GetPos().z <= 600.0f) {
-			player_->LockOn(enemy->GetIsLockOn(), enemy->GetPos());
+		if (enemy->GetIsLockOn()) {
+			player_->LockOn(enemy->GetPos());
 		}
-		else {
-			//player_->Attack();
+		else{
+			player_->Attack();
 		}
 	}
 
@@ -526,10 +532,7 @@ void GameScene::LockOnEnemy()
 	for (std::unique_ptr<Enemy>& enemy : json_->GetFixedEnemys()) {
 		if (player_->Get3DWorldPosition().z < enemy->GetPos().z &&
 			enemy->GetPos().z - player_->GetPos().z <= 600.0f) {
-			player_->LockOn(enemy->GetIsLockOn(), enemy->GetPos());
-		}
-		else {
-			//player_->Attack();
+			player_->LockOn(enemy->GetPos());
 		}
 	}
 }

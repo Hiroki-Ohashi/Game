@@ -19,11 +19,10 @@
 #include <PostProcess.h>
 #include "Animation.h"
 #include "Json.h"
-#include "SkyBox.h"
 #include <Player/Player.h>
-#include <Skydome.h>
 #include <Stage/Stage.h>
 #include <Enemy/Enemy.h>
+#include <SkyBox/Skydome.h>
 using namespace Engine;
 
 #pragma comment(lib, "d3d12.lib")
@@ -100,6 +99,8 @@ private:
 	// 天球
 	std::unique_ptr<Skydome> skydome_;
 
+	std::vector<std::unique_ptr<Particles>> particlesList;
+
 	//
 	std::unique_ptr<Sprite> sentaku_ = nullptr;
 
@@ -135,7 +136,7 @@ private:
 	// ブラー
 	float blurStrength_ = 0.3f;
 	const float kDefaultBlurStrength_ = 0.0f;
-	float minusBlurStrength_ = 0.002f;
+	float minusBlurStrength_ = 0.005f;
 
 	// ノイズ
 	float noiseStrength;
@@ -144,7 +145,7 @@ private:
 	const float plusNoiseStrength = 1.0f;
 
 	// ゴールライン
-	float goalline = 3800.0f;
+	float goalline = 29800.0f;
 
 	// カメラoffset
 	Vector3 cameraOffset = { 0.0f, 1.5f, 20.0f };
@@ -159,6 +160,7 @@ private:
 
 	// デバッグ用仮変数;
 	Vector2 pos = {};
+	Vector3 pos_ = {};
 	Vector2 scale = {};
 	EulerTransform transform_;
 

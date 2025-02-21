@@ -33,6 +33,7 @@ public:
 	void FixedEnemyUpdate(Camera& camera, Player* player, GameScene* gamescene);
 	// 描画処理
 	void Draw(Camera& camera, uint32_t index);
+	void DrawEnemy(Camera& camera);
 
 	// Getter
 	const Camera &GetCamera() { return camera_; }
