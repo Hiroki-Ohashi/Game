@@ -98,7 +98,7 @@ namespace Engine
 
 	private:
 		// シングルトン呼び出し
-		DirectXCommon* dir_ = DirectXCommon::GetInsTance();
+		DirectXCommon* dir_ = DirectXCommon::GetInstance();
 
 		// PSO
 		Microsoft::WRL::ComPtr<ID3DBlob> signatureBlob = nullptr;

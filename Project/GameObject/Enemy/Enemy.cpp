@@ -27,8 +27,8 @@ void Enemy::Initialize(Vector3 pos, EnemyType type)
 	enemySprite_->SetSize({ 50.0f,50.0f });
 	enemySprite_->SetRotation({ 0.0f, 0.0f, -0.8f });
 
-	/*particle_ = std::make_unique<Particles>();
-	particle_->Initialize("board.obj", worldtransform_.translate, 80);*/
+	particle_ = std::make_unique<Particles>();
+	particle_->Initialize("board.obj", worldtransform_.translate);
 
 	isDead_ = false;
 	isLockOn_ = false;
@@ -58,8 +58,6 @@ void Enemy::Update(EnemyType type, Camera* camera_)
 	else if (type == FIXEDENEMY) {
 		FixedUpdate(camera_);
 	}
-
-	//particle_->SetPos(worldtransform_.translate);
 
 	// 弾の更新
 	//bulletPool_.Update();
@@ -175,8 +173,7 @@ void Enemy::FryUpdate(Camera* camera_)
 	// 近づいたら動き出す
 	if (worldtransform_.translate.z - player_->GetPos().z <= kMaxAttack) {
 
-		if (worldtransform_.translate.z <= 29800 &&
-			isDead_ == false) {
+		if (worldtransform_.translate.z <= 29800 && isDead_ == false) {
 			worldtransform_.translate.z += 30.0f;
 		}
 
@@ -265,6 +262,7 @@ void Enemy::DrawUI()
 void Enemy::DrawParticle(Camera* camera)
 {
 	if (isDead_) {
+		particle_->SetPos(worldtransform_.translate);
 		particle_->Draw(camera, enemyBulletTex);
 	}
 }

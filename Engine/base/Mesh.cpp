@@ -6,7 +6,7 @@
 /// </summary>
 namespace Engine
 {
-	Mesh* Mesh::GetInsTance()
+	Mesh* Mesh::GetInstance()
 	{
 		static Mesh instance;
 		return &instance;

@@ -135,7 +135,7 @@ private:
 
 	// ブラー
 	float blurStrength_ = 0.3f;
-	const float kDefaultBlurStrength_ = 0.0f;
+	const float kDefaultBlurStrength_ = 0.01f;
 	float minusBlurStrength_ = 0.005f;
 
 	// ノイズ

@@ -26,7 +26,7 @@ namespace Engine
 		Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(Microsoft::WRL::ComPtr<ID3D12Device> device, size_t sizeInbytes);
 	private:
 		// シングルトン飛び出し
-		DirectXCommon* dir_ = DirectXCommon::GetInsTance();
+		DirectXCommon* dir_ = DirectXCommon::GetInstance();
 
 		// リソース
 		Microsoft::WRL::ComPtr<ID3D12Resource> directionalLightResource;

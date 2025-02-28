@@ -7,7 +7,7 @@
 
 namespace Engine
 {
-	DirectXCommon* DirectXCommon::GetInsTance()
+	DirectXCommon* DirectXCommon::GetInstance()
 	{
 		static DirectXCommon instance;
 		return &instance;
@@ -122,8 +122,8 @@ namespace Engine
 		assert(SUCCEEDED(hr_));
 
 		// スワップチェーンを生成する
-		swapChainDesc.Width = WinApp::GetInsTance()->GetKClientWidth();// 画面の幅
-		swapChainDesc.Height = WinApp::GetInsTance()->GetKClientHeight();// 画面の高さ
+		swapChainDesc.Width = WinApp::GetInstance()->GetKClientWidth();// 画面の幅
+		swapChainDesc.Height = WinApp::GetInstance()->GetKClientHeight();// 画面の高さ
 		swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;// 色の形式
 		swapChainDesc.SampleDesc.Count = 1;// マルチサンプル
 		swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;// 描画のターゲットとして利用
@@ -131,7 +131,7 @@ namespace Engine
 		swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;// モニタに写したら中身を破棄
 
 		// コマンドキュー、ウインドウハンドル、設定を渡して生成する
-		hr_ = dxgiFactory_->CreateSwapChainForHwnd(commandQueue_.Get(), WinApp::GetInsTance()->GetHwnd(), &swapChainDesc, nullptr, nullptr, reinterpret_cast<IDXGISwapChain1**>(swapChain_.GetAddressOf()));
+		hr_ = dxgiFactory_->CreateSwapChainForHwnd(commandQueue_.Get(), WinApp::GetInstance()->GetHwnd(), &swapChainDesc, nullptr, nullptr, reinterpret_cast<IDXGISwapChain1**>(swapChain_.GetAddressOf()));
 		assert(SUCCEEDED(hr_));
 
 		// RTV用のヒープでディスクリプタの数は2。RTVはShader内で触るものではないので、ShaderVisibleはfalse
@@ -139,7 +139,11 @@ namespace Engine
 
 		// SRV用のヒープでディスクリプタの数は128。SRVはShader内で触るものなので、ShaderVisibleはtrue
 		srvDescriptorHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 128, true);
-		srvDescriptorHeap2_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 128, true);
+
+		SrvManager* srvManager_ = SrvManager::GetInstance();
+		srvManager_->Initialize();
+
+		//srvDescriptorHeap2_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 128, true);
 
 		// SwapChainからResourceを引っ張ってくる
 		hr_ = swapChain_->GetBuffer(0, IID_PPV_ARGS(&swapChainResources[0]));
@@ -166,7 +170,7 @@ namespace Engine
 		device_->CreateRenderTargetView(swapChainResources[1].Get(), &rtvDesc, rtvHandles[1]);
 
 		// RTVの作成
-		renderTextureResource = CreateRenderTextureResource(device_.Get(), WinApp::GetInsTance()->GetKClientWidth(), WinApp::GetInsTance()->GetKClientHeight(), DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, kRenderTargetClearValue);
+		renderTextureResource = CreateRenderTextureResource(device_.Get(), WinApp::GetInstance()->GetKClientWidth(), WinApp::GetInstance()->GetKClientHeight(), DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, kRenderTargetClearValue);
 		rtvHandle.ptr = rtvHandles[1].ptr + device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 		device_->CreateRenderTargetView(renderTextureResource.Get(), &rtvDesc, rtvHandle);
 
@@ -184,7 +188,7 @@ namespace Engine
 		device_->CreateShaderResourceView(renderTextureResource.Get(), &renderTextureSrvDesc, srvHandle);
 
 		// DepthStencilTextureをウィンドウのサイズで作成
-		depthStencilResource = CreateDepthStencilTextureResource(device_.Get(), WinApp::GetInsTance()->GetKClientWidth(), WinApp::GetInsTance()->GetKClientHeight());
+		depthStencilResource = CreateDepthStencilTextureResource(device_.Get(), WinApp::GetInstance()->GetKClientWidth(), WinApp::GetInstance()->GetKClientHeight());
 
 		// DSV用のヒープでディスクリプタの数は1。DSVはShader内で触るものではないので、shaderVisibleはfalse
 		dsvDescriptorHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1, false);
@@ -242,8 +246,9 @@ namespace Engine
 		commandList_->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
 		// 描画用のDescriptorHeapの設定
-		ID3D12DescriptorHeap* descriptorHeaps2[] = { srvDescriptorHeap2_.Get() };
-		commandList_->SetDescriptorHeaps(1, descriptorHeaps2);
+		SrvManager::GetInstance()->PreDraw();
+		/*ID3D12DescriptorHeap* descriptorHeaps2[] = { srvDescriptorHeap2_.Get() };
+		commandList_->SetDescriptorHeaps(1, descriptorHeaps2);*/
 
 		commandList_->RSSetViewports(1, &viewport);
 		commandList_->RSSetScissorRects(1, &scissorRect);
@@ -334,8 +339,8 @@ namespace Engine
 	void DirectXCommon::Viewport() {
 		// ビューポート
 		// クライアント領域のサイズと一緒にして画面全体に表示
-		viewport.Width = (float)WinApp::GetInsTance()->GetKClientWidth();
-		viewport.Height = (float)WinApp::GetInsTance()->GetKClientHeight();
+		viewport.Width = (float)WinApp::GetInstance()->GetKClientWidth();
+		viewport.Height = (float)WinApp::GetInstance()->GetKClientHeight();
 		viewport.TopLeftX = 0;
 		viewport.TopLeftY = 0;
 		viewport.MinDepth = 0.0f;
@@ -346,9 +351,9 @@ namespace Engine
 		// シザー矩形
 		// 基本的にビューポートと同じ矩形が構成されるようにする
 		scissorRect.left = 0;
-		scissorRect.right = WinApp::GetInsTance()->GetKClientWidth();
+		scissorRect.right = WinApp::GetInstance()->GetKClientWidth();
 		scissorRect.top = 0;
-		scissorRect.bottom = WinApp::GetInsTance()->GetKClientHeight();
+		scissorRect.bottom = WinApp::GetInstance()->GetKClientHeight();
 	}
 
 
@@ -357,14 +362,14 @@ namespace Engine
 		CloseHandle(fenceEvent);
 
 #ifdef _DEBUG
-		WinApp::GetInsTance()->GetDebugController()->Release();
+		WinApp::GetInstance()->GetDebugController()->Release();
 		//Microsoft::WRL::ComPtr<ID3D12DebugDevice> debugDevice;
 		//if (SUCCEEDED(device_->QueryInterface(IID_PPV_ARGS(&debugDevice)))) {
 		//	// 未解放オブジェクトを報告
 		//	debugDevice->ReportLiveObjects(D3D12_RLDO_DETAIL | D3D12_RLDO_IGNORE_INTERNAL);
 		//}
 #endif
-		CloseWindow(WinApp::GetInsTance()->GetHwnd());
+		CloseWindow(WinApp::GetInstance()->GetHwnd());
 
 		struct D3DResourceLeakCheker {
 			~D3DResourceLeakCheker() {

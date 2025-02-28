@@ -13,7 +13,6 @@ GameScene::~GameScene(){
 
 void GameScene::Initialize() {
 	camera_.Initialize();
-	textureManager_->Initialize();
 
 	// PostEffect
 	postProcess_ = std::make_unique<PostProcess>();
@@ -99,7 +98,7 @@ void GameScene::Update(){
 	// ゲームパッドの状態を得る変数(XINPUT)
 	XINPUT_STATE joyState;
 
-	if (Input::GetInsTance()->GetJoystickState(joyState)) {
+	if (Input::GetInstance()->GetJoystickState(joyState)) {
 		bool currentBackButtonState = (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_START);
 
 		// ボタンが前フレームで押されておらず、今フレームで押されたらトグル
@@ -115,16 +114,16 @@ void GameScene::Update(){
 		postProcess_->SetNoise(0.2f, 1.0f);
 
 		// 十字キーでシーン選択
-		if (Input::GetInsTance()->GetJoystickState(joyState)) {
+		if (Input::GetInstance()->GetJoystickState(joyState)) {
 			// 長押し防止
 			if (scenePrev == 0) {
-				if (Input::GetInsTance()->PressedButton(joyState, XINPUT_GAMEPAD_DPAD_DOWN)) {
+				if (Input::GetInstance()->PressedButton(joyState, XINPUT_GAMEPAD_DPAD_DOWN)) {
 					scenePrev = 1;
 					sentaku_->SetTexture(backTitle);
 				}
 			}
 			else if (scenePrev == 1) {
-				if (Input::GetInsTance()->PressedButton(joyState, XINPUT_GAMEPAD_DPAD_UP)) {
+				if (Input::GetInstance()->PressedButton(joyState, XINPUT_GAMEPAD_DPAD_UP)) {
 					scenePrev = 0;
 					sentaku_->SetTexture(retry);
 				}
@@ -132,12 +131,12 @@ void GameScene::Update(){
 
 			// 選んだシーンをAボタンで遷移開始
 			if (scenePrev == 0) {
-				if (Input::GetInsTance()->PressedButton(joyState, XINPUT_GAMEPAD_A)) {
+				if (Input::GetInstance()->PressedButton(joyState, XINPUT_GAMEPAD_A)) {
 					isPose_ = false;
 				}
 			}
 			else if (scenePrev == 1) {
-				if (Input::GetInsTance()->PressedButton(joyState, XINPUT_GAMEPAD_A)) {
+				if (Input::GetInstance()->PressedButton(joyState, XINPUT_GAMEPAD_A)) {
 					isVignette_ = true;
 				}
 			}
@@ -248,7 +247,7 @@ void GameScene::Draw()
 		}
 	}
 
-	//json_->DrawEnemy(camera_);
+	json_->DrawEnemy(camera_);
 
 	if (isPose_) {
 		sentaku_->Draw();
@@ -289,7 +288,7 @@ void GameScene::CheckAllCollisions()
 
 	// playerBullet
 	for (std::unique_ptr<PlayerBullet>& bullet : playerBullets) {
-		bullet->SetRadius(5.0f);
+		bullet->SetRadius(8.0f);
 		colliders_.push_back(std::move(bullet.get()));
 	}
 
@@ -571,6 +570,24 @@ void GameScene::Start()
 
 			// カメラ位置
 			camera_.cameraTransform.translate = { player_->GetPos().x + randX, player_->GetPos().y + cameraOffset.y + randY,  player_->GetPos().z - cameraOffset.z };
+
+			// カメラをプレイヤーに向ける
+			Vector3 end = player_->Get3DWorldPosition();
+			Vector3 start = camera_.cameraTransform.translate;
+
+			Vector3 diff;
+			diff.x = end.x - start.x;
+			diff.y = end.y - start.y;
+			diff.z = end.z - start.z;
+
+			diff = Normalize(diff);
+
+			Vector3 velocity_(diff.x, diff.y, diff.z);
+
+			// Y軸周り角度（Θy）
+			camera_.cameraTransform.rotate.y = std::atan2(velocity_.x, velocity_.z);
+			float velocityXZ = sqrt((velocity_.x * velocity_.x) + (velocity_.z * velocity_.z));
+			camera_.cameraTransform.rotate.x = std::atan2(-velocity_.y, velocityXZ);
 
 			// ブラー
 			blurStrength_ -= minusBlurStrength_;

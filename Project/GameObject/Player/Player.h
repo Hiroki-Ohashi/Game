@@ -83,7 +83,7 @@ private:
 private:
 	// シングルトン呼び出し
 	TextureManager* textureManager_ = TextureManager::GetInstance();
-	Input* input_ = Input::GetInsTance();
+	Input* input_ = Input::GetInstance();
 
 	// プレイヤー
 	WorldTransform worldtransform_;

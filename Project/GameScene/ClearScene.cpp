@@ -12,7 +12,6 @@ ClearScene::~ClearScene()
 void ClearScene::Initialize()
 {
 	camera_.Initialize();
-	textureManager_->Initialize();
 
 	// PostEffect
 	postProcess_ = std::make_unique<PostProcess>();
@@ -32,16 +31,16 @@ void ClearScene::Initialize()
 
 	// UI(clear)
 	clear_ = std::make_unique<Sprite>();
-	clear_->Initialize(Vector2{ 315.0f, 566.0f }, Vector2{ 1.0f, 1.0f }, clear);
+	clear_->Initialize(Vector2{ 170.0f, 530.0f }, Vector2{ 960.0f, 130.0f }, clear);
 
 	// UI(log)
 	log_ = std::make_unique<Sprite>();
-	log_->Initialize(Vector2{ 987.0f, 582.0f }, Vector2{ 14.0f, 42.0f }, log);
-	log_->SetSize({ 14.0f, 32.0f });
+	log_->Initialize(Vector2{ 1110.0f, 565.0f }, Vector2{ 15.0f, 70.0f }, log);
+	log_->SetSize({ 15.0f, 50.0f });
 
 	// UI(clearLog)
 	clearLog_ = std::make_unique<Sprite>();
-	clearLog_->Initialize(Vector2{ 415.0f, 70.0f }, Vector2{ 1.0f, 1.0f }, clearLog);
+	clearLog_->Initialize(Vector2{ 310.0f, 50.0f }, Vector2{ 650.0f, 200.0f }, clearLog);
 
 	// json
 	json_ = std::make_unique<Json>();
@@ -71,9 +70,9 @@ void ClearScene::Update()
 
 	XINPUT_STATE joyState;
 	// Aボタンで遷移
-	if (Input::GetInsTance()->GetJoystickState(joyState)) {
+	if (Input::GetInstance()->GetJoystickState(joyState)) {
 
-		if (Input::GetInsTance()->PressedButton(joyState, XINPUT_GAMEPAD_A)) {
+		if (Input::GetInstance()->PressedButton(joyState, XINPUT_GAMEPAD_A)) {
 			isVignette_ = true;
 		}
 

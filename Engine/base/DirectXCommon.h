@@ -15,6 +15,7 @@
 #include "WinApp.h"
 #include "Function.h"
 #include "MathFunction.h"
+#include "SrvManager.h"
 
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -30,7 +31,7 @@ namespace Engine
 	class DirectXCommon {
 	public:
 		// シングルトン化
-		static DirectXCommon* GetInsTance();
+		static DirectXCommon* GetInstance();
 		// デストラクタ
 		~DirectXCommon();
 
@@ -46,7 +47,7 @@ namespace Engine
 		DXGI_SWAP_CHAIN_DESC1 GetSwapChainDesc() { return swapChainDesc; }
 		D3D12_RENDER_TARGET_VIEW_DESC GetRtvDesc() { return rtvDesc; }
 		Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetSrvDescriptorHeap() { return srvDescriptorHeap_.Get(); }
-		Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetSrvDescriptorHeap2() { return srvDescriptorHeap2_.Get(); }
+		//Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetSrvDescriptorHeap2() { return srvDescriptorHeap2_.Get(); }
 		D3D12_GPU_DESCRIPTOR_HANDLE GetSrvHandleGpu() { return srvGpuHandle; }
 		D3D12_RESOURCE_BARRIER GetBarrier() const { return barrier; }
 

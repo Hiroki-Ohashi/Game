@@ -11,7 +11,7 @@ namespace Engine
 	{
 	}
 
-	void Particles::Initialize(const std::string& filename, Vector3 pos, uint32_t index) {
+	void Particles::Initialize(const std::string& filename, Vector3 pos) {
 
 		// モデル読み込み
 		const std::wstring filePathW = Convert::ConvertString(filename);;
@@ -33,26 +33,17 @@ namespace Engine
 		modelData.vertices.push_back({ .position = {1.0f,-1.0f,0.0f,1.0f}, .texcoord = {1.0f,1.0f},.normal = {0.0f,0.0f,1.0f} }); // 右下
 
 		// Resource作成
-		instancingResource = CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(ParticleForGpu) * kMaxInstance);
+		instancingResource = CreateBufferResource(DirectXCommon::GetInstance()->GetDevice(), sizeof(ParticleForGpu) * kMaxInstance);
 		instancingData_ = nullptr;
 		instancingResource->Map(0, nullptr, reinterpret_cast<void**>(&instancingData_));
 
 		// SRVの作成
-		uint32_t descriptorSizeSRV = DirectXCommon::GetInsTance()->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		D3D12_SHADER_RESOURCE_VIEW_DESC instancingSrvDesc{};
-		instancingSrvDesc.Format = DXGI_FORMAT_UNKNOWN;
-		instancingSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-		instancingSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
-		instancingSrvDesc.Buffer.FirstElement = 0;
-		instancingSrvDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
-		instancingSrvDesc.Buffer.NumElements = kMaxInstance;
-		instancingSrvDesc.Buffer.StructureByteStride = sizeof(ParticleForGpu);
+		SrvIndex_ = srvManager_->Allocate();
+		srvManager_->CreateSRVforStructuredBuffer(SrvIndex_, instancingResource.Get(), kMaxInstance, sizeof(ParticleForGpu));
+		instancingSrvHandleCPU_ = srvManager_->GetCPUDescriptorHandle(SrvIndex_);
+		instancingSrvHandleGPU_ = srvManager_->GetGPUDescriptorHandle(SrvIndex_);
 
-		// SRVを作成するDescriptorHeapの場所を決める
-		instancingSrvHandleCPU_ = texture_->GetCPUDescriptorHandle(DirectXCommon::GetInsTance()->GetSrvDescriptorHeap2(), descriptorSizeSRV, index);
-		instancingSrvHandleGPU_ = texture_->GetGPUDescriptorHandle(DirectXCommon::GetInsTance()->GetSrvDescriptorHeap2(), descriptorSizeSRV, index);
-		// SRVの生成
-		DirectXCommon::GetInsTance()->GetDevice()->CreateShaderResourceView(instancingResource.Get(), &instancingSrvDesc, instancingSrvHandleCPU_);
+		//srvManager_->CreateSRVforStructuredBuffer(60, instancingResource, kMaxInstance, sizeof(ParticleForGpu));
 
 		Particles::CreatePso();
 		Particles::CreateVertexResource();
@@ -103,26 +94,26 @@ namespace Engine
 		uvtransformMatrix = Multiply(uvtransformMatrix, MakeTranslateMatrix(uvTransform.translate));
 		materialData->uvTransform = uvtransformMatrix;*/
 
-		ID3D12DescriptorHeap* descriptorHeaps[] = { DirectXCommon::GetInsTance()->GetSrvDescriptorHeap2().Get()};
-		DirectXCommon::GetInsTance()->GetCommandList()->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
+		/*ID3D12DescriptorHeap* descriptorHeaps[] = { DirectXCommon::GetInsTance()->GetSrvDescriptorHeap2().Get()};
+		DirectXCommon::GetInsTance()->GetCommandList()->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);*/
 
 		// DirectXCommon::GetInsTance()を設定。PSOに設定しているけど別途設定が必要
-		DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootSignature(rootSignature.Get());
-		DirectXCommon::GetInsTance()->GetCommandList()->SetPipelineState(graphicsPipelineState.Get());
+		DirectXCommon::GetInstance()->GetCommandList()->SetGraphicsRootSignature(rootSignature.Get());
+		DirectXCommon::GetInstance()->GetCommandList()->SetPipelineState(graphicsPipelineState.Get());
 
 		// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
-		DirectXCommon::GetInsTance()->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		DirectXCommon::GetInstance()->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		// コマンドを積む
-		DirectXCommon::GetInsTance()->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView); // VBVを設定
+		DirectXCommon::GetInstance()->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView); // VBVを設定
 		// マテリアルCBufferの場所を設定
-		DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
+		DirectXCommon::GetInstance()->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
 		// TransformationMatrixCBufferの場所を設定
-		DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootDescriptorTable(1, instancingSrvHandleGPU_);
+		DirectXCommon::GetInstance()->GetCommandList()->SetGraphicsRootDescriptorTable(1, instancingSrvHandleGPU_);
 		// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-		DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootDescriptorTable(2, texture_->GetTextureSRVHandleGPU(index));
+		DirectXCommon::GetInstance()->GetCommandList()->SetGraphicsRootDescriptorTable(2, srvManager_->GetGPUDescriptorHandle(index));
 
-		DirectXCommon::GetInsTance()->GetCommandList()->DrawInstanced(UINT(modelData.vertices.size()), numInstance, 0, 0);
+		DirectXCommon::GetInstance()->GetCommandList()->DrawInstanced(UINT(modelData.vertices.size()), numInstance, 0, 0);
 
 
 		if (ImGui::TreeNode("Particle")) {
@@ -136,7 +127,7 @@ namespace Engine
 
 	void Particles::CreateVertexResource() {
 		// 頂点用のリソースを作る。
-		vertexResource = CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(VertexData) * modelData.vertices.size()).Get();
+		vertexResource = CreateBufferResource(DirectXCommon::GetInstance()->GetDevice(), sizeof(VertexData) * modelData.vertices.size()).Get();
 
 		// リソースの先頭のアドレスから使う
 		vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();
@@ -156,7 +147,7 @@ namespace Engine
 
 	void Particles::CreateMaterialResource() {
 		// マテリアル用のリソースを作る。今回はcolor1つ分のサイズを用意する
-		materialResource = CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(Material));
+		materialResource = CreateBufferResource(DirectXCommon::GetInstance()->GetDevice(), sizeof(Material));
 		// マテリアルにデータを書き込む
 		materialData = nullptr;
 		// 書き込むためのアドレスを取得
@@ -171,7 +162,7 @@ namespace Engine
 
 	void Particles::CreateWVPResource() {
 		// WVP用のリソースを作る。Matrix4x4 1つ分のサイズを用意する
-		wvpResource = CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(TransformationMatrix));
+		wvpResource = CreateBufferResource(DirectXCommon::GetInstance()->GetDevice(), sizeof(TransformationMatrix));
 
 		// 書き込むためのアドレスを取得
 		wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
@@ -252,7 +243,7 @@ namespace Engine
 			assert(false);
 		}
 		// バイナリを元に生成
-		hr = DirectXCommon::GetInsTance()->GetDevice()->CreateRootSignature(0, signatureBlob->GetBufferPointer(), signatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature));
+		hr = DirectXCommon::GetInstance()->GetDevice()->CreateRootSignature(0, signatureBlob->GetBufferPointer(), signatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature));
 		assert(SUCCEEDED(hr));
 
 		// InputLayout
@@ -331,7 +322,7 @@ namespace Engine
 		graphicsPipelineStateDesc.DepthStencilState = depthStencilDesc;
 		graphicsPipelineStateDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 		// 実際に生成
-		hr = DirectXCommon::GetInsTance()->GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc, IID_PPV_ARGS(&graphicsPipelineState));
+		hr = DirectXCommon::GetInstance()->GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc, IID_PPV_ARGS(&graphicsPipelineState));
 		assert(SUCCEEDED(hr));
 	}
 

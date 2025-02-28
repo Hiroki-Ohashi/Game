@@ -29,7 +29,7 @@ namespace Engine {
 		cameraResource->Map(0, nullptr, reinterpret_cast<void**>(&camera_));
 
 		skeleton = CreateSkelton(modelData.rootNode);
-		skinCluster = CreateSkinCluster(dir_->GetDevice(), skeleton, modelData, dir_->GetSrvDescriptorHeap2(), texture_->GetDiscreptorSize(), index_);
+		skinCluster = CreateSkinCluster(dir_->GetDevice(), skeleton, modelData, index_);
 
 		worldTransform_.Initialize();
 		worldTransform_.translate = param.translate;
@@ -107,8 +107,8 @@ namespace Engine {
 		dir_->GetCommandList()->SetGraphicsRootConstantBufferView(3, light_->GetDirectionalLightResource()->GetGPUVirtualAddress());
 		dir_->GetCommandList()->SetGraphicsRootConstantBufferView(4, cameraResource.Get()->GetGPUVirtualAddress());
 		// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-		dir_->GetCommandList()->SetGraphicsRootDescriptorTable(2, texture_->GetTextureSRVHandleGPU(index_));
-		dir_->GetCommandList()->SetGraphicsRootDescriptorTable(6, texture_->GetTextureSRVHandleGPU(index2));
+		dir_->GetCommandList()->SetGraphicsRootDescriptorTable(2, srvManager_->GetGPUDescriptorHandle(index_));
+		dir_->GetCommandList()->SetGraphicsRootDescriptorTable(6, srvManager_->GetGPUDescriptorHandle(index2));
 		// 描画(DrawCall/ドローコール)
 		//DirectXCommon::GetInsTance()->GetCommandList()->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
 		dir_->GetCommandList()->DrawIndexedInstanced(UINT(modelData.indices.size()), 1, 0, 0, 0);
@@ -309,7 +309,7 @@ namespace Engine {
 		graphicsPipelineStateDesc.DepthStencilState = depthStencilDesc;
 		graphicsPipelineStateDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 		// 実際に生成
-		hr = DirectXCommon::GetInsTance()->GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc, IID_PPV_ARGS(&graphicsPipelineState));
+		hr = DirectXCommon::GetInstance()->GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc, IID_PPV_ARGS(&graphicsPipelineState));
 		assert(SUCCEEDED(hr));
 	}
 
@@ -426,7 +426,7 @@ namespace Engine {
 		return joint_.index;
 	}
 
-	SkinCluster AnimationModel::CreateSkinCluster(const Microsoft::WRL::ComPtr<ID3D12Device>& device, const Skeleton& skeleton_, const ModelData& modelData_, const Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>& descriptorHeap, uint32_t descriptorSize, uint32_t index_)
+	SkinCluster AnimationModel::CreateSkinCluster(const Microsoft::WRL::ComPtr<ID3D12Device>& device, const Skeleton& skeleton_, const ModelData& modelData_, uint32_t index_)
 	{
 		SkinCluster skinCluster_;
 
@@ -435,8 +435,8 @@ namespace Engine {
 		WellForGPU* mappedPalette = nullptr;
 		skinCluster_.paletteResource->Map(0, nullptr, reinterpret_cast<void**>(&mappedPalette));
 		skinCluster_.mappedPalette = { mappedPalette, skeleton_.joints.size() }; // spanを使ってアクセスするようにする
-		skinCluster_.paletteSrvHandle.first = texture_->GetCPUDescriptorHandle(descriptorHeap, descriptorSize, 10 + index_);
-		skinCluster_.paletteSrvHandle.second = texture_->GetGPUDescriptorHandle(descriptorHeap, descriptorSize, 10 + index_);
+		skinCluster_.paletteSrvHandle.first = srvManager_->GetCPUDescriptorHandle(10 + index_);
+		skinCluster_.paletteSrvHandle.second = srvManager_->GetGPUDescriptorHandle(10 + index_);
 
 		// palette用のsrvを作成
 		D3D12_SHADER_RESOURCE_VIEW_DESC paletteSrvDesc{};

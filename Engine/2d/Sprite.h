@@ -10,6 +10,7 @@
 #include "MathFunction.h"
 #include "DirectXCommon.h"
 #include "TextureManager.h"
+#include "SrvManager.h"
 #include "Mesh.h"
 #include "Camera.h"
 
@@ -84,8 +85,9 @@ namespace Engine
 
 	private:
 		// シングルトン呼び出し
-		DirectXCommon* dir_ = DirectXCommon::GetInsTance();
+		DirectXCommon* dir_ = DirectXCommon::GetInstance();
 		TextureManager* texture_ = TextureManager::GetInstance();
+		SrvManager* srvManager_ = SrvManager::GetInstance();
 
 		// Resource
 		Microsoft::WRL::ComPtr<ID3D12Resource> vertexResourceSprite;
@@ -106,6 +108,7 @@ namespace Engine
 		Material* materialDataSprite;
 		TransformationMatrix* transformationMatrixDataSprite;
 		uint32_t* indexDataSprite;
+		std::unordered_map<int, std::string> textureFilenames;
 
 		// Transform
 		EulerTransform transformSprite;

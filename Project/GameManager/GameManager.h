@@ -12,6 +12,7 @@
 #include "ImGuiManeger.h"
 #include "imgui.h"
 #include "Light.h"
+#include "SrvManager.h"
 
 using namespace Engine;
 
@@ -40,6 +41,8 @@ private:
 	Input* input = nullptr;
 	ImGuiManeger* imgui = nullptr;
 	Light* light_ = nullptr;
+	SrvManager* srvManager_ = nullptr;
+	TextureManager* textureManager_ = nullptr;
 
 
 	// シーンを保持

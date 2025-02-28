@@ -28,7 +28,7 @@ namespace Engine
 
 		worldTransform_.translate = transformSphere.translate;
 
-		cameraResource = CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(Camera));
+		cameraResource = CreateBufferResource(DirectXCommon::GetInstance()->GetDevice(), sizeof(Camera));
 		cameraResource->Map(0, nullptr, reinterpret_cast<void**>(&camera_));
 
 		directionalLightData->color = { 1.0f, 1.0f, 1.0f, 1.0f };
@@ -53,19 +53,19 @@ namespace Engine
 		materialDataSphere->uvTransform = uvtransformMatrix;
 
 		// Spriteの描画。変更が必要なものだけ変更する
-		DirectXCommon::GetInsTance()->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferViewSphere); // VBVを設定
+		DirectXCommon::GetInstance()->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferViewSphere); // VBVを設定
 		// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
-		DirectXCommon::GetInsTance()->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		DirectXCommon::GetInstance()->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		// マテリアルCBufferの場所を設定
-		DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResourceSphere.Get()->GetGPUVirtualAddress());
+		DirectXCommon::GetInstance()->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResourceSphere.Get()->GetGPUVirtualAddress());
 		// TransformationMatrixCBufferの場所を設定
-		DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResourceSphere->GetGPUVirtualAddress());
-		DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource->GetGPUVirtualAddress());
-		DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(4, cameraResource.Get()->GetGPUVirtualAddress());
+		DirectXCommon::GetInstance()->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResourceSphere->GetGPUVirtualAddress());
+		DirectXCommon::GetInstance()->GetCommandList()->SetGraphicsRootConstantBufferView(3, directionalLightResource->GetGPUVirtualAddress());
+		DirectXCommon::GetInstance()->GetCommandList()->SetGraphicsRootConstantBufferView(4, cameraResource.Get()->GetGPUVirtualAddress());
 		// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-		DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootDescriptorTable(2, texture_->GetTextureSRVHandleGPU(index));
+		DirectXCommon::GetInstance()->GetCommandList()->SetGraphicsRootDescriptorTable(2, srvManager_->GetGPUDescriptorHandle(index));
 		// 描画(DrawCall/ドローコール)
-		DirectXCommon::GetInsTance()->GetCommandList()->DrawInstanced(vertexIndex, 1, 0, 0);
+		DirectXCommon::GetInstance()->GetCommandList()->DrawInstanced(vertexIndex, 1, 0, 0);
 
 		if (ImGui::TreeNode("Sphere")) {
 			ImGui::DragFloat3("Scale", &worldTransform_.scale.x, 0.01f, -10.0f, 10.0f);
@@ -93,7 +93,7 @@ namespace Engine
 	void Sphere::CreateVertexResourceSphere() {
 
 		// 頂点リソースを作る
-		vertexResourceSphere = CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(VertexData) * vertexIndex);
+		vertexResourceSphere = CreateBufferResource(DirectXCommon::GetInstance()->GetDevice(), sizeof(VertexData) * vertexIndex);
 
 		// リソースの先頭のアドレスから使う
 		vertexBufferViewSphere.BufferLocation = vertexResourceSphere->GetGPUVirtualAddress();
@@ -198,7 +198,7 @@ namespace Engine
 
 	void Sphere::CreateMaterialResourceSphere() {
 		// マテリアル用のリソースを作る。今回はcolor1つ分のサイズを用意する
-		materialResourceSphere = CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(Material));
+		materialResourceSphere = CreateBufferResource(DirectXCommon::GetInstance()->GetDevice(), sizeof(Material));
 		// マテリアルにデータを書き込む
 		materialDataSphere = nullptr;
 		// 書き込むためのアドレスを取得
@@ -215,7 +215,7 @@ namespace Engine
 
 	void Sphere::CreateTransformationMatrixResourceSphere() {
 		// Sprite用のTransformationMatrix用のリソースを作る。Matrix4x4 1つ分のサイズを用意する
-		wvpResourceSphere = CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(TransformationMatrix));
+		wvpResourceSphere = CreateBufferResource(DirectXCommon::GetInstance()->GetDevice(), sizeof(TransformationMatrix));
 
 		// 書き込むためのアドレスを取得
 		wvpResourceSphere->Map(0, nullptr, reinterpret_cast<void**>(&wvpResourceDataSphere));
@@ -227,7 +227,7 @@ namespace Engine
 
 	void Sphere::CreateDirectionalResource()
 	{
-		directionalLightResource = CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(DirectionalLight));
+		directionalLightResource = CreateBufferResource(DirectXCommon::GetInstance()->GetDevice(), sizeof(DirectionalLight));
 		directionalLightResource->Map(0, nullptr, reinterpret_cast<void**>(&directionalLightData));
 	}
 

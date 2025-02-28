@@ -13,6 +13,7 @@
 #include "Camera.h"
 #include "WorldTransform.h"
 #include "Light.h"
+#include "SrvManager.h"
 
 /// <summary>
 /// Sphere.h
@@ -54,6 +55,7 @@ namespace Engine
 		// シングルトン呼び出し
 		Light* light_ = Light::GetInstance();
 		TextureManager* texture_ = TextureManager::GetInstance();
+		SrvManager* srvManager_ = SrvManager::GetInstance();
 
 		// Resource
 		Microsoft::WRL::ComPtr<ID3D12Resource> vertexResourceSphere;

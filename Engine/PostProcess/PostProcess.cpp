@@ -36,7 +36,7 @@ namespace Engine
 		if (type == NOISE) {
 			CreateNoisePSO();
 
-			noise_ = CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(NoiseParams));
+			noise_ = CreateBufferResource(DirectXCommon::GetInstance()->GetDevice(), sizeof(NoiseParams));
 			noise_->Map(0, nullptr, reinterpret_cast<void**>(&noiseData_));
 			noiseData_->time = 1.0f;
 			noiseData_->lineStrength = 0.2f;

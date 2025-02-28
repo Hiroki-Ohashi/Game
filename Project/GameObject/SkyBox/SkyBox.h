@@ -2,6 +2,7 @@
 #include <Camera.h>
 #include <TextureManager.h>
 #include <WorldTransform.h>
+#include "SrvManager.h"
 
 /// <summary>
 /// SkyBox.h
@@ -31,8 +32,9 @@ namespace Engine
 		Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(Microsoft::WRL::ComPtr<ID3D12Device> device, size_t sizeInbytes);
 	private:
 		// シングルトン呼び出し
-		DirectXCommon* dir_ = DirectXCommon::GetInsTance();
+		DirectXCommon* dir_ = DirectXCommon::GetInstance();
 		TextureManager* texture_ = TextureManager::GetInstance();
+		SrvManager* srvManager_ = SrvManager::GetInstance();
 
 		// Resource
 		Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource;

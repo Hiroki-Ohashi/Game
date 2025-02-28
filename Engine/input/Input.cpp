@@ -6,7 +6,7 @@
 /// </summary>
 namespace Engine
 {
-	Input* Input::GetInsTance()
+	Input* Input::GetInstance()
 	{
 		static Input instance;
 		return &instance;
@@ -15,7 +15,7 @@ namespace Engine
 	void Input::Initialize() {
 		HRESULT result;
 		// DirectInputのインスタンスを生成
-		result = DirectInput8Create(WinApp::GetInsTance()->GetHInstance().hInstance, DIRECTION_VERSION, IID_IDirectInput8, (void**)&directInput, nullptr);
+		result = DirectInput8Create(WinApp::GetInstance()->GetHInstance().hInstance, DIRECTION_VERSION, IID_IDirectInput8, (void**)&directInput, nullptr);
 		assert(SUCCEEDED(result));
 
 		// キーボードデバイス生成
@@ -27,7 +27,7 @@ namespace Engine
 		assert(SUCCEEDED(result));
 
 		// 排他制御レベルのセット
-		result = keyboad->SetCooperativeLevel(WinApp::GetInsTance()->GetHwnd(), DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY);
+		result = keyboad->SetCooperativeLevel(WinApp::GetInstance()->GetHwnd(), DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY);
 		assert(SUCCEEDED(result));
 	}
 
@@ -73,7 +73,7 @@ namespace Engine
 
 	bool Input::PressedButton(XINPUT_STATE& out, WORD button)
 	{
-		Input::GetInsTance()->UpdateButtonState(state_, out.Gamepad.wButtons & button);
+		Input::GetInstance()->UpdateButtonState(state_, out.Gamepad.wButtons & button);
 
 		return (state_.isPressed && !state_.wasPressed);
 	}

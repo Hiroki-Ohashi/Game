@@ -240,7 +240,7 @@ void Player::Move()
 		XINPUT_STATE joyState;
 
 		// ゲームパッド状態取得
-		if (Input::GetInsTance()->GetJoystickState(joyState)) {
+		if (Input::GetInstance()->GetJoystickState(joyState)) {
 			reticleWorldtransform_.translate.x += (float)joyState.Gamepad.sThumbLX / SHRT_MAX * kCharacterSpeed;
 			reticleWorldtransform_.translate.y += (float)joyState.Gamepad.sThumbLY / SHRT_MAX * kCharacterSpeed;
 
@@ -263,12 +263,12 @@ void Player::Move()
 
 	// 移動限界座標
 	const float kMoveLimitX = 140.0f;
-	const float kMoveLimitY = 100.0f;
+	const float kMoveLimitY = 120.0f;
 
 	// 範囲超えない処理
 	reticleWorldtransform_.translate.x = max(reticleWorldtransform_.translate.x, -kMoveLimitX);
 	reticleWorldtransform_.translate.x = std::min(reticleWorldtransform_.translate.x, +kMoveLimitX);
-	reticleWorldtransform_.translate.y = max(reticleWorldtransform_.translate.y, -kMoveLimitY);
+	reticleWorldtransform_.translate.y = max(reticleWorldtransform_.translate.y, -100.0f);
 	reticleWorldtransform_.translate.y = std::min(reticleWorldtransform_.translate.y, +kMoveLimitY);
 
 	// WorldTransformをモデルにセット
@@ -304,9 +304,9 @@ void Player::LockOn(Vector3 EnemyPos)
 	if (worldtransform_.translate.z < EnemyPos.z &&
 		EnemyPos.z - worldtransform_.translate.z <= 600.0f) {
 
-		if (Input::GetInsTance()->GetJoystickState(joyState)) {
+		if (Input::GetInstance()->GetJoystickState(joyState)) {
 			// Aボタンが押された場合のみ処理を実行
-			if (Input::GetInsTance()->PressedButton(joyState, XINPUT_GAMEPAD_A)) {
+			if (Input::GetInstance()->PressedButton(joyState, XINPUT_GAMEPAD_A)) {
 				// ターゲットの位置
 				Vector3 end = EnemyPos;
 				// プレイヤーの位置
@@ -347,8 +347,8 @@ void Player::LockOn(Vector3 EnemyPos)
 void Player::Attack()
 {
 	XINPUT_STATE joyState{};
-	if (Input::GetInsTance()->GetJoystickState(joyState)) {
-		if (Input::GetInsTance()->PressedButton(joyState, XINPUT_GAMEPAD_A)) {
+	if (Input::GetInstance()->GetJoystickState(joyState)) {
+		if (Input::GetInstance()->PressedButton(joyState, XINPUT_GAMEPAD_A)) {
 			// 弾の速度
 			const float kBulletSpeed = 60.0f;
 

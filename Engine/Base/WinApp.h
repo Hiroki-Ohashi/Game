@@ -15,7 +15,7 @@
 class WinApp {
 public:
 	// シングルトン
-	static WinApp* GetInsTance();
+	static WinApp* GetInstance();
 	// 初期化
 	void Initialize(const wchar_t* title);
 
