@@ -174,7 +174,7 @@ void Enemy::FryUpdate(Camera* camera_)
 	if (worldtransform_.translate.z - player_->GetPos().z <= kMaxAttack) {
 
 		if (worldtransform_.translate.z <= 29800 && isDead_ == false) {
-			worldtransform_.translate.z += 30.0f;
+			worldtransform_.translate.z += enemySpeed.z;
 		}
 
 		const float kMoveSpeed = 0.005f;
@@ -253,7 +253,7 @@ void Enemy::DrawUI()
 	if (worldtransform_.translate.z - player_->GetPos().z <= kMaxAttack &&
 		worldtransform_.translate.z > player_->GetPos().z)
 	{
-		if (isDead_ == false) {
+		if (isDeadAnimation_ == false) {
 			enemySprite_->Draw();
 		}
 	}
@@ -304,6 +304,8 @@ void Enemy::OnCollision()
 	isDeadAnimation_ = true;
 	isLockOn_ = false;
 	isPossibillityLock = false;
+
+	SetEnemySpeed({ 0.0f, 0.0f, 0.0f, });
 }
 
 void Enemy::DeadAnimation()

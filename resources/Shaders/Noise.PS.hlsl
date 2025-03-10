@@ -10,10 +10,13 @@ struct PostEffectParams
     float vignetteShape; // ビネットの形状
     float blurStrength; // ラジアルブラーの強度
     int sampleCount; // ブラーのサンプリング数
+    float fogStart; // フォグ開始地点
+    float fogDensity; // フォグの濃さ
 };
 
 // テクスチャとサンプラーの定義
 Texture2D<float4> gTexture : register(t0);
+Texture2D<float> gDepthTexture : register(t1);
 SamplerState gSampler : register(s0);
 ConstantBuffer<PostEffectParams> gParams : register(b0);
 
@@ -29,6 +32,13 @@ float random(float2 uv)
     return frac(sin(dot(uv.xy, float2(12.9898, 78.233))) * 43758.5453);
 }
 
+// 深度バッファ値をカメラ空間の奥行きに変換
+float DepthToCameraDistance(float depth)
+{
+    float z = depth * 2.0f - 1.0f;
+    return 0.1f * 1000000.0f / (1000000.0f - z * (1000000.0f - 0.1f));
+}
+
 // ピクセルシェーダー関数
 PixelShaderOutput main(VertexShaderOutput input)
 {
@@ -37,6 +47,18 @@ PixelShaderOutput main(VertexShaderOutput input)
     // 元のテクスチャの色をサンプリング
     float4 color = gTexture.Sample(gSampler, input.texcoord);
 
+    // --- フォグ処理 ---
+    float rawDepth = gDepthTexture.Sample(gSampler, input.texcoord).r; // .r でチャンネル指定
+    float depth = DepthToCameraDistance(rawDepth);
+
+    // Exponential fog (指数フォグ)
+    float fogFactor = exp(-gParams.fogDensity * (depth - gParams.fogStart) * 0.01f);
+    fogFactor = clamp(fogFactor, 0.0, 1.0);
+
+    float4 fogColor = float4(0.5f, 0.5f, 1.0f, 1.0f);
+    
+    color = lerp(fogColor, color, fogFactor);
+    
     // --- ノイズ処理 ---
     
     // 横ラインノイズの生成
@@ -94,9 +116,6 @@ PixelShaderOutput main(VertexShaderOutput input)
 
     // ビネットを結果色に適用
     resultColor.rgb *= vignette;
-
-    // 最終的な色を出力
     output.color = resultColor;
-
     return output;
 }

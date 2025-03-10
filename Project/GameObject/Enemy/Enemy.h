@@ -71,6 +71,7 @@ public:
 	void SetGameScene(GameScene* gameScene) { gameScene_ = gameScene; }
 	void SetPlayer(Player* player) { player_ = player; }
 	void SetisLockOn(bool isLockOn) { isLockOn_ = isLockOn; }
+	void SetEnemySpeed(Vector3 speed_) { enemySpeed = speed_; }
 private:
 	// シングルトン呼び出し
 	TextureManager* textureManager_ = TextureManager::GetInstance();
@@ -118,6 +119,8 @@ private:
 
 	bool isLockOn_;
 	bool isPossibillityLock;
+
+	Vector3 enemySpeed = { 0.0f, 0.0f, 30.0f };
 
 	// ステート
 	BaseEnemyState* state;

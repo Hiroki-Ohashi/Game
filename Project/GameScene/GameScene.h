@@ -62,6 +62,7 @@ private:
 
 	// ロックオン処理
 	void LockOnEnemy();
+	void Pose();
 
 	// スタート演出
 	void Start();
@@ -163,6 +164,12 @@ private:
 	Vector3 pos_ = {};
 	Vector2 scale = {};
 	EulerTransform transform_;
+
+	// カメライージング変数
+	float start = 0.0f;
+	float end = 6.29f;
+	float frame;
+	float endFrame = 100.0f;
 
 	bool isPose_;
 	bool prevBackButtonState_ = false;

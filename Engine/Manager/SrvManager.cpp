@@ -1,4 +1,5 @@
 #include "SrvManager.h"
+#include <iostream>
 
 namespace Engine {
 
@@ -11,7 +12,9 @@ namespace Engine {
 	void Engine::SrvManager::Initialize()
 	{
 		// descriptorHeapの生成
-		descriptorHeap = DirectXCommon::GetInstance()->CreateDescriptorHeap(DirectXCommon::GetInstance()->GetDevice().Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 128, true);
+		descriptorHeap = DirectXCommon::GetInstance()->CreateDescriptorHeap(DirectXCommon::GetInstance()->GetDevice().Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, kMaxSRVCount, true);
+		descriptorHeapPostEffect = DirectXCommon::GetInstance()->CreateDescriptorHeap(DirectXCommon::GetInstance()->GetDevice().Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, kMaxSRVCount, true);
+		descriptorHeapImgui = DirectXCommon::GetInstance()->CreateDescriptorHeap(DirectXCommon::GetInstance()->GetDevice().Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 2, true);
 		// deisptorHeapSize1個分を取得
 		descriptorSize = DirectXCommon::GetInstance()->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	}
@@ -51,22 +54,41 @@ namespace Engine {
 		DirectXCommon::GetInstance()->GetDevice()->CreateShaderResourceView(pResource.Get(), &instancingSrvDesc, GetCPUDescriptorHandle(srvIndex));
 	}
 
-	//void SrvManager::CreateSRVRenderTexture(uint32_t srvIndex, Microsoft::WRL::ComPtr<ID3D12Resource> pResource, DXGI_FORMAT Format, UINT MipLevels)
-	//{
-	//	D3D12_SHADER_RESOURCE_VIEW_DESC renderTextureSrvDesc{};
-	//	renderTextureSrvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
-	//	renderTextureSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	//	renderTextureSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-	//	renderTextureSrvDesc.Texture2D.MipLevels = 1;
+	void SrvManager::CreateSRVRenderTexture(uint32_t srvIndex, Microsoft::WRL::ComPtr<ID3D12Resource> pResource)
+	{
+		D3D12_SHADER_RESOURCE_VIEW_DESC renderTextureSrvDesc{};
+		renderTextureSrvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+		renderTextureSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+		renderTextureSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+		renderTextureSrvDesc.Texture2D.MipLevels = 1;
 
-	//	// SRVの作成
-	//	dir_->GetDevice()->CreateShaderResourceView(pResource.Get(), &renderTextureSrvDesc, srvHandle);
-	//}
+		// SRVの作成
+		DirectXCommon::GetInstance()->GetDevice()->CreateShaderResourceView(pResource.Get(), &renderTextureSrvDesc, GetEffectCPUDescriptorHandle(srvIndex));
+	}
+
+	void SrvManager::CreateSRVDepthTexture(uint32_t srvIndex, Microsoft::WRL::ComPtr<ID3D12Resource> pResource)
+	{
+		D3D12_SHADER_RESOURCE_VIEW_DESC depthTextureSrvDesc = {};
+		depthTextureSrvDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+		depthTextureSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+		depthTextureSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+		depthTextureSrvDesc.Texture2D.MipLevels = 1;
+
+		// SRVの作成
+		DirectXCommon::GetInstance()->GetDevice()->CreateShaderResourceView(pResource.Get(), &depthTextureSrvDesc, GetEffectCPUDescriptorHandle(srvIndex));
+	}
 
 	void SrvManager::PreDraw()
 	{
 		// 描画用のDescriptorHeapの設定
 		ID3D12DescriptorHeap* descriptorHeaps[] = { descriptorHeap.Get() };
+		DirectXCommon::GetInstance()->GetCommandList()->SetDescriptorHeaps(1, descriptorHeaps);
+	}
+
+	void SrvManager::PostDraw()
+	{
+		// 描画用のDescriptorHeapの設定
+		ID3D12DescriptorHeap* descriptorHeaps[] = { descriptorHeapPostEffect.Get() };
 		DirectXCommon::GetInstance()->GetCommandList()->SetDescriptorHeaps(1, descriptorHeaps);
 	}
 
@@ -94,8 +116,26 @@ namespace Engine {
 		return handleGPU;
 	}
 
+	D3D12_CPU_DESCRIPTOR_HANDLE SrvManager::GetEffectCPUDescriptorHandle(uint32_t index)
+	{
+		D3D12_CPU_DESCRIPTOR_HANDLE handleCPU = descriptorHeapPostEffect->GetCPUDescriptorHandleForHeapStart();
+		handleCPU.ptr += (descriptorSize * index);
+		return handleCPU;
+	}
+
+	D3D12_GPU_DESCRIPTOR_HANDLE SrvManager::GetEffectGPUDescriptorHandle(uint32_t index)
+	{
+		D3D12_GPU_DESCRIPTOR_HANDLE handleGPU = descriptorHeapPostEffect->GetGPUDescriptorHandleForHeapStart();
+		handleGPU.ptr += (descriptorSize * index);
+		return handleGPU;
+	}
+
 	void SrvManager::SetGraphicsRootDescriptorTable(UINT RootParameterIndex, uint32_t srvIndex)
 	{
 		DirectXCommon::GetInstance()->GetCommandList()->SetGraphicsRootDescriptorTable(RootParameterIndex, GetGPUDescriptorHandle(srvIndex));
+	}
+	void SrvManager::SetGraphicsRootDescriptorTableTypeEffect(UINT RootParameterIndex, uint32_t srvIndex)
+	{
+		DirectXCommon::GetInstance()->GetCommandList()->SetGraphicsRootDescriptorTable(RootParameterIndex, GetEffectGPUDescriptorHandle(srvIndex));
 	}
 }

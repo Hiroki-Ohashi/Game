@@ -3,6 +3,7 @@
 #include "imgui.h"
 #include "imgui_impl_dx12.h"
 #include "imgui_impl_win32.h"
+#include <iostream>
 
 /// <summary>
 /// ImGuiManager.cpp
@@ -23,9 +24,9 @@ void ImGuiManeger::Initialize(){
 	ImGui_ImplDX12_Init(DirectXCommon::GetInstance()->GetDevice().Get(),
 		DirectXCommon::GetInstance()->GetSwapChainDesc().BufferCount,
 		DirectXCommon::GetInstance()->GetRtvDesc().Format,
-		DirectXCommon::GetInstance()->GetSrvDescriptorHeap().Get(),
-		DirectXCommon::GetInstance()->GetSrvDescriptorHeap()->GetCPUDescriptorHandleForHeapStart(),
-		DirectXCommon::GetInstance()->GetSrvDescriptorHeap()->GetGPUDescriptorHandleForHeapStart()
+		SrvManager::GetInstance()->GetSrvDescriptorHeap().Get(),
+		SrvManager::GetInstance()->GetSrvDescriptorHeap()->GetCPUDescriptorHandleForHeapStart(),
+		SrvManager::GetInstance()->GetSrvDescriptorHeap()->GetGPUDescriptorHandleForHeapStart()
 	);
 }
 

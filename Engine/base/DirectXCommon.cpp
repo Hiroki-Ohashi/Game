@@ -138,12 +138,8 @@ namespace Engine
 		rtvDescriptorHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 3, false);
 
 		// SRV用のヒープでディスクリプタの数は128。SRVはShader内で触るものなので、ShaderVisibleはtrue
-		srvDescriptorHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 128, true);
-
 		SrvManager* srvManager_ = SrvManager::GetInstance();
 		srvManager_->Initialize();
-
-		//srvDescriptorHeap2_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 128, true);
 
 		// SwapChainからResourceを引っ張ってくる
 		hr_ = swapChain_->GetBuffer(0, IID_PPV_ARGS(&swapChainResources[0]));
@@ -160,7 +156,6 @@ namespace Engine
 		D3D12_CPU_DESCRIPTOR_HANDLE rtvStartHandle = rtvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart();
 
 		// RTVを2つ作るのでディスクリプタを2つ用意
-		// 
 		// まず1つ目を作る。１つ目は最初のところに作る。作る場所をこちらで指定してあげる必要がある
 		rtvHandles[0] = rtvStartHandle;
 		device_->CreateRenderTargetView(swapChainResources[0].Get(), &rtvDesc, rtvHandles[0]);
@@ -174,18 +169,8 @@ namespace Engine
 		rtvHandle.ptr = rtvHandles[1].ptr + device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 		device_->CreateRenderTargetView(renderTextureResource.Get(), &rtvDesc, rtvHandle);
 
-		srvHandle.ptr += srvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart().ptr + device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		srvGpuHandle.ptr += srvDescriptorHeap_->GetGPUDescriptorHandleForHeapStart().ptr + device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-
-		// SRVの設定。FormatはResourceと同じにしておく
-		D3D12_SHADER_RESOURCE_VIEW_DESC renderTextureSrvDesc{};
-		renderTextureSrvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
-		renderTextureSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-		renderTextureSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-		renderTextureSrvDesc.Texture2D.MipLevels = 1;
-
 		// SRVの作成
-		device_->CreateShaderResourceView(renderTextureResource.Get(), &renderTextureSrvDesc, srvHandle);
+		srvManager_->CreateSRVRenderTexture(1, renderTextureResource);
 
 		// DepthStencilTextureをウィンドウのサイズで作成
 		depthStencilResource = CreateDepthStencilTextureResource(device_.Get(), WinApp::GetInstance()->GetKClientWidth(), WinApp::GetInstance()->GetKClientHeight());
@@ -197,8 +182,11 @@ namespace Engine
 		D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc{};
 		dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 		dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+
 		// DSVHeapの先頭にDSVを作る
 		device_->CreateDepthStencilView(depthStencilResource.Get(), &dsvDesc, dsvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart());
+
+		srvManager_->CreateSRVDepthTexture(2, depthStencilResource);
 
 		DirectXCommon::Fence();
 		DirectXCommon::Viewport();
@@ -217,21 +205,14 @@ namespace Engine
 	}
 
 	void DirectXCommon::RenderTexture() {
-
 		//これから書き込むバックバッファのインデックスを取得 
 		backBufferIndex = swapChain_->GetCurrentBackBufferIndex();
-
-		// 今回のバリアはTransition
+		// バリアを張る対象のリソース（バックバッファ）の状態遷移
 		barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-		// Noneにしておく
 		barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-		// バリアを張る対象のリソース。現在のバックバッファに対して行う
 		barrier.Transition.pResource = swapChainResources[backBufferIndex].Get();
-		// 遷移前(現在)のResourceState
 		barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
-		// 遷移後のResourceState
 		barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
-		// TransitionBarrierを練る
 		commandList_->ResourceBarrier(1, &barrier);
 
 		// 描画先のRTVとDSVをを設定する
@@ -247,39 +228,48 @@ namespace Engine
 
 		// 描画用のDescriptorHeapの設定
 		SrvManager::GetInstance()->PreDraw();
-		/*ID3D12DescriptorHeap* descriptorHeaps2[] = { srvDescriptorHeap2_.Get() };
-		commandList_->SetDescriptorHeaps(1, descriptorHeaps2);*/
 
 		commandList_->RSSetViewports(1, &viewport);
 		commandList_->RSSetScissorRects(1, &scissorRect);
 	}
 
+	void DirectXCommon::ChangeBarrier()
+	{
+		//// depthStencilResource の状態を元に戻す
+		//depthBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+		//depthBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_DEPTH_WRITE;
+		//commandList_->ResourceBarrier(1, &depthBarrier);
+	}
+
 	void DirectXCommon::SwapChain()
 	{
-		// 今回のバリアはTransition
+		// バリアを張る対象のリソース（renderTextureResource）の状態遷移
 		barrier2.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-		// Noneにしておく
 		barrier2.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-		// バリアを張る対象のリソース。現在のバックバッファに対して行う
 		barrier2.Transition.pResource = renderTextureResource.Get();
-		// 遷移前(現在)のResourceState
 		barrier2.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
-		// 遷移後のResourceState
 		barrier2.Transition.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
-		// TransitionBarrierを練る
 		commandList_->ResourceBarrier(1, &barrier2);
+
+		// depthStencilResourceの状態遷移
+		// depthStencilResource のバリア
+		depthBarrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+		depthBarrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+		depthBarrier.Transition.pResource = depthStencilResource.Get();
+		depthBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_DEPTH_WRITE;
+		depthBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+		commandList_->ResourceBarrier(1, &depthBarrier);
 
 		// 描画先のRTVとDSVをを設定する
 		dsvHandle = dsvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart();
-		commandList_->OMSetRenderTargets(1, &rtvHandles[backBufferIndex], false, &dsvHandle);
+		commandList_->OMSetRenderTargets(1, &rtvHandles[backBufferIndex], false, nullptr);
 
 		// 指定した色で画面全体をクリアする
-		float clearColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+		float clearColor[] = { 1.0f, 0.0f, 0.0f, 1.0f };
 		commandList_->ClearRenderTargetView(rtvHandles[backBufferIndex], clearColor, 0, nullptr);
 
 		// 描画用のDescriptorHeapの設定
-		ID3D12DescriptorHeap* descriptorHeaps[] = { srvDescriptorHeap_.Get() };
-		commandList_->SetDescriptorHeaps(1, descriptorHeaps);
+		SrvManager::GetInstance()->PostDraw();
 
 		commandList_->RSSetViewports(1, &viewport);
 		commandList_->RSSetScissorRects(1, &scissorRect);
@@ -293,6 +283,11 @@ namespace Engine
 		barrier2.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
 		// TransitionBarrierを練る
 		commandList_->ResourceBarrier(1, &barrier2);
+
+		// `depthStencilResource` の状態遷移
+		depthBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+		depthBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_DEPTH_WRITE;
+		commandList_->ResourceBarrier(1, &depthBarrier);
 	}
 
 	void DirectXCommon::Close() {
@@ -309,6 +304,7 @@ namespace Engine
 		// GPUにコマンドの実行を行わせる
 		ID3D12CommandList* commandLists[] = { commandList_.Get() };
 		commandQueue_->ExecuteCommandLists(1, commandLists);
+		//commandAllocator_->Reset();
 		// GPUとOSに画像の交換を行うよう通知する
 		swapChain_->Present(1, 0);
 

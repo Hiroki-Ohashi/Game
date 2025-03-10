@@ -52,8 +52,13 @@
     <FxCompile Include="resources\Shaders\RadialBlur.PS.hlsl">
       <Filter>シェーダーファイル</Filter>
     </FxCompile>
-    <FxCompile Include="resources\Shaders\Sprite2d.PS.hlsl" />
-    <FxCompile Include="resources\Shaders\Sprite2d.VS.hlsl" />
+    <FxCompile Include="resources\Shaders\Sprite2d.PS.hlsl">
+      <Filter>シェーダーファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\Shaders\Sprite2d.VS.hlsl">
+      <Filter>シェーダーファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="resources\Shaders\Fog.PS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -135,10 +140,10 @@
     <ClCompile Include="Project\GameObject\Player\PlayerBullet.cpp">
       <Filter>ソースファイル\Project\GameObject\Player</Filter>
     </ClCompile>
-    <ClCompile Include="Project\SkyBox\SkyBox.cpp">
+    <ClCompile Include="Project\GameObject\SkyBox\SkyBox.cpp">
       <Filter>ソースファイル\Project\SkyBox</Filter>
     </ClCompile>
-    <ClCompile Include="Project\SkyBox\Skydome.cpp">
+    <ClCompile Include="Project\GameObject\SkyBox\Skydome.cpp">
       <Filter>ソースファイル\Project\SkyBox</Filter>
     </ClCompile>
     <ClCompile Include="Project\GameScene\ClearScene.cpp">
@@ -181,7 +186,9 @@
       <Filter>ソースファイル\Project\GameObject\Stage</Filter>
     </ClCompile>
     <ClCompile Include="Project\GameObject\Enemy\EnemyBulletPool.cpp" />
-    <ClCompile Include="Project\GameObject\Player\LockOn.cpp" />
+    <ClCompile Include="Project\GameObject\Enemy\EnemyStateApproach.cpp" />
+    <ClCompile Include="Engine\Manager\SrvManager.cpp" />
+    <ClCompile Include="Project\GameObject\Player\PlayerUI\PlayerUI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="externals\imgui\imconfig.h">
@@ -286,11 +293,11 @@
     <ClInclude Include="Project\GameScene\TitleScene.h">
       <Filter>ヘッダーファイル\Project\GameScene</Filter>
     </ClInclude>
-    <ClInclude Include="Project\SkyBox\SkyBox.h">
-      <Filter>ヘッダーファイル\Project\SkyBox</Filter>
+    <ClInclude Include="Project\GameObject\SkyBox\SkyBox.h">
+      <Filter>ヘッダーファイル\Project\GameObject\SkyBox</Filter>
     </ClInclude>
-    <ClInclude Include="Project\SkyBox\Skydome.h">
-      <Filter>ヘッダーファイル\Project\SkyBox</Filter>
+    <ClInclude Include="Project\GameObject\SkyBox\Skydome.h">
+      <Filter>ヘッダーファイル\Project\GameObject\SkyBox</Filter>
     </ClInclude>
     <ClInclude Include="Project\utillity\Camera.h">
       <Filter>ヘッダーファイル\Project\utillity</Filter>
@@ -317,8 +324,11 @@
       <Filter>ヘッダーファイル\Project\utillity</Filter>
     </ClInclude>
     <ClInclude Include="Project\GameObject\Enemy\EnemyBulletPool.h" />
-    <ClInclude Include="Project\GameObject\Player\LockOn.h" />
     <ClInclude Include="Project\utillity\CollisionConfig.h" />
+    <ClInclude Include="Project\GameObject\Enemy\BaseEnemyState.h" />
+    <ClInclude Include="Project\GameObject\Enemy\EnemyStateApproach.h" />
+    <ClInclude Include="Engine\Manager\SrvManager.h" />
+    <ClInclude Include="Project\GameObject\Player\PlayerUI\PlayerUI.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\Shaders\Fullscreen.hlsli">
@@ -443,9 +453,6 @@
     <Filter Include="ヘッダーファイル\Project\GameScene">
       <UniqueIdentifier>{a3e6e4a0-461a-4ae0-b773-2f8910ca4acb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダーファイル\Project\SkyBox">
-      <UniqueIdentifier>{a0cd7ef3-2c13-4967-bace-28d9d2372f44}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ヘッダーファイル\Project\utillity">
       <UniqueIdentifier>{5fe92b79-668a-476c-bfc7-b28b177680be}</UniqueIdentifier>
     </Filter>
@@ -457,6 +464,9 @@
     </Filter>
     <Filter Include="ヘッダーファイル\Project\GameObject\Stage">
       <UniqueIdentifier>{ecbe9df5-1357-4434-9a0c-e39861e01b05}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\Project\GameObject\SkyBox">
+      <UniqueIdentifier>{a0cd7ef3-2c13-4967-bace-28d9d2372f44}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

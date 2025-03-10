@@ -1,5 +1,6 @@
 #pragma once
 #include "DirectXCommon.h"
+#include "SrvManager.h"
 
 /// <summary>
 /// PostProcess.h
@@ -27,6 +28,8 @@ struct NoiseParams {
 	float vignetteShape;
 	float blurStrength;
 	int sampleCount;
+	float fogStart;
+	float fogDensity;
 };
 
 namespace Engine
@@ -80,6 +83,18 @@ namespace Engine
 		void SetNoise(float lineStrength_, float noiseStrength_) {
 			noiseData_->lineStrength = lineStrength_;
 			noiseData_->noiseStrength = noiseStrength_;
+		}
+
+		// fogのGetterとSetter
+		float GetFogStart() { return noiseData_->fogStart; }
+		void SetFogStart(float fogStart_) { noiseData_->fogStart = fogStart_; }
+
+		float GetFogDensity() { return noiseData_->fogDensity; }
+		void SetFogDensity(float fogDensity_) { noiseData_->fogDensity = fogDensity_; }
+
+		void SetFog(float fogStart_, float fogDensity_) {
+			noiseData_->fogStart = fogStart_;
+			noiseData_->fogDensity = fogDensity_;
 		}
 
 	private:

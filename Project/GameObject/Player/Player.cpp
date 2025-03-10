@@ -36,7 +36,7 @@ void Player::Initialize()
 	reticleWorldtransform_.UpdateMatrix();
 
 	// texture
-	reticleTex = textureManager_->Load("resources/reticle.png");
+	reticleTex = textureManager_->Load("resources/playerReticle.png");
 	hit = textureManager_->Load("resources/red.png");
 	playerTex = textureManager_->Load("resources/white.png");
 
@@ -44,28 +44,6 @@ void Player::Initialize()
 	reticleSprite_ = std::make_unique<Sprite>();
 	reticleSprite_->Initialize({ 590.0f,310.0f }, { 100.0f,100.0f }, reticleTex);
 	reticleSprite_->SetSize({ 100.0f,100.0f });
-
-	// HP
-	hp5 = textureManager_->Load("resources/hp5.png");
-	hp4 = textureManager_->Load("resources/hp4.png");
-	hp3 = textureManager_->Load("resources/hp3.png");
-	hp2 = textureManager_->Load("resources/hp2.png");
-	hp1 = textureManager_->Load("resources/hp1.png");
-	hp0 = textureManager_->Load("resources/hp0.png");
-
-	// HP用スプライト
-	hp0_ = std::make_unique<Sprite>();
-	hp0_->Initialize({ 0.0f,0.0f }, { 1.0f,1.0f }, hp0);
-	hp1_ = std::make_unique<Sprite>();
-	hp1_->Initialize({ 0.0f,0.0f }, { 1.0f,1.0f }, hp1);
-	hp2_ = std::make_unique<Sprite>();
-	hp2_->Initialize({ 0.0f,0.0f }, { 1.0f,1.0f }, hp2);
-	hp3_ = std::make_unique<Sprite>();
-	hp3_->Initialize({ 0.0f,0.0f }, { 1.0f,1.0f }, hp3);
-	hp4_ = std::make_unique<Sprite>();
-	hp4_->Initialize({ 0.0f,0.0f }, { 1.0f,1.0f }, hp4);
-	hp5_ = std::make_unique<Sprite>();
-	hp5_->Initialize({ 0.0f,0.0f }, { 1.0f,1.0f }, hp5);
 
 	// HP初期化
 	isHit_ = false;
@@ -130,25 +108,6 @@ void Player::DrawUI()
 {
 	if (HP > 0) {
 		reticleSprite_->Draw();
-	}
-
-	if (GetHP() == 5) {
-		hp5_->Draw();
-	}
-	else if (GetHP() == 4) {
-		hp4_->Draw();
-	}
-	else if (GetHP() == 3) {
-		hp3_->Draw();
-	}
-	else if (GetHP() == 2) {
-		hp2_->Draw();
-	}
-	else if (GetHP() == 1) {
-		hp1_->Draw();
-	}
-	else if (GetHP() == 0) {
-		hp0_->Draw();
 	}
 }
 

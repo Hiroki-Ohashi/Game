@@ -36,7 +36,7 @@ public:
 	Vector3 GetWorldPosition() const override;
 
 	// Getter
-	Vector3 GetPos() { return worldtransform_.translate; }
+	Vector3 GetPos() const { return worldtransform_.translate; }
 	Vector3 GetReticlePos() { return positionReticle; }
 	Vector3 Get3DWorldPosition();
 	Vector3 GetVelocity() { return velocity_; }
@@ -97,14 +97,6 @@ private:
 	EulerTransform reticleTransform_;
 	Vector3 positionReticle;
 
-	// UI
-	std::unique_ptr<Sprite> hp0_;
-	std::unique_ptr<Sprite> hp1_;
-	std::unique_ptr<Sprite> hp2_;
-	std::unique_ptr<Sprite> hp3_;
-	std::unique_ptr<Sprite> hp4_;
-	std::unique_ptr<Sprite> hp5_;
-
 	// 弾
 	std::vector<std::unique_ptr<PlayerBullet>> bullets_;
 
@@ -113,16 +105,9 @@ private:
 	uint32_t reticleTex;
 	uint32_t hit;
 
-	uint32_t hp5;
-	uint32_t hp4;
-	uint32_t hp3;
-	uint32_t hp2;
-	uint32_t hp1;
-	uint32_t hp0;
-
 	// 速度
 	Vector3 velocity_;
-	float playerSpeed = 30.0f;
+	float playerSpeed = 0.0f;
 
 	// タイマー
 	int32_t hitTimer_;

@@ -45,6 +45,8 @@ namespace Engine
 			noiseData_->vignetteShape = 1.0f;
 			noiseData_->blurStrength = 0.0f;
 			noiseData_->sampleCount = 10;
+			noiseData_->fogStart = 200.0f;
+			noiseData_->fogDensity = 0.05f;
 		}
 
 		if (type == RADIAL) {
@@ -87,7 +89,7 @@ namespace Engine
 		dir_->GetCommandList()->SetPipelineState(graphicsPipelineState_.Get());
 		// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
 		dir_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		dir_->GetCommandList()->SetGraphicsRootDescriptorTable(0, dir_->GetSrvHandleGpu());
+		SrvManager::GetInstance()->SetGraphicsRootDescriptorTableTypeEffect(0, 1);
 		dir_->GetCommandList()->DrawInstanced(3, 1, 0, 0);
 	}
 
@@ -98,7 +100,8 @@ namespace Engine
 		// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
 		dir_->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		dir_->GetCommandList()->SetGraphicsRootConstantBufferView(1, noise_.Get()->GetGPUVirtualAddress());
-		dir_->GetCommandList()->SetGraphicsRootDescriptorTable(0, dir_->GetSrvHandleGpu());
+		SrvManager::GetInstance()->SetGraphicsRootDescriptorTableTypeEffect(0, 1);
+		SrvManager::GetInstance()->SetGraphicsRootDescriptorTableTypeEffect(2, 2);
 		dir_->GetCommandList()->DrawInstanced(3, 1, 0, 0);
 	}
 
@@ -964,22 +967,32 @@ namespace Engine
 		assert(SUCCEEDED(hr_));
 
 		// DescriptorRange
-		D3D12_DESCRIPTOR_RANGE descriptorRange[1] = {};
-		descriptorRange[0].BaseShaderRegister = 0; // 0から始まる
-		descriptorRange[0].NumDescriptors = 1; // 数は1つ
+		D3D12_DESCRIPTOR_RANGE descriptorRange[2] = {};
+		descriptorRange[0].BaseShaderRegister = 0;
+		descriptorRange[0].NumDescriptors = 1;
 		descriptorRange[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV; // SRVを使う
 		descriptorRange[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // Offsetを自動計算
 
+		descriptorRange[1].BaseShaderRegister = 1;
+		descriptorRange[1].NumDescriptors = 1;
+		descriptorRange[1].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV; // SRVを使う
+		descriptorRange[1].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // Offsetを自動計算
+
 		// rootParameters
-		D3D12_ROOT_PARAMETER rootParameters[2] = {};
+		D3D12_ROOT_PARAMETER rootParameters[3] = {};
 		rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; // Descriptortableを使う
 		rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
-		rootParameters[0].DescriptorTable.pDescriptorRanges = descriptorRange; // Tableの中身の配列を指定
-		rootParameters[0].DescriptorTable.NumDescriptorRanges = _countof(descriptorRange); // Tableで利用する数
+		rootParameters[0].DescriptorTable.pDescriptorRanges = &descriptorRange[0]; // Tableの中身の配列を指定
+		rootParameters[0].DescriptorTable.NumDescriptorRanges = 1; // Tableで利用する数
 
 		rootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
 		rootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 		rootParameters[1].Descriptor.ShaderRegister = 0;
+
+		rootParameters[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; // Descriptortableを使う
+		rootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
+		rootParameters[2].DescriptorTable.pDescriptorRanges = &descriptorRange[1]; // Tableの中身の配列を指定
+		rootParameters[2].DescriptorTable.NumDescriptorRanges = 1; // Tableで利用する数
 
 		// ルートシグネチャの設定
 		D3D12_ROOT_SIGNATURE_DESC descriptionRootSignature{};

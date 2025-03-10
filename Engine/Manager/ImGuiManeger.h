@@ -4,6 +4,7 @@
 #include <d3d12.h>
 #include <WinApp.h>
 #include "DirectXCommon.h"
+#include "SrvManager.h"
 
 using namespace Engine;
 
