@@ -125,6 +125,15 @@ struct DirectionalLight {
 	float intensity;
 };
 
+// TextureData
+struct TextureData {
+	DirectX::TexMetadata mataData;
+	Microsoft::WRL::ComPtr<ID3D12Resource> resource;
+	uint32_t srvIndex;
+	D3D12_CPU_DESCRIPTOR_HANDLE srvHandleCPU;
+	D3D12_GPU_DESCRIPTOR_HANDLE srvHandleGPU;
+};
+
 // Node
 struct Node {
 	QuaternionTransform transform;
@@ -345,6 +354,8 @@ Quaternion LerpQuaternion(const Quaternion& v1, const Quaternion& v2, float t);
 // 球面補間
 Vector3 Slerp(const Vector3& v1, const Vector3& v2, float t);
 Quaternion SlerpQuaternion(const Quaternion& q0, const Quaternion& q1, float t);
+// イージング
+float EaseOutQuart(float x);
 
 Vector3 CalculateValue(const std::vector<KeyframeVector3>& keyframes, float time);
 Quaternion CalculateValueRotate(const std::vector<KeyframeQuaternion>& keyframes, float time);

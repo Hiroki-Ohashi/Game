@@ -19,7 +19,7 @@
 #include "IScene.h"
 #include "PostProcess.h"
 #include <Json.h>
-#include <Skydome.h>
+#include <SkyBox/Skydome.h>
 
 using namespace Engine;
 

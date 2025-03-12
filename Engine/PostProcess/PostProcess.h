@@ -1,5 +1,6 @@
 #pragma once
 #include "DirectXCommon.h"
+#include "SrvManager.h"
 
 /// <summary>
 /// PostProcess.h
@@ -27,6 +28,8 @@ struct NoiseParams {
 	float vignetteShape;
 	float blurStrength;
 	int sampleCount;
+	float fogStart;
+	float fogDensity;
 };
 
 namespace Engine
@@ -82,6 +85,18 @@ namespace Engine
 			noiseData_->noiseStrength = noiseStrength_;
 		}
 
+		// fogのGetterとSetter
+		float GetFogStart() { return noiseData_->fogStart; }
+		void SetFogStart(float fogStart_) { noiseData_->fogStart = fogStart_; }
+
+		float GetFogDensity() { return noiseData_->fogDensity; }
+		void SetFogDensity(float fogDensity_) { noiseData_->fogDensity = fogDensity_; }
+
+		void SetFog(float fogStart_, float fogDensity_) {
+			noiseData_->fogStart = fogStart_;
+			noiseData_->fogDensity = fogDensity_;
+		}
+
 	private:
 		// PSO生成
 		void CreatePSO();
@@ -98,7 +113,7 @@ namespace Engine
 
 	private:
 		// シングルトン呼び出し
-		DirectXCommon* dir_ = DirectXCommon::GetInsTance();
+		DirectXCommon* dir_ = DirectXCommon::GetInstance();
 
 		// PSO
 		Microsoft::WRL::ComPtr<ID3DBlob> signatureBlob = nullptr;

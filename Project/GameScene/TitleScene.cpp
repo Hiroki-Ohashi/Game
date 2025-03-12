@@ -15,7 +15,7 @@ void TitleScene::Initialize()
 	camera_.cameraTransform.translate = { 0.0f, 5.0f, -10.0f };
 	camera_.cameraTransform.rotate.x = 0.4f;
 
-	textureManager_->Initialize();
+	//textureManager_->Initialize();
 
 	postProcess_ = std::make_unique<PostProcess>();
 	postProcess_->Initialize(NOISE);
@@ -32,7 +32,7 @@ void TitleScene::Initialize()
 
 	// UI(title)
 	title_ = std::make_unique<Sprite>();
-	title_->Initialize(Vector2{ 60.0f, 60.0f }, Vector2{ 90.0f, 80.0f }, title);
+	title_->Initialize(Vector2{ 60.0f, 80.0f }, Vector2{ 500.0f, 370.0f }, title);
 
 	// UI(startLog)
 	startLog_ = std::make_unique<Sprite>();
@@ -64,9 +64,9 @@ void TitleScene::Update()
 	XINPUT_STATE joyState;
 
 	// Aボタンで遷移
-	if (Input::GetInsTance()->GetJoystickState(joyState)) {
+	if (Input::GetInstance()->GetJoystickState(joyState)) {
 
-		if (Input::GetInsTance()->PressedButton(joyState, XINPUT_GAMEPAD_A)) {
+		if (Input::GetInstance()->PressedButton(joyState, XINPUT_GAMEPAD_A)) {
 			isVignette_ = true;
 		}
 

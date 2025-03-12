@@ -12,6 +12,7 @@
 #include "TextureManager.h"
 #include "Camera.h"
 #include "WorldTransform.h"
+#include "SrvManager.h"
 
 
 /// <summary>
@@ -54,6 +55,7 @@ namespace Engine
 	private:
 		// シングルトン呼び出し
 		TextureManager* texture_ = TextureManager::GetInstance();
+		SrvManager* srvManager_ = SrvManager::GetInstance();
 
 		// BufferView
 		D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};

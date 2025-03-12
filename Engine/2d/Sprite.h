@@ -10,6 +10,7 @@
 #include "MathFunction.h"
 #include "DirectXCommon.h"
 #include "TextureManager.h"
+#include "SrvManager.h"
 #include "Mesh.h"
 #include "Camera.h"
 
@@ -41,8 +42,10 @@ namespace Engine
 		Vector2 GetSize() { return { transformSprite.scale.x,  transformSprite.scale.y }; }
 		Vector2 GetPos() { return { transformSprite.translate.x,  transformSprite.translate.y }; }
 		Vector2 GetTextureLeftTop() { return textureLeftTop; }
+		float GetAlpha() { return materialDataSprite->color.w; }
 
 		// Setter
+		void SetTexture(uint32_t texture) { textureIndex = texture; }
 		void SetAnchorPoint(const Vector2 anchorPoint_) { this->anchorPoint = anchorPoint_; }
 		void SetPosition(Vector2 pos_) {
 			transformSprite.translate.x = pos_.x;
@@ -59,7 +62,6 @@ namespace Engine
 		}
 		void SetTextureLeftTop(const Vector2 textureLeftTop_) { this->textureLeftTop = textureLeftTop_; }
 		void SetAlpha(float alpha) { materialDataSprite->color.w = alpha; }
-		float GetAlpha() { return materialDataSprite->color.w; }
 
 		// シーン遷移処理
 		void FadeIn(float speed);
@@ -83,8 +85,9 @@ namespace Engine
 
 	private:
 		// シングルトン呼び出し
-		DirectXCommon* dir_ = DirectXCommon::GetInsTance();
+		DirectXCommon* dir_ = DirectXCommon::GetInstance();
 		TextureManager* texture_ = TextureManager::GetInstance();
+		SrvManager* srvManager_ = SrvManager::GetInstance();
 
 		// Resource
 		Microsoft::WRL::ComPtr<ID3D12Resource> vertexResourceSprite;
@@ -105,6 +108,7 @@ namespace Engine
 		Material* materialDataSprite;
 		TransformationMatrix* transformationMatrixDataSprite;
 		uint32_t* indexDataSprite;
+		std::unordered_map<int, std::string> textureFilenames;
 
 		// Transform
 		EulerTransform transformSprite;

@@ -21,7 +21,7 @@ protected:
 	// シーン番号
 	static int sceneNo;
 	// シングルトン呼び出し
-	Input* input_ = Input::GetInsTance();
+	Input* input_ = Input::GetInstance();
 
 public:
 	// デストラクタ

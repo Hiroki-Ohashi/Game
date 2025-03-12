@@ -5,6 +5,7 @@
 #include "WorldTransform.h"
 #include "TextureManager.h"
 #include "Light.h"
+#include "SrvManager.h"
 
 /// <summary>
 /// Animation.h
@@ -47,7 +48,7 @@ namespace Engine {
 		// joint作成
 		int32_t CreateJoint(const Node& node, const std::optional<int32_t>& parent, std::vector<Joint>& joints);
 		// skinClister作成
-		SkinCluster CreateSkinCluster(const Microsoft::WRL::ComPtr<ID3D12Device>& device, const Skeleton& skeleton, const ModelData& modelData, const Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>& descriptorHeap, uint32_t descriptorSize, uint32_t index);
+		SkinCluster CreateSkinCluster(const Microsoft::WRL::ComPtr<ID3D12Device>& device, const Skeleton& skeleton, const ModelData& modelData, uint32_t index);
 
 		// Resource生成
 		Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(Microsoft::WRL::ComPtr<ID3D12Device> device, size_t sizeInbytes);
@@ -56,9 +57,10 @@ namespace Engine {
 
 	private:
 		// シングルトン呼び出し
-		DirectXCommon* dir_ = DirectXCommon::GetInsTance();
+		DirectXCommon* dir_ = DirectXCommon::GetInstance();
 		TextureManager* texture_ = TextureManager::GetInstance();
 		Light* light_ = Light::GetInstance();
+		SrvManager* srvManager_ = SrvManager::GetInstance();
 		CameraForGpu* camera_ = nullptr;
 
 		// Transform

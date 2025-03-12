@@ -15,8 +15,7 @@ void OverScene::Initialize()
 	camera_.cameraTransform.translate = { -0.4f, 7.0f, -19.0f };
 	camera_.cameraTransform.rotate.x = 0.25f;
 
-	textureManager_->Initialize();
-
+	
 	// PostEffect
 	postProcess_ = std::make_unique<PostProcess>();
 	postProcess_->Initialize(NOISE);
@@ -99,26 +98,26 @@ void OverScene::Update()
 	XINPUT_STATE joyState;
 
 	// 十字キーでシーン選択
-	if (Input::GetInsTance()->GetJoystickState(joyState)) {
+	if (Input::GetInstance()->GetJoystickState(joyState)) {
 		// 長押し防止
 		if (scenePrev == 0) {
-			if (Input::GetInsTance()->PressedButton(joyState, XINPUT_GAMEPAD_DPAD_DOWN)) {
+			if (Input::GetInstance()->PressedButton(joyState, XINPUT_GAMEPAD_DPAD_DOWN)) {
 				scenePrev = 1;
 			}
 		}
 		else if (scenePrev == 1) {
-			if (Input::GetInsTance()->PressedButton(joyState, XINPUT_GAMEPAD_DPAD_UP)) {
+			if (Input::GetInstance()->PressedButton(joyState, XINPUT_GAMEPAD_DPAD_UP)) {
 				scenePrev = 0;
 			}
 		}
 
 		// 選んだシーンをAボタンで遷移開始
 		if (scenePrev == 0) {
-			if (Input::GetInsTance()->PressedButton(joyState, XINPUT_GAMEPAD_A)) {
+			if (Input::GetInstance()->PressedButton(joyState, XINPUT_GAMEPAD_A)) {
 				isVignette_ = true;
 			}
 		}else if (scenePrev == 1) {
-			if (Input::GetInsTance()->PressedButton(joyState, XINPUT_GAMEPAD_A)) {
+			if (Input::GetInstance()->PressedButton(joyState, XINPUT_GAMEPAD_A)) {
 				isVignette_ = true;
 			}
 		}

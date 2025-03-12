@@ -7,7 +7,7 @@
 
 void PlayerBullet::Initialize(Vector3 pos, Vector3 velocity)
 {
-	transform = { {0.5f,0.5f,0.5f},{0.0f,0.0f,0.0f},{pos.x,pos.y,pos.z - 4.0f} };
+	transform = { {0.5f,0.5f,0.5f},{0.0f,0.0f,0.0f},{pos.x,pos.y,pos.z} };
 
 	model_ = std::make_unique<Model>();
 	model_->Initialize("misairu.obj", transform);

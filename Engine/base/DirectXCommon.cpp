@@ -7,7 +7,7 @@
 
 namespace Engine
 {
-	DirectXCommon* DirectXCommon::GetInsTance()
+	DirectXCommon* DirectXCommon::GetInstance()
 	{
 		static DirectXCommon instance;
 		return &instance;
@@ -122,8 +122,8 @@ namespace Engine
 		assert(SUCCEEDED(hr_));
 
 		// スワップチェーンを生成する
-		swapChainDesc.Width = WinApp::GetInsTance()->GetKClientWidth();// 画面の幅
-		swapChainDesc.Height = WinApp::GetInsTance()->GetKClientHeight();// 画面の高さ
+		swapChainDesc.Width = WinApp::GetInstance()->GetKClientWidth();// 画面の幅
+		swapChainDesc.Height = WinApp::GetInstance()->GetKClientHeight();// 画面の高さ
 		swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;// 色の形式
 		swapChainDesc.SampleDesc.Count = 1;// マルチサンプル
 		swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;// 描画のターゲットとして利用
@@ -131,15 +131,15 @@ namespace Engine
 		swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;// モニタに写したら中身を破棄
 
 		// コマンドキュー、ウインドウハンドル、設定を渡して生成する
-		hr_ = dxgiFactory_->CreateSwapChainForHwnd(commandQueue_.Get(), WinApp::GetInsTance()->GetHwnd(), &swapChainDesc, nullptr, nullptr, reinterpret_cast<IDXGISwapChain1**>(swapChain_.GetAddressOf()));
+		hr_ = dxgiFactory_->CreateSwapChainForHwnd(commandQueue_.Get(), WinApp::GetInstance()->GetHwnd(), &swapChainDesc, nullptr, nullptr, reinterpret_cast<IDXGISwapChain1**>(swapChain_.GetAddressOf()));
 		assert(SUCCEEDED(hr_));
 
 		// RTV用のヒープでディスクリプタの数は2。RTVはShader内で触るものではないので、ShaderVisibleはfalse
 		rtvDescriptorHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 3, false);
 
 		// SRV用のヒープでディスクリプタの数は128。SRVはShader内で触るものなので、ShaderVisibleはtrue
-		srvDescriptorHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 128, true);
-		srvDescriptorHeap2_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 128, true);
+		SrvManager* srvManager_ = SrvManager::GetInstance();
+		srvManager_->Initialize();
 
 		// SwapChainからResourceを引っ張ってくる
 		hr_ = swapChain_->GetBuffer(0, IID_PPV_ARGS(&swapChainResources[0]));
@@ -156,7 +156,6 @@ namespace Engine
 		D3D12_CPU_DESCRIPTOR_HANDLE rtvStartHandle = rtvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart();
 
 		// RTVを2つ作るのでディスクリプタを2つ用意
-		// 
 		// まず1つ目を作る。１つ目は最初のところに作る。作る場所をこちらで指定してあげる必要がある
 		rtvHandles[0] = rtvStartHandle;
 		device_->CreateRenderTargetView(swapChainResources[0].Get(), &rtvDesc, rtvHandles[0]);
@@ -166,25 +165,15 @@ namespace Engine
 		device_->CreateRenderTargetView(swapChainResources[1].Get(), &rtvDesc, rtvHandles[1]);
 
 		// RTVの作成
-		renderTextureResource = CreateRenderTextureResource(device_.Get(), WinApp::GetInsTance()->GetKClientWidth(), WinApp::GetInsTance()->GetKClientHeight(), DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, kRenderTargetClearValue);
+		renderTextureResource = CreateRenderTextureResource(device_.Get(), WinApp::GetInstance()->GetKClientWidth(), WinApp::GetInstance()->GetKClientHeight(), DXGI_FORMAT_R8G8B8A8_UNORM_SRGB, kRenderTargetClearValue);
 		rtvHandle.ptr = rtvHandles[1].ptr + device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 		device_->CreateRenderTargetView(renderTextureResource.Get(), &rtvDesc, rtvHandle);
 
-		srvHandle.ptr += srvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart().ptr + device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		srvGpuHandle.ptr += srvDescriptorHeap_->GetGPUDescriptorHandleForHeapStart().ptr + device_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-
-		// SRVの設定。FormatはResourceと同じにしておく
-		D3D12_SHADER_RESOURCE_VIEW_DESC renderTextureSrvDesc{};
-		renderTextureSrvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
-		renderTextureSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-		renderTextureSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-		renderTextureSrvDesc.Texture2D.MipLevels = 1;
-
 		// SRVの作成
-		device_->CreateShaderResourceView(renderTextureResource.Get(), &renderTextureSrvDesc, srvHandle);
+		srvManager_->CreateSRVRenderTexture(1, renderTextureResource);
 
 		// DepthStencilTextureをウィンドウのサイズで作成
-		depthStencilResource = CreateDepthStencilTextureResource(device_.Get(), WinApp::GetInsTance()->GetKClientWidth(), WinApp::GetInsTance()->GetKClientHeight());
+		depthStencilResource = CreateDepthStencilTextureResource(device_.Get(), WinApp::GetInstance()->GetKClientWidth(), WinApp::GetInstance()->GetKClientHeight());
 
 		// DSV用のヒープでディスクリプタの数は1。DSVはShader内で触るものではないので、shaderVisibleはfalse
 		dsvDescriptorHeap_ = CreateDescriptorHeap(device_.Get(), D3D12_DESCRIPTOR_HEAP_TYPE_DSV, 1, false);
@@ -193,8 +182,11 @@ namespace Engine
 		D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc{};
 		dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 		dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+
 		// DSVHeapの先頭にDSVを作る
 		device_->CreateDepthStencilView(depthStencilResource.Get(), &dsvDesc, dsvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart());
+
+		srvManager_->CreateSRVDepthTexture(2, depthStencilResource);
 
 		DirectXCommon::Fence();
 		DirectXCommon::Viewport();
@@ -213,21 +205,14 @@ namespace Engine
 	}
 
 	void DirectXCommon::RenderTexture() {
-
 		//これから書き込むバックバッファのインデックスを取得 
 		backBufferIndex = swapChain_->GetCurrentBackBufferIndex();
-
-		// 今回のバリアはTransition
+		// バリアを張る対象のリソース（バックバッファ）の状態遷移
 		barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-		// Noneにしておく
 		barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-		// バリアを張る対象のリソース。現在のバックバッファに対して行う
 		barrier.Transition.pResource = swapChainResources[backBufferIndex].Get();
-		// 遷移前(現在)のResourceState
 		barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
-		// 遷移後のResourceState
 		barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
-		// TransitionBarrierを練る
 		commandList_->ResourceBarrier(1, &barrier);
 
 		// 描画先のRTVとDSVをを設定する
@@ -242,39 +227,49 @@ namespace Engine
 		commandList_->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
 		// 描画用のDescriptorHeapの設定
-		ID3D12DescriptorHeap* descriptorHeaps2[] = { srvDescriptorHeap2_.Get() };
-		commandList_->SetDescriptorHeaps(1, descriptorHeaps2);
+		SrvManager::GetInstance()->PreDraw();
 
 		commandList_->RSSetViewports(1, &viewport);
 		commandList_->RSSetScissorRects(1, &scissorRect);
 	}
 
+	void DirectXCommon::ChangeBarrier()
+	{
+		//// depthStencilResource の状態を元に戻す
+		//depthBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+		//depthBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_DEPTH_WRITE;
+		//commandList_->ResourceBarrier(1, &depthBarrier);
+	}
+
 	void DirectXCommon::SwapChain()
 	{
-		// 今回のバリアはTransition
+		// バリアを張る対象のリソース（renderTextureResource）の状態遷移
 		barrier2.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-		// Noneにしておく
 		barrier2.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-		// バリアを張る対象のリソース。現在のバックバッファに対して行う
 		barrier2.Transition.pResource = renderTextureResource.Get();
-		// 遷移前(現在)のResourceState
 		barrier2.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
-		// 遷移後のResourceState
 		barrier2.Transition.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
-		// TransitionBarrierを練る
 		commandList_->ResourceBarrier(1, &barrier2);
+
+		// depthStencilResourceの状態遷移
+		// depthStencilResource のバリア
+		depthBarrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+		depthBarrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+		depthBarrier.Transition.pResource = depthStencilResource.Get();
+		depthBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_DEPTH_WRITE;
+		depthBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+		commandList_->ResourceBarrier(1, &depthBarrier);
 
 		// 描画先のRTVとDSVをを設定する
 		dsvHandle = dsvDescriptorHeap_->GetCPUDescriptorHandleForHeapStart();
-		commandList_->OMSetRenderTargets(1, &rtvHandles[backBufferIndex], false, &dsvHandle);
+		commandList_->OMSetRenderTargets(1, &rtvHandles[backBufferIndex], false, nullptr);
 
 		// 指定した色で画面全体をクリアする
-		float clearColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+		float clearColor[] = { 1.0f, 0.0f, 0.0f, 1.0f };
 		commandList_->ClearRenderTargetView(rtvHandles[backBufferIndex], clearColor, 0, nullptr);
 
 		// 描画用のDescriptorHeapの設定
-		ID3D12DescriptorHeap* descriptorHeaps[] = { srvDescriptorHeap_.Get() };
-		commandList_->SetDescriptorHeaps(1, descriptorHeaps);
+		SrvManager::GetInstance()->PostDraw();
 
 		commandList_->RSSetViewports(1, &viewport);
 		commandList_->RSSetScissorRects(1, &scissorRect);
@@ -288,6 +283,11 @@ namespace Engine
 		barrier2.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
 		// TransitionBarrierを練る
 		commandList_->ResourceBarrier(1, &barrier2);
+
+		// `depthStencilResource` の状態遷移
+		depthBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+		depthBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_DEPTH_WRITE;
+		commandList_->ResourceBarrier(1, &depthBarrier);
 	}
 
 	void DirectXCommon::Close() {
@@ -304,6 +304,7 @@ namespace Engine
 		// GPUにコマンドの実行を行わせる
 		ID3D12CommandList* commandLists[] = { commandList_.Get() };
 		commandQueue_->ExecuteCommandLists(1, commandLists);
+		//commandAllocator_->Reset();
 		// GPUとOSに画像の交換を行うよう通知する
 		swapChain_->Present(1, 0);
 
@@ -334,8 +335,8 @@ namespace Engine
 	void DirectXCommon::Viewport() {
 		// ビューポート
 		// クライアント領域のサイズと一緒にして画面全体に表示
-		viewport.Width = (float)WinApp::GetInsTance()->GetKClientWidth();
-		viewport.Height = (float)WinApp::GetInsTance()->GetKClientHeight();
+		viewport.Width = (float)WinApp::GetInstance()->GetKClientWidth();
+		viewport.Height = (float)WinApp::GetInstance()->GetKClientHeight();
 		viewport.TopLeftX = 0;
 		viewport.TopLeftY = 0;
 		viewport.MinDepth = 0.0f;
@@ -346,9 +347,9 @@ namespace Engine
 		// シザー矩形
 		// 基本的にビューポートと同じ矩形が構成されるようにする
 		scissorRect.left = 0;
-		scissorRect.right = WinApp::GetInsTance()->GetKClientWidth();
+		scissorRect.right = WinApp::GetInstance()->GetKClientWidth();
 		scissorRect.top = 0;
-		scissorRect.bottom = WinApp::GetInsTance()->GetKClientHeight();
+		scissorRect.bottom = WinApp::GetInstance()->GetKClientHeight();
 	}
 
 
@@ -357,14 +358,14 @@ namespace Engine
 		CloseHandle(fenceEvent);
 
 #ifdef _DEBUG
-		WinApp::GetInsTance()->GetDebugController()->Release();
+		WinApp::GetInstance()->GetDebugController()->Release();
 		//Microsoft::WRL::ComPtr<ID3D12DebugDevice> debugDevice;
 		//if (SUCCEEDED(device_->QueryInterface(IID_PPV_ARGS(&debugDevice)))) {
 		//	// 未解放オブジェクトを報告
 		//	debugDevice->ReportLiveObjects(D3D12_RLDO_DETAIL | D3D12_RLDO_IGNORE_INTERNAL);
 		//}
 #endif
-		CloseWindow(WinApp::GetInsTance()->GetHwnd());
+		CloseWindow(WinApp::GetInstance()->GetHwnd());
 
 		struct D3DResourceLeakCheker {
 			~D3DResourceLeakCheker() {

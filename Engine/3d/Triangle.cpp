@@ -26,17 +26,17 @@ namespace Engine
 
 		worldtransform_.TransferMatrix(wvpData, camera);
 
-		DirectXCommon::GetInsTance()->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView);
+		DirectXCommon::GetInstance()->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView);
 		// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
-		DirectXCommon::GetInsTance()->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		DirectXCommon::GetInstance()->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		// マテリアルCBufferの場所を設定
-		DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
+		DirectXCommon::GetInstance()->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
 		// wvp用のCBufferの場所を設定
-		DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
+		DirectXCommon::GetInstance()->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
 		// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-		DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootDescriptorTable(2, texture_->GetTextureSRVHandleGPU(index));
+		DirectXCommon::GetInstance()->GetCommandList()->SetGraphicsRootDescriptorTable(2, srvManager_->GetGPUDescriptorHandle(index));
 		// 描画(DrawCall/ドローコール)。3頂点で1つのインスタンス。
-		DirectXCommon::GetInsTance()->GetCommandList()->DrawInstanced(6, 1, 0, 0);
+		DirectXCommon::GetInstance()->GetCommandList()->DrawInstanced(6, 1, 0, 0);
 	}
 
 	void Triangle::Release() {
@@ -44,7 +44,7 @@ namespace Engine
 
 	void Triangle::CreateVertexResource(Vector4* pos) {
 		// 頂点用のリソースを作る。今回はcolor1つ分のサイズを用意する
-		vertexResource = CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(VertexData) * 6);
+		vertexResource = CreateBufferResource(DirectXCommon::GetInstance()->GetDevice(), sizeof(VertexData) * 6);
 
 		// リソースの先頭のアドレスから使う
 		vertexBufferView.BufferLocation = vertexResource->GetGPUVirtualAddress();
@@ -116,7 +116,7 @@ namespace Engine
 
 	void Triangle::CreateMaterialResource() {
 		// マテリアル用のリソースを作る。今回はcolor1つ分のサイズを用意する
-		materialResource = CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(Material));
+		materialResource = CreateBufferResource(DirectXCommon::GetInstance()->GetDevice(), sizeof(Material));
 		// マテリアルにデータを書き込む
 		materialData = nullptr;
 		// 書き込むためのアドレスを取得
@@ -130,7 +130,7 @@ namespace Engine
 
 	void Triangle::CreateWVPResource() {
 		// WVP用のリソースを作る。Matrix4x4 1つ分のサイズを用意する
-		wvpResource = CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(TransformationMatrix));
+		wvpResource = CreateBufferResource(DirectXCommon::GetInstance()->GetDevice(), sizeof(TransformationMatrix));
 		// 書き込むためのアドレスを取得
 		wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
 		// 単位行列を書き込んでおく

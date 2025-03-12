@@ -3,6 +3,7 @@
 #include "imgui.h"
 #include "imgui_impl_dx12.h"
 #include "imgui_impl_win32.h"
+#include <iostream>
 
 /// <summary>
 /// ImGuiManager.cpp
@@ -19,13 +20,13 @@ void ImGuiManeger::Initialize(){
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGui::StyleColorsDark();
-	ImGui_ImplWin32_Init(WinApp::GetInsTance()->GetHwnd());
-	ImGui_ImplDX12_Init(DirectXCommon::GetInsTance()->GetDevice().Get(),
-		DirectXCommon::GetInsTance()->GetSwapChainDesc().BufferCount,
-		DirectXCommon::GetInsTance()->GetRtvDesc().Format,
-		DirectXCommon::GetInsTance()->GetSrvDescriptorHeap().Get(),
-		DirectXCommon::GetInsTance()->GetSrvDescriptorHeap()->GetCPUDescriptorHandleForHeapStart(),
-		DirectXCommon::GetInsTance()->GetSrvDescriptorHeap()->GetGPUDescriptorHandleForHeapStart()
+	ImGui_ImplWin32_Init(WinApp::GetInstance()->GetHwnd());
+	ImGui_ImplDX12_Init(DirectXCommon::GetInstance()->GetDevice().Get(),
+		DirectXCommon::GetInstance()->GetSwapChainDesc().BufferCount,
+		DirectXCommon::GetInstance()->GetRtvDesc().Format,
+		SrvManager::GetInstance()->GetSrvDescriptorHeap().Get(),
+		SrvManager::GetInstance()->GetSrvDescriptorHeap()->GetCPUDescriptorHandleForHeapStart(),
+		SrvManager::GetInstance()->GetSrvDescriptorHeap()->GetGPUDescriptorHandleForHeapStart()
 	);
 }
 
@@ -43,7 +44,7 @@ void ImGuiManeger::Draw(){
 
 #ifdef _DEBUG
 	// 実際にcommandListのImGuiの描画コマンドを積む
-	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), DirectXCommon::GetInsTance()->GetCommandList().Get());
+	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), DirectXCommon::GetInstance()->GetCommandList().Get());
 #endif // DEBUG
 }
 

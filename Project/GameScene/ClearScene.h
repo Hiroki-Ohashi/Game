@@ -4,8 +4,8 @@
 #include <Camera.h>
 #include <Sprite.h>
 #include <PostProcess.h>
-#include <Skydome.h>
 #include <Json.h>
+#include <SkyBox/Skydome.h>
 using namespace Engine;
 
 /// <summary>

@@ -23,7 +23,7 @@ namespace Engine {
 
 		textureIndex = index;
 
-		AdjustTextureSize();
+		//AdjustTextureSize();
 
 		CreatePso();
 
@@ -39,7 +39,7 @@ namespace Engine {
 
 		transformationMatrixDataSprite->World = MakeAffineMatrix(transformSprite.scale, transformSprite.rotate, transformSprite.translate);
 		Matrix4x4 viewMatrixSprite = MakeIndentity4x4();
-		Matrix4x4 projectionMatrixSprite = MakeOrthographicMatrix(0.0f, 0.0f, float(WinApp::GetInsTance()->GetKClientWidth()), float(WinApp::GetInsTance()->GetKClientHeight()), 0.0f, 100.0f);
+		Matrix4x4 projectionMatrixSprite = MakeOrthographicMatrix(0.0f, 0.0f, float(WinApp::GetInstance()->GetKClientWidth()), float(WinApp::GetInstance()->GetKClientHeight()), 0.0f, 100.0f);
 		Matrix4x4 worldViewProjectionMatrixSprite = Multiply(transformationMatrixDataSprite->World, Multiply(viewMatrixSprite, projectionMatrixSprite));
 		transformationMatrixDataSprite->WVP = worldViewProjectionMatrixSprite;
 
@@ -49,8 +49,8 @@ namespace Engine {
 		materialDataSprite->uvTransform = uvtransformMatrix;
 
 		// DirectXCommon::GetInsTance()を設定。PSOに設定しているけど別途設定が必要
-		DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootSignature(rootSignature.Get());
-		DirectXCommon::GetInsTance()->GetCommandList()->SetPipelineState(graphicsPipelineState.Get());
+		DirectXCommon::GetInstance()->GetCommandList()->SetGraphicsRootSignature(rootSignature.Get());
+		DirectXCommon::GetInstance()->GetCommandList()->SetPipelineState(graphicsPipelineState.Get());
 		// コマンドを積む
 		dir_->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferViewSprite); // VBVを設定
 		// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
@@ -62,7 +62,8 @@ namespace Engine {
 		// TransformationMatrixCBufferの場所を設定
 		dir_->GetCommandList()->SetGraphicsRootConstantBufferView(1, transformationMatrixResourceSprite->GetGPUVirtualAddress());
 		// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-		dir_->GetCommandList()->SetGraphicsRootDescriptorTable(2, texture_->GetTextureSRVHandleGPU(textureIndex));
+		// SRVのDescriptorTableの先頭を設定
+		DirectXCommon::GetInstance()->GetCommandList()->SetGraphicsRootDescriptorTable(2, srvManager_->GetGPUDescriptorHandle(textureIndex));
 		// 描画(DrawCall/ドローコール)
 		dir_->GetCommandList()->DrawIndexedInstanced(6, 1, 0, 0, 0);
 
@@ -158,7 +159,6 @@ namespace Engine {
 		materialResourceSprite->Unmap(0, nullptr);
 	}
 
-
 	void Sprite::CreateTransformationMatrixResourceSprite() {
 		// Sprite用のTransformationMatrix用のリソースを作る。Matrix4x4 1つ分のサイズを用意する
 		transformationMatrixResourceSprite = CreateBufferResource(dir_->GetDevice(), sizeof(TransformationMatrix));
@@ -244,7 +244,7 @@ namespace Engine {
 			assert(false);
 		}
 		// バイナリを元に生成
-		hr = DirectXCommon::GetInsTance()->GetDevice()->CreateRootSignature(0, signatureBlob->GetBufferPointer(), signatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature));
+		hr = DirectXCommon::GetInstance()->GetDevice()->CreateRootSignature(0, signatureBlob->GetBufferPointer(), signatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature));
 		assert(SUCCEEDED(hr));
 
 		// InputLayout
@@ -317,7 +317,7 @@ namespace Engine {
 		graphicsPipelineStateDesc.DepthStencilState = depthStencilDesc;
 		graphicsPipelineStateDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 		// 実際に生成
-		hr = DirectXCommon::GetInsTance()->GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc, IID_PPV_ARGS(&graphicsPipelineState));
+		hr = DirectXCommon::GetInstance()->GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc, IID_PPV_ARGS(&graphicsPipelineState));
 		assert(SUCCEEDED(hr));
 	}
 
@@ -373,7 +373,8 @@ namespace Engine {
 
 	void Sprite::AdjustTextureSize()
 	{
-		Microsoft::WRL::ComPtr<ID3D12Resource> textureBuffer = texture_->GetTextureResource(textureIndex).Get();
+		std::string filename = textureFilenames[textureIndex];
+		Microsoft::WRL::ComPtr<ID3D12Resource> textureBuffer = texture_->GetTextureResource(filename).Get();
 		assert(textureBuffer);
 
 		D3D12_RESOURCE_DESC resDesc = textureBuffer->GetDesc();

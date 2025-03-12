@@ -9,6 +9,7 @@
 #include "EnemyBulletPool.h"
 #include "Sprite.h"
 #include "CollisionConfig.h"
+#include "BaseEnemyState.h"
 
 using namespace Engine;
 
@@ -37,12 +38,15 @@ public:
 	// 描画処理
 	void Draw(Camera* camera);
 	void DrawUI();
+	void DrawParticle(Camera* camera);
 	// 攻撃処理
 	void Attack();
 	// 当たり判定処理
 	void OnCollision() override;
 	// 死亡アニメーション
 	void DeadAnimation();
+
+	void ChangeState(BaseEnemyState* newState);
 
 	// 死亡判定
 	void SetIsDead(bool isDead) { isDead_ = isDead; }
@@ -67,6 +71,7 @@ public:
 	void SetGameScene(GameScene* gameScene) { gameScene_ = gameScene; }
 	void SetPlayer(Player* player) { player_ = player; }
 	void SetisLockOn(bool isLockOn) { isLockOn_ = isLockOn; }
+	void SetEnemySpeed(Vector3 speed_) { enemySpeed = speed_; }
 private:
 	// シングルトン呼び出し
 	TextureManager* textureManager_ = TextureManager::GetInstance();
@@ -79,6 +84,7 @@ private:
 	Player* player_ = nullptr;
 	GameScene* gameScene_ = nullptr;
 	EnemyBulletPool bulletPool_;
+
 	std::unique_ptr<Sprite> enemySprite_;
 	std::unique_ptr<Particles> particle_ = nullptr;
 
@@ -87,6 +93,7 @@ private:
 	uint32_t enemyTex;
 	uint32_t enemyBulletTex;
 	uint32_t lockOnTex;
+	uint32_t lockTex;
 	// 発射タイマー
 	int32_t attackTimer = 10;
 	static const int kFireInterval = 120;
@@ -99,7 +106,7 @@ private:
 	Vector3 positionReticle;
 
 	// 初期位置
-	Vector3 posParam;
+	Vector3 posParam = {0.0f, 80.0f, 0.0f};
 
 	float speedY = 0.3f;
 	float kRotSpeed = 1.0f;
@@ -112,4 +119,9 @@ private:
 
 	bool isLockOn_;
 	bool isPossibillityLock;
+
+	Vector3 enemySpeed = { 0.0f, 0.0f, 30.0f };
+
+	// ステート
+	BaseEnemyState* state;
 };

@@ -15,6 +15,7 @@
 #include "WinApp.h"
 #include "Function.h"
 #include "MathFunction.h"
+#include "SrvManager.h"
 
 #pragma comment(lib, "d3d12.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -30,7 +31,7 @@ namespace Engine
 	class DirectXCommon {
 	public:
 		// シングルトン化
-		static DirectXCommon* GetInsTance();
+		static DirectXCommon* GetInstance();
 		// デストラクタ
 		~DirectXCommon();
 
@@ -45,9 +46,6 @@ namespace Engine
 		Microsoft::WRL::ComPtr<ID3D12Device> GetDevice() { return device_.Get(); }
 		DXGI_SWAP_CHAIN_DESC1 GetSwapChainDesc() { return swapChainDesc; }
 		D3D12_RENDER_TARGET_VIEW_DESC GetRtvDesc() { return rtvDesc; }
-		Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetSrvDescriptorHeap() { return srvDescriptorHeap_.Get(); }
-		Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> GetSrvDescriptorHeap2() { return srvDescriptorHeap2_.Get(); }
-		D3D12_GPU_DESCRIPTOR_HANDLE GetSrvHandleGpu() { return srvGpuHandle; }
 		D3D12_RESOURCE_BARRIER GetBarrier() const { return barrier; }
 
 		void SetBarrier(D3D12_RESOURCE_BARRIER barrier_) { barrier_ = barrier; }
@@ -56,6 +54,7 @@ namespace Engine
 		void Fence();
 		void SwapChain();
 		void RemoveBarrier();
+		void ChangeBarrier();
 		void Close();
 
 		void Viewport();
@@ -85,19 +84,16 @@ namespace Engine
 		// barriar
 		D3D12_RESOURCE_BARRIER barrier{};
 		D3D12_RESOURCE_BARRIER barrier2{};
+		D3D12_RESOURCE_BARRIER depthBarrier{};
 
 		// DescripterHeap
 		Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> rtvDescriptorHeap_ = nullptr;
 		Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> dsvDescriptorHeap_ = nullptr;
-		Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> srvDescriptorHeap_ = nullptr;
-		Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> srvDescriptorHeap2_ = nullptr;
 
 		// DescripterHandle
 		D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles[2];
 		D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle;
 		D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle;
-		D3D12_CPU_DESCRIPTOR_HANDLE srvHandle;
-		D3D12_GPU_DESCRIPTOR_HANDLE srvGpuHandle;
 
 		D3D12_RENDER_TARGET_VIEW_DESC rtvDesc{};
 
@@ -112,7 +108,7 @@ namespace Engine
 		HANDLE fenceEvent = 0;
 		std::chrono::steady_clock::time_point reference_;
 
-		const Vector4 kRenderTargetClearValue = { 0.0f, 0.0f, 0.0f, 1.0f }; // いったんわかりやすいように赤
+		const Vector4 kRenderTargetClearValue = { 1.0f, 0.0f, 0.0f, 1.0f }; // いったんわかりやすいように赤
 
 		D3D12_VIEWPORT viewport{};
 		D3D12_RECT scissorRect{};

@@ -31,7 +31,7 @@ namespace Engine
 
 		light_->Initialize();
 
-		cameraResource = CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(Camera));
+		cameraResource = CreateBufferResource(DirectXCommon::GetInstance()->GetDevice(), sizeof(Camera));
 		cameraResource->Map(0, nullptr, reinterpret_cast<void**>(&camera_));
 
 		worldTransform_.translate = transform_.translate;
@@ -70,22 +70,22 @@ namespace Engine
 		uvtransformMatrix = Multiply(uvtransformMatrix, MakeTranslateMatrix(uvTransform.translate));
 		materialData->uvTransform = uvtransformMatrix;
 
-		DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootSignature(rootSignature.Get());
-		DirectXCommon::GetInsTance()->GetCommandList()->SetPipelineState(graphicsPipelineState.Get());
+		DirectXCommon::GetInstance()->GetCommandList()->SetGraphicsRootSignature(rootSignature.Get());
+		DirectXCommon::GetInstance()->GetCommandList()->SetPipelineState(graphicsPipelineState.Get());
 		// コマンドを積む
-		DirectXCommon::GetInsTance()->GetCommandList()->IASetVertexBuffers(0, 1, &modelData.vertexBufferView); // VBVを設定
+		DirectXCommon::GetInstance()->GetCommandList()->IASetVertexBuffers(0, 1, &modelData.vertexBufferView); // VBVを設定
 		// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
-		DirectXCommon::GetInsTance()->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		DirectXCommon::GetInstance()->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		// マテリアルCBufferの場所を設定
-		DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResource.Get()->GetGPUVirtualAddress());
+		DirectXCommon::GetInstance()->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResource.Get()->GetGPUVirtualAddress());
 		// TransformationMatrixCBufferの場所を設定
-		DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
-		DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(3, light_->GetDirectionalLightResource()->GetGPUVirtualAddress());
-		DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootConstantBufferView(4, cameraResource->GetGPUVirtualAddress());
+		DirectXCommon::GetInstance()->GetCommandList()->SetGraphicsRootConstantBufferView(1, wvpResource->GetGPUVirtualAddress());
+		DirectXCommon::GetInstance()->GetCommandList()->SetGraphicsRootConstantBufferView(3, light_->GetDirectionalLightResource()->GetGPUVirtualAddress());
+		DirectXCommon::GetInstance()->GetCommandList()->SetGraphicsRootConstantBufferView(4, cameraResource->GetGPUVirtualAddress());
 		// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-		DirectXCommon::GetInsTance()->GetCommandList()->SetGraphicsRootDescriptorTable(2, texture_->GetTextureSRVHandleGPU(index));
+		DirectXCommon::GetInstance()->GetCommandList()->SetGraphicsRootDescriptorTable(2, srvManager_->GetGPUDescriptorHandle(index));
 		// 描画(DrawCall/ドローコール)
-		DirectXCommon::GetInsTance()->GetCommandList()->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
+		DirectXCommon::GetInstance()->GetCommandList()->DrawInstanced(UINT(modelData.vertices.size()), 1, 0, 0);
 
 		/*if (ImGui::TreeNode("Model")) {
 			ImGui::SliderAngle("Rotate.y ", &worldTransform_.rotate.y);
@@ -108,7 +108,7 @@ namespace Engine
 
 	void Model::CreateVertexResource() {
 		// 頂点用のリソースを作る。
-		modelData.vertexResource = CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(VertexData) * modelData.vertices.size());
+		modelData.vertexResource = CreateBufferResource(DirectXCommon::GetInstance()->GetDevice(), sizeof(VertexData) * modelData.vertices.size());
 
 		// リソースの先頭のアドレスから使う
 		modelData.vertexBufferView.BufferLocation = modelData.vertexResource->GetGPUVirtualAddress();
@@ -130,7 +130,7 @@ namespace Engine
 
 	void Model::CreateMaterialResource() {
 		// マテリアル用のリソースを作る。今回はcolor1つ分のサイズを用意する
-		materialResource = CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(Material));
+		materialResource = CreateBufferResource(DirectXCommon::GetInstance()->GetDevice(), sizeof(Material));
 		// マテリアルにデータを書き込む
 		materialData = nullptr;
 		// 書き込むためのアドレスを取得
@@ -150,7 +150,7 @@ namespace Engine
 
 	void Model::CreateWVPResource() {
 		// WVP用のリソースを作る。Matrix4x4 1つ分のサイズを用意する
-		wvpResource = CreateBufferResource(DirectXCommon::GetInsTance()->GetDevice(), sizeof(TransformationMatrix));
+		wvpResource = CreateBufferResource(DirectXCommon::GetInstance()->GetDevice(), sizeof(TransformationMatrix));
 
 		// 書き込むためのアドレスを取得
 		wvpResource->Map(0, nullptr, reinterpret_cast<void**>(&wvpData));
@@ -240,7 +240,7 @@ namespace Engine
 			assert(false);
 		}
 		// バイナリを元に生成
-		hr = DirectXCommon::GetInsTance()->GetDevice()->CreateRootSignature(0, signatureBlob->GetBufferPointer(), signatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature));
+		hr = DirectXCommon::GetInstance()->GetDevice()->CreateRootSignature(0, signatureBlob->GetBufferPointer(), signatureBlob->GetBufferSize(), IID_PPV_ARGS(&rootSignature));
 		assert(SUCCEEDED(hr));
 
 		// InputLayout
@@ -323,7 +323,7 @@ namespace Engine
 		graphicsPipelineStateDesc.DepthStencilState = depthStencilDesc;
 		graphicsPipelineStateDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 		// 実際に生成
-		hr = DirectXCommon::GetInsTance()->GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc, IID_PPV_ARGS(&graphicsPipelineState));
+		hr = DirectXCommon::GetInstance()->GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc, IID_PPV_ARGS(&graphicsPipelineState));
 		assert(SUCCEEDED(hr));
 	}
 

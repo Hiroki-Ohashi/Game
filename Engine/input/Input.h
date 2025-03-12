@@ -29,7 +29,7 @@ namespace Engine
 		};
 
 		// シングルトン
-		static Input* GetInsTance();
+		static Input* GetInstance();
 
 		// 初期化
 		void Initialize();

@@ -15,6 +15,7 @@
 #include "Function.h"
 #include "MathFunction.h"
 #include "DirectXCommon.h"
+#include "SrvManager.h"
 #include "d3dx12.h"
 #include <unordered_map>
 #include <mutex>
@@ -35,17 +36,15 @@ namespace Engine
 		Animation LoadAnimation(const std::string& directoryPath, const std::string& filename);
 
 		// テクスチャセット
-		void SetTexture(const std::string& filePath, uint32_t index);
+		void SetTexture(const std::string& filePath);
 
 		// テクスチャ読み込み
 		DirectX::ScratchImage LoadTexture(const std::string& filePath);
 
 		// Getter
-		const D3D12_GPU_DESCRIPTOR_HANDLE GetTextureSRVHandleGPU(uint32_t index) { return textureSrvHandleGPU[index]; }
-		D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap, uint32_t descriptorSize, uint32_t index);
-		D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandle(Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap, uint32_t descriptorSize, uint32_t index);
-		uint32_t GetDiscreptorSize() { return descriptorSizeSRV; }
-		Microsoft::WRL::ComPtr<ID3D12Resource> GetTextureResource(uint32_t index) { return textureResource[index].Get(); }
+		uint32_t GetSrvIndex(const std::string& filename) { return textureDatas[filename].srvIndex; }
+		const D3D12_GPU_DESCRIPTOR_HANDLE GetTextureSRVHandleGPU(const std::string& filename) { return textureDatas[filename].srvHandleGPU; }
+		Microsoft::WRL::ComPtr<ID3D12Resource> GetTextureResource(const std::string& filename) { return textureDatas[filename].resource; }
 
 		// リソース作成
 		Microsoft::WRL::ComPtr<ID3D12Resource> CreateTextureResource(Microsoft::WRL::ComPtr<ID3D12Device> device, const DirectX::TexMetadata& metadata);
@@ -60,41 +59,32 @@ namespace Engine
 		// ノード読み込み
 		Node ReadNode(aiNode* node);
 
-		//uint32_t GetDiscrepterRtvSize() { return descriptorSizeRTV; }
-
 		[[nodiscard]]
 		Microsoft::WRL::ComPtr<ID3D12Resource> UploadTextureData(ID3D12Resource* texture, const DirectX::ScratchImage& mipImages);
 
 	private:
-		DirectXCommon* dir_ = DirectXCommon::GetInsTance();
+		DirectXCommon* dir_ = DirectXCommon::GetInstance();
+		SrvManager* srvManager_ = SrvManager::GetInstance();
 
-		// DescriptorSizeを取得しておく
-		uint32_t descriptorSizeRTV;
-		uint32_t descriptorSizeDSV;
-		uint32_t descriptorSizeSRV;
-
-		static const int kMaxTexture = 100;
-		int32_t textureIndex_;
-
+		static const int kMaxTexture = 1000;
 		Microsoft::WRL::ComPtr< ID3D12Resource> intermediateResource[kMaxTexture];
-		Microsoft::WRL::ComPtr<ID3D12Resource> textureResource[kMaxTexture];
-
-		D3D12_CPU_DESCRIPTOR_HANDLE textureSrvHandleCPU[kMaxTexture];
-		D3D12_GPU_DESCRIPTOR_HANDLE textureSrvHandleGPU[kMaxTexture];
 
 		static const int kMaxAnimation = 100;
 		uint32_t animationIndex_;
 
 		Animation animation[kMaxAnimation];
 
+		// TextureData
+		std::unordered_map<std::string, TextureData> textureDatas;
+		
 		// キャッシュ用データ構造
 		std::unordered_map<std::string, ModelData> modelCache;
-		std::mutex cacheMutex; // スレッドセーフ性を確保するためのミューテックス
+		std::mutex cacheMutex;
 
-		// テクスチャキャッシュ：キーはファイルパス、値はリソース情報
-		std::unordered_map<std::string, Microsoft::WRL::ComPtr<ID3D12Resource>> textureCache;
-		std::unordered_map<std::string, D3D12_SHADER_RESOURCE_VIEW_DESC> srvCache;
-
-		std::mutex TextureCacheMutex; // キャッシュ用ミューテックス
+	private:
+		TextureManager() = default;
+		~TextureManager() = default;
+		TextureManager(TextureManager&) = delete;
+		TextureManager& operator = (TextureManager&) = delete;
 	};
 }

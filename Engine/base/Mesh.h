@@ -25,7 +25,7 @@ namespace Engine
 	class Mesh {
 	public:
 		// シングルトン
-		static Mesh* GetInsTance();
+		static Mesh* GetInstance();
 		// 初期化処理
 		void Initialize();
 		// PSO生成
@@ -37,7 +37,7 @@ namespace Engine
 
 	private:
 		// シングルトン
-		DirectXCommon* dir_ = DirectXCommon::GetInsTance();
+		DirectXCommon* dir_ = DirectXCommon::GetInstance();
 		TextureManager* texture_ = TextureManager::GetInstance();
 
 		// PSO

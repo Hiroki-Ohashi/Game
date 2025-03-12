@@ -14,8 +14,9 @@
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{c26448c8-761f-42be-b3f6-eef22c1fce1a}</ProjectGuid>
-    <RootNamespace>CG201</RootNamespace>
+    <RootNamespace>Gekitui</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>Gekitui</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -91,6 +92,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <AdditionalIncludeDirectories>C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\2d;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\3d;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\Base;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\Input;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\Manager;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\GameScene;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\utillity;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\resources;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\externals\DirectXTex;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\externals\imgui;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\GameObject\;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Project\GameManager;$(ProjectDir)externals\assimp\include;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\Engine\PostProcess;C:\Users\Ohashi\source\repos\CG2\CG2_0_1\externals\json;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories>$(ProjectDir)Engine\2d;$(ProjectDir)Engine\3d;$(ProjectDir)Engine\Base;$(ProjectDir)Engine\Input;$(ProjectDir)Engine\Manager;$(ProjectDir)Project\GameScene;$(ProjectDir)Project\utillity;$(ProjectDir)resources;$(ProjectDir)externals\DirectXTex;$(ProjectDir)externals\imgui;$(ProjectDir)Project\;$(ProjectDir)Project\GameObject\;$(ProjectDir)Project\GameManager;$(ProjectDir)externals\assimp\include;$(ProjectDir)Engine\PostProcess;$(ProjectDir)Engine\Light;$(ProjectDir)Project\SkyBox;$(ProjectDir)externals\json</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <Optimization>MinSpace</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -108,9 +110,11 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="LockOn.cpp" />
+    <ClCompile Include="Engine\Manager\SrvManager.cpp" />
+    <ClCompile Include="Project\GameObject\Enemy\EnemyStateApproach.cpp" />
     <ClCompile Include="Project\GameObject\Enemy\EnemyBulletPool.cpp" />
     <ClCompile Include="Engine\Manager\Json.cpp" />
+    <ClCompile Include="Project\GameObject\Player\PlayerUI\PlayerUI.cpp" />
     <ClCompile Include="Project\GameObject\Stage\Object.cpp" />
     <ClCompile Include="Project\GameScene\OverScene.cpp" />
     <ClCompile Include="Project\GameObject\Enemy\EnemyBullet.cpp" />
@@ -147,14 +151,17 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Engine\Base\WinApp.cpp" />
     <ClCompile Include="Project\utillity\WorldTransform.cpp" />
     <ClCompile Include="Project\GameScene\TitleScene.cpp" />
-    <ClCompile Include="Project\SkyBox\SkyBox.cpp" />
-    <ClCompile Include="Project\SkyBox\Skydome.cpp" />
+    <ClCompile Include="Project\GameObject\SkyBox\SkyBox.cpp" />
+    <ClCompile Include="Project\GameObject\SkyBox\Skydome.cpp" />
     <ClCompile Include="Project\GameObject\Player\PlayerBullet.cpp" />
     <ClCompile Include="Project\GameObject\Stage\Stage.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Engine\Manager\SrvManager.h" />
+    <ClInclude Include="Project\GameObject\Enemy\EnemyStateApproach.h" />
+    <ClInclude Include="Project\GameObject\Enemy\BaseEnemyState.h" />
+    <ClInclude Include="Project\GameObject\Player\PlayerUI\PlayerUI.h" />
     <ClInclude Include="Project\utillity\CollisionConfig.h" />
-    <ClInclude Include="LockOn.h" />
     <ClInclude Include="Project\GameObject\Enemy\EnemyBulletPool.h" />
     <ClInclude Include="Project\GameObject\Stage\Object.h" />
     <ClInclude Include="Project\utillity\Collider.h" />
@@ -199,8 +206,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Engine\Base\WinApp.h" />
     <ClInclude Include="Project\utillity\WorldTransform.h" />
     <ClInclude Include="Project\GameScene\TitleScene.h" />
-    <ClInclude Include="Project\SkyBox\SkyBox.h" />
-    <ClInclude Include="Project\SkyBox\Skydome.h" />
+    <ClInclude Include="Project\GameObject\SkyBox\SkyBox.h" />
+    <ClInclude Include="Project\GameObject\SkyBox\Skydome.h" />
     <ClInclude Include="Project\GameObject\Stage\Stage.h" />
   </ItemGroup>
   <ItemGroup>
@@ -225,6 +232,12 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </None>
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="resources\Shaders\Fog.PS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="resources\Shaders\Sprite2d.PS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>

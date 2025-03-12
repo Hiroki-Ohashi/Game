@@ -2,8 +2,8 @@
 
 void Stage::Initialize()
 {
-	transform_ = { {10000.0f,1.0f,10000.0f},{0.0f,0.0f,0.0f},{0.0f,-100.0f,0.0f} };
-	uvTransform_ = { {100.0f,100.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+	transform_ = { {40000.0f,1.0f,40000.0f},{0.0f,0.0f,0.0f},{0.0f,-100.0f,0.0f} };
+	uvTransform_ = { {300.0f,300.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
 
 	model_ = std::make_unique<Model>();
 	model_->Initialize("plane.obj", transform_);

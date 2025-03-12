@@ -17,6 +17,7 @@
 #include "Camera.h"
 #include "WorldTransform.h"
 #include "Light.h"
+#include "SrvManager.h"
 
 /// <summary>
 /// Model.h
@@ -66,9 +67,10 @@ namespace Engine
 
 	private:
 		// シングルトン呼び出し
-		WinApp* winapp_ = WinApp::GetInsTance();
+		WinApp* winapp_ = WinApp::GetInstance();
 		TextureManager* texture_ = TextureManager::GetInstance();
 		Light* light_ = Light::GetInstance();
+		SrvManager* srvManager_ = SrvManager::GetInstance();
 
 		// Transform
 		WorldTransform worldTransform_;

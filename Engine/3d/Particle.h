@@ -14,6 +14,7 @@
 #include "TextureManager.h"
 #include "Camera.h"
 #include "WorldTransform.h"
+#include "SrvManager.h"
 
 
 /// <summary>
@@ -29,7 +30,7 @@ namespace Engine
 		~Particles();
 
 		// 初期化処理
-		void Initialize(const std::string& filename, Vector3 pos, uint32_t index);
+		void Initialize(const std::string& filename, Vector3 pos);
 		// 更新処理
 		void Update();
 		// 描画処理
@@ -55,8 +56,9 @@ namespace Engine
 		Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(Microsoft::WRL::ComPtr<ID3D12Device> device, size_t sizeInbytes);
 	private:
 		// シングルトン呼び出し
-		WinApp* winapp_ = WinApp::GetInsTance();
+		WinApp* winapp_ = WinApp::GetInstance();
 		TextureManager* texture_ = TextureManager::GetInstance();
+		SrvManager* srvManager_ = SrvManager::GetInstance();
 
 		// Transform
 		WorldTransform worldTransform_;
@@ -100,5 +102,7 @@ namespace Engine
 
 		// deltaTime
 		const float kDeltaTime = 1.0f / 60.0f;
+
+		uint32_t SrvIndex_;
 	};
 }

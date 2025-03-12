@@ -6,6 +6,7 @@
 #include <Sprite.h>
 #include "Collider.h"
 #include "CollisionConfig.h"
+#include "PlayerUI/PlayerUI.h"
 using namespace Engine;
 
 /// <summary>
@@ -24,7 +25,8 @@ public:
 	// 更新処理
 	void Update(Camera* camera_);
 	// 攻撃処理
-	void LockOn(bool isLockOn, Vector3 EnemyPos);
+	void LockOn(Vector3 EnemyPos);
+	void Attack();
 	// 描画処理
 	void Draw(Camera* camera_);
 	void DrawUI();
@@ -35,7 +37,7 @@ public:
 	Vector3 GetWorldPosition() const override;
 
 	// Getter
-	Vector3 GetPos() { return worldtransform_.translate; }
+	Vector3 GetPos() const { return worldtransform_.translate; }
 	Vector3 GetReticlePos() { return positionReticle; }
 	Vector3 Get3DWorldPosition();
 	Vector3 GetVelocity() { return velocity_; }
@@ -72,6 +74,9 @@ public:
 	// 弾リストを取得
 	 std::vector<std::unique_ptr<PlayerBullet>>& GetBullets() { return bullets_; }
 
+	 // Setter
+	 void SetGoalLine(bool goal);
+
 private:
 	// レティクルの方向にプレイヤーの向きを変える
 	void PlayerRot();
@@ -82,7 +87,6 @@ private:
 private:
 	// シングルトン呼び出し
 	TextureManager* textureManager_ = TextureManager::GetInstance();
-	Input* input_ = Input::GetInsTance();
 
 	// プレイヤー
 	WorldTransform worldtransform_;
@@ -96,31 +100,20 @@ private:
 	EulerTransform reticleTransform_;
 	Vector3 positionReticle;
 
-	// UI
-	std::unique_ptr<Sprite> hp0_;
-	std::unique_ptr<Sprite> hp1_;
-	std::unique_ptr<Sprite> hp2_;
-	std::unique_ptr<Sprite> hp3_;
-	std::unique_ptr<Sprite> hp4_;
-	std::unique_ptr<Sprite> hp5_;
-
 	// 弾
 	std::vector<std::unique_ptr<PlayerBullet>> bullets_;
+
+	// UI
+	std::unique_ptr<PlayerUI> uiModel_;
 
 	// テクスチャ処理
 	uint32_t playerTex;
 	uint32_t reticleTex;
 	uint32_t hit;
 
-	uint32_t hp5;
-	uint32_t hp4;
-	uint32_t hp3;
-	uint32_t hp2;
-	uint32_t hp1;
-	uint32_t hp0;
-
 	// 速度
 	Vector3 velocity_;
+	float playerSpeed = 30.0f;
 
 	// タイマー
 	int32_t hitTimer_;
@@ -133,4 +126,10 @@ private:
 	// HP
 	int32_t HP = 5;
 	const uint32_t damage_ = 1;
+
+	const float kMaxRoll = DirectX::XMConvertToRadians(75.0f); 
+	const float kMaxPitch = DirectX::XMConvertToRadians(45.0f); 
+	const float kYawSpeed = DirectX::XMConvertToRadians(2.5f);
+	const float kRollLerpFactor = 0.2f; 
+	const float kPitchLerpFactor = 0.15f;
 };

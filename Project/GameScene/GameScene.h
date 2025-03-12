@@ -19,11 +19,10 @@
 #include <PostProcess.h>
 #include "Animation.h"
 #include "Json.h"
-#include "SkyBox.h"
 #include <Player/Player.h>
-#include <Skydome.h>
 #include <Stage/Stage.h>
 #include <Enemy/Enemy.h>
+#include <SkyBox/Skydome.h>
 using namespace Engine;
 
 #pragma comment(lib, "d3d12.lib")
@@ -63,6 +62,7 @@ private:
 
 	// ロックオン処理
 	void LockOnEnemy();
+	void Pose(XINPUT_STATE joyState_);
 
 	// スタート演出
 	void Start();
@@ -100,6 +100,11 @@ private:
 	// 天球
 	std::unique_ptr<Skydome> skydome_;
 
+	std::vector<std::unique_ptr<Particles>> particlesList;
+
+	//
+	std::unique_ptr<Sprite> sentaku_ = nullptr;
+
 	// 当たり判定
 	void CheckCollisionPair(Collider* colliderA, Collider* colliderB);
 	void CheckAABBCollisionPair(Collider* colliderA, Collider* colliderB);
@@ -110,6 +115,8 @@ private:
 	uint32_t uv;
 	uint32_t ready;
 	uint32_t go;
+	uint32_t backTitle;
+	uint32_t retry;
 
 	// 待機タイマー
 	int32_t waitTimer_;
@@ -129,8 +136,8 @@ private:
 
 	// ブラー
 	float blurStrength_ = 0.3f;
-	const float kDefaultBlurStrength_ = 0.0f;
-	float minusBlurStrength_ = 0.002f;
+	const float kDefaultBlurStrength_ = 0.01f;
+	float minusBlurStrength_ = 0.005f;
 
 	// ノイズ
 	float noiseStrength;
@@ -139,7 +146,8 @@ private:
 	const float plusNoiseStrength = 1.0f;
 
 	// ゴールライン
-	float goalline = 3800.0f;
+	float goalline = 29800.0f;
+	bool isGoal_;
 
 	// カメラoffset
 	Vector3 cameraOffset = { 0.0f, 1.5f, 20.0f };
@@ -154,6 +162,19 @@ private:
 
 	// デバッグ用仮変数;
 	Vector2 pos = {};
+	Vector3 pos_ = {};
 	Vector2 scale = {};
 	EulerTransform transform_;
+
+	// カメライージング変数
+	float start = 0.0f;
+	float end = 6.29f;
+	float frame;
+	float endFrame = 100.0f;
+
+	bool isPose_;
+	bool prevBackButtonState_ = false;
+
+	// scene
+	uint32_t scenePrev;
 };

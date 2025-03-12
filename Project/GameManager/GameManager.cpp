@@ -24,20 +24,23 @@ void GameManager::Run()
 {
 	CoInitializeEx(0, COINIT_MULTITHREADED);
 
-	winapp = WinApp::GetInsTance();
+	winapp = WinApp::GetInstance();
 	winapp->Initialize(L"Gekitui");
 
-	directX = DirectXCommon::GetInsTance();
+	directX = DirectXCommon::GetInstance();
 	directX->Initialize();
 
-	mesh = Mesh::GetInsTance();
+	mesh = Mesh::GetInstance();
 	mesh->Initialize();
 
-	input = Input::GetInsTance();
+	input = Input::GetInstance();
 	input->Initialize();
 
 	imgui = ImGuiManeger::GetInstance();
 	imgui->Initialize();
+
+	textureManager_ = TextureManager::GetInstance();
+	textureManager_->Initialize();
 
 	// 各シーンの配列
 	sceneArr_[TITLE] = std::make_unique<TitleScene>();
@@ -77,9 +80,10 @@ void GameManager::Run()
 			input->Update();
 			sceneArr_[currentSceneNo_]->Update();
 
+			//directX->ChangeBarrier();
+
 			// 描画処理
 			sceneArr_[currentSceneNo_]->Draw();
-
 			directX->SwapChain();
 			sceneArr_[currentSceneNo_]->PostDraw();
 			directX->RemoveBarrier();
