@@ -354,6 +354,8 @@ Quaternion LerpQuaternion(const Quaternion& v1, const Quaternion& v2, float t);
 // 球面補間
 Vector3 Slerp(const Vector3& v1, const Vector3& v2, float t);
 Quaternion SlerpQuaternion(const Quaternion& q0, const Quaternion& q1, float t);
+// イージング
+float EaseOutQuart(float x);
 
 Vector3 CalculateValue(const std::vector<KeyframeVector3>& keyframes, float time);
 Quaternion CalculateValueRotate(const std::vector<KeyframeQuaternion>& keyframes, float time);

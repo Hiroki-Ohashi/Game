@@ -729,6 +729,10 @@ Quaternion SlerpQuaternion(const Quaternion& q0, const Quaternion& q1, float t)
 	return 	result;
 }
 
+float EaseOutQuart(float x) {
+	return 1.0f - pow(1.0f - x, 4.0f);
+}
+
 Vector3 CalculateValue(const std::vector<KeyframeVector3>& keyframes, float time)
 {
 	assert(!keyframes.empty()); // キーがないものは返す値がわからないのでダメ

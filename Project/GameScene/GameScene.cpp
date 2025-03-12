@@ -3,10 +3,6 @@
 
 using namespace Engine;
 
-float easeOutQuart(float x){
-return 1.0f - pow(1.0f - x, 4.0f);
-}
-
 /// <summary>
 /// GameScene.cpp
 /// ゲームシーンのソースファイル
@@ -73,15 +69,13 @@ void GameScene::Initialize() {
 	stage_ = std::make_unique<Stage>();
 	stage_->Initialize();
 
-	/*particle_ = std::make_unique<Particles>();
-	particle_->Initialize("board.obj", pos_, 80);*/
-
 	// boolInit
 	isVignette_ = true;
 	isGameClear_ = false;
 	isApploach_ = true;
 	isGameOver_ = false;
 	isPose_ = false;
+	isGoal_ = false;
 
 	// cameraInit
 	camera_.cameraTransform.translate = { player_->GetPos().x, player_->GetPos().y + cameraOffset.y,  player_->GetPos().z - cameraOffset.z };
@@ -99,9 +93,24 @@ void GameScene::Update(){
 
 	stage_->Update();
 
+	// ゲームパッドの状態を得る変数(XINPUT)
+	XINPUT_STATE joyState;
+
+	if (Input::GetInstance()->GetJoystickState(joyState)) {
+		bool currentBackButtonState = (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_START);
+
+		// ボタンが前フレームで押されておらず、今フレームで押されたらトグル
+		if (!prevBackButtonState_ && currentBackButtonState) {
+			isPose_ = !isPose_;
+		}
+
+		// 現在のボタン状態を次のフレームに持ち越す
+		prevBackButtonState_ = currentBackButtonState;
+	}
+
 	if (isPose_) {
 		// ポーズメニュー
-		Pose();
+		Pose(joyState);
 	}
 	else {
 		postProcess_->SetLineStrength(0.0f);
@@ -483,36 +492,22 @@ void GameScene::LockOnEnemy()
 	}
 }
 
-void GameScene::Pose()
+void GameScene::Pose(XINPUT_STATE joyState_)
 {
-	// ゲームパッドの状態を得る変数(XINPUT)
-	XINPUT_STATE joyState;
-
-	if (Input::GetInstance()->GetJoystickState(joyState)) {
-		bool currentBackButtonState = (joyState.Gamepad.wButtons & XINPUT_GAMEPAD_START);
-
-		// ボタンが前フレームで押されておらず、今フレームで押されたらトグル
-		if (!prevBackButtonState_ && currentBackButtonState) {
-			isPose_ = !isPose_;
-		}
-
-		// 現在のボタン状態を次のフレームに持ち越す
-		prevBackButtonState_ = currentBackButtonState;
-	}
 
 	postProcess_->SetNoise(0.2f, 1.0f);
 
 	// 十字キーでシーン選択
-	if (Input::GetInstance()->GetJoystickState(joyState)) {
+	if (Input::GetInstance()->GetJoystickState(joyState_)) {
 		// 長押し防止
 		if (scenePrev == 0) {
-			if (Input::GetInstance()->PressedButton(joyState, XINPUT_GAMEPAD_DPAD_DOWN)) {
+			if (Input::GetInstance()->PressedButton(joyState_, XINPUT_GAMEPAD_DPAD_DOWN)) {
 				scenePrev = 1;
 				sentaku_->SetTexture(backTitle);
 			}
 		}
 		else if (scenePrev == 1) {
-			if (Input::GetInstance()->PressedButton(joyState, XINPUT_GAMEPAD_DPAD_UP)) {
+			if (Input::GetInstance()->PressedButton(joyState_, XINPUT_GAMEPAD_DPAD_UP)) {
 				scenePrev = 0;
 				sentaku_->SetTexture(retry);
 			}
@@ -520,12 +515,12 @@ void GameScene::Pose()
 
 		// 選んだシーンをAボタンで遷移開始
 		if (scenePrev == 0) {
-			if (Input::GetInstance()->PressedButton(joyState, XINPUT_GAMEPAD_A)) {
+			if (Input::GetInstance()->PressedButton(joyState_, XINPUT_GAMEPAD_A)) {
 				isPose_ = false;
 			}
 		}
 		else if (scenePrev == 1) {
-			if (Input::GetInstance()->PressedButton(joyState, XINPUT_GAMEPAD_A)) {
+			if (Input::GetInstance()->PressedButton(joyState_, XINPUT_GAMEPAD_A)) {
 				isVignette_ = true;
 			}
 		}
@@ -560,7 +555,7 @@ void GameScene::Start()
 				postProcess_->SetBlurStrength(blurStrength_);
 			}
 
-			camera_.cameraTransform.rotate.y = start + (end - start) * easeOutQuart(frame / endFrame);
+			camera_.cameraTransform.rotate.y = start + (end - start) * EaseOutQuart(frame / endFrame);
 
 			EulerTransform origin = { {0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f},{player_->GetPos().x,player_->GetPos().y,player_->GetPos().z} };
 			// 追従対象からカメラまでのオフセット
@@ -613,6 +608,10 @@ void GameScene::Clear()
 {
 	// クリア条件
 	if (player_->GetPos().z >= goalline) {
+
+		isGoal_ = true;
+		player_->SetGoalLine(isGoal_);
+
 		camera_.cameraTransform.translate = { player_->GetPos().x, player_->GetPos().y + cameraOffset.y,  goalline - cameraOffset.z };
 
 		// カメラをプレイヤーに向ける

@@ -13,7 +13,7 @@ void Player::Initialize()
 {
 	// モデルごとの初期パラメータ
 	transform_ = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,25.0f,-250.0f} };
-	reticleTransform_ = { {0.5f,0.5f,0.5f},{0.0f,0.0f,0.0f},{transform_.translate.x,transform_.translate.y,transform_.translate.z + 25.0f} };
+	reticleTransform_ = { {0.2f,0.2f,0.2f},{0.0f,0.0f,0.0f},{transform_.translate.x,transform_.translate.y,transform_.translate.z + 25.0f} };
 
 	// プレイヤー本体モデル
 	model_ = std::make_unique<Model>();
@@ -34,6 +34,10 @@ void Player::Initialize()
 	reticleWorldtransform_.scale = reticleTransform_.scale;
 	reticleWorldtransform_.translate = reticleTransform_.translate;
 	reticleWorldtransform_.UpdateMatrix();
+
+	// UImodel
+	uiModel_ = std::make_unique<PlayerUI>();
+	uiModel_->Initialize();
 
 	// texture
 	reticleTex = textureManager_->Load("resources/playerReticle.png");
@@ -57,6 +61,9 @@ void Player::Initialize()
 
 void Player::Update(Camera* camera_)
 {
+	uiModel_->Update();
+	uiModel_->SetUIPosition(worldtransform_.translate);
+
 	// デスフラグの立った弾を排除
 	bullets_.erase(
 		std::remove_if(
@@ -95,6 +102,7 @@ void Player::Update(Camera* camera_)
 
 void Player::Draw(Camera* camera_)
 {
+	uiModel_->Draw(camera_);
 
 	if (isHit_) {
 		model_->Draw(camera_, hit);
@@ -117,6 +125,11 @@ void Player::BulletDraw(Camera* camera_)
 	for (std::unique_ptr<PlayerBullet> &bullet : bullets_) {
 		bullet->Draw(camera_, playerTex);
 	}
+}
+
+void Player::SetGoalLine(bool goal)
+{
+	uiModel_->SetEaseEnd(goal);
 }
 
 void Player::PlayerRot()
@@ -175,22 +188,22 @@ void Player::Move()
 
 	if (HP > 0) {
 		// 押した方向で移動ベクトルを変更(左右)
-		if (input_->PushKey(DIK_A)) {
+		if (Input::GetInstance()->PushKey(DIK_A)) {
 			reticleWorldtransform_.translate.x -= kCharacterSpeed;
 			//worldtransform_.rotate.y -= kRotSpeed;
 		}
 
-		if (input_->PushKey(DIK_D)) {
+		if (Input::GetInstance()->PushKey(DIK_D)) {
 			reticleWorldtransform_.translate.x += kCharacterSpeed;
 			//worldtransform_.rotate.y += kRotSpeed;
 		}
 
 		// 押した方向で移動ベクトルを変更(上下)
-		if (input_->PushKey(DIK_W)) {
+		if (Input::GetInstance()->PushKey(DIK_W)) {
 			reticleWorldtransform_.translate.y += kCharacterSpeed;
 			//worldtransform_.rotate.x -= kRotSpeed;
 		}
-		else if (input_->PushKey(DIK_S)) {
+		else if (Input::GetInstance()->PushKey(DIK_S)) {
 			reticleWorldtransform_.translate.y -= kCharacterSpeed;
 			//worldtransform_.rotate.x += kRotSpeed;
 		}

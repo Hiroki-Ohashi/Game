@@ -62,7 +62,7 @@ private:
 
 	// ロックオン処理
 	void LockOnEnemy();
-	void Pose();
+	void Pose(XINPUT_STATE joyState_);
 
 	// スタート演出
 	void Start();
@@ -147,6 +147,7 @@ private:
 
 	// ゴールライン
 	float goalline = 29800.0f;
+	bool isGoal_;
 
 	// カメラoffset
 	Vector3 cameraOffset = { 0.0f, 1.5f, 20.0f };

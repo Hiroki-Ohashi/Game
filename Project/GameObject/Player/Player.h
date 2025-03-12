@@ -6,6 +6,7 @@
 #include <Sprite.h>
 #include "Collider.h"
 #include "CollisionConfig.h"
+#include "PlayerUI/PlayerUI.h"
 using namespace Engine;
 
 /// <summary>
@@ -73,6 +74,9 @@ public:
 	// 弾リストを取得
 	 std::vector<std::unique_ptr<PlayerBullet>>& GetBullets() { return bullets_; }
 
+	 // Setter
+	 void SetGoalLine(bool goal);
+
 private:
 	// レティクルの方向にプレイヤーの向きを変える
 	void PlayerRot();
@@ -83,7 +87,6 @@ private:
 private:
 	// シングルトン呼び出し
 	TextureManager* textureManager_ = TextureManager::GetInstance();
-	Input* input_ = Input::GetInstance();
 
 	// プレイヤー
 	WorldTransform worldtransform_;
@@ -100,6 +103,9 @@ private:
 	// 弾
 	std::vector<std::unique_ptr<PlayerBullet>> bullets_;
 
+	// UI
+	std::unique_ptr<PlayerUI> uiModel_;
+
 	// テクスチャ処理
 	uint32_t playerTex;
 	uint32_t reticleTex;
@@ -107,7 +113,7 @@ private:
 
 	// 速度
 	Vector3 velocity_;
-	float playerSpeed = 0.0f;
+	float playerSpeed = 30.0f;
 
 	// タイマー
 	int32_t hitTimer_;
