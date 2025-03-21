@@ -25,7 +25,7 @@ public:
 	// 更新処理
 	void Update(Camera* camera_);
 	// 攻撃処理
-	void LockOn(Vector3 EnemyPos);
+	void LockOn(Vector3 EnemyPos, Vector3 EnemyPrePos);
 	void Attack();
 	// 描画処理
 	void Draw(Camera* camera_);
@@ -84,6 +84,8 @@ private:
 	void Move();
 	// レティクルの3D座標を2D変換
 	void Convert2D(Camera* camera_);
+	// 予測射撃
+	Vector3 PredictPosition(Vector3 shotPosition, Vector3 targetPosition, Vector3 targetPrePosition, float bulletSpeed);
 private:
 	// シングルトン呼び出し
 	TextureManager* textureManager_ = TextureManager::GetInstance();

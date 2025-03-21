@@ -269,36 +269,62 @@ void Player::Convert2D(Camera* camera_)
 	reticleSprite_->SetPosition(Vector2(positionReticle.x - 50.0f, positionReticle.y - 50.0f));
 }
 
-void Player::LockOn(Vector3 EnemyPos)
-{
+Vector3 Player::PredictPosition(Vector3 shotPosition, Vector3 targetPosition, Vector3 targetPrePosition, float bulletSpeed) {
+	// 目標の1フレームの移動速度
+	Vector3 velocity = { targetPosition.x - targetPrePosition.x, targetPosition.y - targetPrePosition.y, targetPosition.z - targetPrePosition.z };
+	// 射撃位置から見た目標位置
+	Vector3 toTarget = { targetPosition.x - shotPosition.x, targetPosition.y - shotPosition.y, targetPosition.z - shotPosition.z };
+
+	float A = (velocity.x * velocity.x + velocity.y * velocity.y + velocity.z * velocity.z) - (bulletSpeed * bulletSpeed);
+	float B = 2.0f * (toTarget.x * velocity.x + toTarget.y * velocity.y + toTarget.z * velocity.z);
+	float C = (toTarget.x * toTarget.x + toTarget.y * toTarget.y + toTarget.z * toTarget.z);
+
+	if (A == 0) {
+		if (B == 0) {
+			return targetPosition;
+		}
+		else {
+			return { targetPosition.x + velocity.x * (-C / B), targetPosition.y + velocity.y * (-C / B), targetPosition.z + velocity.z * (-C / B) };
+		}
+	}
+
+	float D = B * B - 4 * A * C;
+	float timeToHit;
+	if (D > 0) {
+		float sqrtD = sqrt(D);
+		float t1 = (-B - sqrtD) / (2 * A);
+		float t2 = (-B + sqrtD) / (2 * A);
+		timeToHit = (t1 > 0 && t2 > 0) ? std::min(t1, t2) : max(t1, t2);
+		if (timeToHit < 0) timeToHit = 0;
+	}
+	else {
+		timeToHit = 0;
+	}
+
+	return { targetPosition.x + velocity.x * timeToHit, targetPosition.y + velocity.y * timeToHit, targetPosition.z + velocity.z * timeToHit };
+}
+
+void Player::LockOn(Vector3 EnemyPos, Vector3 EnemyPrePos) {
 	XINPUT_STATE joyState{};
 
 	if (worldtransform_.translate.z < EnemyPos.z &&
-		EnemyPos.z - worldtransform_.translate.z <= 600.0f) {
+		EnemyPos.z - worldtransform_.translate.z <= 2000.0f) {
 
 		if (Input::GetInstance()->GetJoystickState(joyState)) {
 			// Aボタンが押された場合のみ処理を実行
 			if (Input::GetInstance()->PressedButton(joyState, XINPUT_GAMEPAD_A)) {
-				// ターゲットの位置
-				Vector3 end = EnemyPos;
-				// プレイヤーの位置
-				Vector3 start = worldtransform_.translate;
+				// 予測射撃位置を計算
+				Vector3 predictedTarget = PredictPosition(worldtransform_.translate, EnemyPos, EnemyPrePos, 60.0f);
 
 				// 自キャラから敵へのベクトル計算
-				Vector3 toEnemy = { end.x - start.x, end.y - start.y, end.z - start.z };
+				Vector3 toEnemy = { predictedTarget.x - worldtransform_.translate.x, predictedTarget.y - worldtransform_.translate.y, predictedTarget.z - worldtransform_.translate.z };
 
 				// ベクトルを正規化（単位ベクトル化）
 				Vector3 direction = Normalize(toEnemy);
 
-				// 弾の進行方向をターゲット方向に強く補正
-				float homingFactor = 5.0f;  // ホーミングの強さ
-				direction.x += direction.x * homingFactor;
-				direction.y += direction.y * homingFactor;
-				direction.z += direction.z * homingFactor;
-
 				// 弾の速度を設定
-				const float kBulletSpeed = 10.0f;
-				Vector3 velocity(direction.x * kBulletSpeed, direction.y * kBulletSpeed, direction.z * kBulletSpeed);
+				const float kBulletSpeed = 60.0f;
+				Vector3 velocity = { direction.x * kBulletSpeed, direction.y * kBulletSpeed, direction.z * kBulletSpeed };
 
 				// 回転を計算
 				worldtransform_.rotate.y = std::atan2(velocity.x, velocity.z);
@@ -315,6 +341,7 @@ void Player::LockOn(Vector3 EnemyPos)
 		}
 	}
 }
+
 
 void Player::Attack()
 {

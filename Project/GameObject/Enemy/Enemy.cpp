@@ -59,6 +59,8 @@ void Enemy::Update(EnemyType type, Camera* camera_)
 		FixedUpdate(camera_);
 	}
 
+	UpdatePosition(worldtransform_.translate);
+
 	// 弾の更新
 	//bulletPool_.Update();
 
@@ -161,7 +163,7 @@ void Enemy::FryUpdate(Camera* camera_)
 
 		if (isDead_ == false) {
 			// 攻撃処理
-			if (worldtransform_.translate.z - player_->GetPos().z <= 1300.0f) {
+			if (worldtransform_.translate.z - player_->GetPos().z <= 2500.0f) {
 				Attack();
 			}
 		}
@@ -173,11 +175,11 @@ void Enemy::FryUpdate(Camera* camera_)
 	// 近づいたら動き出す
 	if (worldtransform_.translate.z - player_->GetPos().z <= kMaxAttack) {
 
-		if (worldtransform_.translate.z <= 29800 && isDead_ == false) {
+		if (worldtransform_.translate.z <= 59800 && isDead_ == false) {
 			worldtransform_.translate.z += enemySpeed.z;
 		}
 
-		const float kMoveSpeed = 0.005f;
+		/*const float kMoveSpeed = 0.005f;
 
 		if (worldtransform_.translate.y < posParam.y) {
 			speedY += kMoveSpeed;
@@ -186,7 +188,7 @@ void Enemy::FryUpdate(Camera* camera_)
 			speedY -= kMoveSpeed;
 		}
 
-		worldtransform_.translate.y += speedY;
+		worldtransform_.translate.y += speedY;*/
 	}
 
 	if (isDeadAnimation_) {

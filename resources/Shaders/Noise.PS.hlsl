@@ -55,7 +55,7 @@ PixelShaderOutput main(VertexShaderOutput input)
     float fogFactor = exp(-gParams.fogDensity * (depth - gParams.fogStart) * 0.01f);
     fogFactor = clamp(fogFactor, 0.0, 1.0);
 
-    float4 fogColor = float4(0.5f, 0.5f, 1.0f, 1.0f);
+    float4 fogColor = float4(0.0f, 0.0f, 1.0f, 1.0f);
     
     color = lerp(fogColor, color, fogFactor);
     

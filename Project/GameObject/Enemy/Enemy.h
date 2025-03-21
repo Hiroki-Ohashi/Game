@@ -54,11 +54,16 @@ public:
 	bool IsActive() const { return !isDead_;}
 
 	// Getter
-	Vector3 GetPos() { return worldtransform_.translate; }
+	Vector3 GetPos() const { return position_; }
+	Vector3 GetPrePos() const { return previousPosition_; }
 	Vector3 GetScreenPos() { return positionReticle; }
 	Vector3 GetWorldPosition() const override;
 	bool GetIsLockOn() const { return isLockOn_; }
 	bool GetIsPossibillityLock() const { return isPossibillityLock; }
+	void UpdatePosition(Vector3 newPosition) {
+		previousPosition_ = position_;
+		position_ = newPosition;
+	}
 
 	// Setter
 	void SetPosition(Vector3 pos) { 
@@ -115,12 +120,15 @@ private:
 	bool isDead_;
 	bool isDeadAnimation_;
 
-	float kMaxAttack = 600.0f;
+	float kMaxAttack = 2500.0f;
 
 	bool isLockOn_;
 	bool isPossibillityLock;
 
-	Vector3 enemySpeed = { 0.0f, 0.0f, 30.0f };
+	Vector3 position_;
+	Vector3 previousPosition_;
+
+	Vector3 enemySpeed = { 0.0f, 0.0f, 20.0f };
 
 	// ステート
 	BaseEnemyState* state;

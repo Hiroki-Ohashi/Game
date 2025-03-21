@@ -146,7 +146,7 @@ private:
 	const float plusNoiseStrength = 1.0f;
 
 	// ゴールライン
-	float goalline = 29800.0f;
+	float goalline = 99600.0f;
 	bool isGoal_;
 
 	// カメラoffset

@@ -233,14 +233,16 @@ void Json::Update()
 	}
 }
 
-void Json::EnemyUpdate(Camera& camera, Player* player, GameScene* gamescene)
+void Json::EnemyUpdate(Camera& camera, Player* player, GameScene* gamescene, float distance)
 {
 	for (std::unique_ptr<Enemy>& enemy : enemys_) {
-		// 敵キャラに自キャラのアドレスを渡す
-		enemy->SetPlayer(player);
-		// 敵キャラにゲームシーンを渡す
-		enemy->SetGameScene(gamescene);
-		enemy->Update(FRY, &camera);
+		if (enemy->GetPos().z > distance && enemy->GetPos().z - distance <= 10000) {
+			// 敵キャラに自キャラのアドレスを渡す
+			enemy->SetPlayer(player);
+			// 敵キャラにゲームシーンを渡す
+			enemy->SetGameScene(gamescene);
+			enemy->Update(FRY, &camera);
+		}
 	}
 }
 
@@ -267,7 +269,7 @@ void Json::Draw(Camera& camera, uint32_t index)
 	}
 
 	for (std::unique_ptr<Enemy>& fixedEnemy : fixedEnemys_) {
-		fixedEnemy->Draw(&camera);
+		//fixedEnemy->Draw(&camera);
 		fixedEnemy->DrawUI();
 	}
 }

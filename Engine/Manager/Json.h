@@ -29,7 +29,7 @@ public:
 	void FixedEnemyAdoption(LevelData* levelData, Player* player, GameScene* gamescene);
 	// 更新処理
 	void Update();
-	void EnemyUpdate(Camera& camera, Player* player, GameScene* gamescene);
+	void EnemyUpdate(Camera& camera, Player* player, GameScene* gamescene, float distance);
 	void FixedEnemyUpdate(Camera& camera, Player* player, GameScene* gamescene);
 	// 描画処理
 	void Draw(Camera& camera, uint32_t index);

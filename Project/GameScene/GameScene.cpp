@@ -117,8 +117,7 @@ void GameScene::Update(){
 
 		// json更新処理
 		json_->Update();
-		json_->EnemyUpdate(camera_, player_.get(), this);
-		json_->FixedEnemyUpdate(camera_, player_.get(), this);
+		json_->EnemyUpdate(camera_, player_.get(), this, player_->GetPos().z);
 
 		// ゲームスタート
 		// 画面が切り替わったらvignetteをフェードアウトして明るくする
@@ -232,13 +231,13 @@ void GameScene::CheckAllCollisions()
 
 	// enemy
 	for (std::unique_ptr<Enemy>& enemy : json_->GetEnemys()) {
-		enemy->SetRadius(5.0f);
+		enemy->SetRadius(8.0f);
 		colliders_.push_back(std::move(enemy.get()));
 	}
 
 	// fixedEnemy
 	for (std::unique_ptr<Enemy>& enemy : json_->GetFixedEnemys()) {
-		enemy->SetRadius(5.0f);
+		enemy->SetRadius(8.0f);
 		colliders_.push_back(std::move(enemy.get()));
 	}
 
@@ -476,7 +475,7 @@ void GameScene::LockOnEnemy()
 	// fryEnemyLockOn
 	for (std::unique_ptr<Enemy>& enemy : json_->GetEnemys()) {
 		if (enemy->GetIsLockOn()) {
-			player_->LockOn(enemy->GetPos());
+			player_->LockOn(enemy->GetPos(), enemy->GetPrePos());
 		}
 		else{
 			player_->Attack();
@@ -484,12 +483,12 @@ void GameScene::LockOnEnemy()
 	}
 
 	// fixedEnemyLockOn
-	for (std::unique_ptr<Enemy>& enemy : json_->GetFixedEnemys()) {
+	/*for (std::unique_ptr<Enemy>& enemy : json_->GetFixedEnemys()) {
 		if (player_->Get3DWorldPosition().z < enemy->GetPos().z &&
 			enemy->GetPos().z - player_->GetPos().z <= 600.0f) {
-			player_->LockOn(enemy->GetPos());
+			player_->LockOn(enemy->GetPos(), enemy->GetPrePos());
 		}
-	}
+	}*/
 }
 
 void GameScene::Pose(XINPUT_STATE joyState_)
