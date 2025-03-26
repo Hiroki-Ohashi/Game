@@ -31,7 +31,12 @@ void PlayerUI::Initialize()
 	leftWorldtransform_.UpdateMatrix();
 
 	// texture
-	HP = textureManager_->Load("resources/hp.png");
+	HP100 = textureManager_->Load("resources/hp100.png");
+	HP80 = textureManager_->Load("resources/hp80.png");
+	HP60 = textureManager_->Load("resources/hp60.png");
+	HP40 = textureManager_->Load("resources/hp40.png");
+	HP20 = textureManager_->Load("resources/hp20.png");
+	HP0 = textureManager_->Load("resources/hp0.png");
 	operation = textureManager_->Load("resources/operation.png");
 
 	isEaseStart = true;
@@ -77,10 +82,28 @@ void PlayerUI::Update()
 	leftModel_->SetWorldTransform(leftWorldtransform_);
 }
 
-void PlayerUI::Draw(Camera* camera_)
+void PlayerUI::Draw(Camera* camera_, int32_t hp)
 {
+	if (hp == 5){
+		leftModel_->Draw(camera_, HP100);
+	}
+	else if (hp == 4) {
+		leftModel_->Draw(camera_, HP80);
+	}
+	else if (hp == 3) {
+		leftModel_->Draw(camera_, HP60);
+	}
+	else if (hp == 2) {
+		leftModel_->Draw(camera_, HP40);
+	}
+	else if (hp == 1) {
+		leftModel_->Draw(camera_, HP20);
+	}
+	else if (hp == 0) {
+		leftModel_->Draw(camera_, HP0);
+	}
+
 	rightModel_->Draw(camera_, operation);
-	leftModel_->Draw(camera_, HP);
 }
 
 void PlayerUI::SetUIPosition(Vector3 pos)

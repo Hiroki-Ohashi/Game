@@ -102,7 +102,7 @@ void Player::Update(Camera* camera_)
 
 void Player::Draw(Camera* camera_)
 {
-	uiModel_->Draw(camera_);
+	uiModel_->Draw(camera_, HP);
 
 	if (isHit_) {
 		model_->Draw(camera_, hit);

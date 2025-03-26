@@ -231,19 +231,21 @@ void GameScene::CheckAllCollisions()
 
 	// enemy
 	for (std::unique_ptr<Enemy>& enemy : json_->GetEnemys()) {
-		enemy->SetRadius(8.0f);
-		colliders_.push_back(std::move(enemy.get()));
+		enemy->SetRadius(5.0f);
+		if (!enemy->IsDead()) {
+			colliders_.push_back(std::move(enemy.get()));
+		}
 	}
 
 	// fixedEnemy
 	for (std::unique_ptr<Enemy>& enemy : json_->GetFixedEnemys()) {
-		enemy->SetRadius(8.0f);
+		enemy->SetRadius(5.0f);
 		colliders_.push_back(std::move(enemy.get()));
 	}
 
 	// playerBullet
 	for (std::unique_ptr<PlayerBullet>& bullet : playerBullets) {
-		bullet->SetRadius(8.0f);
+		bullet->SetRadius(5.0f);
 		colliders_.push_back(std::move(bullet.get()));
 	}
 

@@ -31,6 +31,7 @@ void Enemy::Initialize(Vector3 pos, EnemyType type)
 	particle_->Initialize("board.obj", worldtransform_.translate);
 
 	isDead_ = false;
+	isDeadAnimation_ = false;
 	isLockOn_ = false;
 	isPossibillityLock = false;
 
@@ -175,7 +176,7 @@ void Enemy::FryUpdate(Camera* camera_)
 	// 近づいたら動き出す
 	if (worldtransform_.translate.z - player_->GetPos().z <= kMaxAttack) {
 
-		if (worldtransform_.translate.z <= 59800 && isDead_ == false) {
+		if (worldtransform_.translate.z <= 99600.0f && isDead_ == false) {
 			worldtransform_.translate.z += enemySpeed.z;
 		}
 
@@ -263,8 +264,8 @@ void Enemy::DrawUI()
 
 void Enemy::DrawParticle(Camera* camera)
 {
-	if (isDead_) {
-		particle_->SetPos(worldtransform_.translate);
+	if (isDeadAnimation_) {
+		//particle_->SetPos(worldtransform_.translate);
 		particle_->Draw(camera, enemyBulletTex);
 	}
 }
@@ -306,8 +307,8 @@ void Enemy::OnCollision()
 	isDeadAnimation_ = true;
 	isLockOn_ = false;
 	isPossibillityLock = false;
-
 	SetEnemySpeed({ 0.0f, 0.0f, 0.0f, });
+	particle_->SetPos(worldtransform_.translate);
 }
 
 void Enemy::DeadAnimation()
