@@ -35,11 +35,16 @@ namespace Engine
 		void Update();
 		// 描画処理
 		void Draw(Camera* camera, uint32_t index);
+		void RoopDraw(Camera* camera, uint32_t index);
 		// 解放処理
 		void Release();
 
+		// Getter
+		Vector3 GetBillboard(Camera* camera_);
+
 		// Setter
-		void SetPos(Vector3 pos_) { pos_ = worldTransform_.translate; }
+		void SetPos(Vector3 pos_);
+		void SetRoopPos(Vector3 pos_);
 		// ランダム生成
 		Particle MakeNewParticle(std::mt19937& randomEngine);
 	private:
@@ -90,12 +95,17 @@ namespace Engine
 		const static uint32_t kMaxInstance = 10;
 		Particle particles[kMaxInstance];
 
+		std::list<Particle> RoopParticles;
+
 		// DiscripterHndle
 		D3D12_CPU_DESCRIPTOR_HANDLE instancingSrvHandleCPU_;
 		D3D12_GPU_DESCRIPTOR_HANDLE instancingSrvHandleGPU_;
 
 		// 描画条件
 		bool isModel;
+
+		// BillBorad
+		Matrix4x4 backToFrontMatrix;
 
 		// camera
 		CameraForGpu camera;

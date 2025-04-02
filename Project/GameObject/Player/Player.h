@@ -129,9 +129,12 @@ private:
 	int32_t HP = 5;
 	const uint32_t damage_ = 1;
 
+	// 機体制御
 	const float kMaxRoll = DirectX::XMConvertToRadians(75.0f); 
 	const float kMaxPitch = DirectX::XMConvertToRadians(45.0f); 
 	const float kYawSpeed = DirectX::XMConvertToRadians(2.5f);
 	const float kRollLerpFactor = 0.2f; 
 	const float kPitchLerpFactor = 0.15f;
+	const float kYawLerpFactor = 1.0f;
+	float yawSpeed_ = 0.0f;
 };

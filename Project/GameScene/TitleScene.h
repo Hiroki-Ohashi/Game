@@ -61,6 +61,7 @@ private:
 	// sprite
 	std::unique_ptr<Sprite> title_ = nullptr;
 	std::unique_ptr<Sprite> startLog_ = nullptr;
+	std::unique_ptr<Sprite> loadSprite_ = nullptr;
 
 	// postProcess
 	std::unique_ptr<PostProcess> postProcess_ = nullptr;
@@ -85,6 +86,7 @@ private:
 	uint32_t title;
 	uint32_t start;
 	uint32_t white;
+	uint32_t load;
 
 	// 点滅タイマー
 	uint32_t timer;
@@ -94,6 +96,7 @@ private:
 
 	// ビネット
 	bool isVignette_;
+	bool isLoad_;
 
 	// デバッグ用
 	Vector2 pos = {};

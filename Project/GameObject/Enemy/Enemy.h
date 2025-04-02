@@ -43,8 +43,6 @@ public:
 	void Attack();
 	// 当たり判定処理
 	void OnCollision() override;
-	// 死亡アニメーション
-	void DeadAnimation();
 
 	void ChangeState(BaseEnemyState* newState);
 
@@ -60,6 +58,7 @@ public:
 	Vector3 GetWorldPosition() const override;
 	bool GetIsLockOn() const { return isLockOn_; }
 	bool GetIsPossibillityLock() const { return isPossibillityLock; }
+
 	void UpdatePosition(Vector3 newPosition) {
 		previousPosition_ = position_;
 		position_ = newPosition;
@@ -99,6 +98,7 @@ private:
 	uint32_t enemyBulletTex;
 	uint32_t lockOnTex;
 	uint32_t lockTex;
+	uint32_t bakuhatuTex;
 	// 発射タイマー
 	int32_t attackTimer = 10;
 	static const int kFireInterval = 120;
@@ -118,8 +118,6 @@ private:
 	float kScaleSpeed = 0.05f;
 
 	bool isDead_;
-	bool isDeadAnimation_;
-
 	float kMaxAttack = 2500.0f;
 
 	bool isLockOn_;

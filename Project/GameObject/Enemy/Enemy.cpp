@@ -31,13 +31,13 @@ void Enemy::Initialize(Vector3 pos, EnemyType type)
 	particle_->Initialize("board.obj", worldtransform_.translate);
 
 	isDead_ = false;
-	isDeadAnimation_ = false;
 	isLockOn_ = false;
 	isPossibillityLock = false;
 
 	lockOnTex = textureManager_->Load("resources/reticle.png");
 	enemyTex = textureManager_->Load("resources/white.png");
 	enemyBulletTex = textureManager_->Load("resources/red.png");
+	bakuhatuTex = textureManager_->Load("resources/bakuhatu.png");
 
 	attackTimer = 10;
 
@@ -103,10 +103,6 @@ void Enemy::FixedUpdate(Camera* camera_)
 			attackTimer = kFireInterval;
 			rensyanum = 0;
 		}
-	}
-
-	if (isDeadAnimation_) {
-		DeadAnimation();
 	}
 
 	model_->SetWorldTransform(worldtransform_);
@@ -178,9 +174,10 @@ void Enemy::FryUpdate(Camera* camera_)
 
 		if (worldtransform_.translate.z <= 99600.0f && isDead_ == false) {
 			worldtransform_.translate.z += enemySpeed.z;
+			//UpdatePosition(worldtransform_.translate);
 		}
 
-		/*const float kMoveSpeed = 0.005f;
+		const float kMoveSpeed = 0.005f;
 
 		if (worldtransform_.translate.y < posParam.y) {
 			speedY += kMoveSpeed;
@@ -189,11 +186,7 @@ void Enemy::FryUpdate(Camera* camera_)
 			speedY -= kMoveSpeed;
 		}
 
-		worldtransform_.translate.y += speedY;*/
-	}
-
-	if (isDeadAnimation_) {
-		DeadAnimation();
+		worldtransform_.translate.y += speedY;
 	}
 
 	model_->SetWorldTransform(worldtransform_);
@@ -256,7 +249,7 @@ void Enemy::DrawUI()
 	if (worldtransform_.translate.z - player_->GetPos().z <= kMaxAttack &&
 		worldtransform_.translate.z > player_->GetPos().z)
 	{
-		if (isDeadAnimation_ == false) {
+		if (isDead_ == false) {
 			enemySprite_->Draw();
 		}
 	}
@@ -264,9 +257,9 @@ void Enemy::DrawUI()
 
 void Enemy::DrawParticle(Camera* camera)
 {
-	if (isDeadAnimation_) {
+	if (isDead_) {
 		//particle_->SetPos(worldtransform_.translate);
-		particle_->Draw(camera, enemyBulletTex);
+		particle_->Draw(camera, bakuhatuTex);
 	}
 }
 
@@ -304,36 +297,11 @@ void Enemy::Attack()
 
 void Enemy::OnCollision()
 {
-	isDeadAnimation_ = true;
+	isDead_ = true;
 	isLockOn_ = false;
 	isPossibillityLock = false;
 	SetEnemySpeed({ 0.0f, 0.0f, 0.0f, });
 	particle_->SetPos(worldtransform_.translate);
-}
-
-void Enemy::DeadAnimation()
-{
-	// 当たったら回転
-	float rotSpeed = 2.0f;
-	kRotSpeed += rotSpeed;
-	worldtransform_.rotate.y += kRotSpeed;
-
-	// 小さく
-	/*float scaleSpeed = 2.0f;
-	kScaleSpeed += scaleSpeed;*/
-	worldtransform_.scale.x -= kScaleSpeed;
-	worldtransform_.scale.y -= kScaleSpeed;
-	worldtransform_.scale.z -= kScaleSpeed;
-
-	if (worldtransform_.scale.x <= 0.0f ||
-		worldtransform_.scale.y <= 0.0f ||
-		worldtransform_.scale.z <= 0.0f) {
-		isDead_ = true;
-	}
-
-
-	model_->SetWorldTransform(worldtransform_);
-	worldtransform_.UpdateMatrix();
 }
 
 void Enemy::ChangeState(BaseEnemyState* newState) { 

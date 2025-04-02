@@ -441,7 +441,17 @@ void GameScene::ShakeCamera()
 		startShake(40, 2.0f);
 
 		// 自キャラの衝突時コールバックを呼び出す
+		isNoise = true;
 		noiseStrength += kdamageNoise;
+
+	}
+
+	if (isNoise) {
+		noiseStrength -= 0.5f;
+		if (noiseStrength <= 0.0f) {
+			isNoise = false;
+		}
+
 		postProcess_->SetNoiseStrength(noiseStrength);
 	}
 
@@ -474,14 +484,19 @@ void GameScene::ShakeCamera()
 
 void GameScene::LockOnEnemy()
 {
+	bool hasLockOnTarget = false;
+
 	// fryEnemyLockOn
 	for (std::unique_ptr<Enemy>& enemy : json_->GetEnemys()) {
 		if (enemy->GetIsLockOn()) {
 			player_->LockOn(enemy->GetPos(), enemy->GetPrePos());
+			hasLockOnTarget = true;
 		}
-		else{
-			player_->Attack();
-		}
+	}
+
+	// ロックオン対象がいなかったら攻撃
+	if (!hasLockOnTarget) {
+		player_->Attack();
 	}
 
 	// fixedEnemyLockOn

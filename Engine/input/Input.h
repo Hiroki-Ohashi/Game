@@ -2,9 +2,11 @@
 #include <cassert>
 #include <wrl.h>
 #include <Windows.h>
-#define DIRECTION_VERSION 0x0800
-#include <dinput.h>
 #include "WinApp.h"
+
+#define DIRECTION_VERSION 0x0800
+#define DIRECTINPUT_VERSION 0x0800
+#include <dinput.h>
 #include <Xinput.h>
 
 #pragma comment(lib, "dinput8.lib")

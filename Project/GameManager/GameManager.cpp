@@ -80,8 +80,6 @@ void GameManager::Run()
 			input->Update();
 			sceneArr_[currentSceneNo_]->Update();
 
-			//directX->ChangeBarrier();
-
 			// 描画処理
 			sceneArr_[currentSceneNo_]->Draw();
 			directX->SwapChain();

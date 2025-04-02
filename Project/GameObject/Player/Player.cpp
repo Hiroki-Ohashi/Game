@@ -46,7 +46,7 @@ void Player::Initialize()
 
 	// レティクル用スプライト
 	reticleSprite_ = std::make_unique<Sprite>();
-	reticleSprite_->Initialize({ 590.0f,310.0f }, { 100.0f,100.0f }, reticleTex);
+	reticleSprite_->Initialize({ 590.0f,310.0f }, { 80.0f,80.0f }, reticleTex);
 	reticleSprite_->SetSize({ 100.0f,100.0f });
 
 	// HP初期化
@@ -147,16 +147,13 @@ void Player::PlayerRot()
 
 	Vector3 velocity(diff.x, diff.y, diff.z);
 
-	float t = 0.0f;
+	float t = 1.0f;
 
 	// 引数で受け取った速度をメンバ変数に代入
 	velocity_ = Slerp(velocity, worldtransform_.translate, t);
 
-	// Y軸周り角度（Θy）
+	//// Y軸周り角度（Θy）
 	worldtransform_.rotate.y = std::atan2(velocity_.x, velocity_.z);
-
-	float velocityXZ = sqrt((velocity_.x * velocity_.x) + (velocity_.z * velocity_.z));
-	worldtransform_.rotate.x = std::atan2(-velocity_.y, velocityXZ);
 
 	if (HP > 0) {
 		// 座標移動(ベクトルの加算)
@@ -183,8 +180,6 @@ void Player::Move()
 	Vector3 rot = { 0, 0, 0 };
 	// キャラクターの移動速さ
 	const float kCharacterSpeed = 6.0f;
-	// 回転速さ[ラジアン/frame]
-	//float kRotSpeed = 0.1f;
 
 	if (HP > 0) {
 		// 押した方向で移動ベクトルを変更(左右)
@@ -221,15 +216,13 @@ void Player::Move()
 
 			// 機体を左右に傾ける
 			float targetRoll = -lx * kMaxRoll;
-			worldtransform_.rotate.z = worldtransform_.rotate.z * (1.0f - kRollLerpFactor) + targetRoll * kRollLerpFactor;
-
 			// 機首の上下
-			float targetPitch = ly * kMaxPitch;
-			worldtransform_.rotate.x = worldtransform_.rotate.x * (1.0f - kPitchLerpFactor) + targetPitch * kPitchLerpFactor;
+			float targetPitch = -ly * kMaxPitch;
 
-			// ロール角に応じて旋回を調整
-			float yawSpeed = sinf(worldtransform_.rotate.z) * kYawSpeed;
-			worldtransform_.rotate.y += yawSpeed;
+			Vector3 currentRotation = worldtransform_.rotate;
+			Vector3 targetRotation = { targetPitch, worldtransform_.rotate.y, targetRoll };
+
+			worldtransform_.rotate = Lerp(currentRotation, targetRotation, 0.5f);
 		}
 	}
 
@@ -281,25 +274,30 @@ Vector3 Player::PredictPosition(Vector3 shotPosition, Vector3 targetPosition, Ve
 
 	if (A == 0) {
 		if (B == 0) {
+			// 速度がない or すでに当たっている
 			return targetPosition;
 		}
 		else {
-			return { targetPosition.x + velocity.x * (-C / B), targetPosition.y + velocity.y * (-C / B), targetPosition.z + velocity.z * (-C / B) };
+			// 未来の衝突時間が負なら、現在の位置をターゲットとする
+			float t = -C / B;
+			if (t < 0) return targetPosition;
+			return { targetPosition.x + velocity.x * t, targetPosition.y + velocity.y * t, targetPosition.z + velocity.z * t };
 		}
 	}
 
 	float D = B * B - 4 * A * C;
-	float timeToHit;
-	if (D > 0) {
-		float sqrtD = sqrt(D);
-		float t1 = (-B - sqrtD) / (2 * A);
-		float t2 = (-B + sqrtD) / (2 * A);
-		timeToHit = (t1 > 0 && t2 > 0) ? std::min(t1, t2) : max(t1, t2);
-		if (timeToHit < 0) timeToHit = 0;
+	if (D < 0) {
+		// 衝突解なし
+		return targetPosition;
 	}
-	else {
-		timeToHit = 0;
-	}
+
+	float sqrtD = sqrt(D);
+	float t1 = (-B - sqrtD) / (2 * A);
+	float t2 = (-B + sqrtD) / (2 * A);
+	float timeToHit = (t1 > 0 && t2 > 0) ? std::min(t1, t2) : max(t1, t2);
+
+	// 未来の衝突時間が負なら、現在の位置をターゲットとする
+	if (timeToHit < 0) return targetPosition;
 
 	return { targetPosition.x + velocity.x * timeToHit, targetPosition.y + velocity.y * timeToHit, targetPosition.z + velocity.z * timeToHit };
 }

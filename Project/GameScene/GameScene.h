@@ -141,7 +141,8 @@ private:
 
 	// ノイズ
 	float noiseStrength;
-	const float kdamageNoise = 0.5f;
+	bool isNoise;
+	const float kdamageNoise = 3.0f;
 	const float kMaxNoiseStrength = 100.0f;
 	const float plusNoiseStrength = 1.0f;
 
@@ -150,7 +151,7 @@ private:
 	bool isGoal_;
 
 	// カメラoffset
-	Vector3 cameraOffset = { 0.0f, 1.5f, 20.0f };
+	Vector3 cameraOffset = { 0.0f, 2.0f, 20.0f };
 
 	// カメラシェイク変数
 	bool isShake = false;

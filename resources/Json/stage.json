@@ -6006,321 +6006,6 @@
             "file_name": "cube"
         },
         {
-            "type": "EnemySpawn",
-            "name": "EnemySpawn",
-            "transform": {
-                "translation": [
-                    -72.18807220458984,
-                    3001.4326171875,
-                    20.67342758178711
-                ],
-                "rotation": [
-                    0.0,
-                    -0.0,
-                    0.0
-                ],
-                "scaling": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "type": "EnemySpawn",
-            "name": "EnemySpawn.001",
-            "transform": {
-                "translation": [
-                    -34.2857666015625,
-                    3001.4326171875,
-                    20.67342758178711
-                ],
-                "rotation": [
-                    0.0,
-                    -0.0,
-                    0.0
-                ],
-                "scaling": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "type": "EnemySpawn",
-            "name": "EnemySpawn.002",
-            "transform": {
-                "translation": [
-                    -113.73612213134766,
-                    3001.4326171875,
-                    20.67342758178711
-                ],
-                "rotation": [
-                    0.0,
-                    -0.0,
-                    0.0
-                ],
-                "scaling": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "type": "EnemySpawn",
-            "name": "EnemySpawn.003",
-            "transform": {
-                "translation": [
-                    101.22708892822266,
-                    8993.298828125,
-                    20.67342758178711
-                ],
-                "rotation": [
-                    0.0,
-                    -0.0,
-                    0.0
-                ],
-                "scaling": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "type": "EnemySpawn",
-            "name": "EnemySpawn.004",
-            "transform": {
-                "translation": [
-                    180.6774444580078,
-                    8993.298828125,
-                    20.67342758178711
-                ],
-                "rotation": [
-                    0.0,
-                    -0.0,
-                    0.0
-                ],
-                "scaling": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "type": "EnemySpawn",
-            "name": "EnemySpawn.005",
-            "transform": {
-                "translation": [
-                    142.775146484375,
-                    8993.298828125,
-                    20.67342758178711
-                ],
-                "rotation": [
-                    0.0,
-                    -0.0,
-                    0.0
-                ],
-                "scaling": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "type": "EnemySpawn",
-            "name": "EnemySpawn.006",
-            "transform": {
-                "translation": [
-                    -104.86247253417969,
-                    14005.484375,
-                    20.67342758178711
-                ],
-                "rotation": [
-                    0.0,
-                    -0.0,
-                    0.0
-                ],
-                "scaling": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "type": "EnemySpawn",
-            "name": "EnemySpawn.007",
-            "transform": {
-                "translation": [
-                    -66.96017456054688,
-                    14005.484375,
-                    20.67342758178711
-                ],
-                "rotation": [
-                    0.0,
-                    -0.0,
-                    0.0
-                ],
-                "scaling": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "type": "EnemySpawn",
-            "name": "EnemySpawn.008",
-            "transform": {
-                "translation": [
-                    -146.4105224609375,
-                    14005.484375,
-                    20.67342758178711
-                ],
-                "rotation": [
-                    0.0,
-                    -0.0,
-                    0.0
-                ],
-                "scaling": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "type": "EnemySpawn",
-            "name": "EnemySpawn.009",
-            "transform": {
-                "translation": [
-                    51.69956970214844,
-                    19978.50390625,
-                    20.67342758178711
-                ],
-                "rotation": [
-                    0.0,
-                    -0.0,
-                    0.0
-                ],
-                "scaling": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "type": "EnemySpawn",
-            "name": "EnemySpawn.010",
-            "transform": {
-                "translation": [
-                    131.14991760253906,
-                    19978.50390625,
-                    20.67342758178711
-                ],
-                "rotation": [
-                    0.0,
-                    -0.0,
-                    0.0
-                ],
-                "scaling": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "type": "EnemySpawn",
-            "name": "EnemySpawn.011",
-            "transform": {
-                "translation": [
-                    93.24761962890625,
-                    19978.50390625,
-                    20.67342758178711
-                ],
-                "rotation": [
-                    0.0,
-                    -0.0,
-                    0.0
-                ],
-                "scaling": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "type": "EnemySpawn",
-            "name": "EnemySpawn.012",
-            "transform": {
-                "translation": [
-                    -94.95697021484375,
-                    25971.3359375,
-                    20.67342758178711
-                ],
-                "rotation": [
-                    0.0,
-                    -0.0,
-                    0.0
-                ],
-                "scaling": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "type": "EnemySpawn",
-            "name": "EnemySpawn.013",
-            "transform": {
-                "translation": [
-                    -57.05467224121094,
-                    25971.3359375,
-                    20.67342758178711
-                ],
-                "rotation": [
-                    0.0,
-                    -0.0,
-                    0.0
-                ],
-                "scaling": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "type": "EnemySpawn",
-            "name": "EnemySpawn.014",
-            "transform": {
-                "translation": [
-                    -136.50502014160156,
-                    25971.3359375,
-                    20.67342758178711
-                ],
-                "rotation": [
-                    0.0,
-                    -0.0,
-                    0.0
-                ],
-                "scaling": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
             "type": "MESH",
             "name": "立方体.118",
             "transform": {
@@ -12149,363 +11834,6 @@
                 ]
             },
             "file_name": "cube"
-        },
-        {
-            "type": "LIGHT",
-            "name": "Light.001",
-            "transform": {
-                "translation": [
-                    4.076245307922363,
-                    29628.373046875,
-                    5.903861999511719
-                ],
-                "rotation": [
-                    0.6503279805183411,
-                    0.055217139422893524,
-                    1.8663909435272217
-                ],
-                "scaling": [
-                    1.0,
-                    0.9999999403953552,
-                    1.0
-                ]
-            }
-        },
-        {
-            "type": "EnemySpawn",
-            "name": "EnemySpawn.015",
-            "transform": {
-                "translation": [
-                    -136.50502014160156,
-                    55598.703125,
-                    20.67342758178711
-                ],
-                "rotation": [
-                    0.0,
-                    -0.0,
-                    0.0
-                ],
-                "scaling": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "type": "EnemySpawn",
-            "name": "EnemySpawn.016",
-            "transform": {
-                "translation": [
-                    -57.05467224121094,
-                    55598.703125,
-                    20.67342758178711
-                ],
-                "rotation": [
-                    0.0,
-                    -0.0,
-                    0.0
-                ],
-                "scaling": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "type": "EnemySpawn",
-            "name": "EnemySpawn.017",
-            "transform": {
-                "translation": [
-                    -94.95697021484375,
-                    55598.703125,
-                    20.67342758178711
-                ],
-                "rotation": [
-                    0.0,
-                    -0.0,
-                    0.0
-                ],
-                "scaling": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "type": "EnemySpawn",
-            "name": "EnemySpawn.018",
-            "transform": {
-                "translation": [
-                    93.24761962890625,
-                    49605.87109375,
-                    20.67342758178711
-                ],
-                "rotation": [
-                    0.0,
-                    -0.0,
-                    0.0
-                ],
-                "scaling": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "type": "EnemySpawn",
-            "name": "EnemySpawn.019",
-            "transform": {
-                "translation": [
-                    131.14991760253906,
-                    49605.87109375,
-                    20.67342758178711
-                ],
-                "rotation": [
-                    0.0,
-                    -0.0,
-                    0.0
-                ],
-                "scaling": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "type": "EnemySpawn",
-            "name": "EnemySpawn.020",
-            "transform": {
-                "translation": [
-                    51.69956970214844,
-                    49605.87109375,
-                    20.67342758178711
-                ],
-                "rotation": [
-                    0.0,
-                    -0.0,
-                    0.0
-                ],
-                "scaling": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "type": "EnemySpawn",
-            "name": "EnemySpawn.021",
-            "transform": {
-                "translation": [
-                    -146.4105224609375,
-                    43632.8515625,
-                    20.67342758178711
-                ],
-                "rotation": [
-                    0.0,
-                    -0.0,
-                    0.0
-                ],
-                "scaling": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "type": "EnemySpawn",
-            "name": "EnemySpawn.022",
-            "transform": {
-                "translation": [
-                    -66.96017456054688,
-                    43632.8515625,
-                    20.67342758178711
-                ],
-                "rotation": [
-                    0.0,
-                    -0.0,
-                    0.0
-                ],
-                "scaling": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "type": "EnemySpawn",
-            "name": "EnemySpawn.023",
-            "transform": {
-                "translation": [
-                    -104.86247253417969,
-                    43632.8515625,
-                    20.67342758178711
-                ],
-                "rotation": [
-                    0.0,
-                    -0.0,
-                    0.0
-                ],
-                "scaling": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "type": "EnemySpawn",
-            "name": "EnemySpawn.024",
-            "transform": {
-                "translation": [
-                    142.775146484375,
-                    38620.6640625,
-                    20.67342758178711
-                ],
-                "rotation": [
-                    0.0,
-                    -0.0,
-                    0.0
-                ],
-                "scaling": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "type": "EnemySpawn",
-            "name": "EnemySpawn.025",
-            "transform": {
-                "translation": [
-                    180.6774444580078,
-                    38620.6640625,
-                    20.67342758178711
-                ],
-                "rotation": [
-                    0.0,
-                    -0.0,
-                    0.0
-                ],
-                "scaling": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "type": "EnemySpawn",
-            "name": "EnemySpawn.026",
-            "transform": {
-                "translation": [
-                    101.22708892822266,
-                    38620.6640625,
-                    20.67342758178711
-                ],
-                "rotation": [
-                    0.0,
-                    -0.0,
-                    0.0
-                ],
-                "scaling": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "type": "EnemySpawn",
-            "name": "EnemySpawn.027",
-            "transform": {
-                "translation": [
-                    -113.73612213134766,
-                    32628.80078125,
-                    20.67342758178711
-                ],
-                "rotation": [
-                    0.0,
-                    -0.0,
-                    0.0
-                ],
-                "scaling": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "type": "EnemySpawn",
-            "name": "EnemySpawn.028",
-            "transform": {
-                "translation": [
-                    -34.2857666015625,
-                    32628.80078125,
-                    20.67342758178711
-                ],
-                "rotation": [
-                    0.0,
-                    -0.0,
-                    0.0
-                ],
-                "scaling": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "type": "EnemySpawn",
-            "name": "EnemySpawn.029",
-            "transform": {
-                "translation": [
-                    -72.18807220458984,
-                    32628.80078125,
-                    20.67342758178711
-                ],
-                "rotation": [
-                    0.0,
-                    -0.0,
-                    0.0
-                ],
-                "scaling": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
-        },
-        {
-            "type": "CAMERA",
-            "name": "Camera.001",
-            "transform": {
-                "translation": [
-                    -0.6611080169677734,
-                    34554.89453125,
-                    86.59354400634766
-                ],
-                "rotation": [
-                    1.4556045532226562,
-                    -0.0,
-                    0.0
-                ],
-                "scaling": [
-                    1.0,
-                    1.0,
-                    1.0
-                ]
-            }
         },
         {
             "type": "MESH",
@@ -20164,22 +19492,631 @@
             "file_name": "cube"
         },
         {
-            "type": "LIGHT",
-            "name": "Light.002",
+            "type": "EnemySpawn",
+            "name": "EnemySpawn",
             "transform": {
                 "translation": [
-                    4.076245307922363,
-                    68269.75,
-                    5.903861999511719
+                    -100.80329895019531,
+                    8002.3671875,
+                    110.90280151367188
                 ],
                 "rotation": [
-                    0.6503279805183411,
-                    0.055217139422893524,
-                    1.8663909435272217
+                    0.0,
+                    -0.0,
+                    0.0
                 ],
                 "scaling": [
                     1.0,
-                    0.9999999403953552,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "type": "EnemySpawn",
+            "name": "EnemySpawn.001",
+            "transform": {
+                "translation": [
+                    -83.31591033935547,
+                    8002.3671875,
+                    110.90280151367188
+                ],
+                "rotation": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "type": "EnemySpawn",
+            "name": "EnemySpawn.002",
+            "transform": {
+                "translation": [
+                    -66.37030029296875,
+                    8002.3671875,
+                    110.90280151367188
+                ],
+                "rotation": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "type": "EnemySpawn",
+            "name": "EnemySpawn.003",
+            "transform": {
+                "translation": [
+                    15.647125244140625,
+                    11718.21875,
+                    53.03913497924805
+                ],
+                "rotation": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "type": "EnemySpawn",
+            "name": "EnemySpawn.004",
+            "transform": {
+                "translation": [
+                    -1.2984850406646729,
+                    11718.21875,
+                    53.03913497924805
+                ],
+                "rotation": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "type": "EnemySpawn",
+            "name": "EnemySpawn.005",
+            "transform": {
+                "translation": [
+                    -18.785873413085938,
+                    11718.21875,
+                    53.03913497924805
+                ],
+                "rotation": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "type": "EnemySpawn",
+            "name": "EnemySpawn.006",
+            "transform": {
+                "translation": [
+                    121.83436584472656,
+                    18985.8359375,
+                    110.90280151367188
+                ],
+                "rotation": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "type": "EnemySpawn",
+            "name": "EnemySpawn.007",
+            "transform": {
+                "translation": [
+                    104.88875579833984,
+                    18985.8359375,
+                    110.90280151367188
+                ],
+                "rotation": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "type": "EnemySpawn",
+            "name": "EnemySpawn.008",
+            "transform": {
+                "translation": [
+                    87.4013671875,
+                    18985.8359375,
+                    110.90280151367188
+                ],
+                "rotation": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "type": "EnemySpawn",
+            "name": "EnemySpawn.009",
+            "transform": {
+                "translation": [
+                    -100.80329895019531,
+                    35567.66015625,
+                    110.90280151367188
+                ],
+                "rotation": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "type": "EnemySpawn",
+            "name": "EnemySpawn.010",
+            "transform": {
+                "translation": [
+                    -83.31591033935547,
+                    35567.66015625,
+                    110.90280151367188
+                ],
+                "rotation": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "type": "EnemySpawn",
+            "name": "EnemySpawn.011",
+            "transform": {
+                "translation": [
+                    -66.37030029296875,
+                    35567.66015625,
+                    110.90280151367188
+                ],
+                "rotation": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "type": "EnemySpawn",
+            "name": "EnemySpawn.012",
+            "transform": {
+                "translation": [
+                    102.02334594726562,
+                    39995.421875,
+                    110.90280151367188
+                ],
+                "rotation": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "type": "EnemySpawn",
+            "name": "EnemySpawn.013",
+            "transform": {
+                "translation": [
+                    85.0777359008789,
+                    39995.421875,
+                    110.90280151367188
+                ],
+                "rotation": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "type": "EnemySpawn",
+            "name": "EnemySpawn.014",
+            "transform": {
+                "translation": [
+                    67.59034729003906,
+                    39995.421875,
+                    110.90280151367188
+                ],
+                "rotation": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "type": "EnemySpawn",
+            "name": "EnemySpawn.015",
+            "transform": {
+                "translation": [
+                    -120.61431884765625,
+                    51990.99609375,
+                    110.90280151367188
+                ],
+                "rotation": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "type": "EnemySpawn",
+            "name": "EnemySpawn.016",
+            "transform": {
+                "translation": [
+                    -103.1269302368164,
+                    51990.99609375,
+                    110.90280151367188
+                ],
+                "rotation": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "type": "EnemySpawn",
+            "name": "EnemySpawn.017",
+            "transform": {
+                "translation": [
+                    -86.18132019042969,
+                    51990.99609375,
+                    110.90280151367188
+                ],
+                "rotation": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "type": "EnemySpawn",
+            "name": "EnemySpawn.018",
+            "transform": {
+                "translation": [
+                    141.6453857421875,
+                    65006.83984375,
+                    110.90280151367188
+                ],
+                "rotation": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "type": "EnemySpawn",
+            "name": "EnemySpawn.019",
+            "transform": {
+                "translation": [
+                    124.69977569580078,
+                    65006.83984375,
+                    110.90280151367188
+                ],
+                "rotation": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "type": "EnemySpawn",
+            "name": "EnemySpawn.020",
+            "transform": {
+                "translation": [
+                    107.21238708496094,
+                    65006.83984375,
+                    110.90280151367188
+                ],
+                "rotation": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "type": "EnemySpawn",
+            "name": "EnemySpawn.021",
+            "transform": {
+                "translation": [
+                    -115.66154479980469,
+                    86020.015625,
+                    110.90280151367188
+                ],
+                "rotation": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "type": "EnemySpawn",
+            "name": "EnemySpawn.022",
+            "transform": {
+                "translation": [
+                    -98.17415618896484,
+                    86020.015625,
+                    110.90280151367188
+                ],
+                "rotation": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "type": "EnemySpawn",
+            "name": "EnemySpawn.023",
+            "transform": {
+                "translation": [
+                    -81.22854614257812,
+                    86020.015625,
+                    110.90280151367188
+                ],
+                "rotation": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "type": "EnemySpawn",
+            "name": "EnemySpawn.024",
+            "transform": {
+                "translation": [
+                    1.317352294921875,
+                    92557.65625,
+                    110.90280151367188
+                ],
+                "rotation": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "type": "EnemySpawn",
+            "name": "EnemySpawn.025",
+            "transform": {
+                "translation": [
+                    -15.628257751464844,
+                    92557.65625,
+                    110.90280151367188
+                ],
+                "rotation": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "type": "EnemySpawn",
+            "name": "EnemySpawn.026",
+            "transform": {
+                "translation": [
+                    -33.11564636230469,
+                    92557.65625,
+                    110.90280151367188
+                ],
+                "rotation": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "type": "EnemySpawn",
+            "name": "EnemySpawn.027",
+            "transform": {
+                "translation": [
+                    95.86119842529297,
+                    28973.615234375,
+                    53.03913497924805
+                ],
+                "rotation": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "type": "EnemySpawn",
+            "name": "EnemySpawn.028",
+            "transform": {
+                "translation": [
+                    113.34858703613281,
+                    28973.615234375,
+                    53.03913497924805
+                ],
+                "rotation": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "type": "EnemySpawn",
+            "name": "EnemySpawn.029",
+            "transform": {
+                "translation": [
+                    130.294189453125,
+                    28973.615234375,
+                    53.03913497924805
+                ],
+                "rotation": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    1.0,
+                    1.0,
                     1.0
                 ]
             }
@@ -20189,9 +20126,9 @@
             "name": "EnemySpawn.030",
             "transform": {
                 "translation": [
-                    -72.18807220458984,
-                    71270.171875,
-                    20.67342758178711
+                    130.294189453125,
+                    44205.88671875,
+                    53.03913497924805
                 ],
                 "rotation": [
                     0.0,
@@ -20210,9 +20147,9 @@
             "name": "EnemySpawn.031",
             "transform": {
                 "translation": [
-                    -34.2857666015625,
-                    71270.171875,
-                    20.67342758178711
+                    113.34858703613281,
+                    44205.88671875,
+                    53.03913497924805
                 ],
                 "rotation": [
                     0.0,
@@ -20231,9 +20168,9 @@
             "name": "EnemySpawn.032",
             "transform": {
                 "translation": [
-                    -113.73612213134766,
-                    71270.171875,
-                    20.67342758178711
+                    95.86119842529297,
+                    44205.88671875,
+                    53.03913497924805
                 ],
                 "rotation": [
                     0.0,
@@ -20252,9 +20189,9 @@
             "name": "EnemySpawn.033",
             "transform": {
                 "translation": [
-                    101.22708892822266,
-                    77262.0390625,
-                    20.67342758178711
+                    -122.06000518798828,
+                    49317.12890625,
+                    53.03913497924805
                 ],
                 "rotation": [
                     0.0,
@@ -20273,9 +20210,9 @@
             "name": "EnemySpawn.034",
             "transform": {
                 "translation": [
-                    180.6774444580078,
-                    77262.0390625,
-                    20.67342758178711
+                    -104.57261657714844,
+                    49317.12890625,
+                    53.03913497924805
                 ],
                 "rotation": [
                     0.0,
@@ -20294,9 +20231,9 @@
             "name": "EnemySpawn.035",
             "transform": {
                 "translation": [
-                    142.775146484375,
-                    77262.0390625,
-                    20.67342758178711
+                    -87.62701416015625,
+                    49317.12890625,
+                    53.03913497924805
                 ],
                 "rotation": [
                     0.0,
@@ -20315,9 +20252,9 @@
             "name": "EnemySpawn.036",
             "transform": {
                 "translation": [
-                    -104.86247253417969,
-                    82274.2265625,
-                    20.67342758178711
+                    21.333587646484375,
+                    69108.3359375,
+                    53.03913497924805
                 ],
                 "rotation": [
                     0.0,
@@ -20336,9 +20273,9 @@
             "name": "EnemySpawn.037",
             "transform": {
                 "translation": [
-                    -66.96017456054688,
-                    82274.2265625,
-                    20.67342758178711
+                    4.3879852294921875,
+                    69108.3359375,
+                    53.03913497924805
                 ],
                 "rotation": [
                     0.0,
@@ -20357,9 +20294,9 @@
             "name": "EnemySpawn.038",
             "transform": {
                 "translation": [
-                    -146.4105224609375,
-                    82274.2265625,
-                    20.67342758178711
+                    -13.09939956665039,
+                    69108.3359375,
+                    53.03913497924805
                 ],
                 "rotation": [
                     0.0,
@@ -20378,9 +20315,9 @@
             "name": "EnemySpawn.039",
             "transform": {
                 "translation": [
-                    51.69956970214844,
-                    88247.25,
-                    20.67342758178711
+                    87.21678161621094,
+                    89375.015625,
+                    53.03913497924805
                 ],
                 "rotation": [
                     0.0,
@@ -20399,9 +20336,9 @@
             "name": "EnemySpawn.040",
             "transform": {
                 "translation": [
-                    131.14991760253906,
-                    88247.25,
-                    20.67342758178711
+                    104.70417022705078,
+                    89375.015625,
+                    53.03913497924805
                 ],
                 "rotation": [
                     0.0,
@@ -20420,9 +20357,9 @@
             "name": "EnemySpawn.041",
             "transform": {
                 "translation": [
-                    93.24761962890625,
-                    88247.25,
-                    20.67342758178711
+                    121.64977264404297,
+                    89375.015625,
+                    53.03913497924805
                 ],
                 "rotation": [
                     0.0,
@@ -20441,9 +20378,9 @@
             "name": "EnemySpawn.042",
             "transform": {
                 "translation": [
-                    -94.95697021484375,
-                    94240.078125,
-                    20.67342758178711
+                    -38.099456787109375,
+                    23324.05078125,
+                    72.93571472167969
                 ],
                 "rotation": [
                     0.0,
@@ -20462,9 +20399,9 @@
             "name": "EnemySpawn.043",
             "transform": {
                 "translation": [
-                    -57.05467224121094,
-                    94240.078125,
-                    20.67342758178711
+                    -55.04505920410156,
+                    23324.05078125,
+                    72.93571472167969
                 ],
                 "rotation": [
                     0.0,
@@ -20483,9 +20420,9 @@
             "name": "EnemySpawn.044",
             "transform": {
                 "translation": [
-                    -136.50502014160156,
-                    94240.078125,
-                    20.67342758178711
+                    -72.5324478149414,
+                    23324.05078125,
+                    72.93571472167969
                 ],
                 "rotation": [
                     0.0,
@@ -20504,9 +20441,9 @@
             "name": "EnemySpawn.045",
             "transform": {
                 "translation": [
-                    -136.50502014160156,
-                    64612.7109375,
-                    20.67342758178711
+                    14.134864807128906,
+                    56366.69140625,
+                    110.90280151367188
                 ],
                 "rotation": [
                     0.0,
@@ -20525,9 +20462,9 @@
             "name": "EnemySpawn.046",
             "transform": {
                 "translation": [
-                    -57.05467224121094,
-                    64612.7109375,
-                    20.67342758178711
+                    -2.8107452392578125,
+                    56366.69140625,
+                    110.90280151367188
                 ],
                 "rotation": [
                     0.0,
@@ -20546,9 +20483,9 @@
             "name": "EnemySpawn.047",
             "transform": {
                 "translation": [
-                    -94.95697021484375,
-                    64612.7109375,
-                    20.67342758178711
+                    -20.298133850097656,
+                    56366.69140625,
+                    110.90280151367188
                 ],
                 "rotation": [
                     0.0,
@@ -20563,16 +20500,184 @@
             }
         },
         {
-            "type": "CAMERA",
-            "name": "Camera.002",
+            "type": "EnemySpawn",
+            "name": "EnemySpawn.048",
             "transform": {
                 "translation": [
-                    -0.6611080169677734,
-                    73196.265625,
-                    86.59354400634766
+                    68.85144805908203,
+                    60427.94921875,
+                    65.81156921386719
                 ],
                 "rotation": [
-                    1.4556045532226562,
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "type": "EnemySpawn",
+            "name": "EnemySpawn.049",
+            "transform": {
+                "translation": [
+                    86.33883666992188,
+                    60427.94921875,
+                    65.81156921386719
+                ],
+                "rotation": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "type": "EnemySpawn",
+            "name": "EnemySpawn.050",
+            "transform": {
+                "translation": [
+                    103.2844467163086,
+                    60427.94921875,
+                    65.81156921386719
+                ],
+                "rotation": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "type": "EnemySpawn",
+            "name": "EnemySpawn.051",
+            "transform": {
+                "translation": [
+                    94.21026611328125,
+                    74985.6015625,
+                    53.03913497924805
+                ],
+                "rotation": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "type": "EnemySpawn",
+            "name": "EnemySpawn.052",
+            "transform": {
+                "translation": [
+                    111.69764709472656,
+                    74985.6015625,
+                    53.03913497924805
+                ],
+                "rotation": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "type": "EnemySpawn",
+            "name": "EnemySpawn.053",
+            "transform": {
+                "translation": [
+                    128.64324951171875,
+                    74985.6015625,
+                    53.03913497924805
+                ],
+                "rotation": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "type": "EnemySpawn",
+            "name": "EnemySpawn.054",
+            "transform": {
+                "translation": [
+                    -69.46690368652344,
+                    79707.21875,
+                    53.03913497924805
+                ],
+                "rotation": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "type": "EnemySpawn",
+            "name": "EnemySpawn.055",
+            "transform": {
+                "translation": [
+                    -86.41250610351562,
+                    79707.21875,
+                    53.03913497924805
+                ],
+                "rotation": [
+                    0.0,
+                    -0.0,
+                    0.0
+                ],
+                "scaling": [
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        },
+        {
+            "type": "EnemySpawn",
+            "name": "EnemySpawn.056",
+            "transform": {
+                "translation": [
+                    -103.89988708496094,
+                    79707.21875,
+                    53.03913497924805
+                ],
+                "rotation": [
+                    0.0,
                     -0.0,
                     0.0
                 ],
