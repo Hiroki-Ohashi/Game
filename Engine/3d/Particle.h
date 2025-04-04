@@ -15,6 +15,7 @@
 #include "Camera.h"
 #include "WorldTransform.h"
 #include "SrvManager.h"
+#include "PipeLineManager.h"
 
 
 /// <summary>
@@ -54,8 +55,6 @@ namespace Engine
 		void CreateMaterialResource();
 		// wvp作成
 		void CreateWVPResource();
-		// PSO作成
-		void CreatePso();
 
 		// Resource生成
 		Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(Microsoft::WRL::ComPtr<ID3D12Device> device, size_t sizeInbytes);
@@ -64,6 +63,7 @@ namespace Engine
 		WinApp* winapp_ = WinApp::GetInstance();
 		TextureManager* texture_ = TextureManager::GetInstance();
 		SrvManager* srvManager_ = SrvManager::GetInstance();
+		PipeLineManager* pipeLineManager_ = PipeLineManager::GetInstance();
 
 		// Transform
 		WorldTransform worldTransform_;
@@ -86,10 +86,6 @@ namespace Engine
 		Material* materialData;
 		TransformationMatrix* wvpData;
 		ParticleForGpu* instancingData_;
-
-		// PSO
-		Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature = nullptr;
-		Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineState = nullptr;
 
 		// instanceの最大数
 		const static uint32_t kMaxInstance = 10;

@@ -110,6 +110,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Engine\Manager\PipeLineManager.cpp" />
     <ClCompile Include="Engine\Manager\SrvManager.cpp" />
     <ClCompile Include="Project\GameObject\Enemy\EnemyStateApproach.cpp" />
     <ClCompile Include="Project\GameObject\Enemy\EnemyBulletPool.cpp" />
@@ -157,6 +158,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Project\GameObject\Stage\Stage.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Engine\Manager\PipeLineManager.h" />
     <ClInclude Include="Engine\Manager\SrvManager.h" />
     <ClInclude Include="Project\GameObject\Enemy\EnemyStateApproach.h" />
     <ClInclude Include="Project\GameObject\Enemy\BaseEnemyState.h" />

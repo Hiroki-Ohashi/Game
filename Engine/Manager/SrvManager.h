@@ -40,7 +40,7 @@ namespace Engine
 		// 最大SRV数
 		static const uint32_t kMaxSRVCount = 512;
 		// ディスクリプタサイズ
-		uint32_t descriptorSize;
+		uint32_t descriptorSize = 0;
 		//  ディスクリプタヒープ
 		Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeap;
 		Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> descriptorHeapPostEffect;

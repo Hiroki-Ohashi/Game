@@ -189,6 +189,7 @@
     <ClCompile Include="Project\GameObject\Enemy\EnemyStateApproach.cpp" />
     <ClCompile Include="Engine\Manager\SrvManager.cpp" />
     <ClCompile Include="Project\GameObject\Player\PlayerUI\PlayerUI.cpp" />
+    <ClCompile Include="Engine\Manager\PipeLineManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="externals\imgui\imconfig.h">
@@ -329,6 +330,7 @@
     <ClInclude Include="Project\GameObject\Enemy\EnemyStateApproach.h" />
     <ClInclude Include="Engine\Manager\SrvManager.h" />
     <ClInclude Include="Project\GameObject\Player\PlayerUI\PlayerUI.h" />
+    <ClInclude Include="Engine\Manager\PipeLineManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\Shaders\Fullscreen.hlsli">

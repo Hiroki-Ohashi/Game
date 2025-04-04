@@ -578,7 +578,7 @@ void GameScene::Start()
 
 			EulerTransform origin = { {0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f},{player_->GetPos().x,player_->GetPos().y,player_->GetPos().z} };
 			// 追従対象からカメラまでのオフセット
-			Vector3 offset = { 0.0f, 1.5f, -20.0f };
+			Vector3 offset = { 0.0f, 4.0f, -20.0f };
 			// カメラの角度から回転行列を計算する
 			Matrix4x4 worldTransform = MakeRotateYMatrix(camera_.cameraTransform.rotate.y);
 			// オフセットをカメラの回転に合わせて回転させる
@@ -587,6 +587,24 @@ void GameScene::Start()
 			camera_.cameraTransform.translate.x = origin.translate.x + offset.x;
 			camera_.cameraTransform.translate.y = origin.translate.y + offset.y;
 			camera_.cameraTransform.translate.z = origin.translate.z + offset.z;
+
+			Vector3 camwraEnd = player_->GetPos();
+			Vector3 cameraStart = camera_.cameraTransform.translate;
+
+			Vector3 diff;
+			diff.x = camwraEnd.x - cameraStart.x;
+			diff.y = camwraEnd.y - cameraStart.y;
+			diff.z = camwraEnd.z - cameraStart.z;
+
+			diff = Normalize(diff);
+
+			Vector3 velocity_(diff.x, diff.y, diff.z);
+
+			// Y軸周り角度（Θy）
+			camera_.cameraTransform.rotate.y = std::atan2(velocity_.x, velocity_.z);
+			float velocityXZ = sqrt((velocity_.x * velocity_.x) + (velocity_.z * velocity_.z));
+			camera_.cameraTransform.rotate.x = std::atan2(-velocity_.y, velocityXZ);
+
 		}
 		// 演出が終わったらブラーをかけてプレイヤー発射
 		else{

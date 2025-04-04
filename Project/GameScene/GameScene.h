@@ -151,7 +151,7 @@ private:
 	bool isGoal_;
 
 	// カメラoffset
-	Vector3 cameraOffset = { 0.0f, 2.0f, 20.0f };
+	Vector3 cameraOffset = { 0.0f,4.0f, 10.0f };
 
 	// カメラシェイク変数
 	bool isShake = false;

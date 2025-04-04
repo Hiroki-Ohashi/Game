@@ -42,6 +42,9 @@ void GameManager::Run()
 	textureManager_ = TextureManager::GetInstance();
 	textureManager_->Initialize();
 
+	pipeLineManager_ = PipeLineManager::GetInstance();
+	pipeLineManager_->Initialize();
+
 	// 各シーンの配列
 	sceneArr_[TITLE] = std::make_unique<TitleScene>();
 	sceneArr_[STAGE] = std::make_unique<GameScene>();

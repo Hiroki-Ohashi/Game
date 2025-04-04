@@ -13,6 +13,7 @@
 #include "SrvManager.h"
 #include "Mesh.h"
 #include "Camera.h"
+#include "PipeLineManager.h"
 
 /// <summary>
 /// Sprite.h
@@ -77,8 +78,6 @@ namespace Engine
 		void CreateMaterialResourceSprite();
 		// wvp作成
 		void CreateTransformationMatrixResourceSprite();
-		// PSO作成
-		void CreatePso();
 
 		// Resource生成
 		Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(Microsoft::WRL::ComPtr<ID3D12Device> device, size_t sizeInbytes);
@@ -88,6 +87,7 @@ namespace Engine
 		DirectXCommon* dir_ = DirectXCommon::GetInstance();
 		TextureManager* texture_ = TextureManager::GetInstance();
 		SrvManager* srvManager_ = SrvManager::GetInstance();
+		PipeLineManager* pipeLineManager_ = PipeLineManager::GetInstance();
 
 		// Resource
 		Microsoft::WRL::ComPtr<ID3D12Resource> vertexResourceSprite;
@@ -98,10 +98,6 @@ namespace Engine
 		// BufferView
 		D3D12_VERTEX_BUFFER_VIEW vertexBufferViewSprite{};
 		D3D12_INDEX_BUFFER_VIEW indexBufferViewSprite{};
-
-		// PSO
-		Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature = nullptr;
-		Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineState = nullptr;
 
 		// Data
 		VertexData* vertexDataSprite;

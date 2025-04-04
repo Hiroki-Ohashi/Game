@@ -46,7 +46,7 @@ void Player::Initialize()
 
 	// レティクル用スプライト
 	reticleSprite_ = std::make_unique<Sprite>();
-	reticleSprite_->Initialize({ 590.0f,310.0f }, { 80.0f,80.0f }, reticleTex);
+	reticleSprite_->Initialize({ 0.0f,0.0f }, { 50.0f,50.0f }, reticleTex);
 
 	// HP初期化
 	isHit_ = false;
@@ -153,6 +153,8 @@ void Player::PlayerRot()
 
 	//// Y軸周り角度（Θy）
 	worldtransform_.rotate.y = std::atan2(velocity_.x, velocity_.z);
+	float velocityXZ = sqrt((velocity_.x * velocity_.x) + (velocity_.z * velocity_.z));
+	worldtransform_.rotate.x = std::atan2(-velocity_.y, velocityXZ);
 
 	if (HP > 0) {
 		// 座標移動(ベクトルの加算)
@@ -226,8 +228,8 @@ void Player::Move()
 	}
 
 	// 移動限界座標
-	const float kMoveLimitX = 140.0f;
-	const float kMoveLimitY = 120.0f;
+	const float kMoveLimitX = 180.0f;
+	const float kMoveLimitY = 180.0f;
 
 	// 範囲超えない処理
 	reticleWorldtransform_.translate.x = max(reticleWorldtransform_.translate.x, -kMoveLimitX);
@@ -258,7 +260,7 @@ void Player::Convert2D(Camera* camera_)
 	positionReticle = Transform(positionReticle, matVPV);
 
 	// スプライトのレティクルに座標設定
-	reticleSprite_->SetPosition(Vector2(positionReticle.x - 50.0f, positionReticle.y - 50.0f));
+	reticleSprite_->SetPosition(Vector2(positionReticle.x - 25.0f, positionReticle.y - 25.0f));
 }
 
 Vector3 Player::PredictPosition(Vector3 shotPosition, Vector3 targetPosition, Vector3 targetPrePosition, float bulletSpeed) {
