@@ -86,7 +86,19 @@ private:
 	uint32_t title;
 	uint32_t start;
 	uint32_t white;
+
+	// ロード
+	uint32_t l;
+	uint32_t lo;
+	uint32_t loa;
 	uint32_t load;
+	uint32_t loadi;
+	uint32_t loadin;
+	uint32_t loading;
+	uint32_t loading1;
+	uint32_t loading2;
+	uint32_t loading3;
+	int32_t Loadtimer;
 
 	// 点滅タイマー
 	uint32_t timer;

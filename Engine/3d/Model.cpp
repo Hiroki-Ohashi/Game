@@ -217,11 +217,13 @@ namespace Engine
 
 		// Samplerの設定
 		D3D12_STATIC_SAMPLER_DESC staticSamplers[1] = {};
-		staticSamplers[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR; // バイナリフィルタ
+		staticSamplers[0].Filter = D3D12_FILTER_ANISOTROPIC;
+		staticSamplers[0].MaxAnisotropy = 8; // 8x 異方性フィルタリング
 		staticSamplers[0].AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP; // 0~1の範囲外をリピート
 		staticSamplers[0].AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
 		staticSamplers[0].AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
 		staticSamplers[0].ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER; // 比較しない
+		staticSamplers[0].MinLOD = 0.0f;
 		staticSamplers[0].MaxLOD = D3D12_FLOAT32_MAX; // ありったけのMipmapを使う
 		staticSamplers[0].ShaderRegister = 0; // レジスタ番号0を使う
 		staticSamplers[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // PixelShaderで使う
@@ -322,6 +324,7 @@ namespace Engine
 		// DepthStencilの設定
 		graphicsPipelineStateDesc.DepthStencilState = depthStencilDesc;
 		graphicsPipelineStateDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+
 		// 実際に生成
 		hr = DirectXCommon::GetInstance()->GetDevice()->CreateGraphicsPipelineState(&graphicsPipelineStateDesc, IID_PPV_ARGS(&graphicsPipelineState));
 		assert(SUCCEEDED(hr));

@@ -126,7 +126,7 @@ private:
 	Vector3 position_;
 	Vector3 previousPosition_;
 
-	Vector3 enemySpeed = { 0.0f, 0.0f, 20.0f };
+	Vector3 enemySpeed = { 0.0f, 0.0f, 30.0f };
 
 	// ステート
 	BaseEnemyState* state;

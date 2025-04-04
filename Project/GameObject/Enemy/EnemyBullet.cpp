@@ -9,10 +9,10 @@
 
 void EnemyBullet::Initialize(Vector3 pos, Vector3 velocity)
 {
-	transform = { {0.3f,0.3f,0.5f},{0.0f,0.0f,0.0f},{pos.x,pos.y,pos.z} };
+	transform = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{pos.x,pos.y,pos.z} };
 
 	model_ = std::make_unique<Model>();
-	model_->Initialize("cube.obj", transform);
+	model_->Initialize("misairu.obj", transform);
 
 	worldtransform_.scale = transform.scale;
 	worldtransform_.rotate = transform.rotate;

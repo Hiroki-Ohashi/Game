@@ -23,8 +23,7 @@ void Enemy::Initialize(Vector3 pos, EnemyType type)
 	lockTex = textureManager_->Load("resources/Lock.png");
 
 	enemySprite_ = std::make_unique<Sprite>();
-	enemySprite_->Initialize({ 590.0f,310.0f }, { 50.0f,50.0f }, lockOnTex);
-	enemySprite_->SetSize({ 50.0f,50.0f });
+	enemySprite_->Initialize({ 590.0f,310.0f }, { 35.0f,35.0f }, lockOnTex);
 	enemySprite_->SetRotation({ 0.0f, 0.0f, -0.8f });
 
 	particle_ = std::make_unique<Particles>();
@@ -174,7 +173,6 @@ void Enemy::FryUpdate(Camera* camera_)
 
 		if (worldtransform_.translate.z <= 99600.0f && isDead_ == false) {
 			worldtransform_.translate.z += enemySpeed.z;
-			//UpdatePosition(worldtransform_.translate);
 		}
 
 		const float kMoveSpeed = 0.005f;
@@ -187,9 +185,9 @@ void Enemy::FryUpdate(Camera* camera_)
 		}
 
 		worldtransform_.translate.y += speedY;
-	}
 
-	model_->SetWorldTransform(worldtransform_);
+		//UpdatePosition(worldtransform_.translate);
+	}
 
 	Vector3 end = player_->GetPos();
 	Vector3 start = worldtransform_.translate;
@@ -208,6 +206,7 @@ void Enemy::FryUpdate(Camera* camera_)
 	float velocityXZ = sqrt((velocity_.x * velocity_.x) + (velocity_.z * velocity_.z));
 	worldtransform_.rotate.x = std::atan2(-velocity_.y, velocityXZ);
 	worldtransform_.UpdateMatrix();
+	model_->SetWorldTransform(worldtransform_);
 
 	// 3Dレティクルのワールド座標から2Dレティクルのスクリーン座標を計算
 	{
@@ -223,7 +222,7 @@ void Enemy::FryUpdate(Camera* camera_)
 		positionReticle = Transform(positionReticle, matVPV);
 
 		// スプライトのレティクルに座標設定
-		enemySprite_->SetPosition(Vector2(positionReticle.x - 35.0f, positionReticle.y));
+		enemySprite_->SetPosition(Vector2(positionReticle.x - 25.0f, positionReticle.y));
 	}
 
 	if (isLockOn_) {

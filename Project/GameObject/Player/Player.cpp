@@ -47,7 +47,6 @@ void Player::Initialize()
 	// レティクル用スプライト
 	reticleSprite_ = std::make_unique<Sprite>();
 	reticleSprite_->Initialize({ 590.0f,310.0f }, { 80.0f,80.0f }, reticleTex);
-	reticleSprite_->SetSize({ 100.0f,100.0f });
 
 	// HP初期化
 	isHit_ = false;

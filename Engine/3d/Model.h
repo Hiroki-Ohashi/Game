@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <fstream>
 #include <sstream>
+#include <unordered_map>
 
 #include "WinApp.h"
 #include "Function.h"

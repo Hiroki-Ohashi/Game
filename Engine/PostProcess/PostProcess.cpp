@@ -46,7 +46,7 @@ namespace Engine
 			noiseData_->blurStrength = 0.0f;
 			noiseData_->sampleCount = 10;
 			noiseData_->fogStart = 200.0f;
-			noiseData_->fogDensity = 0.05f;
+			noiseData_->fogDensity = 0.08f;
 		}
 
 		if (type == RADIAL) {
@@ -58,8 +58,8 @@ namespace Engine
 	{
 		noiseData_->time += time_;
 
-		if (time_ >= 10.0f) {
-			time_ = 1.0f;
+		if (noiseData_->time > 50.0f) {
+			noiseData_->time = 1.0f;
 			noiseData_->noiseStrength = 1.0f;
 		}
 	}

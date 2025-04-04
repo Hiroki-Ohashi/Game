@@ -48,6 +48,7 @@ private:
 	std::unique_ptr<Sprite> sentaku_ = nullptr;
 	std::unique_ptr<Sprite> retry_ = nullptr;
 	std::unique_ptr<Sprite> title_ = nullptr;
+	std::unique_ptr<Sprite> loadSprite_ = nullptr;
 
 	// json
 	std::unique_ptr<Json> json_ = nullptr;
@@ -70,6 +71,19 @@ private:
 	uint32_t yuka;
 	uint32_t player;
 
+	// ロード
+	uint32_t l;
+	uint32_t lo;
+	uint32_t loa;
+	uint32_t load;
+	uint32_t loadi;
+	uint32_t loadin;
+	uint32_t loading;
+	uint32_t loading1;
+	uint32_t loading2;
+	uint32_t loading3;
+	int32_t Loadtimer;
+
 	// param
 	EulerTransform transform_;
 
@@ -91,6 +105,7 @@ private:
 
 	// ビネット
 	bool isVignette_;
+	bool isLoad_;
 
 	// デバッグ用
 	Vector2 pos = {};

@@ -33,7 +33,7 @@ void GameScene::Initialize() {
 	go = textureManager_->Load("resources/go.png");
 	ready = textureManager_->Load("resources/ready.png");
 	uv = textureManager_->Load("resources/map.png");
-	enemyBulletTex = textureManager_->Load("resources/black.png");
+	enemyBulletTex = textureManager_->Load("resources/yellow.png");
 	bossBulletTex = textureManager_->Load("resources/red.png");
 	backTitle = textureManager_->Load("resources/backTitle.png");
 	retry = textureManager_->Load("resources/retry.png");
@@ -182,7 +182,7 @@ void GameScene::Draw()
 
 	// 敵弾描画
 	for (std::unique_ptr<EnemyBullet>& bullet : enemyBullets_) {
-		bullet->Draw(&camera_, bossBulletTex);
+		bullet->Draw(&camera_, enemyBulletTex);
 	}
 
 	// プレイヤー描画
@@ -488,9 +488,12 @@ void GameScene::LockOnEnemy()
 
 	// fryEnemyLockOn
 	for (std::unique_ptr<Enemy>& enemy : json_->GetEnemys()) {
-		if (enemy->GetIsLockOn()) {
+		if (enemy->GetIsLockOn() && !enemy->IsDead()) {
 			player_->LockOn(enemy->GetPos(), enemy->GetPrePos());
 			hasLockOnTarget = true;
+		}
+		else {
+			hasLockOnTarget = false;
 		}
 	}
 

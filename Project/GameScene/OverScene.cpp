@@ -74,6 +74,23 @@ void OverScene::Initialize()
 	title_->Initialize(Vector2{ 1050.0f, 560.0f }, Vector2{ 127.0f, 107.0f }, title);
 	title_->SetSize({ 127.0f, 107.0f });
 
+	l = textureManager_->Load("resources/l.png");
+	lo = textureManager_->Load("resources/lo.png");
+	loa = textureManager_->Load("resources/loa.png");
+	load = textureManager_->Load("resources/load.png");
+	loadi = textureManager_->Load("resources/loadi.png");
+	loadin = textureManager_->Load("resources/loadin.png");
+	loading = textureManager_->Load("resources/loading.png");
+	loading1 = textureManager_->Load("resources/loading..png");
+	loading2 = textureManager_->Load("resources/loading...png");
+	loading3 = textureManager_->Load("resources/loading....png");
+
+	// Load
+	loadSprite_ = std::make_unique<Sprite>();
+	loadSprite_->Initialize(Vector2{ 0.0f, 0.0f }, Vector2{ 1280.0f, 720.0f }, l);
+	Loadtimer = 0;
+	isLoad_ = false;
+
 	scenePrev = 0;
 	noiseStrength = 100.0f;
 }
@@ -132,8 +149,7 @@ void OverScene::Update()
 
 		if (postProcess_->GetVignetteLight() <= 0.0f) {
 			isVignette_ = false;
-			// ゲームシーンへ
-			sceneNo = STAGE;
+			isLoad_ = true;
 		}
 	}
 	else {
@@ -148,6 +164,42 @@ void OverScene::Update()
 		}
 	}
 
+	if (isLoad_) {
+		postProcess_->SetVignette(32.0f, 1.0f);
+		postProcess_->SetNoise(0.0f, 0.0f);
+
+		Loadtimer += 1;
+
+		if (Loadtimer == 10) {
+			loadSprite_->SetTexture(lo);
+		}
+		else if (Loadtimer == 15) {
+			loadSprite_->SetTexture(loa);
+		}
+		else if (Loadtimer == 20) {
+			loadSprite_->SetTexture(load);
+		}
+		else if (Loadtimer == 25) {
+			loadSprite_->SetTexture(loadi);
+		}
+		else if (Loadtimer == 30) {
+			loadSprite_->SetTexture(loadin);
+		}
+		else if (Loadtimer == 35) {
+			loadSprite_->SetTexture(loading);
+		}
+		else if (Loadtimer == 40) {
+			loadSprite_->SetTexture(loading1);
+		}
+		else if (Loadtimer == 45) {
+			loadSprite_->SetTexture(loading2);
+		}
+		else if (Loadtimer >= 50) {
+			loadSprite_->SetTexture(loading3);
+			// ゲームシーンへ
+			sceneNo = STAGE;
+		}
+	}
 
 	// カメラ揺らす
 	CameraShake();
@@ -170,16 +222,21 @@ void OverScene::Draw()
 	// 床描画
 	yuka_->Draw(&camera_, yuka);
 
-	// UI描画
-	gekitui_->Draw();
-	sareta_->Draw();
-	sentaku_->Draw();
-	if (blinking) {
-		if (scenePrev == 0) {
-			retry_->Draw();
-		}
-		else {
-			title_->Draw();
+	if (isLoad_) {
+		loadSprite_->Draw();
+	}
+	else {
+		// UI描画
+		gekitui_->Draw();
+		sareta_->Draw();
+		sentaku_->Draw();
+		if (blinking) {
+			if (scenePrev == 0) {
+				retry_->Draw();
+			}
+			else {
+				title_->Draw();
+			}
 		}
 	}
 }

@@ -27,7 +27,17 @@ void TitleScene::Initialize()
 	start = textureManager_->Load("resources/log.png");
 	white = textureManager_->Load("resources/white.png");
 	title = textureManager_->Load("resources/title.png");
-	load = textureManager_->Load("resources/loading.png");
+
+	l = textureManager_->Load("resources/l.png");
+	lo = textureManager_->Load("resources/lo.png");
+	loa = textureManager_->Load("resources/loa.png");
+	load = textureManager_->Load("resources/load.png");
+	loadi = textureManager_->Load("resources/loadi.png");
+	loadin = textureManager_->Load("resources/loadin.png");
+	loading = textureManager_->Load("resources/loading.png");
+	loading1 = textureManager_->Load("resources/loading..png");
+	loading2 = textureManager_->Load("resources/loading...png");
+	loading3 = textureManager_->Load("resources/loading....png");
 
 	// UI(title)
 	title_ = std::make_unique<Sprite>();
@@ -40,7 +50,8 @@ void TitleScene::Initialize()
 
 	// Load
 	loadSprite_ = std::make_unique<Sprite>();
-	loadSprite_->Initialize(Vector2{ 0.0f, 0.0f }, Vector2{ 1280.0f, 720.0f }, load);
+	loadSprite_->Initialize(Vector2{ 0.0f, 0.0f }, Vector2{ 1280.0f, 720.0f }, l);
+	Loadtimer = 0;
 
 	// Json
 	json_ = std::make_unique<Json>();
@@ -79,23 +90,53 @@ void TitleScene::Update()
 	if (isLoad_) {
 		postProcess_->SetVignette(32.0f, 1.0f);
 		postProcess_->SetNoise(0.0f, 0.0f);
-		sceneNo = STAGE;
+
+		Loadtimer += 1;
+
+		if (Loadtimer == 10) {
+			loadSprite_->SetTexture(lo);
+		}
+		else if (Loadtimer == 15) {
+			loadSprite_->SetTexture(loa);
+		}
+		else if (Loadtimer == 20) {
+			loadSprite_->SetTexture(load);
+		}
+		else if (Loadtimer == 25) {
+			loadSprite_->SetTexture(loadi);
+		}
+		else if (Loadtimer == 30) {
+			loadSprite_->SetTexture(loadin);
+		}
+		else if (Loadtimer == 35) {
+			loadSprite_->SetTexture(loading);
+		}
+		else if (Loadtimer == 40) {
+			loadSprite_->SetTexture(loading1);
+		}
+		else if (Loadtimer == 45) {
+			loadSprite_->SetTexture(loading2);
+		}
+		else if (Loadtimer >= 50) {
+			loadSprite_->SetTexture(loading3);
+			sceneNo = STAGE;
+		}
+	}
+	
+	// シーン遷移
+	if (isVignette_) {
+		// フェードイン
+		postProcess_->VignetteFadeIn(0.1f, 0.1f);
 	}
 	else {
-		if (isVignette_) {
-			// フェードイン
-			postProcess_->VignetteFadeIn(0.1f, 0.1f);
-		}
-		else {
-			//フェードアウト
-			postProcess_->VignetteFadeOut(0.1f, 0.1f, 16.0f, 1.0f);
-		}
+		//フェードアウト
+		postProcess_->VignetteFadeOut(0.1f, 0.1f, 16.0f, 1.0f);
+	}
 
-		// ゲームシーンへ
-		if (postProcess_->GetVignetteLight() <= 0.0f) {
-			isLoad_ = true;
-			isVignette_ = false;
-		}
+	// ゲームシーンへ
+	if (postProcess_->GetVignetteLight() <= 0.0f) {
+		isLoad_ = true;
+		isVignette_ = false;
 	}
 
 	// カメラ揺らす

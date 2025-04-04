@@ -115,7 +115,7 @@ private:
 
 	// 速度
 	Vector3 velocity_;
-	float playerSpeed = 30.0f;
+	float playerSpeed = 40.0f;
 
 	// タイマー
 	int32_t hitTimer_;
