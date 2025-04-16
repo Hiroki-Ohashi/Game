@@ -115,7 +115,7 @@ private:
 
 	// 速度
 	Vector3 velocity_;
-	float playerSpeed = 40.0f;
+	float playerSpeed = 30.0f;
 
 	// タイマー
 	int32_t hitTimer_;
@@ -130,8 +130,8 @@ private:
 	const uint32_t damage_ = 1;
 
 	// 機体制御
-	const float kMaxRoll = DirectX::XMConvertToRadians(75.0f); 
-	const float kMaxPitch = DirectX::XMConvertToRadians(45.0f); 
+	const float kMaxRoll = DirectX::XMConvertToRadians(65.0f); 
+	const float kMaxPitch = DirectX::XMConvertToRadians(25.0f); 
 	const float kYawSpeed = DirectX::XMConvertToRadians(2.5f);
 	const float kRollLerpFactor = 0.2f; 
 	const float kPitchLerpFactor = 0.15f;

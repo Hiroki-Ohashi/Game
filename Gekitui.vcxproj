@@ -116,6 +116,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Project\GameObject\Enemy\EnemyBulletPool.cpp" />
     <ClCompile Include="Engine\Manager\Json.cpp" />
     <ClCompile Include="Project\GameObject\Player\PlayerUI\PlayerUI.cpp" />
+    <ClCompile Include="Project\GameObject\RailCamera\RailCamera.cpp" />
     <ClCompile Include="Project\GameObject\Stage\Object.cpp" />
     <ClCompile Include="Project\GameScene\OverScene.cpp" />
     <ClCompile Include="Project\GameObject\Enemy\EnemyBullet.cpp" />
@@ -163,6 +164,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Project\GameObject\Enemy\EnemyStateApproach.h" />
     <ClInclude Include="Project\GameObject\Enemy\BaseEnemyState.h" />
     <ClInclude Include="Project\GameObject\Player\PlayerUI\PlayerUI.h" />
+    <ClInclude Include="Project\GameObject\RailCamera\RailCamera.h" />
     <ClInclude Include="Project\utillity\CollisionConfig.h" />
     <ClInclude Include="Project\GameObject\Enemy\EnemyBulletPool.h" />
     <ClInclude Include="Project\GameObject\Stage\Object.h" />

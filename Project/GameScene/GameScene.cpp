@@ -1,5 +1,6 @@
 #include "GameScene.h"
 #include <time.h>
+#include <limits>
 
 using namespace Engine;
 
@@ -13,6 +14,7 @@ GameScene::~GameScene(){
 
 void GameScene::Initialize() {
 	camera_.Initialize();
+	camera_.SetFovY(1.0f);
 
 	// PostEffect
 	postProcess_ = std::make_unique<PostProcess>();
@@ -76,13 +78,45 @@ void GameScene::Initialize() {
 	isGameOver_ = false;
 	isPose_ = false;
 	isGoal_ = false;
+	isFov = true;
 
 	// cameraInit
-	camera_.cameraTransform.translate = { player_->GetPos().x, player_->GetPos().y + cameraOffset.y,  player_->GetPos().z - cameraOffset.z };
+	EulerTransform origin = { {0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f},{player_->GetPos().x,player_->GetPos().y,player_->GetPos().z} };
+	// 追従対象からカメラまでのオフセット
+	Vector3 offset = { 0.0f, 4.0f, -20.0f };
+	// カメラの角度から回転行列を計算する
+	Matrix4x4 worldTransform = MakeRotateYMatrix(camera_.cameraTransform.rotate.y);
+	// オフセットをカメラの回転に合わせて回転させる
+	offset = TransformNormal(offset, worldTransform);
+	// 座標をコピーしてオフセット分ずらす
+	camera_.cameraTransform.translate.x = origin.translate.x + offset.x;
+	camera_.cameraTransform.translate.y = origin.translate.y + offset.y;
+	camera_.cameraTransform.translate.z = origin.translate.z + offset.z;
+
+	Vector3 camwraEnd = player_->GetPos();
+	Vector3 cameraStart = camera_.cameraTransform.translate;
+
+	Vector3 diff;
+	diff.x = camwraEnd.x - cameraStart.x;
+	diff.y = camwraEnd.y - cameraStart.y;
+	diff.z = camwraEnd.z - cameraStart.z;
+
+	diff = Normalize(diff);
+
+	Vector3 velocity_(diff.x, diff.y, diff.z);
+
+	// Y軸周り角度（Θy）
+	camera_.cameraTransform.rotate.y = std::atan2(velocity_.x, velocity_.z);
+	float velocityXZ = sqrt((velocity_.x * velocity_.x) + (velocity_.z * velocity_.z));
+	camera_.cameraTransform.rotate.x = std::atan2(-velocity_.y, velocityXZ);
+
+	//camera_.cameraTransform.translate = { player_->GetPos().x, player_->GetPos().y + cameraOffset.y,  player_->GetPos().z - cameraOffset.z - 10.0f };
 
 	// EffectInit
 	blurStrength_ = 0.3f;
 	noiseStrength = 0.0f;
+
+	frame = 0;
 }
 
 void GameScene::Update(){
@@ -366,15 +400,11 @@ void GameScene::CheckAllCollisions()
 			reticleTop < enemyBottom &&
 			reticleBottom > enemyTop) {
 			// ロックオン状態にする
-			if (!enemy->GetIsLockOn()) {
-				enemy->SetisLockOn(true);
-			}
+			enemy->SetisLockOn(true);
 		}
 		else {
 			// ロックオン解除
-			if (enemy->GetIsLockOn()) { // 状態が変わる場合のみ更新
-				enemy->SetisLockOn(false);
-			}
+			enemy->SetisLockOn(false);
 		}
 	}
 
@@ -479,41 +509,57 @@ void GameScene::ShakeCamera()
 	}
 
 	// カメラ位置
-	camera_.cameraTransform.translate = { player_->GetPos().x + randX, player_->GetPos().y + cameraOffset.y + randY,  player_->GetPos().z - cameraOffset.z };
+	camera_.cameraTransform.translate.x += randX;
+	camera_.cameraTransform.translate.y += randY;
 }
 
 void GameScene::LockOnEnemy()
 {
-	bool hasLockOnTarget = false;
+	Vector3 playerPos = player_->GetPos(); // プレイヤーの位置
+	Enemy* nearestEnemy = nullptr;
+	float nearestDistSq = std::numeric_limits<float>::max(); // 最小距離の初期値（大きな数）
+	bool hasLockOnTarget = false; // ロックオン対象がいるかどうか
 
-	// fryEnemyLockOn
-	for (std::unique_ptr<Enemy>& enemy : json_->GetEnemys()) {
-		if (enemy->GetIsLockOn() && !enemy->IsDead()) {
-			player_->LockOn(enemy->GetPos(), enemy->GetPrePos());
-			hasLockOnTarget = true;
-		}
-		else {
-			hasLockOnTarget = false;
+	// 一番近いロックオン対象を探す
+	for (const std::unique_ptr<Enemy>& enemy : json_->GetEnemys()) {
+		if (player_->GetPos().z < enemy->GetPos().z &&
+			enemy->GetPos().z - player_->GetPos().z <= 2000.0f) {
+			if (!enemy->IsDead() && enemy->GetIsLockOn()) { // ロックオンされた敵のみ対象にする
+				Vector3 enemyPos = enemy->GetPos();
+
+				Vector3 diff;
+				diff.x = enemyPos.x - playerPos.x;
+				diff.y = enemyPos.y - playerPos.y;
+				diff.z = enemyPos.z - playerPos.z;
+
+				float distSq = diff.x * diff.x + diff.y * diff.y + diff.z * diff.z;
+				if (distSq < nearestDistSq) {
+					nearestDistSq = distSq;
+					nearestEnemy = enemy.get(); // 最も近いロックオン敵を設定
+					hasLockOnTarget = true;
+				}
+			}
 		}
 	}
 
-	// ロックオン対象がいなかったら攻撃
-	if (!hasLockOnTarget) {
-		player_->Attack();
-	}
+	XINPUT_STATE joyState;
+	// 入力状態の取得
+	if (Input::GetInstance()->GetJoystickState(joyState)) {
+		if (Input::GetInstance()->PressedButton(joyState, XINPUT_GAMEPAD_A)) {
 
-	// fixedEnemyLockOn
-	/*for (std::unique_ptr<Enemy>& enemy : json_->GetFixedEnemys()) {
-		if (player_->Get3DWorldPosition().z < enemy->GetPos().z &&
-			enemy->GetPos().z - player_->GetPos().z <= 600.0f) {
-			player_->LockOn(enemy->GetPos(), enemy->GetPrePos());
+			// ロックオンされている敵がいればロックオン、いなければ攻撃
+			if (hasLockOnTarget && nearestEnemy) {
+				player_->LockOn(nearestEnemy->GetPos(), nearestEnemy->GetPrePos());
+			}
+			else {
+				player_->Attack(); // ロックオンされていない場合は攻撃
+			}
 		}
-	}*/
+	}
 }
 
 void GameScene::Pose(XINPUT_STATE joyState_)
 {
-
 	postProcess_->SetNoise(0.2f, 1.0f);
 
 	// 十字キーでシーン選択
@@ -576,6 +622,7 @@ void GameScene::Start()
 
 			camera_.cameraTransform.rotate.y = start + (end - start) * EaseOutQuart(frame / endFrame);
 
+			// cameraInit
 			EulerTransform origin = { {0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f},{player_->GetPos().x,player_->GetPos().y,player_->GetPos().z} };
 			// 追従対象からカメラまでのオフセット
 			Vector3 offset = { 0.0f, 4.0f, -20.0f };
@@ -611,6 +658,17 @@ void GameScene::Start()
 
 			// カメラ位置
 			camera_.cameraTransform.translate = { player_->GetPos().x + randX, player_->GetPos().y + cameraOffset.y + randY,  player_->GetPos().z - cameraOffset.z };
+
+			if (isFov) {
+				frame++;
+				if (frame >= 60.0f) {
+					//frame = 0;
+					isFov = false;
+				}
+			}
+
+			fov = 0.45f + (1.0f - 0.45f) * EaseOutQuart(frame / 60.0f);
+			camera_.SetFovY(fov);
 
 			// カメラをプレイヤーに向ける
 			Vector3 cameraEnd = player_->Get3DWorldPosition();

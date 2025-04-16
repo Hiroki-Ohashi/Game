@@ -5,8 +5,8 @@ void PlayerUI::Initialize()
 	textureManager_ = TextureManager::GetInstance();
 
 	// モデルごとの初期パラメータ
-	rightTransform_ = { {2.1f,1.3f,1.0f},{0.25f,-0.7f,0.0f},{0.0f,-50.0f,0.0f} };
-	leftTransform_ = { {2.1f,1.3f,1.0f},{0.25f,0.7f,0.0f},{0.0f,-50.0f,0.0f} };
+	rightTransform_ = { {2.1f,1.3f,1.0f},{0.25f,-0.7f,0.0f},{0.0f,-500.0f,0.0f} };
+	leftTransform_ = { {2.1f,1.3f,1.0f},{0.25f,0.7f,0.0f},{0.0f,-500.0f,0.0f} };
 
 	// HPUIモデル
 	rightModel_ = std::make_unique<Model>();
@@ -41,6 +41,7 @@ void PlayerUI::Initialize()
 
 	isEaseStart = true;
 	isEaseEnd = false;
+	frame = 0.0f;
 }
 
 void PlayerUI::Update()
@@ -48,17 +49,12 @@ void PlayerUI::Update()
 	if (isEaseStart) {
 		frame++;
 		if (frame >= endFrame) {
-			frame = 0.0f;
+			//frame = 0.0f;
 			isEaseStart = false;
 		}
 
 		rightWorldtransform_.scale.y = start + (end - start) * EaseOutQuart(frame / endFrame);
 		leftWorldtransform_.scale.y = start + (end - start) * EaseOutQuart(frame / endFrame);
-	}
-	
-	if(!isEaseEnd && !isEaseStart){
-		rightWorldtransform_.scale.y = rightTransform_.scale.y;
-		leftWorldtransform_.scale.y = leftTransform_.scale.y;
 	}
 
 	if (ImGui::TreeNode("right")) {
@@ -108,8 +104,8 @@ void PlayerUI::Draw(Camera* camera_, int32_t hp)
 
 void PlayerUI::SetUIPosition(Vector3 pos)
 {
-	rightWorldtransform_.translate = { pos.x - 5.0f, pos.y, pos.z + 10.0f };
-	leftWorldtransform_.translate = { pos.x + 5.0f, pos.y, pos.z + 10.0f };
+	rightWorldtransform_.translate = { pos.x - 4.0f, pos.y, pos.z + 10.0f };
+	leftWorldtransform_.translate = { pos.x + 4.0f, pos.y, pos.z + 10.0f };
 	
 	rightWorldtransform_.UpdateMatrix();
 	leftWorldtransform_.UpdateMatrix();
@@ -124,7 +120,7 @@ void PlayerUI::SetEaseEnd(bool isEase)
 	if (isEaseEnd) {
 		frame++;
 		if (frame >= endFrame) {
-			frame = 0;
+			//frame = 0;
 			isEaseEnd = false;
 		}
 

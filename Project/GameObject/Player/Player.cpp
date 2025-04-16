@@ -152,9 +152,9 @@ void Player::PlayerRot()
 	velocity_ = Slerp(velocity, worldtransform_.translate, t);
 
 	//// Y軸周り角度（Θy）
-	worldtransform_.rotate.y = std::atan2(velocity_.x, velocity_.z);
-	float velocityXZ = sqrt((velocity_.x * velocity_.x) + (velocity_.z * velocity_.z));
-	worldtransform_.rotate.x = std::atan2(-velocity_.y, velocityXZ);
+	//worldtransform_.rotate.y = std::atan2(velocity_.x, velocity_.z);
+	//float velocityXZ = sqrt((velocity_.x * velocity_.x) + (velocity_.z * velocity_.z));
+	//worldtransform_.rotate.x = std::atan2(-velocity_.y, velocityXZ);
 
 	if (HP > 0) {
 		// 座標移動(ベクトルの加算)
@@ -304,72 +304,60 @@ Vector3 Player::PredictPosition(Vector3 shotPosition, Vector3 targetPosition, Ve
 }
 
 void Player::LockOn(Vector3 EnemyPos, Vector3 EnemyPrePos) {
-	XINPUT_STATE joyState{};
 
 	if (worldtransform_.translate.z < EnemyPos.z &&
 		EnemyPos.z - worldtransform_.translate.z <= 2000.0f) {
+		// 予測射撃位置を計算
+		Vector3 predictedTarget = PredictPosition(worldtransform_.translate, EnemyPos, EnemyPrePos, 60.0f);
 
-		if (Input::GetInstance()->GetJoystickState(joyState)) {
-			// Aボタンが押された場合のみ処理を実行
-			if (Input::GetInstance()->PressedButton(joyState, XINPUT_GAMEPAD_A)) {
-				// 予測射撃位置を計算
-				Vector3 predictedTarget = PredictPosition(worldtransform_.translate, EnemyPos, EnemyPrePos, 60.0f);
+		// 自キャラから敵へのベクトル計算
+		Vector3 toEnemy = { predictedTarget.x - worldtransform_.translate.x, predictedTarget.y - worldtransform_.translate.y, predictedTarget.z - worldtransform_.translate.z };
 
-				// 自キャラから敵へのベクトル計算
-				Vector3 toEnemy = { predictedTarget.x - worldtransform_.translate.x, predictedTarget.y - worldtransform_.translate.y, predictedTarget.z - worldtransform_.translate.z };
+		// ベクトルを正規化（単位ベクトル化）
+		Vector3 direction = Normalize(toEnemy);
 
-				// ベクトルを正規化（単位ベクトル化）
-				Vector3 direction = Normalize(toEnemy);
+		// 弾の速度を設定
+		const float kBulletSpeed = 60.0f;
+		Vector3 velocity = { direction.x * kBulletSpeed, direction.y * kBulletSpeed, direction.z * kBulletSpeed };
 
-				// 弾の速度を設定
-				const float kBulletSpeed = 60.0f;
-				Vector3 velocity = { direction.x * kBulletSpeed, direction.y * kBulletSpeed, direction.z * kBulletSpeed };
+		// 回転を計算
+		worldtransform_.rotate.y = std::atan2(velocity.x, velocity.z);
+		float velocityXZ = sqrt((velocity.x * velocity.x) + (velocity.z * velocity.z));
+		worldtransform_.rotate.x = std::atan2(-velocity.y, velocityXZ);
 
-				// 回転を計算
-				worldtransform_.rotate.y = std::atan2(velocity.x, velocity.z);
-				float velocityXZ = sqrt((velocity.x * velocity.x) + (velocity.z * velocity.z));
-				worldtransform_.rotate.x = std::atan2(-velocity.y, velocityXZ);
+		// 弾を生成し、初期化
+		std::unique_ptr<PlayerBullet> newBullet = std::make_unique<PlayerBullet>();
+		newBullet->Initialize(worldtransform_.translate, velocity);
 
-				// 弾を生成し、初期化
-				std::unique_ptr<PlayerBullet> newBullet = std::make_unique<PlayerBullet>();
-				newBullet->Initialize(worldtransform_.translate, velocity);
-
-				// 弾を登録
-				bullets_.push_back(std::move(newBullet));
-			}
-		}
+		// 弾を登録
+		bullets_.push_back(std::move(newBullet));
 	}
 }
 
 
 void Player::Attack()
 {
-	XINPUT_STATE joyState{};
-	if (Input::GetInstance()->GetJoystickState(joyState)) {
-		if (Input::GetInstance()->PressedButton(joyState, XINPUT_GAMEPAD_A)) {
-			// 弾の速度
-			const float kBulletSpeed = 60.0f;
+	// 弾の速度
+	const float kBulletSpeed = 60.0f;
 
-			// 自機から照準オブジェクトへのベクトルを計算
-			Vector3 targetDirection;
-			targetDirection.x = reticleWorldtransform_.translate.x - worldtransform_.translate.x;
-			targetDirection.y = reticleWorldtransform_.translate.y - worldtransform_.translate.y;
-			targetDirection.z = reticleWorldtransform_.translate.z - worldtransform_.translate.z;
+	// 自機から照準オブジェクトへのベクトルを計算
+	Vector3 targetDirection;
+	targetDirection.x = reticleWorldtransform_.translate.x - worldtransform_.translate.x;
+	targetDirection.y = reticleWorldtransform_.translate.y - worldtransform_.translate.y;
+	targetDirection.z = reticleWorldtransform_.translate.z - worldtransform_.translate.z;
 
-			// 正規化して速度を設定
-			Vector3 velocity;
-			velocity.x = Normalize(targetDirection).x * kBulletSpeed;
-			velocity.y = Normalize(targetDirection).y * kBulletSpeed;
-			velocity.z = Normalize(targetDirection).z * kBulletSpeed;
+	// 正規化して速度を設定
+	Vector3 velocity;
+	velocity.x = Normalize(targetDirection).x * kBulletSpeed;
+	velocity.y = Normalize(targetDirection).y * kBulletSpeed;
+	velocity.z = Normalize(targetDirection).z * kBulletSpeed;
 
-			// 弾を生成し、初期化
-			std::unique_ptr<PlayerBullet> newBullet = std::make_unique<PlayerBullet>();
-			newBullet->Initialize(worldtransform_.translate, velocity);
+	// 弾を生成し、初期化
+	std::unique_ptr<PlayerBullet> newBullet = std::make_unique<PlayerBullet>();
+	newBullet->Initialize(worldtransform_.translate, velocity);
 
-			// 弾を登録
-			bullets_.push_back(std::move(newBullet));
-		}
-	}
+	// 弾を登録
+	bullets_.push_back(std::move(newBullet));
 }
 
 void Player::OnCollision()

@@ -1,5 +1,6 @@
 #pragma once
-#include <Windows.h>
+#define NOMINMAX
+#include <windows.h>
 #include <cstdint>
 #include <string>
 #include <format>
@@ -147,7 +148,7 @@ private:
 	const float plusNoiseStrength = 1.0f;
 
 	// ゴールライン
-	float goalline = 99600.0f;
+	float goalline = 99400.0f;
 	bool isGoal_;
 
 	// カメラoffset
@@ -175,6 +176,9 @@ private:
 
 	bool isPose_;
 	bool prevBackButtonState_ = false;
+
+	float fov = 1.0f;
+	bool isFov = false;
 
 	// scene
 	uint32_t scenePrev;

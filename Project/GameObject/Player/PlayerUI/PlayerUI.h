@@ -38,7 +38,7 @@ private:
 	float start = 0.0f;
 	float end = 1.3f;
 	float frame;
-	float endFrame = 20.0f;
+	float endFrame = 60.0f;
 	bool isEaseStart;
 	bool isEaseEnd;
 };
