@@ -8,7 +8,7 @@ class EnemyBulletPool {
 public:
 	void Initialize(size_t poolSize);
 	void Update();
-	void Draw(Camera* camera, uint32_t index);
+	void Draw(Camera* camera, uint32_t index, uint32_t index2);
 
     // 使用可能な弾を取得
     EnemyBullet* GetBullet() {

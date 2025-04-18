@@ -43,6 +43,7 @@ void Player::Initialize()
 	reticleTex = textureManager_->Load("resources/playerReticle.png");
 	hit = textureManager_->Load("resources/red.png");
 	playerTex = textureManager_->Load("resources/white.png");
+	kemuri = textureManager_->Load("resources/kemuri.png");
 
 	// レティクル用スプライト
 	reticleSprite_ = std::make_unique<Sprite>();
@@ -56,10 +57,36 @@ void Player::Initialize()
 	SetCollosionAttribute(kcollisionAttributePlayer);
 	// 衝突対象を自分の属性以外に設定
 	SetCollisionMask(kcollisionAttributeEnemy);
+
+	// emitter
+	emitter.count = 10;
+	emitter.frequency = 0.016f;
+	emitter.frequencyTime = 0.0f;
+	emitter.transform.translate = worldtransform_.translate;
+	emitter.transform.rotate = worldtransform_.rotate;
+	emitter.transform.scale = { 1.0f, 1.0f, 1.0f };
+
+	// particle
+	particle_ = std::make_unique<Particles>();
+	particle_->Initialize("board.obj", worldtransform_.translate, emitter);
+	particle_->SetEmitter(emitter);
+
+	isRot = true;
 }
 
 void Player::Update(Camera* camera_)
 {
+	if (isRot) {
+		frame++;
+		if (frame >= endFrame) {
+			worldtransform_.rotate.z = 0.0f;
+			frame = 0;
+			isRot = false;
+		}
+	}
+
+	worldtransform_.rotate.z = easeStart + (easeEnd - easeStart) * EaseOutQuart(frame / endFrame);
+
 	uiModel_->Update();
 	uiModel_->SetUIPosition(worldtransform_.translate);
 
@@ -97,6 +124,13 @@ void Player::Update(Camera* camera_)
 			isHit_ = false;
 		}
 	}
+
+	// エミッタの位置と回転を設定
+	emitter.transform.translate = { worldtransform_.translate.x, worldtransform_.translate.y, worldtransform_.translate.z - 10.0f };
+	particle_->SetEmitter(emitter);
+
+	// パーティクルを生成して更新
+	particle_->Update();
 }
 
 void Player::Draw(Camera* camera_)
@@ -108,6 +142,10 @@ void Player::Draw(Camera* camera_)
 	}
 	else if (isHit_ == false){
 		model_->Draw(camera_, playerTex);
+	}
+
+	if (HP > 0) {
+		particle_->Draw(camera_, kemuri);
 	}
 }
 
@@ -217,6 +255,12 @@ void Player::Move()
 
 			// 機体を左右に傾ける
 			float targetRoll = -lx * kMaxRoll;
+
+			Vector2 stick = Input::GetInstance()->GetLeftStick();
+
+			// Y軸方向の移動だけ
+			reticleWorldtransform_.translate.y += stick.y * kCharacterSpeed;
+
 			// 機首の上下
 			float targetPitch = -ly * kMaxPitch;
 

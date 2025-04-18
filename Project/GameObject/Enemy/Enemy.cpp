@@ -26,8 +26,16 @@ void Enemy::Initialize(Vector3 pos, EnemyType type)
 	enemySprite_->Initialize({ 590.0f,310.0f }, { 35.0f,35.0f }, lockOnTex);
 	enemySprite_->SetRotation({ 0.0f, 0.0f, -0.8f });
 
+	emitter.count = 10;
+	emitter.frequency = 0.5f;
+	emitter.frequencyTime = 0.0f;
+	emitter.transform.translate = { 0.0f, 0.0f, 0.0f };
+	emitter.transform.rotate = { 0.0f, 0.0f, 0.0f };
+	emitter.transform.scale = { 1.0f, 1.0f, 1.0f };
+
 	particle_ = std::make_unique<Particles>();
-	particle_->Initialize("board.obj", worldtransform_.translate);
+	particle_->Initialize("board.obj", worldtransform_.translate, emitter);
+	particle_->SetEmitter(emitter);
 
 	isDead_ = false;
 	isLockOn_ = false;
@@ -257,7 +265,6 @@ void Enemy::DrawUI()
 void Enemy::DrawParticle(Camera* camera)
 {
 	if (isDead_) {
-		//particle_->SetPos(worldtransform_.translate);
 		particle_->Draw(camera, bakuhatuTex);
 	}
 }
@@ -300,7 +307,10 @@ void Enemy::OnCollision()
 	isLockOn_ = false;
 	isPossibillityLock = false;
 	SetEnemySpeed({ 0.0f, 0.0f, 0.0f, });
-	particle_->SetPos(worldtransform_.translate);
+
+	emitter.transform.translate = worldtransform_.translate;
+	particle_->SetEmitter(emitter);
+	particle_->EmitOnce(emitter);
 }
 
 void Enemy::ChangeState(BaseEnemyState* newState) { 

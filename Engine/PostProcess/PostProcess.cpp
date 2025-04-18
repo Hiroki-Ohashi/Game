@@ -45,8 +45,8 @@ namespace Engine
 			noiseData_->vignetteShape = 1.0f;
 			noiseData_->blurStrength = 0.0f;
 			noiseData_->sampleCount = 10;
-			noiseData_->fogStart = 200.0f;
-			noiseData_->fogDensity = 0.08f;
+			noiseData_->fogStart = 300.0f;
+			noiseData_->fogDensity = 0.1f;
 		}
 
 		if (type == RADIAL) {

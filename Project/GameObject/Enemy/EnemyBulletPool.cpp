@@ -18,11 +18,11 @@ void EnemyBulletPool::Update()
     }
 }
 
-void EnemyBulletPool::Draw(Camera* camera, uint32_t index)
+void EnemyBulletPool::Draw(Camera* camera, uint32_t index, uint32_t index2)
 {
     for (auto& bullet : bullets_) {
         if (bullet->IsActive()) {
-            bullet->Draw(camera, index);
+            bullet->Draw(camera, index, index2);
         }
     }
 }

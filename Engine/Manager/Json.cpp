@@ -78,7 +78,7 @@ LevelData* Json::LoadJson(const std::string& fileName)
 			// Rotation
 			objectData.rotation.x = transform["rotation"][0].get<float>();
 			objectData.rotation.y = (transform["rotation"][2].get<float>() - std::numbers::pi_v<float>);
-			objectData.rotation.z = transform["rotation"][1].get<float>();
+			objectData.rotation.z = (transform["rotation"][1].get<float>() - std::numbers::pi_v<float>);
 			// Scaling
 			objectData.scaling.x = transform["scaling"][0].get<float>();
 			objectData.scaling.y = transform["scaling"][2].get<float>();

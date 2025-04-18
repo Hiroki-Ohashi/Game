@@ -39,6 +39,7 @@ void GameScene::Initialize() {
 	bossBulletTex = textureManager_->Load("resources/red.png");
 	backTitle = textureManager_->Load("resources/backTitle.png");
 	retry = textureManager_->Load("resources/retry.png");
+	kemuri = textureManager_->Load("resources/kemuri.png");
 
 	// UI(ready)
 	ready_ = std::make_unique<Sprite>();
@@ -51,7 +52,7 @@ void GameScene::Initialize() {
 	go_->Initialize("board.obj", transform_);
 	go_->SetLight(false);
 
-	// 
+	// UI(sentaku)
 	sentaku_ = std::make_unique<Sprite>();
 	sentaku_->Initialize(Vector2{ 1050.0f, 560.0f }, Vector2{ 127.0f, 107.0f }, retry);
 	sentaku_->SetSize({ 127.0f, 107.0f });
@@ -216,7 +217,7 @@ void GameScene::Draw()
 
 	// 敵弾描画
 	for (std::unique_ptr<EnemyBullet>& bullet : enemyBullets_) {
-		bullet->Draw(&camera_, enemyBulletTex);
+		bullet->Draw(&camera_, enemyBulletTex, kemuri);
 	}
 
 	// プレイヤー描画
@@ -661,13 +662,13 @@ void GameScene::Start()
 
 			if (isFov) {
 				frame++;
-				if (frame >= 60.0f) {
+				if (frame >= 30.0f) {
 					//frame = 0;
 					isFov = false;
 				}
 			}
 
-			fov = 0.45f + (1.0f - 0.45f) * EaseOutQuart(frame / 60.0f);
+			fov = 0.45f + (1.2f - 0.45f) * EaseOutQuart(frame / 30.0f);
 			camera_.SetFovY(fov);
 
 			// カメラをプレイヤーに向ける

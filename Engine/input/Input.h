@@ -3,6 +3,7 @@
 #include <wrl.h>
 #include <Windows.h>
 #include "WinApp.h"
+#include <MathFunction.h>
 
 #define DIRECTION_VERSION 0x0800
 #define DIRECTINPUT_VERSION 0x0800
@@ -48,6 +49,8 @@ namespace Engine
 		bool PressedButton(XINPUT_STATE& out, WORD button);
 
 		void UpdateButtonState(ButtonState& state, bool isPressed);
+
+		Vector2 GetLeftStick() const;
 
 	private:
 		Microsoft::WRL::ComPtr<IDirectInput8> directInput = nullptr;

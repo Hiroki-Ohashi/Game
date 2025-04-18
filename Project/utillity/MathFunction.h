@@ -285,6 +285,14 @@ struct SkinCluster {
 	std::pair<D3D12_CPU_DESCRIPTOR_HANDLE, D3D12_GPU_DESCRIPTOR_HANDLE> paletteSrvHandle;
 };
 
+struct Emitter {
+	EulerTransform transform; //!< エミッタのTransform
+	Vector3 velocity_;
+	uint32_t count; //!< 発生数
+	float frequency; //!< 発生頻度
+	float frequencyTime; //!< 頻度用時刻
+};
+
 // 内積
 float Dot(const Vector3& v1, const Vector3& v2);
 float Length(const Vector3& v);

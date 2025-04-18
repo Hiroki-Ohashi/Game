@@ -118,6 +118,7 @@ private:
 	uint32_t go;
 	uint32_t backTitle;
 	uint32_t retry;
+	uint32_t kemuri;
 
 	// 待機タイマー
 	int32_t waitTimer_;
@@ -148,7 +149,7 @@ private:
 	const float plusNoiseStrength = 1.0f;
 
 	// ゴールライン
-	float goalline = 99400.0f;
+	float goalline = 98000.0f;
 	bool isGoal_;
 
 	// カメラoffset

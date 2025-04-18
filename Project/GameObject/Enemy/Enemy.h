@@ -99,9 +99,10 @@ private:
 	uint32_t lockOnTex;
 	uint32_t lockTex;
 	uint32_t bakuhatuTex;
+	
 	// 発射タイマー
 	int32_t attackTimer = 10;
-	static const int kFireInterval = 120;
+	static const int kFireInterval = 60;
 	
 	int rensya = 10;
 	int rensyanum = 0;
@@ -130,4 +131,7 @@ private:
 
 	// ステート
 	BaseEnemyState* state;
+
+	// particleEmitter
+	Emitter emitter{};
 };

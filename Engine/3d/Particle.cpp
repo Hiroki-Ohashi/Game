@@ -1,5 +1,6 @@
 #include "Particle.h"
 #include <numbers>
+#include <iostream>
 
 /// <summary>
 /// Particle.cpp
@@ -8,11 +9,12 @@
 
 namespace Engine
 {
+
 	Particles::~Particles()
 	{
 	}
 
-	void Particles::Initialize(const std::string& filename, Vector3 pos) {
+	void Particles::Initialize(const std::string& filename, Vector3 pos, Emitter emitter_) {
 
 		// モデル読み込み
 		const std::wstring filePathW = Convert::ConvertString(filename);;
@@ -34,13 +36,13 @@ namespace Engine
 		modelData.vertices.push_back({ .position = {1.0f,-1.0f,0.0f,1.0f}, .texcoord = {1.0f,1.0f},.normal = {0.0f,0.0f,1.0f} }); // 右下
 
 		// Resource作成
-		instancingResource = CreateBufferResource(DirectXCommon::GetInstance()->GetDevice(), sizeof(ParticleForGpu) * kMaxInstance);
+		instancingResource = CreateBufferResource(DirectXCommon::GetInstance()->GetDevice(), sizeof(ParticleForGpu) * kNumMaxInstance);
 		instancingData_ = nullptr;
 		instancingResource->Map(0, nullptr, reinterpret_cast<void**>(&instancingData_));
 
 		// SRVの作成
 		SrvIndex_ = srvManager_->Allocate();
-		srvManager_->CreateSRVforStructuredBuffer(SrvIndex_, instancingResource.Get(), kMaxInstance, sizeof(ParticleForGpu));
+		srvManager_->CreateSRVforStructuredBuffer(SrvIndex_, instancingResource.Get(), kNumMaxInstance, sizeof(ParticleForGpu));
 		instancingSrvHandleCPU_ = srvManager_->GetCPUDescriptorHandle(SrvIndex_);
 		instancingSrvHandleGPU_ = srvManager_->GetGPUDescriptorHandle(SrvIndex_);
 
@@ -48,127 +50,80 @@ namespace Engine
 		Particles::CreateMaterialResource();
 		Particles::CreateWVPResource();
 
-		std::random_device seedGenerator;
-		std::mt19937 randomEngine(seedGenerator());
-
 		int index_ = 0;
 
 		// 位置と速度を[-1,1]でランダムに初期化
-		for (std::list<Particle>::iterator particleItelater = RoopParticles.begin(); particleItelater != RoopParticles.end(); ++particleItelater, ++index_) {
+		for (std::list<Particle>::iterator particleItelater = particles.begin(); particleItelater != particles.end(); ++particleItelater, ++index_) {
 			instancingData_[index_].WVP = MakeIndentity4x4();
 			instancingData_[index_].World = MakeIndentity4x4();
 			instancingData_[index_].color = { 1.0f, 1.0f, 1.0f, 1.0f };
-
-			RoopParticles.push_back(MakeNewParticle(randomEngine));
 			instancingData_[index_].color = particleItelater->color;
 			particleItelater->transform.translate = pos;
 		}
 
-		for (uint32_t index = 0; index < kMaxInstance; ++index) {
-			instancingData_[index].WVP = MakeIndentity4x4();
-			instancingData_[index].World = MakeIndentity4x4();
-			instancingData_[index].color = { 1.0f, 1.0f, 1.0f, 1.0f };
-			particles[index] = MakeNewParticle(randomEngine);
-			instancingData_[index].color = particles[index].color;
-			particles[index].transform.translate = pos;
-		}
-
 		backToFrontMatrix = MakeRotateYMatrix(std::numbers::pi_v<float>);
+
+		this->emitter.transform.translate = { 0.0f, 0.0f, 0.0f };
+		this->emitter.transform.rotate = { 0.0f, 0.0f, 0.0f };
+		this->emitter.transform.scale = { 1.0f, 1.0f, 1.0f };
+		this->emitter = emitter_;
 	}
 
 	void Particles::Update() {
+
+		std::random_device seedGenerator;
+		std::mt19937 randomEngine(seedGenerator());
+
+		emitter.frequencyTime += kDeltaTime;
+		if (emitter.frequency <= emitter.frequencyTime) {
+			particles.splice(particles.end(), Emit(emitter, randomEngine));
+			emitter.frequencyTime = 0.0f;
+		}
+	}
+
+	void Particles::EmitOnce(const Emitter& emitter_) {
+		std::random_device seedGenerator;
+		std::mt19937 randomEngine(seedGenerator());
+		particles.splice(particles.end(), EmitCircle(emitter_, randomEngine));
+	}
+
+	void Particles::UpdateEmitterPosition(const Vector3& pos) {
+		emitter.transform.translate = pos;
 	}
 
 	void Particles::Draw(Camera* camera_, uint32_t index) {
 
 		uint32_t numInstance = 0;
-		for (uint32_t index_ = 0; index_ < kMaxInstance; ++index_) {
-			if (particles[index_].lifeTime <= particles[index_].currentTime) {
-				continue;
-			}
+		for (std::list<Particle>::iterator particleItelater = particles.begin(); particleItelater != particles.end();) {
 
-			Matrix4x4 worldMatrix = MakeAffineMatrix(particles[index_].transform.scale, GetBillboard(camera_), particles[index_].transform.translate);
-			Matrix4x4 worldViewMatrix = Multiply(worldMatrix, Multiply(worldMatrix, Multiply(camera_->viewMatrix, camera_->projectionMatrix)));
-
-			particles[index_].transform.translate.x += particles[index_].velocity.x * kDeltaTime;
-			particles[index_].transform.translate.y += particles[index_].velocity.y * kDeltaTime;
-			particles[index_].transform.translate.z += particles[index_].velocity.z * kDeltaTime;
-			particles[index_].currentTime += kDeltaTime;
-
-			instancingData_[index_].World = worldMatrix;
-			instancingData_[index_].WVP = Multiply(worldMatrix, Multiply(camera_->viewMatrix, camera_->projectionMatrix));
-			instancingData_[index_].color = particles[index_].color;
-
-			float alpha = 1.0f - (particles[index_].currentTime / particles[index_].lifeTime);
-			instancingData_[numInstance].color.w = alpha;
-
-			++numInstance;
-		}
-
-		/*Matrix4x4 uvtransformMatrix = MakeScaleMatrix(uvTransform.scale);
-		uvtransformMatrix = Multiply(uvtransformMatrix, MakeRotateZMatrix(uvTransform.rotate.z));
-		uvtransformMatrix = Multiply(uvtransformMatrix, MakeTranslateMatrix(uvTransform.translate));
-		materialData->uvTransform = uvtransformMatrix;*/
-
-		/*ID3D12DescriptorHeap* descriptorHeaps[] = { DirectXCommon::GetInsTance()->GetSrvDescriptorHeap2().Get()};
-		DirectXCommon::GetInsTance()->GetCommandList()->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);*/
-
-		// DirectXCommon::GetInsTance()を設定。PSOに設定しているけど別途設定が必要
-		DirectXCommon::GetInstance()->GetCommandList()->SetGraphicsRootSignature(pipeLineManager_->GetRootSignatureParticle().Get());
-		DirectXCommon::GetInstance()->GetCommandList()->SetPipelineState(pipeLineManager_->GetGraphicsPipelineStateParticle().Get());
-
-		// 形状を設定。PSOに設定しているものとはまた別。同じものを設定すると考えておけば良い
-		DirectXCommon::GetInstance()->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-		// コマンドを積む
-		DirectXCommon::GetInstance()->GetCommandList()->IASetVertexBuffers(0, 1, &vertexBufferView); // VBVを設定
-		// マテリアルCBufferの場所を設定
-		DirectXCommon::GetInstance()->GetCommandList()->SetGraphicsRootConstantBufferView(0, materialResource->GetGPUVirtualAddress());
-		// TransformationMatrixCBufferの場所を設定
-		DirectXCommon::GetInstance()->GetCommandList()->SetGraphicsRootDescriptorTable(1, instancingSrvHandleGPU_);
-		// SRVのDescriptorTableの先頭を設定。2はrootParameter[2]である。
-		DirectXCommon::GetInstance()->GetCommandList()->SetGraphicsRootDescriptorTable(2, srvManager_->GetGPUDescriptorHandle(index));
-
-		DirectXCommon::GetInstance()->GetCommandList()->DrawInstanced(UINT(modelData.vertices.size()), numInstance, 0, 0);
-	}
-
-	void Particles::RoopDraw(Camera* camera_, uint32_t index) {
-
-		int index_ = 0;
-		uint32_t numInstance = 0;
-
-		for (std::list<Particle>::iterator particleItelater = RoopParticles.begin(); particleItelater != RoopParticles.end(); ++index_) {
-
-			if ((*particleItelater).lifeTime <= (*particleItelater).currentTime) {
+			if (particleItelater->lifeTime <= particleItelater->currentTime) {
+				particleItelater = particles.erase(particleItelater);
 				continue;
 			}
 
 			Matrix4x4 worldMatrix = MakeAffineMatrix(particleItelater->transform.scale, GetBillboard(camera_), particleItelater->transform.translate);
-			Matrix4x4 worldViewMatrix = Multiply(worldMatrix, Multiply(worldMatrix, Multiply(camera_->viewMatrix, camera_->projectionMatrix)));
+			Matrix4x4 viewProjection = Multiply(camera_->viewMatrix, camera_->projectionMatrix);
 
+			// 移動処理
 			particleItelater->transform.translate.x += particleItelater->velocity.x * kDeltaTime;
 			particleItelater->transform.translate.y += particleItelater->velocity.y * kDeltaTime;
 			particleItelater->transform.translate.z += particleItelater->velocity.z * kDeltaTime;
 			particleItelater->currentTime += kDeltaTime;
 
-			instancingData_[index_].World = worldMatrix;
-			instancingData_[index_].WVP = Multiply(worldMatrix, Multiply(camera_->viewMatrix, camera_->projectionMatrix));
-			instancingData_[index_].color = particleItelater->color;
+			if (numInstance < kNumMaxInstance) {
+				// インスタンシング用データの設定
+				instancingData_[numInstance].World = worldMatrix;
+				instancingData_[numInstance].WVP = Multiply(worldMatrix, viewProjection);
+				instancingData_[numInstance].color = particleItelater->color;
 
-			float alpha = 1.0f - (particleItelater->currentTime / particleItelater->lifeTime);
-			instancingData_[numInstance].color.w = alpha;
+				float alpha = 1.0f - (particleItelater->currentTime / particleItelater->lifeTime);
+				instancingData_[numInstance].color.w = alpha;
 
-			++numInstance;
+				++numInstance;
+			}
+
 			++particleItelater;
 		}
-
-		/*Matrix4x4 uvtransformMatrix = MakeScaleMatrix(uvTransform.scale);
-		uvtransformMatrix = Multiply(uvtransformMatrix, MakeRotateZMatrix(uvTransform.rotate.z));
-		uvtransformMatrix = Multiply(uvtransformMatrix, MakeTranslateMatrix(uvTransform.translate));
-		materialData->uvTransform = uvtransformMatrix;*/
-
-		/*ID3D12DescriptorHeap* descriptorHeaps[] = { DirectXCommon::GetInsTance()->GetSrvDescriptorHeap2().Get()};
-		DirectXCommon::GetInsTance()->GetCommandList()->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);*/
 
 		// DirectXCommon::GetInsTance()を設定。PSOに設定しているけど別途設定が必要
 		DirectXCommon::GetInstance()->GetCommandList()->SetGraphicsRootSignature(pipeLineManager_->GetRootSignatureParticle().Get());
@@ -187,6 +142,11 @@ namespace Engine
 		DirectXCommon::GetInstance()->GetCommandList()->SetGraphicsRootDescriptorTable(2, srvManager_->GetGPUDescriptorHandle(index));
 
 		DirectXCommon::GetInstance()->GetCommandList()->DrawInstanced(UINT(modelData.vertices.size()), numInstance, 0, 0);
+
+		if (ImGui::TreeNode("Particle")) {
+			ImGui::Text("draw");
+			ImGui::TreePop();
+		}
 	}
 
 	void Particles::Release() {
@@ -287,33 +247,111 @@ namespace Engine
 
 	void Particles::SetPos(Vector3 pos_)
 	{
-		for (uint32_t index_ = 0; index_ < kMaxInstance; ++index_) {
-			particles[index_].transform.translate = pos_;
-		}
-	}
-
-	void Particles::SetRoopPos(Vector3 pos_)
-	{
-		for (std::list<Particle>::iterator particleItelater = RoopParticles.begin(); particleItelater != RoopParticles.end(); ++particleItelater) {
+		for (std::list<Particle>::iterator particleItelater = particles.begin(); particleItelater != particles.end(); ++particleItelater) {
 			particleItelater->transform.translate = pos_;
 		}
 	}
 
-	Particle Particles::MakeNewParticle(std::mt19937& randomEngine)
+	Particle Particles::MakeNewParticle(std::mt19937& randomEngine, const Vector3& translate, const Vector3& rotation)
 	{
-		std::uniform_real_distribution<float> distribution(-8.0f, 8.0f);
+		std::uniform_real_distribution<float> distribution(-0.5f, 0.5f); // ちょっとだけ揺らす
 		std::uniform_real_distribution<float> distColor(1.0f, 1.0f);
-		std::uniform_real_distribution<float> distTime(1.0f, 3.0f);
+		std::uniform_real_distribution<float> distTime(3.0f, 5.0f); // 少し長めに見せる
+		std::uniform_real_distribution<float> distZ(-0.1f, 8.1f);
+
 		Particle particle;
-		// 位置と速度を[-1,1]でランダムに初期化
-		particle.transform.scale = { 5.0f,5.0f,5.0f };
+		particle.transform.scale = { 0.7f, 0.7f, 0.7f };
 		particle.transform.rotate = { 0,0,0 };
-		particle.transform.translate = { distribution(randomEngine), distribution(randomEngine), distribution(randomEngine) };
-		particle.velocity = { distribution(randomEngine), distribution(randomEngine), distribution(randomEngine) };
+
+		// 向いている方向（Z前方）をもとに後ろ向きベクトルを出す
+		Vector3 forward = {
+			std::sin(rotation.y),
+			0.0f,
+			std::cos(rotation.y)
+		};
+		Vector3 offset = {
+			distribution(randomEngine),
+			distribution(randomEngine),
+			distZ(randomEngine)
+		};
+
+		// プレイヤーの位置に配置（揺らしつき）
+		particle.transform.translate = {
+			translate.x + offset.x,
+			translate.y + offset.y,
+			translate.z + offset.z
+		};
+
+		// 後方に向かって飛ばす（forwardをマイナス）
+		particle.velocity.x = forward.x * -5.0f + offset.x;
+		particle.velocity.y = forward.y * -5.0f + offset.y;
+		particle.velocity.z = forward.z * -5.0f + offset.z;
+
 		particle.color = { distColor(randomEngine), distColor(randomEngine), distColor(randomEngine), 1.0f };
-		particle.lifeTime = distTime(randomEngine);
+		particle.lifeTime = 0.02f;
 		particle.currentTime = 0;
 		return particle;
+	}
+
+	Particle Particles::MakeNewCircleParticle(std::mt19937& randomEngine, const Vector3& translate)
+	{
+		std::uniform_real_distribution<float> distXYZ(-1.0f, 1.0f);
+		std::uniform_real_distribution<float> distSpeed(8.0f, 16.0f);
+		std::uniform_real_distribution<float> distTime(1.0f, 3.0f);
+		std::uniform_real_distribution<float> distColor(1.0f, 1.0f);
+
+		// ランダムな方向ベクトル（正規化する）
+		Vector3 direction = {
+			distXYZ(randomEngine),
+			distXYZ(randomEngine),
+			distXYZ(randomEngine)
+		};
+
+		// 正規化
+		float length = std::sqrt(direction.x * direction.x + direction.y * direction.y + direction.z * direction.z);
+		if (length != 0.0f) {
+			direction.x /= length;
+			direction.y /= length;
+			direction.z /= length;
+		}
+
+		// スピードを乗算して放射方向に飛ばす
+		float speed = distSpeed(randomEngine);
+		Vector3 velocity = {
+			direction.x * speed,
+			direction.y * speed,
+			direction.z * speed
+		};
+
+		// 生成
+		Particle particle;
+		particle.transform.translate = translate;
+		particle.transform.scale = { 15.0f, 15.0f, 15.0f };
+		particle.transform.rotate = { 0.0f, 0.0f, 0.0f };
+		particle.velocity = velocity;
+		particle.color = { distColor(randomEngine), distColor(randomEngine), distColor(randomEngine), 1.0f };
+		particle.lifeTime = distTime(randomEngine);
+		particle.currentTime = 0.0f;
+
+		return particle;
+	}
+
+	std::list<Particle> Particles::Emit(const Emitter& emitter_, std::mt19937& randomEngine)
+	{
+		std::list<Particle> emitterParticles;
+		for (uint32_t count = 0; count < emitter_.count; ++count) {
+			emitterParticles.push_back(MakeNewParticle(randomEngine, emitter_.transform.translate, emitter_.transform.rotate));
+		}
+		return emitterParticles;
+	}
+
+	std::list<Particle> Particles::EmitCircle(const Emitter& emitter_, std::mt19937& randomEngine)
+	{
+		std::list<Particle> emitterParticles;
+		for (uint32_t count = 0; count < emitter_.count; ++count) {
+			emitterParticles.push_back(MakeNewCircleParticle(randomEngine, emitter_.transform.translate));
+		}
+		return emitterParticles;
 	}
 }
 
