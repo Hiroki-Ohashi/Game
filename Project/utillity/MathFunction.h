@@ -293,6 +293,13 @@ struct Emitter {
 	float frequencyTime; //!< 頻度用時刻
 };
 
+struct OBB {
+	Vector3 center;      // 中心座標
+	Vector3 halfSize;    // 各軸方向の半分サイズ
+	Vector3 axis[3];     // ローカル軸X, Y, Z
+};
+
+
 // 内積
 float Dot(const Vector3& v1, const Vector3& v2);
 float Length(const Vector3& v);
@@ -345,11 +352,12 @@ Quaternion Conjugate(const  Quaternion& quaternion);
 // quaternionのnorm
 float Norm(const  Quaternion& quaternion);
 // 正規化
-Quaternion Normalize(const  Quaternion& quaternion);
+Quaternion NormalizeQuaternion(const  Quaternion& quaternion);
 // 逆行列
 Quaternion Inverse(const  Quaternion& quaternion);
 Quaternion mainasu(const  Quaternion& quaternion);
 
+Matrix4x4 MakeRotateMatrix(const Vector3& rotation);
 //任意軸回転
 Quaternion MakeRotateAxisAngleQuaternion(const Vector3& axis, float angle);
 // ベクトルをquaternion回転

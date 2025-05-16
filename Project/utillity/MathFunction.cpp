@@ -555,7 +555,7 @@ float Norm(const Quaternion& quaternion)
 	return result;
 }
 
-Quaternion Normalize(const Quaternion& quaternion)
+Quaternion NormalizeQuaternion(const Quaternion& quaternion)
 {
 	Quaternion result;
 	float len = 1 / sqrtf(quaternion.x * quaternion.x + quaternion.y * quaternion.y + quaternion.z * quaternion.z + quaternion.w * quaternion.w);
@@ -590,6 +590,45 @@ Quaternion mainasu(const Quaternion& quaternion)
 
 	return result;
 }
+
+// 回転行列を作成（オイラー角：ラジアン）
+Matrix4x4 MakeRotateMatrix(const Vector3& rotation) {
+	float cosX = std::cos(rotation.x);
+	float sinX = std::sin(rotation.x);
+	float cosY = std::cos(rotation.y);
+	float sinY = std::sin(rotation.y);
+	float cosZ = std::cos(rotation.z);
+	float sinZ = std::sin(rotation.z);
+
+	// X軸回転
+	Matrix4x4 rotX = {
+		1,    0,     0,    0,
+		0,  cosX, -sinX,   0,
+		0,  sinX,  cosX,   0,
+		0,    0,     0,    1
+	};
+
+	// Y軸回転
+	Matrix4x4 rotY = {
+		cosY,  0, sinY, 0,
+		  0,   1,   0,  0,
+	   -sinY,  0, cosY, 0,
+		  0,   0,   0,  1
+	};
+
+	// Z軸回転
+	Matrix4x4 rotZ = {
+		cosZ, -sinZ, 0, 0,
+		sinZ,  cosZ, 0, 0,
+		  0,     0,  1, 0,
+		  0,     0,  0, 1
+	};
+
+	// 回転順：Z → X → Y
+	Matrix4x4 result = Multiply(rotZ, Multiply(rotX, rotY));
+	return result;
+}
+
 
 Quaternion MakeRotateAxisAngleQuaternion(const Vector3& axis, float angle)
 {

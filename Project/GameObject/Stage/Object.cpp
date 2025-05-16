@@ -47,3 +47,21 @@ Vector3 Object::GetWorldPosition() const
 
 	return worldPos;
 }
+
+OBB Object::GetOBB()
+{
+	OBB obb;
+
+	// 中心座標の位置
+	obb.center = GetWorldPosition();
+
+	// 半サイズはスケールの半分
+	obb.halfSize = GetHalfSize();
+
+	// 各ローカル軸を正規化して格納
+	obb.axis[0] = Normalize({ worldtransform_.matWorld.m[0][0], worldtransform_.matWorld.m[0][1], worldtransform_.matWorld.m[0][2] }); // X軸
+	obb.axis[1] = Normalize({ worldtransform_.matWorld.m[1][0], worldtransform_.matWorld.m[1][1], worldtransform_.matWorld.m[1][2] }); // Y軸
+	obb.axis[2] = Normalize({ worldtransform_.matWorld.m[2][0], worldtransform_.matWorld.m[2][1], worldtransform_.matWorld.m[2][2] }); // Z軸
+
+	return obb;
+}

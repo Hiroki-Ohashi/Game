@@ -24,6 +24,7 @@
 #include <Stage/Stage.h>
 #include <Enemy/Enemy.h>
 #include <SkyBox/Skydome.h>
+#include <RailCamera/RailCamera.h>
 using namespace Engine;
 
 #pragma comment(lib, "d3d12.lib")
@@ -58,7 +59,6 @@ public:
 
 private:
 	// シェイクを開始する関数
-	void startShake(int duration, float amplitude);
 	void ShakeCamera();
 
 	// ロックオン処理
@@ -74,7 +74,7 @@ private:
 
 private:
 	// カメラ
-	Camera camera_;
+	std::unique_ptr<RailCamera> railCamera_ = nullptr;
 	// シングルトン呼び出し
 	TextureManager* textureManager_ = TextureManager::GetInstance();
 
@@ -109,6 +109,7 @@ private:
 	// 当たり判定
 	void CheckCollisionPair(Collider* colliderA, Collider* colliderB);
 	void CheckAABBCollisionPair(Collider* colliderA, Collider* colliderB);
+	bool IsOBBColliding(const OBB& a, const OBB& b);
 private:
 	// テクスチャ
 	uint32_t enemyBulletTex;
@@ -152,24 +153,13 @@ private:
 	float goalline = 98000.0f;
 	bool isGoal_;
 
-	// カメラoffset
-	Vector3 cameraOffset = { 0.0f,4.0f, 10.0f };
-
-	// カメラシェイク変数
-	bool isShake = false;
-	int shakeTimer = 0;
-	float shakeAmplitude = 1.0f; // 揺れの最大振幅
-	float shakeDecay = 0.2f;    // 揺れの減衰率
-	float randX = 0.0f;
-	float randY = 0.0f;
-
 	// デバッグ用仮変数;
 	Vector2 pos = {};
 	Vector3 pos_ = {};
 	Vector2 scale = {};
 	EulerTransform transform_;
 
-	// カメライージング変数
+	// イージング変数
 	float start = 0.0f;
 	float end = 6.29f;
 	float frame;
@@ -177,9 +167,6 @@ private:
 
 	bool isPose_;
 	bool prevBackButtonState_ = false;
-
-	float fov = 1.0f;
-	bool isFov = false;
 
 	// scene
 	uint32_t scenePrev;

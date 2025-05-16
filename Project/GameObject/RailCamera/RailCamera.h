@@ -9,17 +9,24 @@ public:
 	void Update();
 
 	// シェイクを開始する関数
-	void startShake(int duration, float amplitude);
+	void startShake();
 	void ShakeCamera();
 
 	// スタート
 	void StartCamera();
+	void AfterStartCamera();
+	// クリア
 	void ClearCamera();
 
 	// Getter
-	Camera GetCamera() { return camera_; }
+	Camera* GetCamera() { return &camera_; }
+	Vector3 GetCameraPos() { return camera_.cameraTransform.translate; }
+	Vector3 GetCameraRot() { return camera_.cameraTransform.rotate; }
 	// Setter
 	void SetPlayer(Player* player) { player_ = player; }
+	void SetPos(Vector3 cameraPos) { camera_.cameraTransform.translate = cameraPos; }
+	void SetRot(Vector3 cameraRot) { camera_.cameraTransform.rotate = cameraRot; }
+	void SetGoalLine(float line) { goalLine = line; }
 
 private:
 	void RotObject(Vector3 startObjectPos, Vector3 endObjectPos, Vector3 ObjectRotate);
@@ -40,9 +47,14 @@ private:
 	float randX = 0.0f;
 	float randY = 0.0f;
 
-	// ノイズ
-	float noiseStrength;
-	const float kdamageNoise = 3.0f;
-	const float kMaxNoiseStrength = 100.0f;
-	const float plusNoiseStrength = 1.0f;
+	// カメライージング変数
+	float start = 0.45f;
+	float end = 1.2f;
+	float frame;
+	float endFrame =30.0f;
+	float fov = 1.0f;
+	bool isFov = false;
+
+	// ゴールライン
+	float goalLine;
 };

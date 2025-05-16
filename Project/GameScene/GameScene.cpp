@@ -13,9 +13,6 @@ GameScene::~GameScene(){
 }
 
 void GameScene::Initialize() {
-	camera_.Initialize();
-	camera_.SetFovY(1.0f);
-
 	// PostEffect
 	postProcess_ = std::make_unique<PostProcess>();
 	postProcess_->Initialize(NOISE);
@@ -26,6 +23,10 @@ void GameScene::Initialize() {
 	// player
 	player_ = std::make_unique<Player>();
 	player_->Initialize();
+
+	railCamera_ = std::make_unique<RailCamera>();
+	railCamera_->SetPlayer(player_.get());
+	railCamera_->Initialize();
 
 	// skybox
 	skydome_ = std::make_unique<Skydome>();
@@ -79,50 +80,15 @@ void GameScene::Initialize() {
 	isGameOver_ = false;
 	isPose_ = false;
 	isGoal_ = false;
-	isFov = true;
-
-	// cameraInit
-	EulerTransform origin = { {0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f},{player_->GetPos().x,player_->GetPos().y,player_->GetPos().z} };
-	// 追従対象からカメラまでのオフセット
-	Vector3 offset = { 0.0f, 4.0f, -20.0f };
-	// カメラの角度から回転行列を計算する
-	Matrix4x4 worldTransform = MakeRotateYMatrix(camera_.cameraTransform.rotate.y);
-	// オフセットをカメラの回転に合わせて回転させる
-	offset = TransformNormal(offset, worldTransform);
-	// 座標をコピーしてオフセット分ずらす
-	camera_.cameraTransform.translate.x = origin.translate.x + offset.x;
-	camera_.cameraTransform.translate.y = origin.translate.y + offset.y;
-	camera_.cameraTransform.translate.z = origin.translate.z + offset.z;
-
-	Vector3 camwraEnd = player_->GetPos();
-	Vector3 cameraStart = camera_.cameraTransform.translate;
-
-	Vector3 diff;
-	diff.x = camwraEnd.x - cameraStart.x;
-	diff.y = camwraEnd.y - cameraStart.y;
-	diff.z = camwraEnd.z - cameraStart.z;
-
-	diff = Normalize(diff);
-
-	Vector3 velocity_(diff.x, diff.y, diff.z);
-
-	// Y軸周り角度（Θy）
-	camera_.cameraTransform.rotate.y = std::atan2(velocity_.x, velocity_.z);
-	float velocityXZ = sqrt((velocity_.x * velocity_.x) + (velocity_.z * velocity_.z));
-	camera_.cameraTransform.rotate.x = std::atan2(-velocity_.y, velocityXZ);
-
-	//camera_.cameraTransform.translate = { player_->GetPos().x, player_->GetPos().y + cameraOffset.y,  player_->GetPos().z - cameraOffset.z - 10.0f };
 
 	// EffectInit
 	blurStrength_ = 0.3f;
 	noiseStrength = 0.0f;
-
-	frame = 0;
 }
 
 void GameScene::Update(){
 
-	camera_.Update();
+	railCamera_->Update();
 
 	postProcess_->NoiseUpdate(0.1f);
 
@@ -152,7 +118,7 @@ void GameScene::Update(){
 
 		// json更新処理
 		json_->Update();
-		json_->EnemyUpdate(camera_, player_.get(), this, player_->GetPos().z);
+		json_->EnemyUpdate(*railCamera_->GetCamera(), player_.get(), this, player_->GetPos().z);
 
 		// ゲームスタート
 		// 画面が切り替わったらvignetteをフェードアウトして明るくする
@@ -164,7 +130,8 @@ void GameScene::Update(){
 		}
 		// スタート演出が終わったらプレイヤー更新処理
 		if (isApploach_ == false) {
-			player_->Update(&camera_);
+			player_->Update(railCamera_->GetCamera());
+			railCamera_->SetPlayer(player_.get());
 		}
 
 		// Lockon
@@ -207,21 +174,21 @@ void GameScene::Update(){
 void GameScene::Draw()
 {
 	// 天球描画
-	skydome_->Draw(&camera_);
+	skydome_->Draw(railCamera_->GetCamera());
 	// 床描画
-	stage_->Draw(&camera_);
+	stage_->Draw(railCamera_->GetCamera());
 	// 敵、ステージ描画
-	json_->Draw(camera_, uv);
+	json_->Draw(*railCamera_->GetCamera(), uv);
 	// プレイヤーの弾描画
-	player_->BulletDraw(&camera_);
+	player_->BulletDraw(railCamera_->GetCamera());
 
 	// 敵弾描画
 	for (std::unique_ptr<EnemyBullet>& bullet : enemyBullets_) {
-		bullet->Draw(&camera_, enemyBulletTex, kemuri);
+		bullet->Draw(railCamera_->GetCamera(), enemyBulletTex, kemuri);
 	}
 
 	// プレイヤー描画
-	player_->Draw(&camera_);
+	player_->Draw(railCamera_->GetCamera());
 
 	if (isApploach_) {
 		// readyUI描画
@@ -229,7 +196,7 @@ void GameScene::Draw()
 	}
 	else {
 		// goUI描画
-		go_->Draw(&camera_, go);
+		go_->Draw(railCamera_->GetCamera(), go);
 
 		if (isGameClear_ == false) {
 			// プレイヤーUI描画
@@ -237,7 +204,7 @@ void GameScene::Draw()
 		}
 	}
 
-	json_->DrawEnemy(camera_);
+	json_->DrawEnemy(*railCamera_->GetCamera());
 
 	if (isPose_) {
 		sentaku_->Draw();
@@ -352,25 +319,6 @@ void GameScene::CheckAllCollisions()
 		}
 	}
 
-	for (std::unique_ptr<Object>& objects : json_->GetObjects()) {
-		// AABBの最小/最大座標を取得
-		Vector3 AMin = player_->GetAABBMin();
-		Vector3 AMax = player_->GetAABBMax();
-		Vector3 BMin = objects->GetAABBMin();
-		Vector3 BMax = objects->GetAABBMax();
-
-		// AABBの重なりを判定
-		bool isColliding =
-			(AMax.x >= BMin.x && AMin.x <= BMax.x) &&
-			(AMax.y >= BMin.y && AMin.y <= BMax.y) &&
-			(AMax.z >= BMin.z && AMin.z <= BMax.z);
-
-		if (isColliding) {
-			player_->OnCollision();
-			objects->OnCollision();
-		}
-	}
-
 	for (std::unique_ptr<Enemy>& enemy : json_->GetEnemys()) {
 
 		// プレイヤーの照準（レティクル）の矩形情報
@@ -449,6 +397,19 @@ void GameScene::CheckAllCollisions()
 			}
 		}
 	}
+
+	for (std::unique_ptr<Object>& objects : json_->GetObjects()) {
+		// プレイヤーとオブジェクトのOBBを取得
+		OBB obbA = player_->GetOBB();
+		OBB obbB = objects->GetOBB();
+
+		// OBBの当たり判定
+		if (IsOBBColliding(obbA, obbB)) {
+			player_->OnCollision();
+			objects->OnCollision();
+		}
+	}
+
 }
 
 void GameScene::AddEnemyBullet(std::unique_ptr<EnemyBullet> enemyBullet)
@@ -457,19 +418,11 @@ void GameScene::AddEnemyBullet(std::unique_ptr<EnemyBullet> enemyBullet)
 	enemyBullets_.push_back(std::move(enemyBullet));
 }
 
-void GameScene::startShake(int duration, float amplitude)
-{
-	isShake = true;
-	shakeTimer = duration;
-	shakeAmplitude = amplitude;
-}
-
 void GameScene::ShakeCamera()
 {
 	// 当たったらシェイク
 	if (player_->GetIsHit()) {
-		shakeTimer = 30;
-		startShake(40, 2.0f);
+		railCamera_->startShake();
 
 		// 自キャラの衝突時コールバックを呼び出す
 		isNoise = true;
@@ -486,32 +439,7 @@ void GameScene::ShakeCamera()
 		postProcess_->SetNoiseStrength(noiseStrength);
 	}
 
-	/// 更新処理
-	if (isShake) {
-		// ランダムな振れ幅を計算
-		randX = ((rand() % 200) / 100.0f - 1.0f) * shakeAmplitude;
-		randY = ((rand() % 200) / 100.0f - 1.0f) * shakeAmplitude;
-
-		// 振幅を減衰
-		shakeAmplitude *= shakeDecay;
-
-		// タイマーの減少
-		shakeTimer -= 1;
-
-		if (shakeTimer <= 0 || shakeAmplitude < 0.1f) {
-			isShake = false;
-			randX = 0;
-			randY = 0;
-		}
-	}
-	else {
-		randX = 0;
-		randY = 0;
-	}
-
-	// カメラ位置
-	camera_.cameraTransform.translate.x += randX;
-	camera_.cameraTransform.translate.y += randY;
+	railCamera_->ShakeCamera();
 }
 
 void GameScene::LockOnEnemy()
@@ -621,73 +549,14 @@ void GameScene::Start()
 				postProcess_->SetBlurStrength(blurStrength_);
 			}
 
-			camera_.cameraTransform.rotate.y = start + (end - start) * EaseOutQuart(frame / endFrame);
-
-			// cameraInit
-			EulerTransform origin = { {0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f},{player_->GetPos().x,player_->GetPos().y,player_->GetPos().z} };
-			// 追従対象からカメラまでのオフセット
-			Vector3 offset = { 0.0f, 4.0f, -20.0f };
-			// カメラの角度から回転行列を計算する
-			Matrix4x4 worldTransform = MakeRotateYMatrix(camera_.cameraTransform.rotate.y);
-			// オフセットをカメラの回転に合わせて回転させる
-			offset = TransformNormal(offset, worldTransform);
-			// 座標をコピーしてオフセット分ずらす
-			camera_.cameraTransform.translate.x = origin.translate.x + offset.x;
-			camera_.cameraTransform.translate.y = origin.translate.y + offset.y;
-			camera_.cameraTransform.translate.z = origin.translate.z + offset.z;
-
-			Vector3 camwraEnd = player_->GetPos();
-			Vector3 cameraStart = camera_.cameraTransform.translate;
-
-			Vector3 diff;
-			diff.x = camwraEnd.x - cameraStart.x;
-			diff.y = camwraEnd.y - cameraStart.y;
-			diff.z = camwraEnd.z - cameraStart.z;
-
-			diff = Normalize(diff);
-
-			Vector3 velocity_(diff.x, diff.y, diff.z);
-
-			// Y軸周り角度（Θy）
-			camera_.cameraTransform.rotate.y = std::atan2(velocity_.x, velocity_.z);
-			float velocityXZ = sqrt((velocity_.x * velocity_.x) + (velocity_.z * velocity_.z));
-			camera_.cameraTransform.rotate.x = std::atan2(-velocity_.y, velocityXZ);
-
+			float cameraRot = start + (end - start) * EaseOutQuart(frame / endFrame);
+			railCamera_->SetRot({ railCamera_->GetCameraRot().x, cameraRot, railCamera_->GetCameraRot().z });
+			railCamera_->StartCamera();
 		}
 		// 演出が終わったらブラーをかけてプレイヤー発射
 		else{
 
-			// カメラ位置
-			camera_.cameraTransform.translate = { player_->GetPos().x + randX, player_->GetPos().y + cameraOffset.y + randY,  player_->GetPos().z - cameraOffset.z };
-
-			if (isFov) {
-				frame++;
-				if (frame >= 30.0f) {
-					//frame = 0;
-					isFov = false;
-				}
-			}
-
-			fov = 0.45f + (1.2f - 0.45f) * EaseOutQuart(frame / 30.0f);
-			camera_.SetFovY(fov);
-
-			// カメラをプレイヤーに向ける
-			Vector3 cameraEnd = player_->Get3DWorldPosition();
-			Vector3 cameraStart = camera_.cameraTransform.translate;
-
-			Vector3 diff;
-			diff.x = cameraEnd.x - cameraStart.x;
-			diff.y = cameraEnd.y - cameraStart.y;
-			diff.z = cameraEnd.z - cameraStart.z;
-
-			diff = Normalize(diff);
-
-			Vector3 velocity_(diff.x, diff.y, diff.z);
-
-			// Y軸周り角度（Θy）
-			camera_.cameraTransform.rotate.y = std::atan2(velocity_.x, velocity_.z);
-			float velocityXZ = sqrt((velocity_.x * velocity_.x) + (velocity_.z * velocity_.z));
-			camera_.cameraTransform.rotate.x = std::atan2(-velocity_.y, velocityXZ);
+			railCamera_->AfterStartCamera();
 
 			// ブラー
 			blurStrength_ -= minusBlurStrength_;
@@ -708,25 +577,7 @@ void GameScene::Clear()
 		isGoal_ = true;
 		player_->SetGoalLine(isGoal_);
 
-		camera_.cameraTransform.translate = { player_->GetPos().x, player_->GetPos().y + cameraOffset.y,  goalline - cameraOffset.z };
-
-		// カメラをプレイヤーに向ける
-		Vector3 clearCameraEnd = player_->GetPos();
-		Vector3 clearCameraEtart = camera_.cameraTransform.translate;
-
-		Vector3 diff;
-		diff.x = clearCameraEnd.x - clearCameraEtart.x;
-		diff.y = clearCameraEnd.y - clearCameraEtart.y;
-		diff.z = clearCameraEnd.z - clearCameraEtart.z;
-
-		diff = Normalize(diff);
-
-		Vector3 velocity_(diff.x, diff.y, diff.z);
-
-		// Y軸周り角度（Θy）
-		camera_.cameraTransform.rotate.y = std::atan2(velocity_.x, velocity_.z);
-		float velocityXZ = sqrt((velocity_.x * velocity_.x) + (velocity_.z * velocity_.z));
-		camera_.cameraTransform.rotate.x = std::atan2(-velocity_.y, velocityXZ);
+		railCamera_->ClearCamera();
 
 		isGameClear_ = true;
 	}
@@ -811,4 +662,64 @@ void GameScene::CheckAABBCollisionPair(Collider* colliderA, Collider* colliderB)
 		colliderA->OnCollision();
 		colliderB->OnCollision();
 	}
+}
+
+bool GameScene::IsOBBColliding(const OBB& a, const OBB& b) {
+	const float EPSILON = 1e-5f;
+
+	// 各軸：aの3軸 + bの3軸 + a×bの交差軸 = 15本
+	Vector3 axis[15];
+
+	// aのローカル軸
+	for (int i = 0; i < 3; i++) {
+		axis[i] = a.axis[i];
+	}
+
+	// bのローカル軸
+	for (int i = 0; i < 3; i++) {
+		axis[i + 3] = b.axis[i];
+	}
+
+	// a×b の交差軸
+	int index = 6;
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j < 3; j++) {
+			axis[index++] = Normalize(Cross(a.axis[i], b.axis[j]));
+		}
+	}
+
+	// 中心間ベクトル
+	Vector3 t;
+	t.x = b.center.x - a.center.x;
+	t.y = b.center.y - a.center.y;
+	t.z = b.center.z - a.center.z;
+
+	// 全軸で投影をチェック
+	for (int i = 0; i < 15; i++) {
+		const Vector3& L = axis[i];
+		if (Length(L) < EPSILON) continue; // 無効軸スキップ
+
+		// aの投影幅
+		float ra =
+			std::abs(Dot(a.axis[0], L)) * a.halfSize.x +
+			std::abs(Dot(a.axis[1], L)) * a.halfSize.y +
+			std::abs(Dot(a.axis[2], L)) * a.halfSize.z;
+
+		// bの投影幅
+		float rb =
+			std::abs(Dot(b.axis[0], L)) * b.halfSize.x +
+			std::abs(Dot(b.axis[1], L)) * b.halfSize.y +
+			std::abs(Dot(b.axis[2], L)) * b.halfSize.z;
+
+		// 中心差の投影
+		float dist = std::abs(Dot(t, L));
+
+		if (dist > ra + rb) {
+			// この軸で分離がある → 衝突してない
+			return false;
+		}
+	}
+
+	// 全軸で分離がなかった → 衝突している
+	return true;
 }

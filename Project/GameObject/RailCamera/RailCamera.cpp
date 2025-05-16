@@ -4,6 +4,7 @@
 void RailCamera::Initialize()
 {
 	camera_.Initialize();
+	camera_.SetFovY(1.0f);
 
 	// cameraInit
 	EulerTransform origin = { {0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f},{player_->GetPos().x,player_->GetPos().y,player_->GetPos().z} };
@@ -19,6 +20,9 @@ void RailCamera::Initialize()
 	camera_.cameraTransform.translate.z = origin.translate.z + offset.z;
 
 	RotObject(player_->GetPos(), camera_.cameraTransform.translate, camera_.cameraTransform.rotate);
+
+	frame = 0;
+	isFov = true;
 }
 
 void RailCamera::Update()
@@ -26,9 +30,12 @@ void RailCamera::Update()
 	camera_.Update();
 }
 
-//void RailCamera::startShake(int duration, float amplitude)
-//{
-//}
+void RailCamera::startShake()
+{
+	isShake = true;
+	shakeTimer = 40;
+	shakeAmplitude = 2.0f;
+}
 
 void RailCamera::ShakeCamera()
 {
@@ -62,21 +69,59 @@ void RailCamera::ShakeCamera()
 
 void RailCamera::StartCamera()
 {
+	// cameraInit
+	EulerTransform origin = { {0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f},{player_->GetPos().x,player_->GetPos().y,player_->GetPos().z} };
+	// 追従対象からカメラまでのオフセット
+	Vector3 offset = { 0.0f, 4.0f, -20.0f };
+	// カメラの角度から回転行列を計算する
+	Matrix4x4 worldTransform = MakeRotateYMatrix(camera_.cameraTransform.rotate.y);
+	// オフセットをカメラの回転に合わせて回転させる
+	offset = TransformNormal(offset, worldTransform);
+	// 座標をコピーしてオフセット分ずらす
+	camera_.cameraTransform.translate.x = origin.translate.x + offset.x;
+	camera_.cameraTransform.translate.y = origin.translate.y + offset.y;
+	camera_.cameraTransform.translate.z = origin.translate.z + offset.z;
+
+	// カメラをプレイヤーに向ける
+	RotObject(player_->GetPos(), camera_.cameraTransform.translate, camera_.cameraTransform.rotate);
+}
+
+void RailCamera::AfterStartCamera()
+{
+	// カメラ位置
+	camera_.cameraTransform.translate = { player_->GetPos().x + randX, player_->GetPos().y + cameraOffset.y + randY,  player_->GetPos().z - cameraOffset.z };
+
+	if (isFov) {
+		frame++;
+		if (frame >= endFrame) {
+			isFov = false;
+		}
+	}
+
+	fov = start + (end - start) * EaseOutQuart(frame / endFrame);
+	camera_.SetFovY(fov);
+
+	// カメラをレティクルに向ける
+	RotObject(player_->Get3DWorldPosition(), camera_.cameraTransform.translate, camera_.cameraTransform.rotate);
 }
 
 void RailCamera::ClearCamera()
 {
+	camera_.cameraTransform.translate = { player_->GetPos().x, player_->GetPos().y + cameraOffset.y,  goalLine - cameraOffset.z };
+
+	// カメラをプレイヤーに向ける
+	RotObject(player_->Get3DWorldPosition(), camera_.cameraTransform.translate, camera_.cameraTransform.rotate);
 }
 
 void RailCamera::RotObject(Vector3 endObjectPos, Vector3 startObjectPos, Vector3 ObjectRotate)
 {
-	Vector3 end = endObjectPos;
-	Vector3 start = startObjectPos;
+	Vector3 cameraEnd = endObjectPos;
+	Vector3 cameraStart = startObjectPos;
 
 	Vector3 diff;
-	diff.x = end.x - start.x;
-	diff.y = end.y - start.y;
-	diff.z = end.z - start.z;
+	diff.x = cameraEnd.x - cameraStart.x;
+	diff.y = cameraEnd.y - cameraStart.y;
+	diff.z = cameraEnd.z - cameraStart.z;
 
 	diff = Normalize(diff);
 

@@ -48,9 +48,9 @@ public:
 	// 半分の大きさ
 	Vector3 GetHalfSize() const {
 		return {
-			worldtransform_.scale.x / 2.0f,
-			worldtransform_.scale.y / 2.0f,
-			worldtransform_.scale.z / 2.0f
+			worldtransform_.scale.x / 1.0f,
+			worldtransform_.scale.y / 1.0f,
+			worldtransform_.scale.z / 1.0f
 		};
 	}
 
@@ -71,7 +71,10 @@ public:
 			worldtransform_.translate.z + worldtransform_.scale.z
 		};
 	}
-	
+
+	// OBB当たり判定
+	OBB GetOBB();
+
 	// 弾リストを取得
 	 std::vector<std::unique_ptr<PlayerBullet>>& GetBullets() { return bullets_; }
 
