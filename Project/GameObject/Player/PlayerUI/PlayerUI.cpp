@@ -44,7 +44,7 @@ void PlayerUI::Initialize()
 	frame = 0.0f;
 }
 
-void PlayerUI::Update()
+void PlayerUI::Update(Camera* camera_)
 {
 	if (isEaseStart) {
 		frame++;
@@ -56,6 +56,9 @@ void PlayerUI::Update()
 		rightWorldtransform_.scale.y = start + (end - start) * EaseOutQuart(frame / endFrame);
 		leftWorldtransform_.scale.y = start + (end - start) * EaseOutQuart(frame / endFrame);
 	}
+
+	RotObject(rightWorldtransform_.translate, camera_->cameraTransform.translate, rightWorldtransform_.rotate);
+	RotObject(leftWorldtransform_.translate, camera_->cameraTransform.translate, leftWorldtransform_.rotate);
 
 	if (ImGui::TreeNode("right")) {
 		ImGui::DragFloat3("Scale", &rightWorldtransform_.scale.x, 0.01f);
@@ -104,8 +107,8 @@ void PlayerUI::Draw(Camera* camera_, int32_t hp)
 
 void PlayerUI::SetUIPosition(Vector3 pos)
 {
-	rightWorldtransform_.translate = { pos.x - 5.0f, pos.y, pos.z + 0.0f };
-	leftWorldtransform_.translate = { pos.x + 5.0f, pos.y, pos.z + 0.0f };
+	rightWorldtransform_.translate = { pos.x - 6.0f, pos.y, pos.z + 10.0f };
+	leftWorldtransform_.translate = { pos.x + 6.0f, pos.y, pos.z + 10.0f };
 	
 	rightWorldtransform_.UpdateMatrix();
 	leftWorldtransform_.UpdateMatrix();
@@ -120,11 +123,30 @@ void PlayerUI::SetEaseEnd(bool isEase)
 	if (isEaseEnd) {
 		frame++;
 		if (frame >= endFrame) {
-			//frame = 0;
 			isEaseEnd = false;
 		}
 
 		rightWorldtransform_.scale.y = end + (start - end) * EaseOutQuart(frame / endFrame);
 		leftWorldtransform_.scale.y = end + (start - end) * EaseOutQuart(frame / endFrame);
 	}
+}
+
+void PlayerUI::RotObject(Vector3 startObjectPos, Vector3 endObjectPos, Vector3 ObjectRotate)
+{
+	Vector3 cameraEnd = endObjectPos;
+	Vector3 cameraStart = startObjectPos;
+
+	Vector3 diff;
+	diff.x = cameraEnd.x - cameraStart.x;
+	diff.y = cameraEnd.y - cameraStart.y;
+	diff.z = cameraEnd.z - cameraStart.z;
+
+	diff = Normalize(diff);
+
+	Vector3 velocity_(diff.x, diff.y, diff.z);
+
+	// Y軸周り角度（Θy）
+	ObjectRotate.y = std::atan2(velocity_.x, velocity_.z);
+	float velocityXZ = sqrt((velocity_.x * velocity_.x) + (velocity_.z * velocity_.z));
+	ObjectRotate.x = std::atan2(-velocity_.y, velocityXZ);
 }

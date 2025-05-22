@@ -7,11 +7,14 @@ using namespace Engine;
 class PlayerUI {
 public:
 	void Initialize();
-	void Update();
+	void Update(Camera* camera_);
 	void Draw(Camera* camera_, int32_t hp);
 
 	void SetUIPosition(Vector3 pos);
 	void SetEaseEnd(bool isEase);
+
+	// カメラの方向を向くように回転調整
+	void RotObject(Vector3 startObjectPos, Vector3 endObjectPos, Vector3 ObjectRotate);
 private:
 
 	TextureManager* textureManager_ = nullptr;

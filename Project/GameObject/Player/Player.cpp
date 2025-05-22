@@ -87,7 +87,8 @@ void Player::Update(Camera* camera_)
 
 	worldtransform_.rotate.z = easeStart + (easeEnd - easeStart) * EaseOutQuart(frame / endFrame);
 
-	uiModel_->Update();
+	// UI
+	uiModel_->Update(camera_);
 	uiModel_->SetUIPosition(worldtransform_.translate);
 
 	// デスフラグの立った弾を排除

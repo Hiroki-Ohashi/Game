@@ -92,7 +92,7 @@ void RailCamera::StartCamera()
 void RailCamera::AfterStartCamera()
 {
 	// カメラ位置
-	camera_.cameraTransform.translate = { player_->GetPos().x + randX, player_->GetPos().y + cameraOffset.y + randY,  player_->GetPos().z - cameraOffset.z };
+	camera_.cameraTransform.translate = { player_->Get3DWorldPosition().x + randX, player_->Get3DWorldPosition().y + cameraOffset.y + randY,  player_->GetPos().z - cameraOffset.z };
 
 	if (isFov) {
 		frame++;
@@ -127,22 +127,24 @@ void RailCamera::ClearCameraMove()
 
 void RailCamera::RotObject(Vector3 endObjectPos, Vector3 startObjectPos, Vector3 ObjectRotate)
 {
-	Vector3 cameraEnd = endObjectPos;
-	Vector3 cameraStart = startObjectPos;
+	Vector3 objectEnd = endObjectPos;
+	Vector3 objectStart = startObjectPos;
 
+	// プレイヤーとの方向ベクトルを正規化
 	Vector3 diff;
-	diff.x = cameraEnd.x - cameraStart.x;
-	diff.y = cameraEnd.y - cameraStart.y;
-	diff.z = cameraEnd.z - cameraStart.z;
+	diff.x = objectEnd.x - objectStart.x;
+	diff.y = objectEnd.y - objectStart.y;
+	diff.z = objectEnd.z - objectStart.z;
 
 	diff = Normalize(diff);
+	Vector3 velocity(diff.x, diff.y, diff.z);
 
-	Vector3 velocity_(diff.x, diff.y, diff.z);
+	// Y軸回転：プレイヤー方向を向く
+	ObjectRotate.y = std::atan2(velocity.x, velocity.z);
 
-	// Y軸周り角度（Θy）
-	ObjectRotate.y = std::atan2(velocity_.x, velocity_.z);
-	float velocityXZ = sqrt((velocity_.x * velocity_.x) + (velocity_.z * velocity_.z));
-	ObjectRotate.x = std::atan2(-velocity_.y, velocityXZ);
+	// X軸回転：上下方向の調整
+	float velocityXZ = std::sqrt(velocity.x * velocity.x + velocity.z * velocity.z);
+	ObjectRotate.x = std::atan2(-velocity.y, velocityXZ);
 }
 
 void RailCamera::AttentionObject(EulerTransform origin_, Vector3 offset_)
