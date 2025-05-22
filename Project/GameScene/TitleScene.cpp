@@ -11,9 +11,11 @@ TitleScene::~TitleScene()
 
 void TitleScene::Initialize()
 {
-	camera_.Initialize();
-	camera_.cameraTransform.translate = { 0.0f, 5.0f, -10.0f };
-	camera_.cameraTransform.rotate.x = 0.4f;
+	railCamera_ = std::make_unique<RailCamera>();
+	railCamera_->Initialize();
+	railCamera_->SetPos({ 0.0f, 5.0f, -10.0f });
+	railCamera_->SetRot({ 0.4f, 0.0f, 0.0f });
+	railCamera_->SetkCameraMax({ 0.40f , 0.0f });
 
 	postProcess_ = std::make_unique<PostProcess>();
 	postProcess_->Initialize(NOISE);
@@ -66,7 +68,7 @@ void TitleScene::Initialize()
 
 void TitleScene::Update()
 {
-	camera_.Update();
+	railCamera_->Update();
 	json_->Update();
 	
 	postProcess_->NoiseUpdate(0.1f);
@@ -140,7 +142,7 @@ void TitleScene::Update()
 	}
 
 	// カメラ揺らす
-	CameraShake();
+	railCamera_->CameraSwing();
 
 	// UI点滅
 	Blinking();
@@ -149,9 +151,9 @@ void TitleScene::Update()
 void TitleScene::Draw()
 {
 	// 天球描画
-	skydome_->Draw(&camera_);
+	skydome_->Draw(railCamera_->GetCamera());
 	// Json描画
-	json_->Draw(camera_, white);
+	json_->Draw(railCamera_->GetCamera(), white);
 
 	if (isLoad_) {
 		loadSprite_->Draw();
@@ -169,28 +171,6 @@ void TitleScene::Draw()
 void TitleScene::PostDraw()
 {
 	postProcess_->NoiseDraw();
-}
-
-void TitleScene::CameraShake()
-{
-	// カメラ角度が範囲を超えたら反転
-	// X軸
-	if (camera_.cameraTransform.rotate.x < kCameraMax.x) {
-		cameraSpeedX += cameraMoveSpeed;
-	}
-	else if (camera_.cameraTransform.rotate.x >= kCameraMax.x) {
-		cameraSpeedX -= cameraMoveSpeed;
-	}
-	// Y軸
-	if (camera_.cameraTransform.rotate.y < kCameraMax.y) {
-		cameraSpeedY += cameraMoveSpeed;
-	}
-	else if (camera_.cameraTransform.rotate.y >= kCameraMax.y) {
-		cameraSpeedY -= cameraMoveSpeed;
-	}
-	// カメラスピードを足す
-	camera_.cameraTransform.rotate.x += cameraSpeedX;
-	camera_.cameraTransform.rotate.y += cameraSpeedY;
 }
 
 void TitleScene::Blinking()

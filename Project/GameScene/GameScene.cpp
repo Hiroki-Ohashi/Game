@@ -26,7 +26,7 @@ void GameScene::Initialize() {
 
 	railCamera_ = std::make_unique<RailCamera>();
 	railCamera_->SetPlayer(player_.get());
-	railCamera_->Initialize();
+	railCamera_->GameSceneInitialize();
 
 	// skybox
 	skydome_ = std::make_unique<Skydome>();
@@ -63,9 +63,9 @@ void GameScene::Initialize() {
 	levelData_ = json_->LoadJson("stage");
 	json_->Adoption(levelData_, true);
 	json_->EnemyAdoption(levelData_, player_.get(), this);
-	json_->FixedEnemyAdoption(levelData_, player_.get(), this);
+	//json_->FixedEnemyAdoption(levelData_, player_.get(), this);
 
-	for (std::unique_ptr<Enemy>& enemy : json_->GetEnemys()) {
+	for (std::unique_ptr<FryEnemy>& enemy : json_->GetEnemys()) {
 		enemy->SetIsDead(false);
 	}
 
@@ -118,7 +118,7 @@ void GameScene::Update(){
 
 		// json更新処理
 		json_->Update();
-		json_->EnemyUpdate(*railCamera_->GetCamera(), player_.get(), this, player_->GetPos().z);
+		json_->EnemyUpdate(*railCamera_->GetCamera(),player_->GetPos().z);
 
 		// ゲームスタート
 		// 画面が切り替わったらvignetteをフェードアウトして明るくする
@@ -178,7 +178,7 @@ void GameScene::Draw()
 	// 床描画
 	stage_->Draw(railCamera_->GetCamera());
 	// 敵、ステージ描画
-	json_->Draw(*railCamera_->GetCamera(), uv);
+	json_->Draw(railCamera_->GetCamera(), uv);
 	// プレイヤーの弾描画
 	player_->BulletDraw(railCamera_->GetCamera());
 
@@ -204,7 +204,7 @@ void GameScene::Draw()
 		}
 	}
 
-	json_->DrawEnemy(*railCamera_->GetCamera());
+	json_->DrawEnemy(railCamera_->GetCamera());
 
 	if (isPose_) {
 		sentaku_->Draw();
@@ -214,202 +214,6 @@ void GameScene::Draw()
 void GameScene::PostDraw()
 {
 	postProcess_->NoiseDraw();
-}
-
-void GameScene::CheckAllCollisions()
-{
-
-	// 自弾リストの取得
-	std::vector<std::unique_ptr<PlayerBullet>>& playerBullets = player_->GetBullets();
-	// 敵弾リストの取得
-	std::vector<std::unique_ptr<EnemyBullet>>& enemyBullets = enemyBullets_;
-
-	// コライダー
-	std::list<Collider*> colliders_;
-
-	// 登録
-	// player
-	colliders_.push_back(std::move(player_.get()));
-
-	// enemy
-	for (std::unique_ptr<Enemy>& enemy : json_->GetEnemys()) {
-		enemy->SetRadius(5.0f);
-		if (!enemy->IsDead()) {
-			colliders_.push_back(std::move(enemy.get()));
-		}
-	}
-
-	// fixedEnemy
-	for (std::unique_ptr<Enemy>& enemy : json_->GetFixedEnemys()) {
-		enemy->SetRadius(5.0f);
-		colliders_.push_back(std::move(enemy.get()));
-	}
-
-	// playerBullet
-	for (std::unique_ptr<PlayerBullet>& bullet : playerBullets) {
-		bullet->SetRadius(5.0f);
-		colliders_.push_back(std::move(bullet.get()));
-	}
-
-	// enemyBullet
-	for (std::unique_ptr<EnemyBullet>& bullet : enemyBullets) {
-		colliders_.push_back(std::move(bullet.get()));
-	}
-
-	// Object
-	for (std::unique_ptr<Object>& objects : json_->GetObjects()) {
-		colliders_.push_back(std::move(objects.get()));
-	}
-
-
-	std::list<Collider*>::iterator itrA = colliders_.begin();
-
-	for (; itrA != colliders_.end(); ++itrA) {
-
-		Collider* colliderA = *itrA;
-
-		std::list<Collider*>::iterator itrB = itrA;
-		itrB++;
-		for (; itrB != colliders_.end(); ++itrB) {
-			Collider* colliderB = *itrB;
-			//当たり判定処理
-			CheckCollisionPair(colliderA, colliderB);
-		}
-	}
-
-	for (std::unique_ptr<Object>& objects : json_->GetObjects()) {
-		for (std::unique_ptr<PlayerBullet>& bullet : playerBullets) {
-			// AABBの最小/最大座標を取得
-			Vector3 AMin = bullet->GetAABBMin();
-			Vector3 AMax = bullet->GetAABBMax();
-			Vector3 BMin = objects->GetAABBMin();
-			Vector3 BMax = objects->GetAABBMax();
-
-			// AABBの重なりを判定
-			bool isColliding =
-				(AMax.x >= BMin.x && AMin.x <= BMax.x) &&
-				(AMax.y >= BMin.y && AMin.y <= BMax.y) &&
-				(AMax.z >= BMin.z && AMin.z <= BMax.z);
-
-			if (isColliding) {
-				bullet->OnCollision();
-				objects->OnCollision();
-			}
-		}
-	}
-
-	for (std::unique_ptr<Object>& objects : json_->GetObjects()) {
-		for (std::unique_ptr<EnemyBullet>& bullet : enemyBullets) {
-			// AABBの最小/最大座標を取得
-			Vector3 AMin = bullet->GetAABBMin();
-			Vector3 AMax = bullet->GetAABBMax();
-			Vector3 BMin = objects->GetAABBMin();
-			Vector3 BMax = objects->GetAABBMax();
-
-			// AABBの重なりを判定
-			bool isColliding =
-				(AMax.x >= BMin.x && AMin.x <= BMax.x) &&
-				(AMax.y >= BMin.y && AMin.y <= BMax.y) &&
-				(AMax.z >= BMin.z && AMin.z <= BMax.z);
-
-			if (isColliding) {
-				bullet->OnCollision();
-				objects->OnCollision();
-			}
-		}
-	}
-
-	for (std::unique_ptr<Enemy>& enemy : json_->GetEnemys()) {
-
-		// プレイヤーの照準（レティクル）の矩形情報
-		float reticleX = player_->GetReticlePos().x;
-		float reticleY = player_->GetReticlePos().y;
-		float reticleHalfWidth = 50.0f;
-		float reticleHalfHeight = 50.0f;
-
-		float reticleLeft = reticleX - reticleHalfWidth;
-		float reticleRight = reticleX + reticleHalfWidth;
-		float reticleTop = reticleY - reticleHalfHeight;
-		float reticleBottom = reticleY + reticleHalfHeight;
-
-		// 敵の矩形情報
-		float enemyX = enemy->GetScreenPos().x;
-		float enemyY = enemy->GetScreenPos().y;
-		float enemyHalfWidth = 25.0f;
-		float enemyHalfHeight = 25.0f;
-
-		float enemyLeft = enemyX - enemyHalfWidth;
-		float enemyRight = enemyX + enemyHalfWidth;
-		float enemyTop = enemyY - enemyHalfHeight;
-		float enemyBottom = enemyY + enemyHalfHeight;
-
-		// 矩形同士の当たり判定（AABB）
-		if (reticleLeft < enemyRight &&
-			reticleRight > enemyLeft &&
-			reticleTop < enemyBottom &&
-			reticleBottom > enemyTop) {
-			// ロックオン状態にする
-			enemy->SetisLockOn(true);
-		}
-		else {
-			// ロックオン解除
-			enemy->SetisLockOn(false);
-		}
-	}
-
-	for (std::unique_ptr<Enemy>& enemy : json_->GetFixedEnemys()) {
-		// プレイヤーの照準（レティクル）の矩形情報
-		float reticleX = player_->GetReticlePos().x;
-		float reticleY = player_->GetReticlePos().y;
-		float reticleHalfWidth = 50.0f;
-		float reticleHalfHeight = 50.0f;
-
-		float reticleLeft = reticleX - reticleHalfWidth;
-		float reticleRight = reticleX + reticleHalfWidth;
-		float reticleTop = reticleY - reticleHalfHeight;
-		float reticleBottom = reticleY + reticleHalfHeight;
-
-		// 敵の矩形情報
-		float enemyX = enemy->GetScreenPos().x;
-		float enemyY = enemy->GetScreenPos().y;
-		float enemyHalfWidth = 25.0f;
-		float enemyHalfHeight = 25.0f;
-
-		float enemyLeft = enemyX - enemyHalfWidth;
-		float enemyRight = enemyX + enemyHalfWidth;
-		float enemyTop = enemyY - enemyHalfHeight;
-		float enemyBottom = enemyY + enemyHalfHeight;
-
-		// 矩形同士の当たり判定（AABB）
-		if (reticleLeft < enemyRight &&
-			reticleRight > enemyLeft &&
-			reticleTop < enemyBottom &&
-			reticleBottom > enemyTop) {
-			// ロックオン状態にする
-			if (!enemy->GetIsLockOn()) {
-				enemy->SetisLockOn(true);
-			}
-		}
-		else {
-			// ロックオン解除
-			if (enemy->GetIsLockOn()) { // 状態が変わる場合のみ更新
-				enemy->SetisLockOn(false);
-			}
-		}
-	}
-
-	for (std::unique_ptr<Object>& objects : json_->GetObjects()) {
-		// プレイヤーとオブジェクトのOBBを取得
-		OBB obbA = player_->GetOBB();
-		OBB obbB = objects->GetOBB();
-
-		// OBBの当たり判定
-		if (IsOBBColliding(obbA, obbB)) {
-			player_->OnCollision();
-			objects->OnCollision();
-		}
-	}
-
 }
 
 void GameScene::AddEnemyBullet(std::unique_ptr<EnemyBullet> enemyBullet)
@@ -445,12 +249,12 @@ void GameScene::ShakeCamera()
 void GameScene::LockOnEnemy()
 {
 	Vector3 playerPos = player_->GetPos(); // プレイヤーの位置
-	Enemy* nearestEnemy = nullptr;
+	FryEnemy* nearestEnemy = nullptr;
 	float nearestDistSq = std::numeric_limits<float>::max(); // 最小距離の初期値（大きな数）
 	bool hasLockOnTarget = false; // ロックオン対象がいるかどうか
 
 	// 一番近いロックオン対象を探す
-	for (const std::unique_ptr<Enemy>& enemy : json_->GetEnemys()) {
+	for (const std::unique_ptr<FryEnemy>& enemy : json_->GetEnemys()) {
 		if (player_->GetPos().z < enemy->GetPos().z &&
 			enemy->GetPos().z - player_->GetPos().z <= 2000.0f) {
 			if (!enemy->IsDead() && enemy->GetIsLockOn()) { // ロックオンされた敵のみ対象にする
@@ -614,11 +418,144 @@ void GameScene::Over()
 	postProcess_->SetNoiseStrength(noiseStrength);
 }
 
+void GameScene::CheckAllCollisions()
+{
+	// 自弾リストの取得
+	std::vector<std::unique_ptr<PlayerBullet>>& playerBullets = player_->GetBullets();
+	// 敵弾リストの取得
+	std::vector<std::unique_ptr<EnemyBullet>>& enemyBullets = enemyBullets_;
+
+	// コライダー
+	std::list<Collider*> colliders_;
+
+	// 登録
+	// player
+	colliders_.push_back(std::move(player_.get()));
+
+	// enemy
+	for (std::unique_ptr<FryEnemy>& enemy : json_->GetEnemys()) {
+		enemy->SetRadius(5.0f);
+		if (!enemy->IsDead()) {
+			colliders_.push_back(std::move(enemy.get()));
+		}
+	}
+
+	// fixedEnemy
+	for (std::unique_ptr<FixedEnemy>& enemy : json_->GetFixedEnemys()) {
+		enemy->SetRadius(5.0f);
+		colliders_.push_back(std::move(enemy.get()));
+	}
+
+	// playerBullet
+	for (std::unique_ptr<PlayerBullet>& bullet : playerBullets) {
+		bullet->SetRadius(5.0f);
+		colliders_.push_back(std::move(bullet.get()));
+	}
+
+	// enemyBullet
+	for (std::unique_ptr<EnemyBullet>& bullet : enemyBullets) {
+		colliders_.push_back(std::move(bullet.get()));
+	}
+
+	// Object
+	for (std::unique_ptr<Object>& objects : json_->GetObjects()) {
+		colliders_.push_back(std::move(objects.get()));
+	}
+
+	// 球判定
+	CheckSphereCollisions(colliders_);
+
+	// AABB判定
+	CheckAABBCollisionsWithObjects();
+
+	// ロックオン（2D矩形判定）
+	CheckReticleLockOn();
+
+	// OBB判定
+	CheckOBBCollisionsWithPlayer();
+}
+
+void GameScene::CheckSphereCollisions(std::list<Collider*>& colliders) {
+	// 球同士の衝突チェック
+	std::list<Collider*>::iterator itrA = colliders.begin();
+
+	for (; itrA != colliders.end(); ++itrA) {
+
+		Collider* colliderA = *itrA;
+
+		std::list<Collider*>::iterator itrB = itrA;
+		itrB++;
+		for (; itrB != colliders.end(); ++itrB) {
+			Collider* colliderB = *itrB;
+			//当たり判定処理
+			CheckCollisionPair(colliderA, colliderB);
+		}
+	}
+}
+
+void GameScene::CheckAABBCollisionsWithObjects() {
+	// AABBによる衝突チェック（弾 vs オブジェクト）
+	for (std::unique_ptr<Object>& obj : json_->GetObjects()) {
+		for (std::unique_ptr<PlayerBullet>& bullet : player_->GetBullets()) {
+			CheckAABBCollisionPair(bullet.get(), obj.get());
+		}
+		for (std::unique_ptr<EnemyBullet>& bullet : enemyBullets_) {
+			CheckAABBCollisionPair(bullet.get(), obj.get());
+		}
+	}
+}
+
+void GameScene::CheckReticleLockOn() {
+	// ロックオン矩形領域との衝突チェック
+	const float reticleX = player_->GetReticlePos().x;
+	const float reticleY = player_->GetReticlePos().y;
+	const float left = reticleX - reticleHalfWidth;
+	const float right = reticleX + reticleHalfWidth;
+	const float top = reticleY - reticleHalfWidth;
+	const float bottom = reticleY + reticleHalfWidth;
+
+	auto checkLock = [&](std::unique_ptr<FryEnemy>& enemy) {
+		const float ex = enemy->GetScreenPos().x;
+		const float ey = enemy->GetScreenPos().y;
+		const float eLeft = ex - enemyHalfWidth;
+		const float eRight = ex + enemyHalfWidth;
+		const float eTop = ey - enemyHalfWidth;
+		const float eBottom = ey + enemyHalfWidth;
+
+		bool isHit = (left < eRight && right > eLeft && top < eBottom && bottom > eTop);
+		enemy->SetisLockOn(isHit);
+		};
+
+	for (auto& enemy : json_->GetEnemys()) {
+		checkLock(enemy);
+	}
+
+	/*for (auto& enemy : json_->GetFixedEnemys()) {
+		checkLock(enemy);
+	}*/
+}
+
+void GameScene::CheckOBBCollisionsWithPlayer() {
+	// プレイヤーのOBBとオブジェクトのOBB衝突チェック
+	const OBB playerOBB = player_->GetOBB();
+
+	for (auto& obj : json_->GetObjects()) {
+		if (IsOBBColliding(playerOBB, obj->GetOBB())) {
+			player_->OnCollision();
+			obj->OnCollision();
+		}
+	}
+}
+
 void GameScene::CheckCollisionPair(Collider* colliderA, Collider* colliderB)
 {
+	// 同一オブジェクトは判定不要
+	if (colliderA == colliderB) return;
+
+
 	// 衝突フィルタリング
-	if (colliderA->GetCollosionAttribute() != colliderB->GetCollisionMask() &&
-		colliderB->GetCollosionAttribute() != colliderA->GetCollisionMask()) {
+	if ((colliderA->GetCollosionAttribute() & colliderB->GetCollisionMask()) == 0 ||
+		(colliderA->GetCollisionMask() & colliderB->GetCollosionAttribute()) == 0) {
 		return;
 	}
 

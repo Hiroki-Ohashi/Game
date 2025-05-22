@@ -112,15 +112,15 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   <ItemGroup>
     <ClCompile Include="Engine\Manager\PipeLineManager.cpp" />
     <ClCompile Include="Engine\Manager\SrvManager.cpp" />
-    <ClCompile Include="Project\GameObject\Enemy\EnemyStateApproach.cpp" />
-    <ClCompile Include="Project\GameObject\Enemy\EnemyBulletPool.cpp" />
+    <ClCompile Include="Project\GameObject\Enemy\BaseEnemy.cpp" />
     <ClCompile Include="Engine\Manager\Json.cpp" />
+    <ClCompile Include="Project\GameObject\Enemy\FixedEnemy\FixedEnemy.cpp" />
+    <ClCompile Include="Project\GameObject\Enemy\FryEnemy\FryEnemy.cpp" />
     <ClCompile Include="Project\GameObject\Player\PlayerUI\PlayerUI.cpp" />
     <ClCompile Include="Project\GameObject\RailCamera\RailCamera.cpp" />
     <ClCompile Include="Project\GameObject\Stage\Object.cpp" />
     <ClCompile Include="Project\GameScene\OverScene.cpp" />
     <ClCompile Include="Project\GameObject\Enemy\EnemyBullet.cpp" />
-    <ClCompile Include="Project\GameObject\Enemy\Enemy.cpp" />
     <ClCompile Include="Project\GameScene\ClearScene.cpp" />
     <ClCompile Include="Engine\3d\Animation.cpp" />
     <ClCompile Include="Engine\3d\Particle.cpp" />
@@ -161,12 +161,12 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   <ItemGroup>
     <ClInclude Include="Engine\Manager\PipeLineManager.h" />
     <ClInclude Include="Engine\Manager\SrvManager.h" />
-    <ClInclude Include="Project\GameObject\Enemy\EnemyStateApproach.h" />
-    <ClInclude Include="Project\GameObject\Enemy\BaseEnemyState.h" />
+    <ClInclude Include="Project\GameObject\Enemy\BaseEnemy.h" />
+    <ClInclude Include="Project\GameObject\Enemy\FixedEnemy\FixedEnemy.h" />
+    <ClInclude Include="Project\GameObject\Enemy\FryEnemy\FryEnemy.h" />
     <ClInclude Include="Project\GameObject\Player\PlayerUI\PlayerUI.h" />
     <ClInclude Include="Project\GameObject\RailCamera\RailCamera.h" />
     <ClInclude Include="Project\utillity\CollisionConfig.h" />
-    <ClInclude Include="Project\GameObject\Enemy\EnemyBulletPool.h" />
     <ClInclude Include="Project\GameObject\Stage\Object.h" />
     <ClInclude Include="Project\utillity\Collider.h" />
     <ClInclude Include="Engine\Manager\Json.h" />
@@ -176,7 +176,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </ClInclude>
     <ClInclude Include="Project\GameScene\OverScene.h" />
     <ClInclude Include="Project\GameObject\Enemy\EnemyBullet.h" />
-    <ClInclude Include="Project\GameObject\Enemy\Enemy.h" />
     <ClInclude Include="Project\GameScene\ClearScene.h" />
     <ClInclude Include="Engine\3d\Animation.h" />
     <ClInclude Include="Engine\3d\Particle.h" />

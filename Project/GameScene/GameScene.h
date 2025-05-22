@@ -22,7 +22,6 @@
 #include "Json.h"
 #include <Player/Player.h>
 #include <Stage/Stage.h>
-#include <Enemy/Enemy.h>
 #include <SkyBox/Skydome.h>
 #include <RailCamera/RailCamera.h>
 using namespace Engine;
@@ -103,8 +102,14 @@ private:
 
 	std::vector<std::unique_ptr<Particles>> particlesList;
 
-	//
+	// pose
 	std::unique_ptr<Sprite> sentaku_ = nullptr;
+
+	// 各補助関数
+	void CheckSphereCollisions(std::list<Collider*>& colliders);
+	void CheckAABBCollisionsWithObjects();
+	void CheckReticleLockOn();
+	void CheckOBBCollisionsWithPlayer();
 
 	// 当たり判定
 	void CheckCollisionPair(Collider* colliderA, Collider* colliderB);
@@ -170,4 +175,8 @@ private:
 
 	// scene
 	uint32_t scenePrev;
+
+	// collision
+	const float reticleHalfWidth = 50.0f;
+	const float enemyHalfWidth = 25.0f;
 };

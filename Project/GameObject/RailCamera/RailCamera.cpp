@@ -1,33 +1,48 @@
 #include "RailCamera.h"
 #include "Player/Player.h"
 
-void RailCamera::Initialize()
+void RailCamera::GameSceneInitialize()
 {
 	camera_.Initialize();
 	camera_.SetFovY(1.0f);
 
-	// cameraInit
-	EulerTransform origin = { {0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f},{player_->GetPos().x,player_->GetPos().y,player_->GetPos().z} };
-	// 追従対象からカメラまでのオフセット
-	Vector3 offset = { 0.0f, 4.0f, -20.0f };
-	// カメラの角度から回転行列を計算する
-	Matrix4x4 worldTransform = MakeRotateYMatrix(camera_.cameraTransform.rotate.y);
-	// オフセットをカメラの回転に合わせて回転させる
-	offset = TransformNormal(offset, worldTransform);
-	// 座標をコピーしてオフセット分ずらす
-	camera_.cameraTransform.translate.x = origin.translate.x + offset.x;
-	camera_.cameraTransform.translate.y = origin.translate.y + offset.y;
-	camera_.cameraTransform.translate.z = origin.translate.z + offset.z;
-
+	AttentionObject({ {0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f},{player_->GetPos().x,player_->GetPos().y,player_->GetPos().z} }, { 0.0f, 4.0f, -20.0f });
 	RotObject(player_->GetPos(), camera_.cameraTransform.translate, camera_.cameraTransform.rotate);
 
 	frame = 0;
 	isFov = true;
 }
 
+void RailCamera::Initialize()
+{
+	camera_.Initialize();
+}
+
 void RailCamera::Update()
 {
 	camera_.Update();
+}
+
+void RailCamera::CameraSwing()
+{
+	// カメラ角度が範囲を超えたら反転
+	// X軸
+	if (camera_.cameraTransform.rotate.x < kCameraMax.x) {
+		cameraSpeedX += cameraMoveSpeed;
+	}
+	else if (camera_.cameraTransform.rotate.x >= kCameraMax.x) {
+		cameraSpeedX -= cameraMoveSpeed;
+	}
+	// Y軸
+	if (camera_.cameraTransform.rotate.y < kCameraMax.y) {
+		cameraSpeedY += cameraMoveSpeed;
+	}
+	else if (camera_.cameraTransform.rotate.y >= kCameraMax.y) {
+		cameraSpeedY -= cameraMoveSpeed;
+	}
+	// カメラスピードを足す
+	camera_.cameraTransform.rotate.x += cameraSpeedX;
+	camera_.cameraTransform.rotate.y += cameraSpeedY;
 }
 
 void RailCamera::startShake()
@@ -69,19 +84,7 @@ void RailCamera::ShakeCamera()
 
 void RailCamera::StartCamera()
 {
-	// cameraInit
-	EulerTransform origin = { {0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f},{player_->GetPos().x,player_->GetPos().y,player_->GetPos().z} };
-	// 追従対象からカメラまでのオフセット
-	Vector3 offset = { 0.0f, 4.0f, -20.0f };
-	// カメラの角度から回転行列を計算する
-	Matrix4x4 worldTransform = MakeRotateYMatrix(camera_.cameraTransform.rotate.y);
-	// オフセットをカメラの回転に合わせて回転させる
-	offset = TransformNormal(offset, worldTransform);
-	// 座標をコピーしてオフセット分ずらす
-	camera_.cameraTransform.translate.x = origin.translate.x + offset.x;
-	camera_.cameraTransform.translate.y = origin.translate.y + offset.y;
-	camera_.cameraTransform.translate.z = origin.translate.z + offset.z;
-
+	AttentionObject({ {0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f},{player_->GetPos().x,player_->GetPos().y,player_->GetPos().z} }, { 0.0f, 4.0f, -20.0f });
 	// カメラをプレイヤーに向ける
 	RotObject(player_->GetPos(), camera_.cameraTransform.translate, camera_.cameraTransform.rotate);
 }
@@ -107,10 +110,19 @@ void RailCamera::AfterStartCamera()
 
 void RailCamera::ClearCamera()
 {
-	camera_.cameraTransform.translate = { player_->GetPos().x, player_->GetPos().y + cameraOffset.y,  goalLine - cameraOffset.z };
+	camera_.cameraTransform.translate = { player_->GetPos().x, player_->GetPos().y + cameraOffset.y,  98000.0f - cameraOffset.z };
 
 	// カメラをプレイヤーに向ける
 	RotObject(player_->Get3DWorldPosition(), camera_.cameraTransform.translate, camera_.cameraTransform.rotate);
+}
+
+void RailCamera::ClearCameraMove()
+{
+	camera_.cameraTransform.rotate.y += 0.01f;
+
+	AttentionObject({ {0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} }, { 0.0f, 13.0f, -25.0f });
+
+	camera_.cameraTransform.rotate.x = 0.4f;
 }
 
 void RailCamera::RotObject(Vector3 endObjectPos, Vector3 startObjectPos, Vector3 ObjectRotate)
@@ -131,4 +143,20 @@ void RailCamera::RotObject(Vector3 endObjectPos, Vector3 startObjectPos, Vector3
 	ObjectRotate.y = std::atan2(velocity_.x, velocity_.z);
 	float velocityXZ = sqrt((velocity_.x * velocity_.x) + (velocity_.z * velocity_.z));
 	ObjectRotate.x = std::atan2(-velocity_.y, velocityXZ);
+}
+
+void RailCamera::AttentionObject(EulerTransform origin_, Vector3 offset_)
+{
+	// cameraInit
+	EulerTransform origin = origin_;
+	// 追従対象からカメラまでのオフセット
+	Vector3 offset = offset_;
+	// カメラの角度から回転行列を計算する
+	Matrix4x4 worldTransform = MakeRotateYMatrix(camera_.cameraTransform.rotate.y);
+	// オフセットをカメラの回転に合わせて回転させる
+	offset = TransformNormal(offset, worldTransform);
+	// 座標をコピーしてオフセット分ずらす
+	camera_.cameraTransform.translate.x = origin.translate.x + offset.x;
+	camera_.cameraTransform.translate.y = origin.translate.y + offset.y;
+	camera_.cameraTransform.translate.z = origin.translate.z + offset.z;
 }

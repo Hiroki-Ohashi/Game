@@ -12,19 +12,18 @@ void Object::Initialize(const std::string& filename, EulerTransform transform)
 	worldtransform_.rotate = transform_.rotate;
 	worldtransform_.translate = transform_.translate;
 	worldtransform_.UpdateMatrix();
+
+	// 衝突属性を設定
+	SetCollosionAttribute(kcollisionAttributeObject);
+	// 衝突対象を自分の属性以外に設定
+	SetCollisionMask(kcollisionAttributePlayer);
+	SetCollisionMask(kcollisionAttributeObject);
 }
 
 void Object::Update()
 {
 	model_->SetWorldTransform(worldtransform_);
 	worldtransform_.UpdateMatrix();
-
-	/*if (ImGui::TreeNode("Object")) {
-		ImGui::DragFloat3("Scale ", &worldtransform_.scale.x, 0.01f);
-		ImGui::DragFloat3("Rotate.y ", &worldtransform_.rotate.x, 0.01f);
-		ImGui::DragFloat3("Transform", &worldtransform_.translate.x, 0.01f);
-		ImGui::TreePop();
-	}*/
 }
 
 void Object::Draw(Camera* camera, uint32_t index)

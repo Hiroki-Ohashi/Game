@@ -53,6 +53,7 @@ public:
 	}
 	// Setter
 	void SetPlayer(Player* player) { player_ = player; }
+	void SetDead() { isDead_ = true; }
 private:
 	// model
 	std::unique_ptr<Model> model_;

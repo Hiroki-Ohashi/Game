@@ -5,8 +5,15 @@ class Player;
 
 class RailCamera {
 public:
+	// 初期化処理
+	void GameSceneInitialize();
 	void Initialize();
+
+	// 更新処理
 	void Update();
+
+	// カメラの揺れ
+	void CameraSwing();
 
 	// シェイクを開始する関数
 	void startShake();
@@ -17,6 +24,7 @@ public:
 	void AfterStartCamera();
 	// クリア
 	void ClearCamera();
+	void ClearCameraMove();
 
 	// Getter
 	Camera* GetCamera() { return &camera_; }
@@ -27,9 +35,11 @@ public:
 	void SetPos(Vector3 cameraPos) { camera_.cameraTransform.translate = cameraPos; }
 	void SetRot(Vector3 cameraRot) { camera_.cameraTransform.rotate = cameraRot; }
 	void SetGoalLine(float line) { goalLine = line; }
+	void SetkCameraMax(Vector2 max_) { kCameraMax = max_; }
 
 private:
 	void RotObject(Vector3 startObjectPos, Vector3 endObjectPos, Vector3 ObjectRotate);
+	void AttentionObject(EulerTransform origin_, Vector3 offset_);
 private:
 	// カメラ
 	Camera camera_;
@@ -57,4 +67,10 @@ private:
 
 	// ゴールライン
 	float goalLine;
+
+	// cameraSpeed
+	float cameraSpeedX = 0.0001f;
+	float cameraSpeedY = 0.0002f;
+	float cameraMoveSpeed = 0.000005f;
+	Vector2 kCameraMax;
 };

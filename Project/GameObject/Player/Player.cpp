@@ -207,11 +207,6 @@ void Player::PlayerRot()
 	// 引数で受け取った速度をメンバ変数に代入
 	velocity_ = Slerp(velocity, worldtransform_.translate, t);
 
-	//// Y軸周り角度（Θy）
-	//worldtransform_.rotate.y = std::atan2(velocity_.x, velocity_.z);
-	//float velocityXZ = sqrt((velocity_.x * velocity_.x) + (velocity_.z * velocity_.z));
-	//worldtransform_.rotate.x = std::atan2(-velocity_.y, velocityXZ);
-
 	if (HP > 0) {
 		// 座標移動(ベクトルの加算)
 		worldtransform_.translate.x += velocity.x * playerSpeed;
@@ -242,22 +237,18 @@ void Player::Move()
 		// 押した方向で移動ベクトルを変更(左右)
 		if (Input::GetInstance()->PushKey(DIK_A)) {
 			reticleWorldtransform_.translate.x -= kCharacterSpeed;
-			//worldtransform_.rotate.y -= kRotSpeed;
 		}
 
 		if (Input::GetInstance()->PushKey(DIK_D)) {
 			reticleWorldtransform_.translate.x += kCharacterSpeed;
-			//worldtransform_.rotate.y += kRotSpeed;
 		}
 
 		// 押した方向で移動ベクトルを変更(上下)
 		if (Input::GetInstance()->PushKey(DIK_W)) {
 			reticleWorldtransform_.translate.y += kCharacterSpeed;
-			//worldtransform_.rotate.x -= kRotSpeed;
 		}
 		else if (Input::GetInstance()->PushKey(DIK_S)) {
 			reticleWorldtransform_.translate.y -= kCharacterSpeed;
-			//worldtransform_.rotate.x += kRotSpeed;
 		}
 
 		// ゲームパッドの状態を得る変数(XINPUT)
@@ -296,7 +287,7 @@ void Player::Move()
 	// 範囲超えない処理
 	reticleWorldtransform_.translate.x = max(reticleWorldtransform_.translate.x, -kMoveLimitX);
 	reticleWorldtransform_.translate.x = std::min(reticleWorldtransform_.translate.x, +kMoveLimitX);
-	reticleWorldtransform_.translate.y = max(reticleWorldtransform_.translate.y, -100.0f);
+	reticleWorldtransform_.translate.y = max(reticleWorldtransform_.translate.y, -90.0f);
 	reticleWorldtransform_.translate.y = std::min(reticleWorldtransform_.translate.y, +kMoveLimitY);
 
 	// WorldTransformをモデルにセット
@@ -395,7 +386,6 @@ void Player::LockOn(Vector3 EnemyPos, Vector3 EnemyPrePos) {
 		bullets_.push_back(std::move(newBullet));
 	}
 }
-
 
 void Player::Attack()
 {

@@ -2,6 +2,7 @@
 #include <WorldTransform.h>
 #include <Model.h>
 #include "Collider.h"
+#include <CollisionConfig.h>
 using namespace Engine;
 
 class Object : public Collider {

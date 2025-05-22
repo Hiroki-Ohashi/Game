@@ -11,9 +11,11 @@ OverScene::~OverScene()
 
 void OverScene::Initialize()
 {
-	camera_.Initialize();
-	camera_.cameraTransform.translate = { -0.4f, 7.0f, -19.0f };
-	camera_.cameraTransform.rotate.x = 0.25f;
+	railCamera_ = std::make_unique<RailCamera>();
+	railCamera_->Initialize();
+	railCamera_->SetPos({ -0.4f, 7.0f, -19.0f });
+	railCamera_->SetRot({ 0.25f, 0.0f, 0.0f });
+	railCamera_->SetkCameraMax({ 0.25f , 0.0f });
 
 	
 	// PostEffect
@@ -97,7 +99,7 @@ void OverScene::Initialize()
 
 void OverScene::Update()
 {
-	camera_.Update();
+	railCamera_->Update();
 
 	// ノイズを段々薄く
 	if (noiseStrength >= 5.0f) {
@@ -202,7 +204,7 @@ void OverScene::Update()
 	}
 
 	// カメラ揺らす
-	CameraShake();
+	railCamera_->CameraSwing();
 
 	// UI点滅
 	Blinking();
@@ -216,11 +218,11 @@ void OverScene::Update()
 void OverScene::Draw()
 {
 	// Json描画
-	json_->Draw(camera_, player);
-	jsonObject_->Draw(camera_, player);
+	json_->Draw(railCamera_->GetCamera(), player);
+	jsonObject_->Draw(railCamera_->GetCamera(), player);
 
 	// 床描画
-	yuka_->Draw(&camera_, yuka);
+	yuka_->Draw(railCamera_->GetCamera(), yuka);
 
 	if (isLoad_) {
 		loadSprite_->Draw();
@@ -244,28 +246,6 @@ void OverScene::Draw()
 void OverScene::PostDraw()
 {
 	postProcess_->NoiseDraw();
-}
-
-void OverScene::CameraShake()
-{
-	// カメラ角度が範囲を超えたら反転
-	// X軸
-	if (camera_.cameraTransform.rotate.x < kCameraMax.x) {
-		cameraSpeedX += cameraMoveSpeed;
-	}
-	else if (camera_.cameraTransform.rotate.x >= kCameraMax.x) {
-		cameraSpeedX -= cameraMoveSpeed;
-	}
-	// Y軸
-	if (camera_.cameraTransform.rotate.y < kCameraMax.y) {
-		cameraSpeedY += cameraMoveSpeed;
-	}
-	else if (camera_.cameraTransform.rotate.y >= kCameraMax.y) {
-		cameraSpeedY -= cameraMoveSpeed;
-	}
-	// カメラスピードを足す
-	camera_.cameraTransform.rotate.x += cameraSpeedX;
-	camera_.cameraTransform.rotate.y += cameraSpeedY;
 }
 
 void OverScene::Blinking()

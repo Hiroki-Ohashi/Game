@@ -69,12 +69,6 @@ void EnemyBullet::Update()
 	velocity_.y *= 2.5f;
 	velocity_.z *= 2.5f;
 
-	//// Y軸周り角度（Θy）
-	//worldtransform_.rotate.y = std::atan2(velocity_.x, velocity_.z);
-
-	//float velocityXZ = sqrt((velocity_.x * velocity_.x) + (velocity_.z * velocity_.z));
-	//worldtransform_.rotate.x = std::atan2(-velocity_.y, velocityXZ);
-
 	// 座標を移動させる(1フレーム分の移動量を足しこむ)
 	worldtransform_.translate.x += velocity_.x;
 	worldtransform_.translate.y += velocity_.y;
