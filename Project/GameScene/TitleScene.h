@@ -20,6 +20,8 @@
 #include "PostProcess.h"
 #include <Json.h>
 #include <SkyBox/Skydome.h>
+#include <RailCamera/RailCamera.h>
+#include <LoadScene/LoadingManager.h>
 
 using namespace Engine;
 
@@ -47,14 +49,11 @@ public:
 	void Draw() override;
 	void PostDraw() override;
 private:
-	// カメラ
-	void CameraShake();
 	// UI点滅
 	void Blinking();
-
 private:
 	// カメラ
-	Camera camera_;
+	std::unique_ptr<RailCamera> railCamera_ = nullptr;
 	// シングルトン呼び出し
 	TextureManager* textureManager_ = TextureManager::GetInstance();
 
@@ -71,15 +70,13 @@ private:
 
 	// 天球
 	std::unique_ptr<Skydome> skydome_;
+
+	// load
+	std::unique_ptr<LoadingManager> loadingManager_ = nullptr;
+
 private:
 	// Pamameter
 	EulerTransform transform;
-
-	// cameraSpeed
-	float cameraSpeedX = 0.0001f;
-	float cameraSpeedY = 0.0002f;
-	float cameraMoveSpeed = 0.000005f;
-	const Vector2 kCameraMax = { 0.40f , 0.0f };
 
 	// テクスチャ
 	uint32_t title;
@@ -94,6 +91,7 @@ private:
 
 	// ビネット
 	bool isVignette_;
+	bool isLoad_;
 
 	// デバッグ用
 	Vector2 pos = {};

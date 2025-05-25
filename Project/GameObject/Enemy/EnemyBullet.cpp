@@ -9,10 +9,10 @@
 
 void EnemyBullet::Initialize(Vector3 pos, Vector3 velocity)
 {
-	transform = { {0.3f,0.3f,0.5f},{0.0f,0.0f,0.0f},{pos.x,pos.y,pos.z} };
+	transform = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{pos.x,pos.y,pos.z} };
 
 	model_ = std::make_unique<Model>();
-	model_->Initialize("cube.obj", transform);
+	model_->Initialize("misairu.obj", transform);
 
 	worldtransform_.scale = transform.scale;
 	worldtransform_.rotate = transform.rotate;
@@ -33,6 +33,17 @@ void EnemyBullet::Initialize(Vector3 pos, Vector3 velocity)
 	SetCollosionAttribute(kcollisionAttributeEnemy);
 	// 衝突対象を自分の属性以外に設定
 	SetCollisionMask(0xffffffff);
+
+	emitter.count = 10;
+	emitter.frequency = 0.016f;
+	emitter.frequencyTime = 0.0f;
+	emitter.transform.translate = worldtransform_.translate;
+	emitter.transform.rotate = worldtransform_.rotate;
+	emitter.transform.scale = { 1.0f, 1.0f, 1.0f };
+
+	particle_ = std::make_unique<Particles>();
+	particle_->Initialize("board.obj", worldtransform_.translate, emitter);
+	particle_->SetEmitter(emitter);
 }
 
 void EnemyBullet::Reset(Vector3 pos, Vector3 velocity)
@@ -49,7 +60,7 @@ void EnemyBullet::Update()
 	toPlayer.y = player_->GetPos().y - transform.translate.y;
 	toPlayer.z = player_->GetPos().z - transform.translate.z;
 
-	float t = 0.0f;
+	float t = 0.8f;
 
 	// 引数で受け取った速度をメンバ変数に代入
 	velocity_ = Slerp(toPlayer, transform.translate, t);
@@ -57,12 +68,6 @@ void EnemyBullet::Update()
 	velocity_.x *= 2.5f;
 	velocity_.y *= 2.5f;
 	velocity_.z *= 2.5f;
-
-	//// Y軸周り角度（Θy）
-	//worldtransform_.rotate.y = std::atan2(velocity_.x, velocity_.z);
-
-	//float velocityXZ = sqrt((velocity_.x * velocity_.x) + (velocity_.z * velocity_.z));
-	//worldtransform_.rotate.x = std::atan2(-velocity_.y, velocityXZ);
 
 	// 座標を移動させる(1フレーム分の移動量を足しこむ)
 	worldtransform_.translate.x += velocity_.x;
@@ -77,6 +82,13 @@ void EnemyBullet::Update()
 		isDead_ = true;
 	}
 
+	// エミッタの位置と回転を設定
+	emitter.transform.translate = { worldtransform_.translate.x, worldtransform_.translate.y, worldtransform_.translate.z - 10.0f };
+	particle_->SetEmitter(emitter);
+
+	// パーティクルを生成して更新
+	particle_->Update();
+
 	/*if (ImGui::TreeNode("EnemyBullet")) {
 		ImGui::DragFloat3("Rotate.y ", &worldtransform_.rotate.x, 0.01f);
 		ImGui::DragFloat3("Transform", &worldtransform_.translate.x, 0.01f);
@@ -85,10 +97,11 @@ void EnemyBullet::Update()
 	}*/
 }
 
-void EnemyBullet::Draw(Camera* camera, uint32_t index)
+void EnemyBullet::Draw(Camera* camera, uint32_t index, uint32_t index2)
 {
 	if (isDead_ == false) {
 		model_->Draw(camera, index);
+		particle_->Draw(camera, index2);
 	}
 }
 

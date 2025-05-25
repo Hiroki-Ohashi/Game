@@ -11,12 +11,14 @@ TitleScene::~TitleScene()
 
 void TitleScene::Initialize()
 {
-	camera_.Initialize();
-	camera_.cameraTransform.translate = { 0.0f, 5.0f, -10.0f };
-	camera_.cameraTransform.rotate.x = 0.4f;
+	// カメラ初期化と設定
+	railCamera_ = std::make_unique<RailCamera>();
+	railCamera_->Initialize();
+	railCamera_->SetPos({ 0.0f, 5.0f, -10.0f });
+	railCamera_->SetRot({ 0.4f, 0.0f, 0.0f });
+	railCamera_->SetkCameraMax({ 0.40f , 0.0f });
 
-	//textureManager_->Initialize();
-
+	// ポストプロセス初期化
 	postProcess_ = std::make_unique<PostProcess>();
 	postProcess_->Initialize(NOISE);
 	postProcess_->SetVignette(0.0f, 16.0f);
@@ -25,10 +27,14 @@ void TitleScene::Initialize()
 	skydome_ = std::make_unique<Skydome>();
 	skydome_->Initialize();
 
-	// texture
+	// テクスチャ読み込み
 	start = textureManager_->Load("resources/log.png");
 	white = textureManager_->Load("resources/white.png");
 	title = textureManager_->Load("resources/title.png");
+
+	// Load初期化
+	loadingManager_ = std::make_unique<LoadingManager>();
+	loadingManager_->Initialize(textureManager_);
 
 	// UI(title)
 	title_ = std::make_unique<Sprite>();
@@ -46,94 +52,86 @@ void TitleScene::Initialize()
 
 	// boolInit
 	blinking = true;
+	isLoad_ = false;
 }
 
 
 void TitleScene::Update()
 {
-	camera_.Update();
+	railCamera_->Update();
 	json_->Update();
 	
 	postProcess_->NoiseUpdate(0.1f);
 
-	// キーボード
+	// キーボードまたはゲームパッドの入力でビネット開始
 	if (input_->TriggerKey(DIK_A)) {
 		isVignette_ = true;
 	}
 
 	XINPUT_STATE joyState;
-
-	// Aボタンで遷移
 	if (Input::GetInstance()->GetJoystickState(joyState)) {
-
 		if (Input::GetInstance()->PressedButton(joyState, XINPUT_GAMEPAD_A)) {
 			isVignette_ = true;
 		}
-
 	}
 
+	// ポストエフェクトのフェード制御
 	if (isVignette_) {
-		// フェードイン
 		postProcess_->VignetteFadeIn(0.1f, 0.1f);
 	}
 	else {
-		//フェードアウト
 		postProcess_->VignetteFadeOut(0.1f, 0.1f, 16.0f, 1.0f);
 	}
 
-	// ゲームシーンへ
-	if (postProcess_->GetVignetteLight() <= 0.0f) {
+	// ビネットが真っ黒になったらロード開始
+	if (postProcess_->GetVignetteLight() <= 0.0f && !isLoad_) {
+		isLoad_ = true;
 		isVignette_ = false;
+		loadingManager_->Start();
+	}
+
+	// ローディング中は演出に切り替え
+	if (isLoad_) {
+		postProcess_->SetVignette(32.0f, 1.0f);  // 画面暗く
+		postProcess_->SetNoise(0.0f, 0.0f);      // ノイズ解除
+		loadingManager_->Update();
+	}
+
+	// ロード完了したらステージシーンへ
+	if (loadingManager_->IsComplete()) {
 		sceneNo = STAGE;
 	}
 
-	// カメラ揺らす
-	CameraShake();
+	// カメラ揺らし
+	railCamera_->CameraSwing();
 
-	// UI点滅
+	// ロゴ点滅
 	Blinking();
 }
 
 void TitleScene::Draw()
 {
 	// 天球描画
-	skydome_->Draw(&camera_);
+	skydome_->Draw(railCamera_->GetCamera());
 	// Json描画
-	json_->Draw(camera_, white);
+	json_->Draw(railCamera_->GetCamera(), white);
 
-	// UI描画
-	title_->Draw();
+	if (isLoad_) {
+		loadingManager_->Draw();
+	}
+	else {
+		// UI描画
+		title_->Draw();
 
-	if (blinking) {
-		startLog_->Draw();
+		if (blinking) {
+			startLog_->Draw();
+		}
 	}
 }
 
 void TitleScene::PostDraw()
 {
 	postProcess_->NoiseDraw();
-}
-
-void TitleScene::CameraShake()
-{
-	// カメラ角度が範囲を超えたら反転
-	// X軸
-	if (camera_.cameraTransform.rotate.x < kCameraMax.x) {
-		cameraSpeedX += cameraMoveSpeed;
-	}
-	else if (camera_.cameraTransform.rotate.x >= kCameraMax.x) {
-		cameraSpeedX -= cameraMoveSpeed;
-	}
-	// Y軸
-	if (camera_.cameraTransform.rotate.y < kCameraMax.y) {
-		cameraSpeedY += cameraMoveSpeed;
-	}
-	else if (camera_.cameraTransform.rotate.y >= kCameraMax.y) {
-		cameraSpeedY -= cameraMoveSpeed;
-	}
-	// カメラスピードを足す
-	camera_.cameraTransform.rotate.x += cameraSpeedX;
-	camera_.cameraTransform.rotate.y += cameraSpeedY;
 }
 
 void TitleScene::Blinking()

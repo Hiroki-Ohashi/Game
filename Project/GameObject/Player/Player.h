@@ -7,6 +7,7 @@
 #include "Collider.h"
 #include "CollisionConfig.h"
 #include "PlayerUI/PlayerUI.h"
+#include <Particle.h>
 using namespace Engine;
 
 /// <summary>
@@ -25,7 +26,7 @@ public:
 	// 更新処理
 	void Update(Camera* camera_);
 	// 攻撃処理
-	void LockOn(Vector3 EnemyPos);
+	void LockOn(Vector3 EnemyPos, Vector3 EnemyPrePos);
 	void Attack();
 	// 描画処理
 	void Draw(Camera* camera_);
@@ -47,9 +48,9 @@ public:
 	// 半分の大きさ
 	Vector3 GetHalfSize() const {
 		return {
-			worldtransform_.scale.x / 2.0f,
-			worldtransform_.scale.y / 2.0f,
-			worldtransform_.scale.z / 2.0f
+			worldtransform_.scale.x / 1.0f,
+			worldtransform_.scale.y / 1.0f,
+			worldtransform_.scale.z / 1.0f
 		};
 	}
 
@@ -70,7 +71,10 @@ public:
 			worldtransform_.translate.z + worldtransform_.scale.z
 		};
 	}
-	
+
+	// OBB当たり判定
+	OBB GetOBB();
+
 	// 弾リストを取得
 	 std::vector<std::unique_ptr<PlayerBullet>>& GetBullets() { return bullets_; }
 
@@ -84,6 +88,8 @@ private:
 	void Move();
 	// レティクルの3D座標を2D変換
 	void Convert2D(Camera* camera_);
+	// 予測射撃
+	Vector3 PredictPosition(Vector3 shotPosition, Vector3 targetPosition, Vector3 targetPrePosition, float bulletSpeed);
 private:
 	// シングルトン呼び出し
 	TextureManager* textureManager_ = TextureManager::GetInstance();
@@ -100,6 +106,9 @@ private:
 	EulerTransform reticleTransform_;
 	Vector3 positionReticle;
 
+	// particle
+	std::unique_ptr<Particles> particle_ = nullptr;
+
 	// 弾
 	std::vector<std::unique_ptr<PlayerBullet>> bullets_;
 
@@ -110,6 +119,7 @@ private:
 	uint32_t playerTex;
 	uint32_t reticleTex;
 	uint32_t hit;
+	uint32_t kemuri;
 
 	// 速度
 	Vector3 velocity_;
@@ -123,13 +133,26 @@ private:
 	bool isLeft;
 	bool isRight;
 
+	// カメライージング変数
+	float easeStart = 0.0f;
+	float easeEnd = 25.13f;
+	float frame;
+	float endFrame = 100.0f;
+	bool isRot = true;
+
 	// HP
 	int32_t HP = 5;
 	const uint32_t damage_ = 1;
 
+	// 機体制御
 	const float kMaxRoll = DirectX::XMConvertToRadians(75.0f); 
-	const float kMaxPitch = DirectX::XMConvertToRadians(45.0f); 
+	const float kMaxPitch = DirectX::XMConvertToRadians(25.0f); 
 	const float kYawSpeed = DirectX::XMConvertToRadians(2.5f);
 	const float kRollLerpFactor = 0.2f; 
 	const float kPitchLerpFactor = 0.15f;
+	const float kYawLerpFactor = 1.0f;
+	float yawSpeed_ = 0.0f;
+
+	// particleEmitter
+	Emitter emitter{};
 };

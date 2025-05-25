@@ -7,13 +7,13 @@
 /// </summary>
 
 void Camera::Initialize(){
-	cameraTransform = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, -50.0f} };
+	cameraTransform = { {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f} };
 }
 
 void Camera::Update(){
 	cameraMatrix = MakeAffineMatrix(cameraTransform.scale, cameraTransform.rotate, cameraTransform.translate);
 	viewMatrix = Inverse(cameraMatrix);
-	projectionMatrix = MakePerspectiveMatrix(0.45f, float(winapp_->GetKClientWidth()) / float(winapp_->GetKClientHeight()), 0.1f, 1000000.0f);
+	projectionMatrix = MakePerspectiveMatrix(fov, float(winapp_->GetKClientWidth()) / float(winapp_->GetKClientHeight()), 0.1f, 1000000.0f);
 
 	sMatView = MakeIndentity4x4();
 	sMatProjection = MakeOrthographicMatrix(0.0f, 0.0f, 1280.0f, 720.0f, 0.0f, 100.0f);

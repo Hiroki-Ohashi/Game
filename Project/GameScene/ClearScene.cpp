@@ -11,7 +11,8 @@ ClearScene::~ClearScene()
 
 void ClearScene::Initialize()
 {
-	camera_.Initialize();
+	railCamera_ = std::make_unique<RailCamera>();
+	railCamera_->Initialize();
 
 	// PostEffect
 	postProcess_ = std::make_unique<PostProcess>();
@@ -50,7 +51,7 @@ void ClearScene::Initialize()
 
 void ClearScene::Update()
 {
-	camera_.Update();
+	railCamera_->Update();
 
 	// ポストエフェクト更新処理
 	postProcess_->NoiseUpdate(0.1f);
@@ -89,7 +90,7 @@ void ClearScene::Update()
 	}
 
 	// カメラ回転
-	CameraMove();
+	railCamera_->ClearCameraMove();
 
 	// UI点滅
 	Blinking();
@@ -98,10 +99,10 @@ void ClearScene::Update()
 void ClearScene::Draw()
 {
 	// 天球描画
-	skydome_->Draw(&camera_);
+	skydome_->Draw(railCamera_->GetCamera());
 
 	// Json描画
-	json_->Draw(camera_, player);
+	json_->Draw(railCamera_->GetCamera(), player);
 
 	// UI描画
 	clear_->Draw();
@@ -115,25 +116,6 @@ void ClearScene::Draw()
 void ClearScene::PostDraw()
 {
 	postProcess_->NoiseDraw();
-}
-
-void ClearScene::CameraMove()
-{
-	camera_.cameraTransform.rotate.y += 0.01f;
-
-	EulerTransform origin = { {0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
-	// 追従対象からカメラまでのオフセット
-	Vector3 offset = { 0.0f, 13.0f, -25.0f };
-	// カメラの角度から回転行列を計算する
-	Matrix4x4 worldTransform = MakeRotateYMatrix(camera_.cameraTransform.rotate.y);
-	// オフセットをカメラの回転に合わせて回転させる
-	offset = TransformNormal(offset, worldTransform);
-	// 座標をコピーしてオフセット分ずらす
-	camera_.cameraTransform.translate.x = origin.translate.x + offset.x;
-	camera_.cameraTransform.translate.y = origin.translate.y + offset.y;
-	camera_.cameraTransform.translate.z = origin.translate.z + offset.z;
-
-	camera_.cameraTransform.rotate.x = 0.4f;
 }
 
 void ClearScene::Blinking()

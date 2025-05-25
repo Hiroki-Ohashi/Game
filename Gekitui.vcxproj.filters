@@ -128,9 +128,6 @@
     <ClCompile Include="externals\imgui\imgui_widgets.cpp">
       <Filter>externals\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="Project\GameObject\Enemy\Enemy.cpp">
-      <Filter>ソースファイル\Project\GameObject\Enemy</Filter>
-    </ClCompile>
     <ClCompile Include="Project\GameObject\Enemy\EnemyBullet.cpp">
       <Filter>ソースファイル\Project\GameObject\Enemy</Filter>
     </ClCompile>
@@ -185,10 +182,14 @@
     <ClCompile Include="Project\GameObject\Stage\Object.cpp">
       <Filter>ソースファイル\Project\GameObject\Stage</Filter>
     </ClCompile>
-    <ClCompile Include="Project\GameObject\Enemy\EnemyBulletPool.cpp" />
-    <ClCompile Include="Project\GameObject\Enemy\EnemyStateApproach.cpp" />
     <ClCompile Include="Engine\Manager\SrvManager.cpp" />
     <ClCompile Include="Project\GameObject\Player\PlayerUI\PlayerUI.cpp" />
+    <ClCompile Include="Engine\Manager\PipeLineManager.cpp" />
+    <ClCompile Include="Project\GameObject\RailCamera\RailCamera.cpp" />
+    <ClCompile Include="Project\GameObject\Enemy\BaseEnemy.cpp" />
+    <ClCompile Include="Project\GameObject\Enemy\FryEnemy\FryEnemy.cpp" />
+    <ClCompile Include="Project\GameObject\Enemy\FixedEnemy\FixedEnemy.cpp" />
+    <ClCompile Include="Project\GameScene\LoadScene\LoadingManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="externals\imgui\imconfig.h">
@@ -269,9 +270,6 @@
     <ClInclude Include="Project\GameManager\IScene.h">
       <Filter>ヘッダーファイル\Project\GameManager</Filter>
     </ClInclude>
-    <ClInclude Include="Project\GameObject\Enemy\Enemy.h">
-      <Filter>ヘッダーファイル\Project\GameObject\Enemy</Filter>
-    </ClInclude>
     <ClInclude Include="Project\GameObject\Enemy\EnemyBullet.h">
       <Filter>ヘッダーファイル\Project\GameObject\Enemy</Filter>
     </ClInclude>
@@ -323,12 +321,15 @@
     <ClInclude Include="Project\utillity\Collider.h">
       <Filter>ヘッダーファイル\Project\utillity</Filter>
     </ClInclude>
-    <ClInclude Include="Project\GameObject\Enemy\EnemyBulletPool.h" />
     <ClInclude Include="Project\utillity\CollisionConfig.h" />
-    <ClInclude Include="Project\GameObject\Enemy\BaseEnemyState.h" />
-    <ClInclude Include="Project\GameObject\Enemy\EnemyStateApproach.h" />
     <ClInclude Include="Engine\Manager\SrvManager.h" />
     <ClInclude Include="Project\GameObject\Player\PlayerUI\PlayerUI.h" />
+    <ClInclude Include="Engine\Manager\PipeLineManager.h" />
+    <ClInclude Include="Project\GameObject\RailCamera\RailCamera.h" />
+    <ClInclude Include="Project\GameObject\Enemy\BaseEnemy.h" />
+    <ClInclude Include="Project\GameObject\Enemy\FryEnemy\FryEnemy.h" />
+    <ClInclude Include="Project\GameObject\Enemy\FixedEnemy\FixedEnemy.h" />
+    <ClInclude Include="Project\GameScene\LoadScene\LoadingManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\Shaders\Fullscreen.hlsli">

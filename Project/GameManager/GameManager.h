@@ -13,6 +13,7 @@
 #include "imgui.h"
 #include "Light.h"
 #include "SrvManager.h"
+#include "PipeLineManager.h"
 
 using namespace Engine;
 
@@ -43,6 +44,7 @@ private:
 	Light* light_ = nullptr;
 	SrvManager* srvManager_ = nullptr;
 	TextureManager* textureManager_ = nullptr;
+	PipeLineManager* pipeLineManager_ = nullptr;
 
 
 	// シーンを保持

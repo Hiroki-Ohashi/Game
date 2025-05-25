@@ -18,6 +18,7 @@
 #include "WorldTransform.h"
 #include "Light.h"
 #include "SrvManager.h"
+#include "PipeLineManager.h"
 
 /// <summary>
 /// Model.h
@@ -60,7 +61,7 @@ namespace Engine
 		// wvp作成
 		void CreateWVPResource();
 		// PSO作成
-		void CreatePso();
+		//void CreatePso();
 
 		// Resource生成
 		Microsoft::WRL::ComPtr<ID3D12Resource> CreateBufferResource(Microsoft::WRL::ComPtr<ID3D12Device> device, size_t sizeInbytes);
@@ -71,6 +72,7 @@ namespace Engine
 		TextureManager* texture_ = TextureManager::GetInstance();
 		Light* light_ = Light::GetInstance();
 		SrvManager* srvManager_ = SrvManager::GetInstance();
+		PipeLineManager* pipeLineManager_ = PipeLineManager::GetInstance();
 
 		// Transform
 		WorldTransform worldTransform_;
@@ -81,16 +83,10 @@ namespace Engine
 		ModelData modelData;
 		uint32_t* mappedIndex;
 
-		//// BufferView
-		//D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
-		//D3D12_INDEX_BUFFER_VIEW indexBufferView{};
-
 		// Resource
-		//Microsoft::WRL::ComPtr<ID3D12Resource> vertexResource;
 		Microsoft::WRL::ComPtr<ID3D12Resource> materialResource;
 		Microsoft::WRL::ComPtr<ID3D12Resource> wvpResource;
 		Microsoft::WRL::ComPtr<ID3D12Resource> cameraResource;
-		//Microsoft::WRL::ComPtr<ID3D12Resource> indexResource;
 
 		// Data
 		VertexData* vertexData;
@@ -104,8 +100,8 @@ namespace Engine
 		CameraForGpu camera_;
 
 		// PSO
-		Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature = nullptr;
-		Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineState = nullptr;
+		/*Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature = nullptr;
+		Microsoft::WRL::ComPtr<ID3D12PipelineState> graphicsPipelineState = nullptr;*/
 
 	};
 

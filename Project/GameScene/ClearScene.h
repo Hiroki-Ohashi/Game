@@ -6,6 +6,7 @@
 #include <PostProcess.h>
 #include <Json.h>
 #include <SkyBox/Skydome.h>
+#include <RailCamera/RailCamera.h>
 using namespace Engine;
 
 /// <summary>
@@ -28,15 +29,12 @@ public:
 	void PostDraw() override;
 
 private:
-	// カメラ
-	void CameraMove();
 	// UI点滅
 	void Blinking();
 
-
 private:
 	// カメラ
-	Camera camera_;
+	std::unique_ptr<RailCamera> railCamera_ = nullptr;
 	// シングルトン呼び出し
 	TextureManager* textureManager_ = TextureManager::GetInstance();
 

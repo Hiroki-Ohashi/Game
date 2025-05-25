@@ -11,9 +11,11 @@ OverScene::~OverScene()
 
 void OverScene::Initialize()
 {
-	camera_.Initialize();
-	camera_.cameraTransform.translate = { -0.4f, 7.0f, -19.0f };
-	camera_.cameraTransform.rotate.x = 0.25f;
+	railCamera_ = std::make_unique<RailCamera>();
+	railCamera_->Initialize();
+	railCamera_->SetPos({ -0.4f, 7.0f, -19.0f });
+	railCamera_->SetRot({ 0.25f, 0.0f, 0.0f });
+	railCamera_->SetkCameraMax({ 0.25f , 0.0f });
 
 	
 	// PostEffect
@@ -74,13 +76,18 @@ void OverScene::Initialize()
 	title_->Initialize(Vector2{ 1050.0f, 560.0f }, Vector2{ 127.0f, 107.0f }, title);
 	title_->SetSize({ 127.0f, 107.0f });
 
+	// Load初期化
+	loadingManager_ = std::make_unique<LoadingManager>();
+	loadingManager_->Initialize(textureManager_);
+	isLoad_ = false;
+
 	scenePrev = 0;
 	noiseStrength = 100.0f;
 }
 
 void OverScene::Update()
 {
-	camera_.Update();
+	railCamera_->Update();
 
 	// ノイズを段々薄く
 	if (noiseStrength >= 5.0f) {
@@ -130,10 +137,10 @@ void OverScene::Update()
 			postProcess_->VignetteFadeIn(0.1f, 0.1f);
 		}
 
-		if (postProcess_->GetVignetteLight() <= 0.0f) {
+		if (postProcess_->GetVignetteLight() <= 0.0f && !isLoad_) {
 			isVignette_ = false;
-			// ゲームシーンへ
-			sceneNo = STAGE;
+			isLoad_ = true;
+			loadingManager_->Start();
 		}
 	}
 	else {
@@ -148,9 +155,20 @@ void OverScene::Update()
 		}
 	}
 
+	// ローディング中は演出に切り替え
+	if (isLoad_) {
+		postProcess_->SetVignette(32.0f, 1.0f);  // 画面暗く
+		postProcess_->SetNoise(0.0f, 0.0f);      // ノイズ解除
+		loadingManager_->Update();
+	}
+
+	// ロード完了したらステージシーンへ
+	if (loadingManager_->IsComplete()) {
+		sceneNo = STAGE;
+	}
 
 	// カメラ揺らす
-	CameraShake();
+	railCamera_->CameraSwing();
 
 	// UI点滅
 	Blinking();
@@ -164,22 +182,27 @@ void OverScene::Update()
 void OverScene::Draw()
 {
 	// Json描画
-	json_->Draw(camera_, player);
-	jsonObject_->Draw(camera_, player);
+	json_->Draw(railCamera_->GetCamera(), player);
+	jsonObject_->Draw(railCamera_->GetCamera(), player);
 
 	// 床描画
-	yuka_->Draw(&camera_, yuka);
+	yuka_->Draw(railCamera_->GetCamera(), yuka);
 
-	// UI描画
-	gekitui_->Draw();
-	sareta_->Draw();
-	sentaku_->Draw();
-	if (blinking) {
-		if (scenePrev == 0) {
-			retry_->Draw();
-		}
-		else {
-			title_->Draw();
+	if (isLoad_) {
+		loadingManager_->Draw();
+	}
+	else {
+		// UI描画
+		gekitui_->Draw();
+		sareta_->Draw();
+		sentaku_->Draw();
+		if (blinking) {
+			if (scenePrev == 0) {
+				retry_->Draw();
+			}
+			else {
+				title_->Draw();
+			}
 		}
 	}
 }
@@ -187,28 +210,6 @@ void OverScene::Draw()
 void OverScene::PostDraw()
 {
 	postProcess_->NoiseDraw();
-}
-
-void OverScene::CameraShake()
-{
-	// カメラ角度が範囲を超えたら反転
-	// X軸
-	if (camera_.cameraTransform.rotate.x < kCameraMax.x) {
-		cameraSpeedX += cameraMoveSpeed;
-	}
-	else if (camera_.cameraTransform.rotate.x >= kCameraMax.x) {
-		cameraSpeedX -= cameraMoveSpeed;
-	}
-	// Y軸
-	if (camera_.cameraTransform.rotate.y < kCameraMax.y) {
-		cameraSpeedY += cameraMoveSpeed;
-	}
-	else if (camera_.cameraTransform.rotate.y >= kCameraMax.y) {
-		cameraSpeedY -= cameraMoveSpeed;
-	}
-	// カメラスピードを足す
-	camera_.cameraTransform.rotate.x += cameraSpeedX;
-	camera_.cameraTransform.rotate.y += cameraSpeedY;
 }
 
 void OverScene::Blinking()

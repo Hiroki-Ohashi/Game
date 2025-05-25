@@ -192,16 +192,14 @@ void Json::EnemyAdoption(LevelData* levelData, Player* player, GameScene* gamesc
 	// レベルデータからオブジェクトを生成、配置
 	for (auto& EnemyData : levelData->enemys) {
 		// モデルを指定してEnemyを生成
-		std::unique_ptr<Enemy> newObject = std::make_unique<Enemy>();
-		newObject->Initialize({ 0.0f,0.0f,0.0f }, FRY);
-		newObject->SetPosition(EnemyData.translation);
+		std::unique_ptr<FryEnemy> newObject = std::make_unique<FryEnemy>();
+		newObject->Initialize({ EnemyData.translation.x,EnemyData.translation.y,EnemyData.translation.z });
 		newObject->SetRotation(EnemyData.rotation);
 		newObject->SetScale(Vector3{ 1.0f, 1.0f, 1.0f });
 		// 敵キャラに自キャラのアドレスを渡す
 		newObject->SetPlayer(player);
 		// 敵キャラにゲームシーンを渡す
 		newObject->SetGameScene(gamescene);
-		newObject->SetIsDead(false);
 		enemys_.push_back(std::move(newObject));
 	}
 }
@@ -211,10 +209,10 @@ void Json::FixedEnemyAdoption(LevelData* levelData, Player* player, GameScene* g
 	// レベルデータからオブジェクトを生成、配置
 	for (auto& FixedEnemyData : levelData->fixedEnemys) {
 		// モデルを指定してEnemyを生成
-		std::unique_ptr<Enemy> newObject = std::make_unique<Enemy>();
-		newObject->Initialize({ 0.0f,0.0f,0.0f }, FIXEDENEMY);
-		newObject->SetPosition(FixedEnemyData.translation);
+		std::unique_ptr<FixedEnemy> newObject = std::make_unique<FixedEnemy>();
+		newObject->Initialize({ FixedEnemyData.translation.x,FixedEnemyData.translation.y,FixedEnemyData.translation.z });
 		newObject->SetRotation(FixedEnemyData.rotation);
+		newObject->SetScale(Vector3{ 1.0f, 1.0f, 1.0f });
 		// 敵キャラに自キャラのアドレスを渡す
 		newObject->SetPlayer(player);
 		// 敵キャラにゲームシーンを渡す
@@ -233,52 +231,50 @@ void Json::Update()
 	}
 }
 
-void Json::EnemyUpdate(Camera& camera, Player* player, GameScene* gamescene)
+void Json::EnemyUpdate(Camera& camera,float distance)
 {
-	for (std::unique_ptr<Enemy>& enemy : enemys_) {
-		// 敵キャラに自キャラのアドレスを渡す
-		enemy->SetPlayer(player);
-		// 敵キャラにゲームシーンを渡す
-		enemy->SetGameScene(gamescene);
-		enemy->Update(FRY, &camera);
+	for (std::unique_ptr<FryEnemy>& enemy : enemys_) {
+		if (enemy->GetPos().z > distance && enemy->GetPos().z - distance <= 10000) {
+			
+			enemy->Update(&camera);
+		}
 	}
 }
 
-void Json::FixedEnemyUpdate(Camera& camera, Player* player, GameScene* gamescene)
+void Json::FixedEnemyUpdate(Camera& camera,float distance)
 {
-	for (std::unique_ptr<Enemy>& fixedEnemy : fixedEnemys_) {
-		// 敵キャラに自キャラのアドレスを渡す
-		fixedEnemy->SetPlayer(player);
-		// 敵キャラにゲームシーンを渡す
-		fixedEnemy->SetGameScene(gamescene);
-		fixedEnemy->Update(FIXEDENEMY, &camera);
+	for (std::unique_ptr<FixedEnemy>& fixedEnemy : fixedEnemys_) {
+		if (fixedEnemy->GetPos().z > distance && fixedEnemy->GetPos().z - distance <= 10000) {
+
+			fixedEnemy->Update(&camera);
+		}
 	}
 }
 
-void Json::Draw(Camera& camera, uint32_t index)
+void Json::Draw(Camera* camera, uint32_t index)
 {
 	for (std::unique_ptr<Object>& object : objects_) {
-		object->Draw(&camera, index);
+		object->Draw(camera, index);
 	}
 
-	for (std::unique_ptr<Enemy>& enemy : enemys_) {
-		enemy->Draw(&camera);
+	for (std::unique_ptr<FryEnemy>& enemy : enemys_) {
+		enemy->Draw(camera);
 		enemy->DrawUI();
 	}
 
-	for (std::unique_ptr<Enemy>& fixedEnemy : fixedEnemys_) {
-		fixedEnemy->Draw(&camera);
+	for (std::unique_ptr<FixedEnemy>& fixedEnemy : fixedEnemys_) {
+		fixedEnemy->Draw(camera);
 		fixedEnemy->DrawUI();
 	}
 }
 
-void Json::DrawEnemy(Camera& camera)
+void Json::DrawEnemy(Camera* camera)
 {
-	for (std::unique_ptr<Enemy>& enemy : enemys_) {
-		enemy->DrawParticle(&camera);
+	for (std::unique_ptr<FryEnemy>& enemy : enemys_) {
+		enemy->DrawParticle(camera);
 	}
 
-	for (std::unique_ptr<Enemy>& fixedEnemy : fixedEnemys_) {
-		fixedEnemy->DrawParticle(&camera);
+	for (std::unique_ptr<FixedEnemy>& fixedEnemy : fixedEnemys_) {
+		fixedEnemy->DrawParticle(camera);
 	}
 }

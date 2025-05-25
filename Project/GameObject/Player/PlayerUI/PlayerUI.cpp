@@ -5,8 +5,8 @@ void PlayerUI::Initialize()
 	textureManager_ = TextureManager::GetInstance();
 
 	// モデルごとの初期パラメータ
-	rightTransform_ = { {2.1f,1.3f,1.0f},{0.25f,-0.7f,0.0f},{0.0f,-50.0f,0.0f} };
-	leftTransform_ = { {2.1f,1.3f,1.0f},{0.25f,0.7f,0.0f},{0.0f,-50.0f,0.0f} };
+	rightTransform_ = { {2.1f,1.3f,1.0f},{0.25f,-0.7f,0.0f},{0.0f,-500.0f,0.0f} };
+	leftTransform_ = { {2.1f,1.3f,1.0f},{0.25f,0.7f,0.0f},{0.0f,-500.0f,0.0f} };
 
 	// HPUIモデル
 	rightModel_ = std::make_unique<Model>();
@@ -31,30 +31,34 @@ void PlayerUI::Initialize()
 	leftWorldtransform_.UpdateMatrix();
 
 	// texture
-	HP = textureManager_->Load("resources/hp.png");
+	HP100 = textureManager_->Load("resources/hp100.png");
+	HP80 = textureManager_->Load("resources/hp80.png");
+	HP60 = textureManager_->Load("resources/hp60.png");
+	HP40 = textureManager_->Load("resources/hp40.png");
+	HP20 = textureManager_->Load("resources/hp20.png");
+	HP0 = textureManager_->Load("resources/hp0.png");
 	operation = textureManager_->Load("resources/operation.png");
 
 	isEaseStart = true;
 	isEaseEnd = false;
+	frame = 0.0f;
 }
 
-void PlayerUI::Update()
+void PlayerUI::Update(Camera* camera_)
 {
 	if (isEaseStart) {
 		frame++;
 		if (frame >= endFrame) {
-			frame = 0.0f;
+			//frame = 0.0f;
 			isEaseStart = false;
 		}
 
 		rightWorldtransform_.scale.y = start + (end - start) * EaseOutQuart(frame / endFrame);
 		leftWorldtransform_.scale.y = start + (end - start) * EaseOutQuart(frame / endFrame);
 	}
-	
-	if(!isEaseEnd && !isEaseStart){
-		rightWorldtransform_.scale.y = rightTransform_.scale.y;
-		leftWorldtransform_.scale.y = leftTransform_.scale.y;
-	}
+
+	RotObject(rightWorldtransform_.translate, camera_->cameraTransform.translate, rightWorldtransform_.rotate);
+	RotObject(leftWorldtransform_.translate, camera_->cameraTransform.translate, leftWorldtransform_.rotate);
 
 	if (ImGui::TreeNode("right")) {
 		ImGui::DragFloat3("Scale", &rightWorldtransform_.scale.x, 0.01f);
@@ -77,16 +81,34 @@ void PlayerUI::Update()
 	leftModel_->SetWorldTransform(leftWorldtransform_);
 }
 
-void PlayerUI::Draw(Camera* camera_)
+void PlayerUI::Draw(Camera* camera_, int32_t hp)
 {
+	if (hp == 5){
+		leftModel_->Draw(camera_, HP100);
+	}
+	else if (hp == 4) {
+		leftModel_->Draw(camera_, HP80);
+	}
+	else if (hp == 3) {
+		leftModel_->Draw(camera_, HP60);
+	}
+	else if (hp == 2) {
+		leftModel_->Draw(camera_, HP40);
+	}
+	else if (hp == 1) {
+		leftModel_->Draw(camera_, HP20);
+	}
+	else if (hp == 0) {
+		leftModel_->Draw(camera_, HP0);
+	}
+
 	rightModel_->Draw(camera_, operation);
-	leftModel_->Draw(camera_, HP);
 }
 
 void PlayerUI::SetUIPosition(Vector3 pos)
 {
-	rightWorldtransform_.translate = { pos.x - 4.0f, pos.y - 1.0f, pos.z };
-	leftWorldtransform_.translate = { pos.x + 4.0f, pos.y - 1.0f, pos.z };
+	rightWorldtransform_.translate = { pos.x - 6.0f, pos.y, pos.z + 10.0f };
+	leftWorldtransform_.translate = { pos.x + 6.0f, pos.y, pos.z + 10.0f };
 	
 	rightWorldtransform_.UpdateMatrix();
 	leftWorldtransform_.UpdateMatrix();
@@ -101,11 +123,30 @@ void PlayerUI::SetEaseEnd(bool isEase)
 	if (isEaseEnd) {
 		frame++;
 		if (frame >= endFrame) {
-			frame = 0;
 			isEaseEnd = false;
 		}
 
 		rightWorldtransform_.scale.y = end + (start - end) * EaseOutQuart(frame / endFrame);
 		leftWorldtransform_.scale.y = end + (start - end) * EaseOutQuart(frame / endFrame);
 	}
+}
+
+void PlayerUI::RotObject(Vector3 startObjectPos, Vector3 endObjectPos, Vector3 ObjectRotate)
+{
+	Vector3 cameraEnd = endObjectPos;
+	Vector3 cameraStart = startObjectPos;
+
+	Vector3 diff;
+	diff.x = cameraEnd.x - cameraStart.x;
+	diff.y = cameraEnd.y - cameraStart.y;
+	diff.z = cameraEnd.z - cameraStart.z;
+
+	diff = Normalize(diff);
+
+	Vector3 velocity_(diff.x, diff.y, diff.z);
+
+	// Y軸周り角度（Θy）
+	ObjectRotate.y = std::atan2(velocity_.x, velocity_.z);
+	float velocityXZ = sqrt((velocity_.x * velocity_.x) + (velocity_.z * velocity_.z));
+	ObjectRotate.x = std::atan2(-velocity_.y, velocityXZ);
 }

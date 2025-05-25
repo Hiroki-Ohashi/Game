@@ -3,6 +3,7 @@
 #include <Model.h>
 #include "Collider.h"
 #include "CollisionConfig.h"
+#include "Particle.h"
 
 using namespace Engine;
 
@@ -22,7 +23,7 @@ public:
 	// 更新処理
 	void Update();
 	// 描画処理
-	void Draw(Camera* camera, uint32_t index);
+	void Draw(Camera* camera, uint32_t index, uint32_t index2);
 	// 当たり判定処理
 	void OnCollision() override;
 	Vector3 GetWorldPosition() const override;
@@ -52,11 +53,16 @@ public:
 	}
 	// Setter
 	void SetPlayer(Player* player) { player_ = player; }
+	void SetDead() { isDead_ = true; }
 private:
 	// model
 	std::unique_ptr<Model> model_;
 	EulerTransform transform;
 	WorldTransform worldtransform_;
+
+	// particle
+	std::unique_ptr<Particles> particle_ = nullptr;
+
 	// 自機
 	Player* player_ = nullptr;
 	// 速度
@@ -66,4 +72,7 @@ private:
 	static const int32_t kLifeTime = 60 * 2;
 	int32_t deathTimer_ = kLifeTime;
 	bool isDead_ = false;
+
+	// emitter
+	Emitter emitter{};
 };

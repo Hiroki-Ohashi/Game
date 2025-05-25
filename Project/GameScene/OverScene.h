@@ -6,12 +6,14 @@
 #include <PostProcess.h>
 #include <SkyBox/Skydome.h>
 #include <Json.h>
+#include <RailCamera/RailCamera.h>
+#include <LoadScene/LoadingManager.h>
 
 using namespace Engine;
 
 /// <summary>
 /// OverScene.h
-/// クリアシーンのヘッダーファイル
+/// ゲームオーバーシーンのヘッダーファイル
 /// </summary>
 
 // ClearSceneクラス
@@ -29,14 +31,11 @@ public:
 	void PostDraw() override;
 
 private:
-	// カメラ
-	void CameraShake();
 	// UI点滅
 	void Blinking();
-
 private:
 	// カメラ
-	Camera camera_;
+	std::unique_ptr<RailCamera> railCamera_ = nullptr;
 	// シングルトン呼び出し
 	TextureManager* textureManager_ = TextureManager::GetInstance();
 	// postProcess
@@ -58,6 +57,8 @@ private:
 
 	std::unique_ptr<Model> yuka_ = nullptr;
 
+	// load
+	std::unique_ptr<LoadingManager> loadingManager_ = nullptr;
 private:
 	// テクスチャ
 	uint32_t gekitui;
@@ -73,12 +74,6 @@ private:
 	// param
 	EulerTransform transform_;
 
-	// cameraSpeed
-	float cameraSpeedX = 0.0001f;
-	float cameraSpeedY = 0.0002f;
-	float cameraMoveSpeed = 0.000005f;
-	const Vector2 kCameraMax = { 0.25f , 0.0f };
-
 	// scene
 	uint32_t scenePrev;
 	float noiseStrength = 100.0f;
@@ -91,6 +86,7 @@ private:
 
 	// ビネット
 	bool isVignette_;
+	bool isLoad_;
 
 	// デバッグ用
 	Vector2 pos = {};

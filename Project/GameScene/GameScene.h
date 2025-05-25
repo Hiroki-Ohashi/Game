@@ -1,5 +1,6 @@
 #pragma once
-#include <Windows.h>
+#define NOMINMAX
+#include <windows.h>
 #include <cstdint>
 #include <string>
 #include <format>
@@ -21,8 +22,8 @@
 #include "Json.h"
 #include <Player/Player.h>
 #include <Stage/Stage.h>
-#include <Enemy/Enemy.h>
 #include <SkyBox/Skydome.h>
+#include <RailCamera/RailCamera.h>
 using namespace Engine;
 
 #pragma comment(lib, "d3d12.lib")
@@ -57,7 +58,6 @@ public:
 
 private:
 	// シェイクを開始する関数
-	void startShake(int duration, float amplitude);
 	void ShakeCamera();
 
 	// ロックオン処理
@@ -73,7 +73,7 @@ private:
 
 private:
 	// カメラ
-	Camera camera_;
+	std::unique_ptr<RailCamera> railCamera_ = nullptr;
 	// シングルトン呼び出し
 	TextureManager* textureManager_ = TextureManager::GetInstance();
 
@@ -102,12 +102,19 @@ private:
 
 	std::vector<std::unique_ptr<Particles>> particlesList;
 
-	//
+	// pose
 	std::unique_ptr<Sprite> sentaku_ = nullptr;
+
+	// 各補助関数
+	void CheckSphereCollisions(std::list<Collider*>& colliders);
+	void CheckAABBCollisionsWithObjects();
+	void CheckReticleLockOn();
+	void CheckOBBCollisionsWithPlayer();
 
 	// 当たり判定
 	void CheckCollisionPair(Collider* colliderA, Collider* colliderB);
 	void CheckAABBCollisionPair(Collider* colliderA, Collider* colliderB);
+	bool IsOBBColliding(const OBB& a, const OBB& b);
 private:
 	// テクスチャ
 	uint32_t enemyBulletTex;
@@ -117,6 +124,7 @@ private:
 	uint32_t go;
 	uint32_t backTitle;
 	uint32_t retry;
+	uint32_t kemuri;
 
 	// 待機タイマー
 	int32_t waitTimer_;
@@ -141,24 +149,14 @@ private:
 
 	// ノイズ
 	float noiseStrength;
-	const float kdamageNoise = 0.5f;
+	bool isNoise;
+	const float kdamageNoise = 3.0f;
 	const float kMaxNoiseStrength = 100.0f;
 	const float plusNoiseStrength = 1.0f;
 
 	// ゴールライン
-	float goalline = 29800.0f;
+	float goalline = 98000.0f;
 	bool isGoal_;
-
-	// カメラoffset
-	Vector3 cameraOffset = { 0.0f, 1.5f, 20.0f };
-
-	// カメラシェイク変数
-	bool isShake = false;
-	int shakeTimer = 0;
-	float shakeAmplitude = 1.0f; // 揺れの最大振幅
-	float shakeDecay = 0.2f;    // 揺れの減衰率
-	float randX = 0.0f;
-	float randY = 0.0f;
 
 	// デバッグ用仮変数;
 	Vector2 pos = {};
@@ -166,7 +164,7 @@ private:
 	Vector2 scale = {};
 	EulerTransform transform_;
 
-	// カメライージング変数
+	// イージング変数
 	float start = 0.0f;
 	float end = 6.29f;
 	float frame;
@@ -177,4 +175,8 @@ private:
 
 	// scene
 	uint32_t scenePrev;
+
+	// collision
+	const float reticleHalfWidth = 50.0f;
+	const float enemyHalfWidth = 25.0f;
 };

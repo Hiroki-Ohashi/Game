@@ -84,4 +84,30 @@ namespace Engine
 		state.isPressed = isPressed;
 	}
 
+	Vector2 Input::GetLeftStick() const
+	{
+		XINPUT_STATE state{};
+		if (XInputGetState(0, &state) != ERROR_SUCCESS) {
+			return { 0.0f, 0.0f };
+		}
+
+		const float DEAD_ZONE = 0.2f;
+
+		float lx = static_cast<float>(state.Gamepad.sThumbLX) / 32767.0f;
+		float ly = static_cast<float>(state.Gamepad.sThumbLY) / 32767.0f;
+
+		float magnitude = std::sqrt(lx * lx + ly * ly);
+
+		if (magnitude < DEAD_ZONE) {
+			return { 0.0f, 0.0f };
+		}
+
+		// デッドゾーン補正
+		float scale = (magnitude - DEAD_ZONE) / (1.0f - DEAD_ZONE);
+		lx = (lx / magnitude) * scale;
+		ly = (ly / magnitude) * scale;
+
+		return { lx, ly };
+	}
+
 }

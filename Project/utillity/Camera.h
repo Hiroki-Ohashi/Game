@@ -17,6 +17,8 @@ struct Camera {
 	// 描画処理
 	void Draw();
 
+	void SetFovY(float fov_) { fov = fov_; }
+
 	// シングルトン呼び出し
 	static WinApp* winapp_;
 
@@ -32,4 +34,5 @@ struct Camera {
 	Matrix4x4 sMatView = {};
 	Matrix4x4 sMatProjection = {};
 
+	float fov = 0.45f;
 };
