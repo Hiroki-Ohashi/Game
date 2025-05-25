@@ -119,6 +119,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Project\GameObject\Player\PlayerUI\PlayerUI.cpp" />
     <ClCompile Include="Project\GameObject\RailCamera\RailCamera.cpp" />
     <ClCompile Include="Project\GameObject\Stage\Object.cpp" />
+    <ClCompile Include="Project\GameScene\LoadScene\LoadingManager.cpp" />
     <ClCompile Include="Project\GameScene\OverScene.cpp" />
     <ClCompile Include="Project\GameObject\Enemy\EnemyBullet.cpp" />
     <ClCompile Include="Project\GameScene\ClearScene.cpp" />
@@ -166,6 +167,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Project\GameObject\Enemy\FryEnemy\FryEnemy.h" />
     <ClInclude Include="Project\GameObject\Player\PlayerUI\PlayerUI.h" />
     <ClInclude Include="Project\GameObject\RailCamera\RailCamera.h" />
+    <ClInclude Include="Project\GameScene\LoadScene\LoadingManager.h" />
     <ClInclude Include="Project\utillity\CollisionConfig.h" />
     <ClInclude Include="Project\GameObject\Stage\Object.h" />
     <ClInclude Include="Project\utillity\Collider.h" />

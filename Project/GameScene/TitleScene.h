@@ -21,6 +21,7 @@
 #include <Json.h>
 #include <SkyBox/Skydome.h>
 #include <RailCamera/RailCamera.h>
+#include <LoadScene/LoadingManager.h>
 
 using namespace Engine;
 
@@ -50,7 +51,6 @@ public:
 private:
 	// UI点滅
 	void Blinking();
-
 private:
 	// カメラ
 	std::unique_ptr<RailCamera> railCamera_ = nullptr;
@@ -60,7 +60,6 @@ private:
 	// sprite
 	std::unique_ptr<Sprite> title_ = nullptr;
 	std::unique_ptr<Sprite> startLog_ = nullptr;
-	std::unique_ptr<Sprite> loadSprite_ = nullptr;
 
 	// postProcess
 	std::unique_ptr<PostProcess> postProcess_ = nullptr;
@@ -71,6 +70,10 @@ private:
 
 	// 天球
 	std::unique_ptr<Skydome> skydome_;
+
+	// load
+	std::unique_ptr<LoadingManager> loadingManager_ = nullptr;
+
 private:
 	// Pamameter
 	EulerTransform transform;
@@ -79,19 +82,6 @@ private:
 	uint32_t title;
 	uint32_t start;
 	uint32_t white;
-
-	// ロード
-	uint32_t l;
-	uint32_t lo;
-	uint32_t loa;
-	uint32_t load;
-	uint32_t loadi;
-	uint32_t loadin;
-	uint32_t loading;
-	uint32_t loading1;
-	uint32_t loading2;
-	uint32_t loading3;
-	int32_t Loadtimer;
 
 	// 点滅タイマー
 	uint32_t timer;

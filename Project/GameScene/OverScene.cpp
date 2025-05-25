@@ -76,21 +76,9 @@ void OverScene::Initialize()
 	title_->Initialize(Vector2{ 1050.0f, 560.0f }, Vector2{ 127.0f, 107.0f }, title);
 	title_->SetSize({ 127.0f, 107.0f });
 
-	l = textureManager_->Load("resources/l.png");
-	lo = textureManager_->Load("resources/lo.png");
-	loa = textureManager_->Load("resources/loa.png");
-	load = textureManager_->Load("resources/load.png");
-	loadi = textureManager_->Load("resources/loadi.png");
-	loadin = textureManager_->Load("resources/loadin.png");
-	loading = textureManager_->Load("resources/loading.png");
-	loading1 = textureManager_->Load("resources/loading..png");
-	loading2 = textureManager_->Load("resources/loading...png");
-	loading3 = textureManager_->Load("resources/loading....png");
-
-	// Load
-	loadSprite_ = std::make_unique<Sprite>();
-	loadSprite_->Initialize(Vector2{ 0.0f, 0.0f }, Vector2{ 1280.0f, 720.0f }, l);
-	Loadtimer = 0;
+	// Load初期化
+	loadingManager_ = std::make_unique<LoadingManager>();
+	loadingManager_->Initialize(textureManager_);
 	isLoad_ = false;
 
 	scenePrev = 0;
@@ -149,9 +137,10 @@ void OverScene::Update()
 			postProcess_->VignetteFadeIn(0.1f, 0.1f);
 		}
 
-		if (postProcess_->GetVignetteLight() <= 0.0f) {
+		if (postProcess_->GetVignetteLight() <= 0.0f && !isLoad_) {
 			isVignette_ = false;
 			isLoad_ = true;
+			loadingManager_->Start();
 		}
 	}
 	else {
@@ -166,41 +155,16 @@ void OverScene::Update()
 		}
 	}
 
+	// ローディング中は演出に切り替え
 	if (isLoad_) {
-		postProcess_->SetVignette(32.0f, 1.0f);
-		postProcess_->SetNoise(0.0f, 0.0f);
+		postProcess_->SetVignette(32.0f, 1.0f);  // 画面暗く
+		postProcess_->SetNoise(0.0f, 0.0f);      // ノイズ解除
+		loadingManager_->Update();
+	}
 
-		Loadtimer += 1;
-
-		if (Loadtimer == 10) {
-			loadSprite_->SetTexture(lo);
-		}
-		else if (Loadtimer == 15) {
-			loadSprite_->SetTexture(loa);
-		}
-		else if (Loadtimer == 20) {
-			loadSprite_->SetTexture(load);
-		}
-		else if (Loadtimer == 25) {
-			loadSprite_->SetTexture(loadi);
-		}
-		else if (Loadtimer == 30) {
-			loadSprite_->SetTexture(loadin);
-		}
-		else if (Loadtimer == 35) {
-			loadSprite_->SetTexture(loading);
-		}
-		else if (Loadtimer == 40) {
-			loadSprite_->SetTexture(loading1);
-		}
-		else if (Loadtimer == 45) {
-			loadSprite_->SetTexture(loading2);
-		}
-		else if (Loadtimer >= 50) {
-			loadSprite_->SetTexture(loading3);
-			// ゲームシーンへ
-			sceneNo = STAGE;
-		}
+	// ロード完了したらステージシーンへ
+	if (loadingManager_->IsComplete()) {
+		sceneNo = STAGE;
 	}
 
 	// カメラ揺らす
@@ -225,7 +189,7 @@ void OverScene::Draw()
 	yuka_->Draw(railCamera_->GetCamera(), yuka);
 
 	if (isLoad_) {
-		loadSprite_->Draw();
+		loadingManager_->Draw();
 	}
 	else {
 		// UI描画
