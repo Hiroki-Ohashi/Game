@@ -9,5 +9,6 @@ Imgui,Assimp,DirectXTex,Json
 
 # ポストエフェクト  
 <img src="https://github.com/user-attachments/assets/65b22386-1f8e-44eb-a984-bbdd2521052c" alt="ポストエフェクト" width="600"/>
-<img src="https://github.com/user-attachments/assets/82f8b24d-e9df-4cc2-83a8-300eacd2ce4d" alt="ポストエフェクト" width="600"/>
+<img src="https://github.com/user-attachments/assets/82f8b24d-e9df-4cc2-83a8-300eacd2ce4d" alt="ポストエフェクト" width="600"/>  
+
 自作HSLSシェーダーを用いてタイトル画面やゲーム画面にNoiseやVignette、Fogなどを実装しています。
