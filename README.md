@@ -4,9 +4,9 @@
 # 開発環境  
 自作エンジン(DirectX12)  
 
-# 外部ライブラリ    
+# 外部ライブラリ  
 Imgui,Assimp,DirectXTex,Json  
 
 # ポストエフェクト  
-<img src="https://github.com/user-attachments/assets/65b22386-1f8e-44eb-a984-bbdd2521052c" alt="ポストエフェクト" width="600"/>  
-自作HSLSシェーダーを用いてタイトル画面やゲーム画面にNoiseやVignette、Fogなどを実装しています。
+<img src="https://github.com/user-attachments/assets/65b22386-1f8e-44eb-a984-bbdd2521052c" alt="ポストエフェクト" width="600"/>    
+  自作HSLSシェーダーを用いてタイトル画面やゲーム画面にNoiseやVignette、Fogなどを実装しています。
