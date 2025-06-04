@@ -8,4 +8,4 @@
 Imgui,Assimp,DirectXTex,Json  
 
 # ポストエフェクト  
-![タイトル](https://drive.google.com/file/d/10ZxoJLKukZCgNM5iOEn_b-mkVifqOUVI/view?usp=sharing)
+![スクリーンショット 2025-02-17 023514](https://github.com/user-attachments/assets/07e50766-683f-475c-a6b8-48ac9a9f0d71)
