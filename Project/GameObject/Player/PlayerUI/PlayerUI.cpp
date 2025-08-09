@@ -107,8 +107,8 @@ void PlayerUI::Draw(Camera* camera_, int32_t hp)
 
 void PlayerUI::SetUIPosition(Vector3 pos)
 {
-	rightWorldtransform_.translate = { pos.x - 6.0f, pos.y, pos.z + 10.0f };
-	leftWorldtransform_.translate = { pos.x + 6.0f, pos.y, pos.z + 10.0f };
+	rightWorldtransform_.translate = { pos.x - 6.0f, pos.y - 3.0f, pos.z + 10.0f };
+	leftWorldtransform_.translate = { pos.x + 6.0f, pos.y - 3.0f, pos.z + 10.0f };
 	
 	rightWorldtransform_.UpdateMatrix();
 	leftWorldtransform_.UpdateMatrix();

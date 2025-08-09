@@ -89,7 +89,7 @@ void Player::Update(Camera* camera_)
 
 	// UI
 	uiModel_->Update(camera_);
-	uiModel_->SetUIPosition(worldtransform_.translate);
+	uiModel_->SetUIPosition(camera_->cameraTransform.translate);
 
 	// デスフラグの立った弾を排除
 	bullets_.erase(

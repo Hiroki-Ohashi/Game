@@ -92,7 +92,7 @@ void RailCamera::StartCamera()
 void RailCamera::AfterStartCamera()
 {
 	// カメラ位置
-	camera_.cameraTransform.translate = { player_->Get3DWorldPosition().x + randX, player_->Get3DWorldPosition().y + cameraOffset.y + randY,  player_->GetPos().z - cameraOffset.z };
+	camera_.cameraTransform.translate = { player_->GetPos().x + randX, player_->GetPos().y + cameraOffset.y + randY,  player_->GetPos().z - cameraOffset.z };
 
 	if (isFov) {
 		frame++;
